@@ -1,0 +1,556 @@
+package gdt.jgui.entity;
+/*
+ * Copyright 2016 Alexander Imas
+ * This file is part of JEntigrator.
+
+    JEntigrator is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    JEntigrator is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with JEntigrator.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+import java.awt.Component;
+import java.awt.Image;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.util.Enumeration;
+import java.util.Properties;
+import java.util.logging.Logger;
+
+import gdt.data.entity.BaseHandler;
+import gdt.data.entity.EntityHandler;
+import gdt.data.grain.Locator;
+import gdt.data.grain.Sack;
+import gdt.data.grain.Support;
+import gdt.data.store.Entigrator;
+import gdt.jgui.console.JConsoleHandler;
+import gdt.jgui.console.JContext;
+import gdt.jgui.console.JMainConsole;
+import javax.swing.ImageIcon;
+import javax.swing.JLabel;
+import javax.swing.JMenu;
+import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JPopupMenu;
+import javax.swing.JScrollPane;
+import javax.swing.JTree;
+import javax.swing.event.PopupMenuEvent;
+import javax.swing.event.PopupMenuListener;
+import javax.swing.event.TreeSelectionEvent;
+import javax.swing.event.TreeSelectionListener;
+import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.DefaultTreeCellRenderer;
+import javax.swing.tree.TreeNode;
+import javax.swing.tree.TreePath;
+import javax.swing.BoxLayout;
+
+import org.apache.commons.codec.binary.Base64;
+/**
+ * Displays the structure view of the entity.
+ * @author imasa
+ *
+ */
+public class JEntityStructurePanel extends JPanel implements JContext{
+	private static final long serialVersionUID = 1L;
+	private static final String STRUCTURE="Structure";
+	private String entihome$;
+    private String entityKey$;
+    private String entityLabel$;
+    String locator$;
+    private DefaultMutableTreeNode node;
+    private JMainConsole console;
+    JTree tree;
+    JScrollPane scrollPane;
+    JPopupMenu popup;
+    boolean isRoot=true;
+    boolean isFirst=true;
+	String selection$;
+	/**
+	 * The default constructor.
+	 */
+	public JEntityStructurePanel() {
+		setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
+		scrollPane = new JScrollPane();
+		add(scrollPane);
+		popup = new JPopupMenu();
+     	popup.addPopupMenuListener(new PopupMenuListener(){
+			@Override
+			public void popupMenuWillBecomeVisible(PopupMenuEvent e) {
+				popup.removeAll();
+				JMenuItem facetsItem=new JMenuItem("Facets");
+				   popup.add(facetsItem);
+				   facetsItem.setHorizontalTextPosition(JMenuItem.RIGHT);
+				   facetsItem.addActionListener(new ActionListener() {
+						@Override
+						public void actionPerformed(ActionEvent e) {
+						//	System.out.println("EntityStructurePanel:renderer:component locator$="+nodeLocator$);
+						    JEntityFacetPanel efp=new JEntityFacetPanel();
+						    String efpLocator$=efp.getLocator();
+						    Properties locator=Locator.toProperties(selection$);
+						    String entihome$=locator.getProperty(Entigrator.ENTIHOME);
+						    String entityKey$=locator.getProperty(EntityHandler.ENTITY_KEY);
+						    efpLocator$=Locator.append(efpLocator$, Entigrator.ENTIHOME,entihome$);
+						    efpLocator$=Locator.append(efpLocator$, EntityHandler.ENTITY_KEY,entityKey$);
+						    JConsoleHandler.execute(console, efpLocator$);
+						}
+					    });
+				   JMenuItem copyItem=new JMenuItem("Copy");
+				   popup.add(copyItem);
+				   copyItem.setHorizontalTextPosition(JMenuItem.RIGHT);
+				   copyItem.addActionListener(new ActionListener() {
+						@Override
+						public void actionPerformed(ActionEvent e) {
+						    console.clipboard.clear(); 
+							String locator$=(String)node.getUserObject();
+						     if(locator$!=null)
+						    	 console.clipboard.putString(locator$);
+						}
+					    });
+				
+				if(!isFirst){
+					popup.addSeparator();	
+				JMenuItem excludeItem=new JMenuItem("Exclude");
+				   popup.add(excludeItem);
+				   excludeItem.setHorizontalTextPosition(JMenuItem.RIGHT);
+				   excludeItem.addActionListener(new ActionListener() {
+						@Override
+						public void actionPerformed(ActionEvent e) {
+							int response = JOptionPane.showConfirmDialog(console.getContentPanel(), "Exclude ?", "Confirm",
+							        JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
+						   if (response == JOptionPane.YES_OPTION) {
+							try{ 
+							Properties locator=Locator.toProperties(selection$);
+							String entihome$=locator.getProperty(Entigrator.ENTIHOME);
+							String entityKey$=locator.getProperty(EntityHandler.ENTITY_KEY);
+							Entigrator entigrator=console.getEntigrator(entihome$);
+							Sack component=entigrator.getEntityAtKey(entityKey$);
+							String[] sa=entigrator.ent_listContainers(component);
+							if(sa!=null){
+							   Sack container;	
+								for(String aSa:sa){
+									container=entigrator.getEntityAtKey(aSa);
+									if(container!=null)
+										entigrator.col_breakRelation(container, component);
+								}
+							}
+							 JConsoleHandler.execute(console, JEntityStructurePanel.this.locator$);   
+							}catch(Exception ee){
+								 Logger.getLogger(JEntityStructurePanel.class.getName()).info(ee.toString());
+							 }
+					    }
+						}});
+					
+				JMenuItem deleteItem=new JMenuItem("Delete");
+				   popup.add(deleteItem);
+				   deleteItem.setHorizontalTextPosition(JMenuItem.RIGHT);
+				   deleteItem.addActionListener(new ActionListener() {
+						@Override
+						public void actionPerformed(ActionEvent e) {
+							int response = JOptionPane.showConfirmDialog(console.getContentPanel(), "Delete ?", "Confirm",
+							        JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
+						   if (response == JOptionPane.YES_OPTION) {
+							try{ 
+							Properties locator=Locator.toProperties(selection$);
+							String entihome$=locator.getProperty(Entigrator.ENTIHOME);
+							String entityKey$=locator.getProperty(EntityHandler.ENTITY_KEY);
+							Entigrator entigrator=console.getEntigrator(entihome$);
+							Sack component=entigrator.getEntityAtKey(entityKey$);
+							entigrator.deleteEntity(component);
+							 JConsoleHandler.execute(console, JEntityStructurePanel.this.locator$);   
+							}catch(Exception ee){
+								 Logger.getLogger(JEntityStructurePanel.class.getName()).info(ee.toString());
+							 }
+					    }
+						}});
+					}
+				if(hasToInclude()){
+					popup.addSeparator();
+					JMenuItem includeItem=new JMenuItem("Include");
+					   popup.add(includeItem);
+					   includeItem.setHorizontalTextPosition(JMenuItem.RIGHT);
+					   includeItem.addActionListener(new ActionListener() {
+							@Override
+							public void actionPerformed(ActionEvent e) {
+							    include();
+							    JConsoleHandler.execute(console, JEntityStructurePanel.this.locator$);   
+							}
+						    });
+				}
+			}
+			@Override
+			public void popupMenuWillBecomeInvisible(PopupMenuEvent e) {
+			}
+
+			@Override
+			public void popupMenuCanceled(PopupMenuEvent e) {
+				// TODO Auto-generated method stub
+			}
+     	});
+	}
+	/**
+	 * Get the panel to put into the main console.
+	 * @return the instance of the digest display.
+	 */
+	@Override
+	public JPanel getPanel() {
+		return this;
+	}
+	/**
+	 * Get the context menu.
+	 * @return the context menu.
+	 */
+	@Override
+	public JMenu getContextMenu() {
+		JMenu menu=new JMenu("Context");
+		   menu.setName("Context");
+		   JMenuItem facetItem = new JMenuItem("Facets");
+		   facetItem.addActionListener(new ActionListener() {
+				@Override
+				public void actionPerformed(ActionEvent e) {
+			       Properties locator=Locator.toProperties(locator$);
+			       String entihome$=locator.getProperty(Entigrator.ENTIHOME);
+			       String entityKey$=locator.getProperty(EntityHandler.ENTITY_KEY);
+			       JEntityFacetPanel efp=new JEntityFacetPanel();
+			       String efpLocator$=efp.getLocator();
+			       efpLocator$=Locator.append(efpLocator$, Entigrator.ENTIHOME, entihome$);
+			       efpLocator$=Locator.append(efpLocator$, EntityHandler.ENTITY_KEY, entityKey$);
+			       JConsoleHandler.execute(console, efpLocator$);
+				}
+			} );
+			menu.add(facetItem);
+			
+			JMenuItem digestItem = new JMenuItem("Digest");
+			   digestItem.addActionListener(new ActionListener() {
+					@Override
+					public void actionPerformed(ActionEvent e) {
+				       Properties locator=Locator.toProperties(locator$);
+				       String entihome$=locator.getProperty(Entigrator.ENTIHOME);
+				       String entityKey$=locator.getProperty(EntityHandler.ENTITY_KEY);
+				       JEntityDigestDisplay edp=new JEntityDigestDisplay();
+				       String edpLocator$=edp.getLocator();
+				       edpLocator$=Locator.append(edpLocator$, Entigrator.ENTIHOME, entihome$);
+				       edpLocator$=Locator.append(edpLocator$, EntityHandler.ENTITY_KEY, entityKey$);
+				       JConsoleHandler.execute(console, edpLocator$);
+					}
+				} );
+				menu.add(digestItem);
+			return menu;
+	}
+	/**
+	 * Get the context locator.
+	 * @return the context locator.
+	 */
+	@Override
+	public String getLocator() {
+		 Properties locator=new Properties();
+		    locator.setProperty(Locator.LOCATOR_TYPE, JContext.CONTEXT_TYPE);
+		    locator.setProperty(JContext.CONTEXT_TYPE,getType());
+		    if(entihome$!=null)
+		       locator.setProperty(Entigrator.ENTIHOME,entihome$);
+		    if(entityKey$!=null)
+			       locator.setProperty(EntityHandler.ENTITY_KEY,entityKey$);
+		    if(entityLabel$!=null)
+			       locator.setProperty(EntityHandler.ENTITY_LABEL,entityLabel$);
+		    String icon$=Support.readHandlerIcon(getClass(), "tree.png");
+			 locator.setProperty(Locator.LOCATOR_ICON, icon$);
+ 	       locator.setProperty(Locator.LOCATOR_TITLE, getTitle());
+		   locator.setProperty(BaseHandler.HANDLER_SCOPE,JConsoleHandler.CONSOLE_SCOPE);
+		   locator.setProperty(BaseHandler.HANDLER_CLASS,getClass().getName());
+		   return Locator.toString(locator);
+	}
+	/**
+	 * Create the context.
+	 * @param console the main console.
+	 * @param locator$ the locator.
+	 * @return the structure panel.
+	 */
+	@Override
+	public JContext instantiate(JMainConsole console, String locator$) {
+		this.console=console;
+		this.locator$=locator$;
+		 Properties locator=Locator.toProperties(locator$);
+		 entihome$=locator.getProperty(Entigrator.ENTIHOME);
+		 entityKey$=locator.getProperty(EntityHandler.ENTITY_KEY);
+		 entityLabel$=locator.getProperty(EntityHandler.ENTITY_LABEL);
+		 DefaultMutableTreeNode root = new DefaultMutableTreeNode(entityLabel$);
+		 locator=new Properties();
+		 locator.setProperty(Locator.LOCATOR_TITLE, STRUCTURE);
+		 String icon$=Support.readHandlerIcon(getClass(), "tree.png");
+		 locator.setProperty(Locator.LOCATOR_ICON, icon$);
+		 root.setUserObject(Locator.toString(locator));
+		 DefaultMutableTreeNode parentNode = new DefaultMutableTreeNode(entityLabel$);
+		 root.add(parentNode);
+		 Entigrator entigrator=console.getEntigrator(entihome$);
+		 Sack parent=entigrator.getEntityAtKey(entityKey$);
+		 String parentLocator$=EntityHandler.getEntityLocator(entigrator, parent);			
+		 parentNode.setUserObject(parentLocator$);
+		 addChildren(parentNode);
+		 tree=new JTree(root);
+		 tree.addTreeSelectionListener(new SelectionListener());
+		 tree.setShowsRootHandles(true);
+		 tree.setCellRenderer(new NodeRenderer()); 
+		 tree.addMouseListener(new MousePopupListener());
+		 scrollPane.getViewport().add(tree);
+		 expandTree(tree,true);
+		 return this;
+	}
+	private void addChildren(DefaultMutableTreeNode parentNode){
+		try{
+			String locator$=(String)parentNode.getUserObject();
+			Properties locator=Locator.toProperties(locator$);
+			String entihome$=locator.getProperty(Entigrator.ENTIHOME);
+			String entityKey$=locator.getProperty(EntityHandler.ENTITY_KEY);
+			Entigrator entigrator=console.getEntigrator(entihome$);
+			Sack parent=entigrator.getEntityAtKey(entityKey$);
+			String[] sa=entigrator.ent_listComponents(parent);
+			if(sa!=null){
+				Sack child;
+				String childLocator$;
+				DefaultMutableTreeNode childNode;
+				for(String aSa:sa){
+					child=entigrator.getEntityAtKey(aSa);
+					childLocator$=EntityHandler.getEntityLocator(entigrator, child);
+					childNode=new DefaultMutableTreeNode();
+					childNode.setUserObject(childLocator$);
+					parentNode.add(childNode);
+					addChildren(childNode);
+				}
+			}
+		}catch(Exception e){
+			Logger.getLogger(JEntityStructurePanel.class.getName()).severe(e.toString());
+		}
+	}
+	/**
+	 * Get the context title.
+	 * @return the context title.	
+	 */
+	@Override
+	public String getTitle() {
+		try{
+			if(entityLabel$!=null)
+				return entityLabel$;	
+			entityLabel$= console.getEntigrator(entihome$).indx_getLabel(entityKey$);
+			if(entityLabel$!=null)
+				return entityLabel$;	
+		return "Structure";
+			}catch(Exception e ){
+				return "Structure";
+			}
+	}
+	/**
+	 * Get the context subtitle.
+	 * @return the context subtitle.	
+	 */
+	@Override
+	public String getSubtitle() {
+		return entihome$;
+	}
+	/**
+	 * Get the context type.
+	 * @return the context type.	
+	 */
+	@Override
+	public String getType() {
+		return "Entity structure panel";
+	}
+	/**
+	 * Complete the context. No action.
+	 */
+	@Override
+	public void close() {
+		// TODO Auto-generated method stub
+	}
+	private boolean hasToInclude(){
+		try{
+			String[] sa=console.clipboard.getContent();
+			if(sa==null)
+				return false;
+			for(String aSa:sa )
+				if(canInclude(aSa))
+					return true;
+		}catch(Exception e){
+			Logger.getLogger(getClass().getName()).info(e.toString());
+		}
+		return false;
+	}
+	private void include(){
+		try{
+			String[] sa=console.clipboard.getContent();
+			if(sa==null)
+				return ;
+			String selectedLocator$=selection$;
+					//(String)node.getUserObject();
+//			System.out.println("EntityStructurePanel:include:selection="+selection$);
+			Properties locator=Locator.toProperties(selectedLocator$);
+			String entihome$=locator.getProperty(Entigrator.ENTIHOME);
+			String selectedEntityKey$=locator.getProperty(EntityHandler.ENTITY_KEY);
+			Entigrator entigrator=console.getEntigrator(entihome$);
+			Sack selectedEntity=entigrator.getEntityAtKey(selectedEntityKey$);
+//			System.out.println("EntityStructurePanel:include:selected entity="+selectedEntity.getProperty("label"));
+			String candidateKey$;
+			Sack candidate;
+			for(String aSa:sa )
+				if(canInclude(aSa)){
+					locator=Locator.toProperties(aSa);
+					candidateKey$=locator.getProperty(EntityHandler.ENTITY_KEY);
+					candidate=entigrator.getEntityAtKey(candidateKey$);
+					entigrator.col_addComponent(selectedEntity, candidate);
+				}
+		}catch(Exception e){
+			Logger.getLogger(getClass().getName()).info(e.toString());
+		}
+	}
+	private boolean canInclude(String candidateLocator$){
+		try{
+			String selectedLocator$=(String)node.getUserObject();
+			Properties locator=Locator.toProperties(selectedLocator$);
+			String entihome$=locator.getProperty(Entigrator.ENTIHOME);
+			String selectedEntityKey$=locator.getProperty(EntityHandler.ENTITY_KEY);
+			Entigrator entigrator=console.getEntigrator(entihome$);
+			Sack selectedEntity=entigrator.getEntityAtKey(selectedEntityKey$);
+			locator=Locator.toProperties(candidateLocator$);
+			String candidateKey$=locator.getProperty(EntityHandler.ENTITY_KEY);
+			Sack candidate=entigrator.getEntityAtKey(candidateKey$);
+			if(candidate==null)
+				return false;
+			if(entigrator.col_isComponentDown(selectedEntity,candidate)
+					||entigrator.col_isComponentUp(selectedEntity, candidate))
+				return false;
+			return true;
+		}catch(Exception e){
+			Logger.getLogger(getClass().getName()).info(e.toString());
+		}
+		return false;
+	}
+	private void expandTree(JTree tree, boolean expand) {
+        TreeNode root = (TreeNode) tree.getModel().getRoot();
+        expandAll(tree, new TreePath(root), expand);
+    }
+ 
+    private void expandAll(JTree tree, TreePath path, boolean expand) {
+        TreeNode node = (TreeNode) path.getLastPathComponent();
+        if (node.getChildCount() >= 0) {
+            Enumeration enumeration = node.children();
+            while (enumeration.hasMoreElements()) {
+                TreeNode n = (TreeNode) enumeration.nextElement();
+                TreePath p = path.pathByAddingChild(n);
+                expandAll(tree, p, expand);
+            }
+        }
+        if (expand) {
+            tree.expandPath(path);
+        } else {
+            tree.collapsePath(path);
+        }
+    }
+	class NodeRenderer extends DefaultTreeCellRenderer {
+		private static final long serialVersionUID = 1L;
+		public NodeRenderer() {
+	    }
+	    public Component getTreeCellRendererComponent(
+	                        JTree tree,
+	                        Object value,
+	                        boolean sel,
+	                        boolean expanded,
+	                        boolean leaf,
+	                        int row,
+	                        boolean hasFocus) {
+
+	        super.getTreeCellRendererComponent(
+	                        tree, value, sel,
+	                        expanded, leaf, row,
+	                        hasFocus);
+	        JLabel label = (JLabel) this ;
+            label.setText("Node"); 
+	        if(value!=null){
+	        	node=(DefaultMutableTreeNode)value;
+	        	Object userObject=((DefaultMutableTreeNode)value).getUserObject();
+	        	try{
+	        		Properties locator=Locator.toProperties((String)userObject);
+	        		String title$=locator.getProperty(Locator.LOCATOR_TITLE);
+	        		label.setText(title$); 
+	        		String icon$=locator.getProperty(Locator.LOCATOR_ICON);
+	        		if(icon$==null){
+	        			String entihome$=locator.getProperty(Entigrator.ENTIHOME);
+	        			String entityKey$=locator.getProperty(EntityHandler.ENTITY_KEY);
+	        			Entigrator entigrator=console.getEntigrator(entihome$);
+	        			Sack entity=entigrator.getEntityAtKey(entityKey$);
+        				icon$=entigrator.readEntityIcon(entity);
+	        		}
+	        		if(icon$!=null){
+	        			byte[] ba=Base64.decodeBase64(icon$);
+	        	      	  ImageIcon icon = new ImageIcon(ba);
+	        	      	  Image image= icon.getImage().getScaledInstance(24, 24, 0);
+	        	      	  icon.setImage(image);
+	        	      	  label.setIcon(icon); 
+	        		}
+	        		//else
+	        		//	System.out.println("EntityStructurePanel:renderer:icon is null");
+	        	}catch(Exception e){
+	        		Logger.getLogger(JEntityStructurePanel.class.getName()).severe(e.toString());
+	        	}
+	        }
+	        return this;
+	    }
+
+}
+	class MousePopupListener extends MouseAdapter {
+		  boolean isPopup=false;
+			public void mousePressed(MouseEvent e) {
+				//System.out.println("EntityStructurePanel:MousePopupListener:mouse pressed");
+				
+				if (e.isPopupTrigger()) {
+			      	  if(popup!=null)
+			    		  isPopup=true;
+			    	  else
+			    		  isPopup=false;
+			      }else
+			    	  isPopup=false;
+				
+			//	System.out.println("EntityStructurePanel:MousePopupListener:isPopup="+isPopup);
+		    }
+
+		    public void mouseClicked(MouseEvent e) {
+		    	//System.out.println("EntityStructurePanel:MousePopupListener:mouse clicked.is root="+isRoot);
+		    	if(!isRoot&&isPopup)
+		         		 popup.show(JEntityStructurePanel.this, e.getX(), e.getY());
+		      
+		    }
+
+		    public void mouseReleased(MouseEvent e) {
+		    	//System.out.println("EntityStructurePanel:MousePopupListener:mouse released");
+		    	if(!isPopup)
+		    	if (e.isPopupTrigger()) {
+			    	  isPopup=true;
+			      }
+		    }
+
+		   }
+	class SelectionListener implements TreeSelectionListener {
+		  public void valueChanged(TreeSelectionEvent se) {
+		    JTree tree = (JTree) se.getSource();
+		    node = (DefaultMutableTreeNode) tree.getLastSelectedPathComponent();
+		    if (node.isRoot())
+		    	isRoot=true;
+		    else
+		    	isRoot=false;
+		    DefaultMutableTreeNode parent=( DefaultMutableTreeNode)node.getParent();
+		    isFirst=false;
+		    if(parent==null||parent.isRoot())
+		    	  isFirst=true;
+		    Object userObject=node.getUserObject();
+        	selection$=(String)userObject;
+		    		  }
+}
+}
