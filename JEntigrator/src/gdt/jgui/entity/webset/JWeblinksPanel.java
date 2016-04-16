@@ -412,4 +412,23 @@ return menu;
 	public void close() {
 		// TODO Auto-generated method stub
 	}
+	/**
+	 * Open URL in the system browser. 
+	 * @param console the main console
+	 * @param locator$ the locator string
+	 */
+	public void browseUrl(JMainConsole console,String locator$){
+		try{
+			try{
+				Properties locator=Locator.toProperties(locator$);
+				String url$=locator.getProperty(JWeblinksPanel.WEB_LINK_URL);
+//				System.out.println("weblinkEditor:browseUrl:url="+url$);
+				Desktop.getDesktop().browse(new URI(url$));
+				}catch(Exception ee){
+					Logger.getLogger(JFileOpenItem.class.getName()).info(ee.toString());
+				}
+		}catch(Exception e){
+			Logger.getLogger(getClass().getName()).severe(e.toString());
+		}
+	}
 }
