@@ -1,0 +1,7 @@
+INDEX VERSION 1.127+/home/imasa/git/github/.metadata/.plugins/org.eclipse.jdt.core
+2823696638.index
+3496585412.index
+3850270940.index
+1759043450.index
+3268344461.index
+574940693.index
