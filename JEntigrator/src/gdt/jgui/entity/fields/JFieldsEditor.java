@@ -73,13 +73,13 @@ import org.apache.commons.codec.binary.Base64;
 public class JFieldsEditor extends JPanel implements JFacetRenderer,JRequester{
 	private static final long serialVersionUID = 1L;
 	private Logger LOGGER=Logger.getLogger(JFieldsEditor.class.getName());
-	private static final String CELL_FIELD_NAME="cell field name";
-	private static final String CELL_FIELD_VALUE="cell field value";
-	private static final String CELL_FIELD="cell field";
-	private static final String ACTION_COPY_FIELDS="action copy fields";
-	private static final String ACTION_CUT_FIELDS="action cut fields";
-	private static final String ACTION_NEW_ENTITY="action new entity";
-	private static final String LOCATOR_TYPE_FIELD="locator type field";
+	public static final String CELL_FIELD_NAME="cell field name";
+	public static final String CELL_FIELD_VALUE="cell field value";
+	public static final String CELL_FIELD="cell field";
+	public static final String ACTION_COPY_FIELDS="action copy fields";
+	public static final String ACTION_CUT_FIELDS="action cut fields";
+	public static final String ACTION_NEW_ENTITY="action new entity";
+	public static final String LOCATOR_TYPE_FIELD="locator type field";
 protected String entihome$;
 protected String entityKey$;
 protected String entityLabel$;
@@ -839,5 +839,13 @@ public JFieldsEditor() {
 	@Override
 	public void collectReferences(Entigrator entigrator, String entiyKey$, ArrayList<JReferenceEntry> sl) {
 		// TODO Auto-generated method stub
+	}
+	protected String getField(String fieldName$){
+	try{
+		return entity.getElementItemAt("field", fieldName$);
+	}catch(Exception e){
+		LOGGER.severe(e.toString());
+		return null;
+	}
 	}
 	}

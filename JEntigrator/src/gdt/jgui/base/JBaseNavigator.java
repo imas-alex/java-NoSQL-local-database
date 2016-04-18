@@ -109,7 +109,10 @@ private Logger LOGGER=Logger.getLogger(JBaseNavigator.class.getName());
 					    chooser.setFileFilter(filter);
 					    if (chooser.showOpenDialog(JBaseNavigator.this) == JFileChooser.APPROVE_OPTION) { 
 					    	String extension$=chooser.getSelectedFile().getPath();
-					    	//System.out.println("BaseNavigator.install extension="+extension$);
+					    	
+					    	System.out.println("BaseNavigator.install extension="+extension$);
+					    	System.out.println("Working Directory = " +
+					                System.getProperty("user.dir"));
 					    	try{
 					    	ProcessBuilder pb = new ProcessBuilder(System.getProperty("java.home")+"/bin/java", "-jar", extension$, entihome$);
 					    	Process p = pb.start();

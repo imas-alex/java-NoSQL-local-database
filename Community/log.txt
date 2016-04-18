@@ -1,0 +1,109 @@
+[INFO] Scanning for projects...
+[WARNING] 
+[WARNING] Some problems were encountered while building the effective model for Community:Community:jar:0.0.1-SNAPSHOT
+[WARNING] 'dependencies.dependency.systemPath' for JEntigrator:JEntigrator:jar should not point at files within the project directory, ${basedir}/libs/JEntigrator-0.0.1-SNAPSHOT.jar will be unresolvable by dependent projects @ line 33, column 17
+[WARNING] 'dependencies.dependency.systemPath' for compress:compress:jar should not point at files within the project directory, ${basedir}/libs/commons-codec-1.10.jar will be unresolvable by dependent projects @ line 40, column 17
+[WARNING] 
+[WARNING] It is highly recommended to fix these problems because they threaten the stability of your build.
+[WARNING] 
+[WARNING] For this reason, future Maven versions might no longer support building such malformed projects.
+[WARNING] 
+[INFO]                                                                         
+[INFO] ------------------------------------------------------------------------
+[INFO] Building Community 0.0.1-SNAPSHOT
+[INFO] ------------------------------------------------------------------------
+[INFO] 
+[INFO] --- maven-resources-plugin:2.3:resources (default-resources) @ Community ---
+[WARNING] Using platform encoding (UTF-8 actually) to copy filtered resources, i.e. build is platform dependent!
+[INFO] Copying 7 resources
+[INFO] 
+[INFO] --- maven-compiler-plugin:3.3:compile (default-compile) @ Community ---
+[INFO] Changes detected - recompiling the module!
+[WARNING] File encoding has not been set, using platform encoding UTF-8, i.e. build is platform dependent!
+[INFO] Compiling 25 source files to /home/imasa/git/github/Community/Community/target/classes
+[INFO] -------------------------------------------------------------
+[ERROR] COMPILATION ERROR : 
+[INFO] -------------------------------------------------------------
+[ERROR] /home/imasa/git/github/Community/Community/src/gdt/jgui/entity/email/JEmailFacetAddItem.java:[146,65] cannot find symbol
+  symbol:   variable LOCATOR_DATA
+  location: class gdt.data.grain.Locator
+[ERROR] /home/imasa/git/github/Community/Community/src/gdt/jgui/entity/person/JPersonEditor.java:[173,73] ACTION_NEW_ENTITY has private access in gdt.jgui.entity.fields.JFieldsEditor
+[ERROR] /home/imasa/git/github/Community/Community/src/gdt/jgui/entity/person/JPersonEditor.java:[192,28] ACTION_NEW_ENTITY has private access in gdt.jgui.entity.fields.JFieldsEditor
+[ERROR] /home/imasa/git/github/Community/Community/src/gdt/jgui/entity/person/JPersonEditor.java:[246,71] CELL_FIELD has private access in gdt.jgui.entity.fields.JFieldsEditor
+[ERROR] /home/imasa/git/github/Community/Community/src/gdt/jgui/entity/person/JPersonEditor.java:[247,66] CELL_FIELD_NAME has private access in gdt.jgui.entity.fields.JFieldsEditor
+[ERROR] /home/imasa/git/github/Community/Community/src/gdt/jgui/entity/person/JPersonEditor.java:[249,36] CELL_FIELD_NAME has private access in gdt.jgui.entity.fields.JFieldsEditor
+[ERROR] /home/imasa/git/github/Community/Community/src/gdt/jgui/entity/person/JPersonEditor.java:[251,42] CELL_FIELD_VALUE has private access in gdt.jgui.entity.fields.JFieldsEditor
+[ERROR] /home/imasa/git/github/Community/Community/src/gdt/jgui/entity/bank/JBankEditor.java:[154,73] ACTION_NEW_ENTITY has private access in gdt.jgui.entity.fields.JFieldsEditor
+[ERROR] /home/imasa/git/github/Community/Community/src/gdt/jgui/entity/bank/JBankEditor.java:[173,28] ACTION_NEW_ENTITY has private access in gdt.jgui.entity.fields.JFieldsEditor
+[ERROR] /home/imasa/git/github/Community/Community/src/gdt/jgui/entity/bank/JBankEditor.java:[211,71] CELL_FIELD has private access in gdt.jgui.entity.fields.JFieldsEditor
+[ERROR] /home/imasa/git/github/Community/Community/src/gdt/jgui/entity/bank/JBankEditor.java:[212,66] CELL_FIELD_NAME has private access in gdt.jgui.entity.fields.JFieldsEditor
+[ERROR] /home/imasa/git/github/Community/Community/src/gdt/jgui/entity/bank/JBankEditor.java:[214,36] CELL_FIELD_NAME has private access in gdt.jgui.entity.fields.JFieldsEditor
+[ERROR] /home/imasa/git/github/Community/Community/src/gdt/jgui/entity/bank/JBankEditor.java:[216,42] CELL_FIELD_VALUE has private access in gdt.jgui.entity.fields.JFieldsEditor
+[ERROR] /home/imasa/git/github/Community/Community/src/gdt/jgui/entity/person/JPersonFacetOpenItem.java:[46,17] constructor JFieldsFacetOpenItem in class gdt.jgui.entity.fields.JFieldsFacetOpenItem cannot be applied to given types;
+  required: no arguments
+  found: gdt.jgui.console.JMainConsole,java.lang.String
+  reason: actual and formal argument lists differ in length
+[ERROR] /home/imasa/git/github/Community/Community/src/gdt/jgui/entity/address/JAddressEditor.java:[89,64] cannot find symbol
+  symbol: method getField(java.lang.String)
+[ERROR] /home/imasa/git/github/Community/Community/src/gdt/jgui/entity/address/JAddressEditor.java:[189,73] ACTION_NEW_ENTITY has private access in gdt.jgui.entity.fields.JFieldsEditor
+[ERROR] /home/imasa/git/github/Community/Community/src/gdt/jgui/entity/address/JAddressEditor.java:[208,28] ACTION_NEW_ENTITY has private access in gdt.jgui.entity.fields.JFieldsEditor
+[ERROR] /home/imasa/git/github/Community/Community/src/gdt/jgui/entity/address/JAddressEditor.java:[256,71] CELL_FIELD has private access in gdt.jgui.entity.fields.JFieldsEditor
+[ERROR] /home/imasa/git/github/Community/Community/src/gdt/jgui/entity/address/JAddressEditor.java:[257,66] CELL_FIELD_NAME has private access in gdt.jgui.entity.fields.JFieldsEditor
+[ERROR] /home/imasa/git/github/Community/Community/src/gdt/jgui/entity/address/JAddressEditor.java:[259,36] CELL_FIELD_NAME has private access in gdt.jgui.entity.fields.JFieldsEditor
+[ERROR] /home/imasa/git/github/Community/Community/src/gdt/jgui/entity/address/JAddressEditor.java:[261,42] CELL_FIELD_VALUE has private access in gdt.jgui.entity.fields.JFieldsEditor
+[ERROR] /home/imasa/git/github/Community/Community/src/gdt/jgui/entity/phone/JPhoneFacetAddItem.java:[147,65] cannot find symbol
+  symbol:   variable LOCATOR_DATA
+  location: class gdt.data.grain.Locator
+[ERROR] /home/imasa/git/github/Community/Community/src/gdt/jgui/entity/contact/JContactFacetAddItem.java:[143,65] cannot find symbol
+  symbol:   variable LOCATOR_DATA
+  location: class gdt.data.grain.Locator
+[INFO] 23 errors 
+[INFO] -------------------------------------------------------------
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD FAILURE
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time: 1.364s
+[INFO] Finished at: Mon Apr 18 12:36:11 CEST 2016
+[INFO] Final Memory: 14M/212M
+[INFO] ------------------------------------------------------------------------
+[ERROR] Failed to execute goal org.apache.maven.plugins:maven-compiler-plugin:3.3:compile (default-compile) on project Community: Compilation failure: Compilation failure:
+[ERROR] /home/imasa/git/github/Community/Community/src/gdt/jgui/entity/email/JEmailFacetAddItem.java:[146,65] cannot find symbol
+[ERROR] symbol:   variable LOCATOR_DATA
+[ERROR] location: class gdt.data.grain.Locator
+[ERROR] /home/imasa/git/github/Community/Community/src/gdt/jgui/entity/person/JPersonEditor.java:[173,73] ACTION_NEW_ENTITY has private access in gdt.jgui.entity.fields.JFieldsEditor
+[ERROR] /home/imasa/git/github/Community/Community/src/gdt/jgui/entity/person/JPersonEditor.java:[192,28] ACTION_NEW_ENTITY has private access in gdt.jgui.entity.fields.JFieldsEditor
+[ERROR] /home/imasa/git/github/Community/Community/src/gdt/jgui/entity/person/JPersonEditor.java:[246,71] CELL_FIELD has private access in gdt.jgui.entity.fields.JFieldsEditor
+[ERROR] /home/imasa/git/github/Community/Community/src/gdt/jgui/entity/person/JPersonEditor.java:[247,66] CELL_FIELD_NAME has private access in gdt.jgui.entity.fields.JFieldsEditor
+[ERROR] /home/imasa/git/github/Community/Community/src/gdt/jgui/entity/person/JPersonEditor.java:[249,36] CELL_FIELD_NAME has private access in gdt.jgui.entity.fields.JFieldsEditor
+[ERROR] /home/imasa/git/github/Community/Community/src/gdt/jgui/entity/person/JPersonEditor.java:[251,42] CELL_FIELD_VALUE has private access in gdt.jgui.entity.fields.JFieldsEditor
+[ERROR] /home/imasa/git/github/Community/Community/src/gdt/jgui/entity/bank/JBankEditor.java:[154,73] ACTION_NEW_ENTITY has private access in gdt.jgui.entity.fields.JFieldsEditor
+[ERROR] /home/imasa/git/github/Community/Community/src/gdt/jgui/entity/bank/JBankEditor.java:[173,28] ACTION_NEW_ENTITY has private access in gdt.jgui.entity.fields.JFieldsEditor
+[ERROR] /home/imasa/git/github/Community/Community/src/gdt/jgui/entity/bank/JBankEditor.java:[211,71] CELL_FIELD has private access in gdt.jgui.entity.fields.JFieldsEditor
+[ERROR] /home/imasa/git/github/Community/Community/src/gdt/jgui/entity/bank/JBankEditor.java:[212,66] CELL_FIELD_NAME has private access in gdt.jgui.entity.fields.JFieldsEditor
+[ERROR] /home/imasa/git/github/Community/Community/src/gdt/jgui/entity/bank/JBankEditor.java:[214,36] CELL_FIELD_NAME has private access in gdt.jgui.entity.fields.JFieldsEditor
+[ERROR] /home/imasa/git/github/Community/Community/src/gdt/jgui/entity/bank/JBankEditor.java:[216,42] CELL_FIELD_VALUE has private access in gdt.jgui.entity.fields.JFieldsEditor
+[ERROR] /home/imasa/git/github/Community/Community/src/gdt/jgui/entity/person/JPersonFacetOpenItem.java:[46,17] constructor JFieldsFacetOpenItem in class gdt.jgui.entity.fields.JFieldsFacetOpenItem cannot be applied to given types;
+[ERROR] required: no arguments
+[ERROR] found: gdt.jgui.console.JMainConsole,java.lang.String
+[ERROR] reason: actual and formal argument lists differ in length
+[ERROR] /home/imasa/git/github/Community/Community/src/gdt/jgui/entity/address/JAddressEditor.java:[89,64] cannot find symbol
+[ERROR] symbol: method getField(java.lang.String)
+[ERROR] /home/imasa/git/github/Community/Community/src/gdt/jgui/entity/address/JAddressEditor.java:[189,73] ACTION_NEW_ENTITY has private access in gdt.jgui.entity.fields.JFieldsEditor
+[ERROR] /home/imasa/git/github/Community/Community/src/gdt/jgui/entity/address/JAddressEditor.java:[208,28] ACTION_NEW_ENTITY has private access in gdt.jgui.entity.fields.JFieldsEditor
+[ERROR] /home/imasa/git/github/Community/Community/src/gdt/jgui/entity/address/JAddressEditor.java:[256,71] CELL_FIELD has private access in gdt.jgui.entity.fields.JFieldsEditor
+[ERROR] /home/imasa/git/github/Community/Community/src/gdt/jgui/entity/address/JAddressEditor.java:[257,66] CELL_FIELD_NAME has private access in gdt.jgui.entity.fields.JFieldsEditor
+[ERROR] /home/imasa/git/github/Community/Community/src/gdt/jgui/entity/address/JAddressEditor.java:[259,36] CELL_FIELD_NAME has private access in gdt.jgui.entity.fields.JFieldsEditor
+[ERROR] /home/imasa/git/github/Community/Community/src/gdt/jgui/entity/address/JAddressEditor.java:[261,42] CELL_FIELD_VALUE has private access in gdt.jgui.entity.fields.JFieldsEditor
+[ERROR] /home/imasa/git/github/Community/Community/src/gdt/jgui/entity/phone/JPhoneFacetAddItem.java:[147,65] cannot find symbol
+[ERROR] symbol:   variable LOCATOR_DATA
+[ERROR] location: class gdt.data.grain.Locator
+[ERROR] /home/imasa/git/github/Community/Community/src/gdt/jgui/entity/contact/JContactFacetAddItem.java:[143,65] cannot find symbol
+[ERROR] symbol:   variable LOCATOR_DATA
+[ERROR] location: class gdt.data.grain.Locator
+[ERROR] -> [Help 1]
+[ERROR] 
+[ERROR] To see the full stack trace of the errors, re-run Maven with the -e switch.
+[ERROR] Re-run Maven using the -X switch to enable full debug logging.
+[ERROR] 
+[ERROR] For more information about the errors and possible solutions, please read the following articles:
+[ERROR] [Help 1] http://cwiki.apache.org/confluence/display/MAVEN/MojoFailureException

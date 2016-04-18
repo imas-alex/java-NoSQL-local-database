@@ -25,6 +25,19 @@
         </configuration>
       </plugin>
       <plugin>
+    <groupId>org.apache.maven.plugins</groupId>
+    <artifactId>maven-jar-plugin</artifactId>
+       <configuration>
+      <archive>
+        <manifest>
+           <addClasspath>true</addClasspath>
+               <classpathPrefix>lib/</classpathPrefix>
+              <mainClass>gdt.jgui.console.JMainConsole</mainClass>
+        </manifest>
+      </archive>
+    </configuration>
+  </plugin>
+      <plugin>
       	<groupId>JEntigrator</groupId>
       	<artifactId>JEntigrator</artifactId>
       	<version>0.0.1-SNAPSHOT</version>
