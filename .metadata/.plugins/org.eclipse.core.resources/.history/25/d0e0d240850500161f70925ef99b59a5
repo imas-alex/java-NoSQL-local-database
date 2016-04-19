@@ -1,0 +1,849 @@
+package gdt.jgui.base;
+/*
+ * Copyright 2016 Alexander Imas
+ * This file is part of JEntigrator.
+
+    JEntigrator is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    JEntigrator is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with JEntigrator.  If not, see <http://www.gnu.org/licenses/>.
+ */
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.InputStreamReader;
+import java.lang.reflect.Method;
+import java.net.URL;
+import java.net.URLClassLoader;
+import java.net.URLDecoder;
+import java.util.ArrayList;
+import java.util.Properties;
+import java.util.logging.Logger;
+import gdt.data.entity.ArchiveHandler;
+import gdt.data.entity.BaseHandler;
+import gdt.data.entity.EntitiesArchiveFilter;
+import gdt.data.entity.EntityHandler;
+import gdt.data.entity.facet.ExtensionMain;
+import gdt.data.grain.Core;
+import gdt.data.grain.Identity;
+import gdt.data.grain.Locator;
+import gdt.data.grain.Sack;
+import gdt.data.grain.Support;
+import gdt.data.store.Entigrator;
+import gdt.data.store.FileExpert;
+import gdt.jgui.console.JConsoleHandler;
+import gdt.jgui.console.JContext;
+import gdt.jgui.console.JItemPanel;
+import gdt.jgui.console.JItemsListPanel;
+import gdt.jgui.console.JMainConsole;
+import gdt.jgui.entity.JArchivePanel;
+import gdt.jgui.entity.JEntityFacetPanel;
+import gdt.jgui.entity.JEntityPrimaryMenu;
+import gdt.jgui.entity.JReferenceEntry;
+import gdt.jgui.entity.bookmark.JBookmarksEditor;
+import gdt.jgui.entity.folder.JFolderPanel;
+import gdt.jgui.entity.index.JIndexPanel;
+import gdt.jgui.tool.JSearchPanel;
+
+import javax.swing.JFileChooser;
+import javax.swing.JMenu;
+import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
+import javax.swing.event.MenuEvent;
+import javax.swing.event.MenuListener;
+import javax.swing.filechooser.FileFilter;
+import javax.swing.filechooser.FileNameExtensionFilter;
+/**
+* This context displays items for database navigation:
+*  Design - show the general-purpose control for low-level database management
+*  Search - show the search control to find an entity by label
+*  All categories - display the all categories list.    
+* @author  Alexander Imas
+* @version 1.0
+* @since   2016-03-11
+*/
+public class JBaseNavigator extends JItemsListPanel {
+	private static final long serialVersionUID = 1L;
+private Logger LOGGER=Logger.getLogger(JBaseNavigator.class.getName());
+	String entihome$;
+	/**
+	 * Default constructor
+	 *  
+	 */
+	public JBaseNavigator() {
+		super();
+	//	System.out.println("JBaseNavigator:constructor:BEGIN");
+
+	}
+	/**
+	 * Get context menu:
+	 * Install extension - choose an extension jar and install it.
+	 * Import entities 	 - choose archive file containing entities and
+	 * 					   import them.
+	 * Undo 			-  cancel last changes.
+	 * Commit			-  commit all changes.
+	 * Reindex			-  rebuild database index.
+	 * Archive			-  compress the database into an archive file.
+	 * Delete			-  delete the database.
+	 * @return the context menu.
+	 */	
+	@Override
+	public JMenu getContextMenu() {
+		menu=new JMenu("Context");
+				menu.addMenuListener(new MenuListener(){
+				@Override
+				public void menuSelected(MenuEvent e) {
+				menu.removeAll();	
+				JMenuItem installExtension = new JMenuItem("Install extension");
+				installExtension.addActionListener(new ActionListener() {
+					@Override
+					public void actionPerformed(ActionEvent e) {
+						JFileChooser chooser = new JFileChooser(); 
+					    chooser.setCurrentDirectory(new java.io.File(System.getProperty("user.home")));
+					    chooser.setDialogTitle("Install extension");
+					    FileFilter filter = new FileNameExtensionFilter("JAR file", "jar");
+					    chooser.setFileFilter(filter);
+					    if (chooser.showOpenDialog(JBaseNavigator.this) == JFileChooser.APPROVE_OPTION) { 
+					    	
+					    	String extension$=chooser.getSelectedFile().getPath();
+					    	
+					    	System.out.println("BaseNavigator.install extension="+extension$);
+					    	System.out.println("Working Directory = " +
+					                System.getProperty("user.dir"));
+					    	try{
+					    		String[] args=new String[]{entihome$};
+					    		String path = JBaseNavigator.class.getProtectionDomain().getCodeSource().getLocation().getPath();
+						    	String decodedPath$ = URLDecoder.decode(path, "UTF-8");
+						    	URL[] urls = { new URL("jar:file:"+extension$+"!/") };
+								URLClassLoader cl = URLClassLoader.newInstance(urls);
+								
+								Class<?>cls=cl.loadClass("gdt.data.extension.CommunityMain");
+								ExtensionMain em=(ExtensionMain)cls.newInstance();
+								em.main(args);
+								reindex();
+								System.exit(0);
+								// Method method = obj.getClass().getDeclaredMethod("main",args.getClass());
+								// method.invoke(obj,args);
+						/*    	
+					    	String cmd$=System.getProperty("java.home")+"/bin/java"+" -cp "+ extension$+":"+decodedPath$+ " gdt.data.extension.CommunityMain "+ entihome$;
+					    	System.out.println("cmd = " +cmd$);
+					    	ProcessBuilder pb = new ProcessBuilder(cmd$);        
+					    //	ProcessBuilder pb = new ProcessBuilder(System.getProperty("java.home")+"/bin/java", "-jar", extension$, entihome$);
+					    	Process p = pb.start();
+					    	BufferedReader in = new BufferedReader(new InputStreamReader(p.getInputStream()));
+					    	String s = "";
+					    	while((s = in.readLine()) != null){
+					    	    System.out.println(s);
+					    	}
+					    	int status = p.waitFor();
+					    	
+					    	System.out.println("Successfully installed: " + status);
+					    	*/
+								
+					    	}catch(Exception ee){
+					    		LOGGER.severe(ee.toString());
+					    	}
+				      }
+					    else {
+					    	Logger.getLogger(JMainConsole.class.getName()).info(" no selection");
+					      }
+					     }
+				} );
+				
+				menu.add(installExtension);
+				JMenuItem importEntities = new JMenuItem("Import entities");
+				importEntities.addActionListener(new ActionListener() {
+					@Override
+					public void actionPerformed(ActionEvent e) {
+						JFileChooser chooser = new JFileChooser(); 
+					    chooser.setCurrentDirectory(new java.io.File(System.getProperty("user.home")));
+					    chooser.setDialogTitle("Import entities");
+					    EntitiesArchiveFilter filter =new EntitiesArchiveFilter();
+					    chooser.setFileFilter(filter);
+					    if (chooser.showOpenDialog(JBaseNavigator.this) == JFileChooser.APPROVE_OPTION) { 
+					    	String file$=chooser.getSelectedFile().getPath();
+					    	String undo$=ArchiveHandler.insertEntities(console, entihome$, file$);
+					    	if(undo$!=null){
+					    		 Entigrator entigrator=console.getEntigrator(entihome$);
+					    		 Sack undo=entigrator.getEntityAtKey(undo$);
+					    		 undo.putElementItem("fhandler", new Core(null,"gdt.data.entity.facet.BookmarksHandler",null));
+					    		    undo.putElementItem("jfacet", new Core("gdt.jgui.entity.bookmark.JBookmarksFacetAddItem","gdt.data.entity.facet.BookmarksHandler","gdt.jgui.entity.bookmark.JBookmarksFacetOpenItem"));
+					    		    entigrator.save(undo);
+					    		    entigrator.ent_assignProperty(undo, "bookmarks", undo.getProperty("label"));
+					    		    String undoLocator$=EntityHandler.getEntityLocator(entigrator, undo);
+					    		    JEntityPrimaryMenu.reindexEntity(console, undoLocator$);
+					    			String[]sa=undo.elementList("entity");
+					    			if(sa!=null){
+					    				String entityLocator$;
+					    				Sack entity;
+					    				console.clipboard.clear();
+					    				for(String s:sa){
+					    					entity=entigrator.getEntityAtKey(s);
+					    					if(entity==null)
+					    						continue;
+					    					if("index".equals(entity.getProperty("entity")))
+					    					    updateEntihome(entigrator, s);
+					    					entityLocator$=EntityHandler.getEntityLocator(entigrator, entity);
+					    					JEntityPrimaryMenu.reindexEntity(console,entityLocator$);
+					    					console.clipboard.putString(entityLocator$);
+					    				}
+					    				undo=putBookmarks(console,undo);
+					    				entigrator.save(undo);
+					    				updateBookmarks(entigrator,undo);
+					    			}
+					    			
+					    	}
+					    	
+				      }
+					    else {
+					    	Logger.getLogger(JMainConsole.class.getName()).info(" no selection");
+					      }
+					     }
+					
+				} );
+				
+				menu.add(importEntities);
+				if(hasToPaste()){
+					menu.addSeparator();
+					JMenuItem paste = new JMenuItem("Paste");
+					paste.addActionListener(new ActionListener() {
+						@Override
+						public void actionPerformed(ActionEvent e) {
+							 int response = JOptionPane.showConfirmDialog(console.getContentPanel(), "Keep existing entities ?", "Confirm",
+					  			        JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
+					    		  if (response == JOptionPane.YES_OPTION) 
+					    			  paste(true);
+					    		  else 
+					    		     paste(false);
+						}
+					} );
+					menu.add(paste);
+				}
+				menu.addSeparator();
+				if(hasUndo()){	
+					JMenuItem undo = new JMenuItem("Undo");
+					undo.addActionListener(new ActionListener() {
+						@Override
+						public void actionPerformed(ActionEvent e) {
+							undo(console,entihome$);
+						}
+					} );
+					menu.add(undo);
+				
+				JMenuItem commit = new JMenuItem("Commit");
+				commit.addActionListener(new ActionListener() {
+					@Override
+					public void actionPerformed(ActionEvent e) {
+						  int response = JOptionPane.showConfirmDialog(console.getContentPanel(), "Delete all undo's ?", "Confirm",
+							        JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
+						   if (response == JOptionPane.YES_OPTION) {  	
+						try{
+					    		Entigrator entigrator=console.getEntigrator(entihome$);
+					    		String[] sa=entigrator.indx_listEntities("entity", "undo");
+					    		if(sa!=null){
+					    			Sack undo;
+					    			for(String s:sa){
+					    				undo=entigrator.getEntityAtKey(s);
+					    				entigrator.deleteEntity(undo);
+					    			}
+					    		}
+					    	}catch(Exception ee){
+					    		LOGGER.severe(ee.toString());
+					    	}
+				      }
+					}
+					    			
+				} );
+				menu.add(commit);
+				menu.addSeparator();
+				}
+				
+				JMenuItem reindexItem = new JMenuItem("Reindex");
+				reindexItem.addActionListener(new ActionListener() {
+					@Override
+					public void actionPerformed(ActionEvent e) {
+					 reindex();
+						/*	
+						Entigrator entigrator=console.getEntigrator(entihome$);
+						entigrator.indx_rebuild(null);
+						String [] sa=entigrator.indx_listEntities();
+						Sack entity;
+						String entityLocator$;
+						for(String s:sa){
+							entity=entigrator.getEntityAtKey(s);
+							if(entity==null)
+								continue;
+							if(!"extension".equals(entity.getProperty("entity")))
+								continue;
+						entityLocator$=EntityHandler.getEntityLocator(entigrator, entity);
+						 JEntityPrimaryMenu.reindexEntity(console,entityLocator$);
+						}
+						for(String s:sa){
+							entity=entigrator.getEntityAtKey(s);
+							if(entity==null)
+								continue;
+							if("extension".equals(entity.getProperty("entity")))
+								continue;
+						entityLocator$=EntityHandler.getEntityLocator(entigrator, entity);
+						 JEntityPrimaryMenu.reindexEntity(console,entityLocator$);
+						}
+					*/
+					}
+				   
+				});
+				menu.add(reindexItem);
+				
+				JMenuItem archiveItem = new JMenuItem("Archive");
+				archiveItem.addActionListener(new ActionListener() {
+					@Override
+					public void actionPerformed(ActionEvent e) {
+						
+						JArchivePanel jap=new JArchivePanel();
+						String japLocator$=jap.getLocator();
+						japLocator$=Locator.append(japLocator$, Entigrator.ENTIHOME, entihome$);
+						japLocator$=Locator.append(japLocator$, ArchiveHandler.ARCHIVE_CONTENT,ArchiveHandler.ARCHIVE_CONTENT_DATABASE);
+						JConsoleHandler.execute(console, japLocator$);
+						
+					}
+				});
+				menu.add(archiveItem);
+				menu.addSeparator();
+				JMenuItem delete = new JMenuItem("Delete");
+				delete.addActionListener(new ActionListener() {
+					@Override
+					public void actionPerformed(ActionEvent e) {
+						  int response = JOptionPane.showConfirmDialog(console.getContentPanel(), "Delete database ?", "Confirm",
+							        JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
+						   if (response == JOptionPane.YES_OPTION) {  	
+						try{
+					    	FileExpert.clear(entihome$);
+					    	File entihome=new File (entihome$);
+					    	entihome.delete();
+					    	console.back();
+					    	}catch(Exception ee){
+					    		LOGGER.severe(ee.toString());
+					    	}
+				      }
+					}
+					    			
+				} );
+				menu.add(delete);
+				}
+				@Override
+				public void menuDeselected(MenuEvent e) {
+					// TODO Auto-generated method stub
+				}
+
+				@Override
+				public void menuCanceled(MenuEvent e) {
+					
+				}
+			});
+		return menu;
+	}
+	/**
+	 * Get context locator. 
+	 * @return the locator.
+	 */	
+	private void reindex(){
+		Entigrator entigrator=console.getEntigrator(entihome$);
+		entigrator.indx_rebuild(null);
+		String [] sa=entigrator.indx_listEntities();
+		Sack entity;
+		String entityLocator$;
+		for(String s:sa){
+			entity=entigrator.getEntityAtKey(s);
+			if(entity==null)
+				continue;
+			if(!"extension".equals(entity.getProperty("entity")))
+				continue;
+		entityLocator$=EntityHandler.getEntityLocator(entigrator, entity);
+		 JEntityPrimaryMenu.reindexEntity(console,entityLocator$);
+		}
+		for(String s:sa){
+			entity=entigrator.getEntityAtKey(s);
+			if(entity==null)
+				continue;
+			if("extension".equals(entity.getProperty("entity")))
+				continue;
+		entityLocator$=EntityHandler.getEntityLocator(entigrator, entity);
+		 JEntityPrimaryMenu.reindexEntity(console,entityLocator$);
+		}
+
+	}
+	@Override
+	public String getLocator() {
+		Properties locator=new Properties();
+	    locator.setProperty(Locator.LOCATOR_TYPE, JContext.CONTEXT_TYPE);
+	    locator.setProperty(JContext.CONTEXT_TYPE,getType());
+	    if(entihome$!=null){
+	    locator.setProperty(Entigrator.ENTIHOME,entihome$);
+	    File file = new File(entihome$);
+	    locator.setProperty(Locator.LOCATOR_TITLE, file.getName());
+	    }
+	    String icon$=Support.readHandlerIcon(getClass(), "base.png");
+	    if(icon$!=null)
+	    	locator.setProperty(Locator.LOCATOR_ICON,icon$);
+	    locator.setProperty(BaseHandler.HANDLER_SCOPE,JConsoleHandler.CONSOLE_SCOPE);
+	    locator.setProperty(BaseHandler.HANDLER_CLASS,JBaseNavigator.class.getName());
+//	    System.out.println("JBaseNavigator:getLocator:locator="+Locator.toString(locator));
+	    return Locator.toString(locator);
+	}
+	/**
+	 * Create the context.
+	 *  @param console the main application console
+	 *  @param locator$ the locator string.
+	 * @return the context.
+	 */	
+	@Override
+	public JContext instantiate(JMainConsole console, String locator$) {
+		System.out.println("JBaseNavigator:instantiate:locator="+Locator.remove(locator$,Locator.LOCATOR_ICON));
+		this.console=console;
+		Properties locator=Locator.toProperties(locator$);
+		entihome$=locator.getProperty(Entigrator.ENTIHOME);
+		if(entihome$!=null){
+		    locator.setProperty(Entigrator.ENTIHOME,entihome$);
+		    File file = new File(entihome$);
+		    locator.setProperty(Locator.LOCATOR_TITLE, file.getName());
+		    }
+		ArrayList<JItemPanel>ipl=new ArrayList<JItemPanel>();
+		JDesignPanel designPanel=new JDesignPanel();
+		String designLocator$=designPanel.getLocator();
+		designLocator$=Locator.append(designLocator$,Entigrator.ENTIHOME,entihome$);
+		designPanel.instantiate(console, designLocator$);
+		JItemPanel designItem=new JItemPanel(console, designPanel.getLocator());
+		ipl.add(designItem);
+		JSearchPanel searchPanel=new JSearchPanel();
+		String searchLocator$=searchPanel.getLocator();
+		searchLocator$=Locator.append(searchLocator$,Entigrator.ENTIHOME,entihome$);
+		searchPanel.instantiate(console, searchLocator$);
+		JItemPanel searchItem=new JItemPanel(console, searchPanel.getLocator());
+		ipl.add(searchItem);
+		JAllCategoriesPanel allCategoriesPanel=new JAllCategoriesPanel();
+		String allCategoriesLocator$= allCategoriesPanel.getLocator();
+		allCategoriesLocator$=Locator.append(allCategoriesLocator$,Entigrator.ENTIHOME,entihome$);
+		JItemPanel allCategoriesItem=new JItemPanel(console, allCategoriesLocator$);
+		ipl.add(allCategoriesItem);
+		putItems(ipl.toArray(new JItemPanel[0]));
+		return this;
+	}
+	/**
+	 * Get context title.
+	 * @return the title string.
+	 */
+
+	@Override
+	public String getTitle() {
+		try{
+		File entihome=new File(entihome$);
+		return entihome.getName();
+		}catch(Exception e){
+		return "Entigrator";
+		}
+	}
+	/**
+	 * Get context type.
+	 * @return the type string.
+	 */
+	@Override
+	public String getType() {
+		return "Base navigator";
+	}
+	/**
+	 * Complete the context after
+	 * remove it from the main console.
+	 */	
+	@Override
+	public void close() {
+		// TODO Auto-generated method stub
+	}
+	/**
+	 * Get context subtitle.
+	 * @return the subtitle string.
+	 */	
+	@Override
+	public String getSubtitle() {
+
+		return entihome$;
+	}
+	private boolean hasUndo(){
+		Entigrator entigrator =console.getEntigrator(entihome$);
+		String[] sa=entigrator.indx_listEntities("entity", "undo");
+		if(sa!=null&&sa.length>0)
+			return true;
+		else
+			return false;
+	}
+	private static void undo(JMainConsole console ,String entihome$){
+		try{
+			Entigrator entigrator =console.getEntigrator(entihome$);
+			String[] sa=entigrator.indx_listEntities("entity", "undo");
+			if(sa==null)
+				return;
+			String label$;
+			Sack undo=null;
+			int cnt;
+			int max=0;
+			for(String s:sa){
+				label$=entigrator.indx_getLabel(s);
+				cnt=Integer.parseInt(label$.substring(5, label$.length()));
+				if (cnt>max){
+					max=cnt;
+					undo=entigrator.getEntityAtKey(s);
+				}
+			}
+		//	System.out.println("BaseNavigator:undo="+undo.getProperty("label"));
+			Sack entity;
+			sa=undo.elementList("entity");
+			if(sa!=null)
+				for(String s:sa){
+					entity=entigrator.getEntityAtKey(s);
+					if(entity!=null)
+					    entigrator.deleteEntity(entity);
+				}
+			sa=undo.elementList("icon");
+			if(sa!=null){
+				String icons$=entihome$+"/"+Entigrator.ICONS;
+				File icon;
+				for(String s:sa){
+					System.out.println("BaseNavigator:undo:icon="+s);
+					icon =new File(icons$+"/"+s);
+					if (icon.exists())
+						icon.delete();
+				}
+			}
+			sa=ArchiveHandler.insertCache(entigrator, entigrator.ent_getHome(undo.getKey()), false);
+			if(sa!=null){
+				String entityLocator$;
+				
+				for(String s:sa){
+				entity=entigrator.getEntityAtKey(s);
+				entityLocator$=EntityHandler.getEntityLocator(entigrator, entity);
+				JEntityPrimaryMenu.reindexEntity(console, entityLocator$);
+				}
+			}
+			entigrator.deleteEntity(undo);
+		}catch(Exception e){
+			Logger.getLogger(JBaseNavigator.class.getName()).severe(e.toString());
+		}
+	}
+private  boolean hasToPaste(){
+	try{
+	String[] sa=console.clipboard.getContent();
+	if(sa==null||sa.length<1)
+		return false;
+	Properties clipLocator;
+	String foreignEntihome$;
+	for(String s:sa){
+		clipLocator=Locator.toProperties(s);
+		foreignEntihome$=clipLocator.getProperty(Entigrator.ENTIHOME);
+		if(foreignEntihome$==null||entihome$.equals(foreignEntihome$))
+			continue;
+		if(clipLocator.getProperty(EntityHandler.ENTITY_KEY)!=null)
+			return true;
+	}
+	}catch(Exception e){
+		Logger.getLogger(getClass().getName()).severe(e.toString());
+	}
+	return false;
+}
+private  JReferenceEntry[] getToPaste(){
+	try{
+	String[] sa=console.clipboard.getContent();
+	if(sa==null||sa.length<1)
+		return null;
+	Properties clipLocator;
+	String foreignEntihome$=null;
+	ArrayList<String>sl=new ArrayList<String>();
+	ArrayList<String>eka=new ArrayList<String>();
+	String entityKey$;
+	for(String s:sa){
+		clipLocator=Locator.toProperties(s);
+		foreignEntihome$=clipLocator.getProperty(Entigrator.ENTIHOME);
+		if(foreignEntihome$==null||entihome$.equals(foreignEntihome$))
+			continue;
+		entityKey$=clipLocator.getProperty(EntityHandler.ENTITY_KEY);
+		if(entityKey$!=null){
+			eka.add(entityKey$);
+		//if(clipLocator.getProperty(EntityHandler.ENTITY_KEY)!=null)
+			sl.add(s);
+		}
+	}
+	//sa=sl.toArray(new String[0]);
+	sa=eka.toArray(new String[0]);
+	if(sa==null||foreignEntihome$==null)
+		return null;
+	Entigrator foreignEntigrator=console.getEntigrator(foreignEntihome$);
+	ArrayList<JReferenceEntry>rel=JReferenceEntry.collectReferences(console, foreignEntigrator, sa);
+	
+	/*
+	ArrayList<JReferenceEntry>rel=new ArrayList<JReferenceEntry>();
+	for(String s:sa){
+	   JEntityPrimaryMenu.collectReferences(console, s, rel);
+	}
+	*/
+	return rel.toArray(new JReferenceEntry[0]);
+	}catch(Exception e){
+		Logger.getLogger(getClass().getName()).severe(e.toString());
+	}
+	return null;
+}
+private void paste(boolean keep){
+	try{
+	JReferenceEntry[] jrea= getToPaste();
+	Entigrator entigrator=console.getEntigrator(entihome$);
+	int cnt=0;
+	String[] sa=entigrator.indx_listEntities("entity", "undo");
+	if(sa!=null){
+		String label$;
+		int max=0;
+		for(String s:sa){
+			label$=entigrator.indx_getLabel(s);
+			cnt=Integer.parseInt(label$.substring(5, label$.length()));
+			if (cnt>max){
+				max=cnt;
+			}
+		}
+		cnt=max+1;
+	}
+	Sack undo=entigrator.ent_new("undo", "undo_"+String.valueOf(cnt));
+	entigrator.save(undo);
+	entigrator.ent_reindex(undo);
+	entigrator.ent_assignProperty(undo, "folder", undo.getProperty("label"));
+	undo.createElement("entity");
+	undo.createElement("icon");
+	undo.createElement("jbookmark");
+	File sourceEntity;
+	File undoEntity;
+	File oldEntity;
+	Sack pastedEntity;
+	File undoIcon;
+	File oldIcon;
+	File newIcon;
+	File undoHome=new File(entigrator.ent_getHome(undo.getKey()));
+	File undoBodies=new File(undoHome.getPath()+"/"+Entigrator.ENTITY_BASE+"/data/");
+	File undoIcons=new File(undoHome.getPath()+"/"+Entigrator.ICONS);
+	File oldEntityHome;
+	File undoEntityHome;
+	File sourceEntityHome;
+	File oldIcons=new File(entigrator.getEntihome()+"/"+Entigrator.ICONS);
+	String entityBodies$=entigrator.getEntihome()+"/"+Entigrator.ENTITY_BASE+"/data/";
+    String icon$;
+	for(JReferenceEntry jre:jrea){
+		try{
+		if(keep&&entigrator.indx_getLabel(jre.name)!=null)
+			continue;
+		oldEntity=new File(entityBodies$+jre.name);
+		if(oldEntity.exists()){
+			if(!undoBodies.exists())
+				undoBodies.mkdirs();
+			undoEntity=new File(undoBodies.getPath()+"/"+jre.name);
+			FileExpert.copyFile(oldEntity, undoEntity);
+			icon$=entigrator.indx_getIcon(jre.name);
+			if(icon$!=null){
+				oldIcon=new File(oldIcons.getPath()+"/"+icon$);
+				if(oldIcon.exists()){
+				if(!undoIcons.exists())
+					undoIcons.mkdir();
+				undoIcon=new File(undoIcons.getPath()+"/"+icon$);
+				undoIcon.createNewFile();
+				oldIcon=new File(oldIcons.getPath()+"/"+icon$);
+				FileExpert.copyFile(oldIcon, undoIcon);
+				undo.putElementItem("icon", new Core(null,icon$,null));
+				}
+			}
+			oldEntityHome=new File(entihome$+"/"+jre.name);
+			if(oldEntityHome.exists()){
+				undoEntityHome=new File(undoHome.getPath()+"/"+jre.name);
+				undoEntityHome.mkdir();
+				FileExpert.copyAll(oldEntityHome.getPath(), undoEntityHome.getPath());
+			}
+		}
+		
+		undo.putElementItem("entity", new Core(Locator.getProperty(jre.value,Entigrator.ENTIHOME),jre.name,jre.value));
+	    sourceEntity=new File(jre.type+"/"+Entigrator.ENTITY_BASE+"/data/"+jre.name);
+	   //  System.out.println("BaseNavigator:source entity="+sourceEntity.getPath());
+	    if(!oldEntity.exists())
+	    	oldEntity.createNewFile();
+	    FileExpert.copyFile(sourceEntity,oldEntity);
+	    pastedEntity=Sack.parseXML(oldEntity.getPath());
+	    entigrator.ent_reindex(pastedEntity);
+	    icon$=pastedEntity.getAttributeAt("icon");
+	    //System.out.println("BaseNavigator:paste:icon="+icon$);
+	    if(icon$!=null){
+	    	undo.putElementItem("icon", new Core(null,icon$,null));
+	    	newIcon=new File(jre.type+"/"+Entigrator.ICONS+"/"+icon$);
+	    	if(newIcon.exists()){
+	    		
+	    		oldIcon=new File(oldIcons.getPath()+"/"+icon$);
+	    		if(!oldIcon.exists())
+	    			oldIcon.createNewFile();
+	    		else{
+	    			if(!undoIcons.exists())
+	    				undoIcons.mkdir();
+	    			undoIcon=new File(undoIcons.getPath()+"/"+icon$);
+	    			FileExpert.copyFile(oldIcon, undoIcon);
+	    		}
+	    		FileExpert.copyFile(newIcon, oldIcon);
+	    	}
+	    }
+	    sourceEntityHome=new File(jre.type+"/"+jre.name);
+	    if( sourceEntityHome.exists()){
+	    	oldEntityHome=new File(entihome$+"/"+jre.name);
+	    	if(!oldEntityHome.exists())
+	    		oldEntityHome.mkdir();
+	    	FileExpert.copyAll(sourceEntityHome.getPath(), oldEntityHome.getPath());
+	    }
+		}catch(Exception e){
+			Logger.getLogger(getClass().getName()).info(e.toString());
+		}
+	}
+  //  
+    undo.putElementItem("fhandler", new Core(null,"gdt.data.entity.facet.BookmarksHandler",null));
+    undo.putElementItem("jfacet", new Core("gdt.jgui.entity.bookmark.JBookmarksFacetAddItem","gdt.data.entity.facet.BookmarksHandler","gdt.jgui.entity.bookmark.JBookmarksFacetOpenItem"));
+    entigrator.save(undo);
+    entigrator.ent_assignProperty(undo, "bookmarks", undo.getProperty("label"));
+    String undoLocator$=EntityHandler.getEntityLocator(entigrator, undo);
+    JEntityPrimaryMenu.reindexEntity(console, undoLocator$);
+	sa=undo.elementList("entity");
+	if(sa!=null){
+		String entityLocator$;
+		Sack entity;
+		console.clipboard.clear();
+		for(String s:sa){
+			entity=entigrator.getEntityAtKey(s);
+			if(entity==null)
+				continue;
+			if("index".equals(entity.getProperty("entity")))
+			    updateEntihome(entigrator, s);
+			entityLocator$=EntityHandler.getEntityLocator(entigrator, entity);
+			JEntityPrimaryMenu.reindexEntity(console,entityLocator$);
+			console.clipboard.putString(entityLocator$);
+		}
+		undo=putBookmarks(console,undo);
+		entigrator.save(undo);
+		updateBookmarks(entigrator,undo);
+	}
+	//entigrator.prp_refresh();
+    JConsoleHandler.execute(console, getLocator());
+	}catch(Exception e){
+		Logger.getLogger(getClass().getName()).severe(e.toString());
+	}
+}
+private  static Sack putBookmarks(JMainConsole console,Sack undo ){
+    try{
+    	String[] sa=console.clipboard.getContent();
+    	if(sa==null||sa.length<1)
+    		return undo;
+    	ArrayList<Core>cl=new ArrayList<Core>();
+    	Core[] ca=undo.elementGet("jbookmark");
+    	if(ca==null){
+    		undo.createElement("jbookmark");
+    	}else
+    	for(Core aCa:ca)
+    		cl.add(aCa);
+    	String title$;
+    	String bookmarkKey$;
+    	for(String aSa:sa){
+    		title$=Locator.getProperty(aSa, Locator.LOCATOR_TITLE);
+    		if(title$==null)
+    			continue;
+    		bookmarkKey$=Locator.getProperty(aSa, JBookmarksEditor.BOOKMARK_KEY);
+    		if(bookmarkKey$==null){
+    			bookmarkKey$=Identity.key();
+    			aSa=Locator.append(aSa, JBookmarksEditor.BOOKMARK_KEY, bookmarkKey$);
+    			aSa=Locator.append(aSa, Locator.LOCATOR_CHECKABLE, Locator.LOCATOR_TRUE);
+    			aSa=Locator.append(aSa, BaseHandler.HANDLER_CLASS, JEntityFacetPanel.class.getName());
+       			aSa=Locator.append(aSa, BaseHandler.HANDLER_SCOPE, JConsoleHandler.CONSOLE_SCOPE);
+    		}
+    		cl.add( new Core(title$,bookmarkKey$,aSa));
+    	}
+    	ca=cl.toArray(new Core[0]);
+    	undo.elementReplace("jbookmark", ca);
+    }catch(Exception e){
+    	Logger.getLogger(JBaseNavigator.class.getName()).severe(e.toString());
+    }
+    return undo;
+}
+private static void updateBookmarks(Entigrator entigrator,Sack undo){
+	try{
+		Core[] ca=undo.elementGet("jbookmark");
+		if(ca==null)
+			return;
+		Sack entity;
+		String entityKey$;
+		Core []jbma;
+		for(Core c:ca){
+			entityKey$=Locator.getProperty(c.value, EntityHandler.ENTITY_KEY);
+			if(entityKey$==null)
+				continue;
+			entity=entigrator.getEntityAtKey(entityKey$);
+			if(entity==null)
+				continue;
+			jbma=entity.elementGet("jbookmark");
+			if(jbma==null)
+				continue;
+			for(Core jbm:jbma){
+				    jbm.value=Locator.append(jbm.value,Entigrator.ENTIHOME, entigrator.getEntihome()); 
+					entity.putElementItem("jbookmark", jbm);
+			}
+		entigrator.save(entity);	
+		}
+		
+	}catch(Exception e){
+		Logger.getLogger(JBaseNavigator.class.getName()).severe(e.toString());
+	}
+}
+private static void updateEntihome(Entigrator entigrator,String entityKey$){
+	try{
+		
+		if(!"index".equals(entigrator.getEntityType(entityKey$)))
+			return;	
+		Sack index=entigrator.getEntityAtKey(entityKey$);
+		Core[]ca=index.elementGet("index.jlocator");
+		if(ca==null)
+			return;
+		String oldEntihome$;
+		String filePath$;
+		for(Core c:ca){
+			oldEntihome$=Locator.getProperty(c.value, Entigrator.ENTIHOME);
+			c.value=Locator.append(c.value, Entigrator.ENTIHOME, entigrator.getEntihome());
+			filePath$=Locator.getProperty(c.value, JFolderPanel.FILE_PATH);
+			if(filePath$!=null){
+				try{
+				File sourceFile=new File(filePath$);
+				filePath$=filePath$.replace(oldEntihome$, entigrator.getEntihome());
+				File targetFile=new File(filePath$);
+				File targetFolder=targetFile.getParentFile();
+				if(!targetFolder.exists())
+						targetFolder.mkdirs();
+				if(!targetFile.exists())
+					targetFile.createNewFile();
+				FileExpert.copyFile(sourceFile, targetFile);
+				//System.out.println("JIndexPanel:updateEntihome:file path="+filePath$);
+				c.value=Locator.append(c.value, JFolderPanel.FILE_PATH, filePath$);
+				}catch(Exception ee){
+					Logger.getLogger(JIndexPanel.class.getName()).info(ee.toString());	
+				}
+			}
+			index.putElementItem("index.jlocator", c);
+		}
+		
+		entigrator.save(index);
+		
+		//JEntityPrimaryMenu.reindexEntity(console,EntityHandler.getEntityLocator(entigrator, index));
+	}catch(Exception e){
+		Logger.getLogger(JIndexPanel.class.getName()).severe(e.toString());
+	}
+}
+
+}

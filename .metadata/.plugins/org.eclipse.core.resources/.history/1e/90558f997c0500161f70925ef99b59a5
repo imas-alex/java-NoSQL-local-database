@@ -1,0 +1,5 @@
+package gdt.data.entity.facet;
+
+public interface ExtensionMain {
+
+}
