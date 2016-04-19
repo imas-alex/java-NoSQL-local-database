@@ -20,19 +20,19 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.net.URL;
+import java.net.URLClassLoader;
 import java.net.URLDecoder;
-import java.util.Enumeration;
 import java.util.logging.Logger;
+
+import gdt.data.entity.facet.ExtensionMain;
 import gdt.data.grain.Core;
 import gdt.data.grain.Sack;
 import gdt.data.store.*;
-public class CommunityMain {
+public class Main implements ExtensionMain{
 	 public static final String EXTENSION_KEY="_v6z8CVgemqMI6Bledpc7F1j0pVY";
-	 public static final String ENTITY_BASE="_xXsnV5R_SGxkuH_SpLJDeXCglybws";
-	 public static final String EXTENSION_LABEL="community";
-	 public static final String EXTENSION_ENTITY="extension";
-	 public static final String EXTENSION_JAR="community.jar";
-	public static void main(String[] args) {
+	 private static final String EXTENSION_LABEL="community";
+	 private static final String EXTENSION_JAR="community.jar";
+	public void main(String[] args) {
       
 		final String[] sa=args;
         if(sa!=null)
@@ -40,7 +40,9 @@ public class CommunityMain {
             public void run() {
               try{
            	//System.out.println("Community:main");
+            	  
                String entihome$=sa[0];
+               System.out.println("Community:main.entihome="+entihome$);
                Entigrator entigrator=new Entigrator(new String[]{entihome$});
            //    System.out.println(entigrator.getEntihome());
                makeExtension(entigrator);
@@ -48,31 +50,22 @@ public class CommunityMain {
                File folder=new File(folder$);
                if(!folder.exists())
             	   folder.mkdir();
-               String path = CommunityMain.class.getProtectionDomain().getCodeSource().getLocation().getPath();
-               String jar$ = URLDecoder.decode(path, "UTF-8");
-               File jar=new File(jar$);
+               String path$ = Main.class.getProtectionDomain().getCodeSource().getLocation().getPath();
+             // System.out.println("Community:main.path="+path$);
+              String jar$ = URLDecoder.decode(path$, "UTF-8");
+              jar$=jar$.replace("file:", "");
+              jar$=jar$.replace("!/", "");
+              File jar=new File(jar$);
+           //    System.out.println("Community:main:jar="+jar.getPath());
                File target=new File(folder$+"/"+EXTENSION_JAR);
                if(!target.exists())
             	   target.createNewFile();
                FileExpert.copyFile(jar, target);
-               ClassLoader classloader = Thread.currentThread().getContextClassLoader();
+          //     System.out.println("CommunityMain:main:url="+Main.class.getProtectionDomain().getCodeSource().getLocation().toString());
+               URL[] urls = { Main.class.getProtectionDomain().getCodeSource().getLocation() };
+               URLClassLoader classloader = URLClassLoader.newInstance(urls);
                InputStream is = classloader.getResourceAsStream("res/community.tar");
                target=new File(folder$+"/community.tar");
-               
-               if(is==null){
-         		String resourcePath$="src/res/community.tar";
-//         		System.out.println("CommunityMain:resource path="+resourcePath$);
-            URL resourceUrl= classloader.getResource(resourcePath$);
-               if(resourceUrl!=null){
-               System.out.println("CommunityMain::resource URL="+resourceUrl.toString());
-                  is=resourceUrl.openStream();
-               }
-               else{
-               	System.out.println("CommunityMain:cannot get resource URL");            	
-               }
-               } else
-              
-            //	   System.out.println("CommunityMain:stream resource found");
                if(is!=null){
             	  if(!target.exists())
                 	   target.createNewFile();
@@ -86,7 +79,7 @@ public class CommunityMain {
                is.close();
                }
                 }catch(Exception e ){
-            	  Logger.getLogger(CommunityMain.class.getName()).severe(e.toString());
+            	  Logger.getLogger(Main.class.getName()).severe(e.toString());
               }
             }
         });
@@ -99,7 +92,7 @@ public class CommunityMain {
               extension.putAttribute(new Core("String", "residence.base",Entigrator.ENTITY_BASE));
               extension.putAttribute(new Core("String", "alias", EXTENSION_LABEL));
               extension.setKey(EXTENSION_KEY);
-              String path$=entigrator.getEntihome()+"/"+ENTITY_BASE+"/data/"+EXTENSION_KEY;
+              String path$=entigrator.getEntihome()+"/"+Entigrator.ENTITY_BASE+"/data/"+EXTENSION_KEY;
               extension.setPath(path$);
         	  if(!extension.saveXML(path$)){
         		  System.out.println("Main:makeExtension:cannot save extension="+entigrator.getEntihome()+"/"+Entigrator.ENTITY_BASE+"/data/"+EXTENSION_KEY) ;

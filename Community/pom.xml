@@ -32,12 +32,10 @@
   		<version>0.0.1</version>
   		<systemPath>${basedir}/../JEntigrator/target/JEntigrator-0.0.1-SNAPSHOT.jar</systemPath>
   	</dependency>
-  	<dependency>
-  		<groupId>codec</groupId>
-  		<artifactId>codec</artifactId>
-  		<scope>system</scope>
+  		<dependency>
+	  	<groupId>commons-codec</groupId>
+  		<artifactId>commons-codec</artifactId>
   		<version>1.10</version>
-  		<systemPath>${basedir}/../JEntigrator/libs/commons-codec-1.10.jar</systemPath>
   	</dependency>
   </dependencies>
 </project>
