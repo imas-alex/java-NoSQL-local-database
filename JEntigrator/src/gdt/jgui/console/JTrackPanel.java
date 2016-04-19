@@ -149,7 +149,7 @@ public static void clearMembers(JMainConsole console){
  * @param locator$ the context locator.
  */
 public static void putMember(JMainConsole console,String locator$){
-	System.out.println("TrackPanel:putMember:locator:"+Locator.remove(locator$, Locator.LOCATOR_ICON));
+//	System.out.println("TrackPanel:putMember:locator:"+Locator.remove(locator$, Locator.LOCATOR_ICON));
 	Stack <String>track=console.getTrack();
 	if(track==null)
 		track=new Stack<String>();

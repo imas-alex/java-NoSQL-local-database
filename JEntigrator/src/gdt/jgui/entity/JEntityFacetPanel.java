@@ -90,7 +90,7 @@ public class JEntityFacetPanel extends JItemsListPanel {
  */
 	@Override
 	public JContext instantiate(JMainConsole console, String locator$) {
-		System.out.println("JEntityFacetPanel:instantiate:BEGIN");
+	//	System.out.println("JEntityFacetPanel:instantiate:BEGIN");
 		this.console=console;
 		this.locator$=locator$;
 		 Properties locator=Locator.toProperties(locator$);
@@ -108,19 +108,17 @@ public class JEntityFacetPanel extends JItemsListPanel {
 			}
 			JItemPanel designItem=new JItemPanel(console, primaryMenu.getLocator());
 			ipl.add(designItem);
-			// System.out.println("EntityFacetPanel:instantiate:1");	
-			JFacetOpenItem[] ipa=getFacetOpenItems();
+				JFacetOpenItem[] ipa=getFacetOpenItems();
 			if(ipa!=null){
-			System.out.println("JEntityFacetPanel:instantiate:ipa="+ipa.length);	
+		//	System.out.println("JEntityFacetPanel:instantiate:ipa="+ipa.length);	
 			for(JFacetOpenItem ip:ipa){
-				System.out.println("EntityFacetPanel:instantiate:ipa locator="+ip.getLocator());
+		//		System.out.println("EntityFacetPanel:instantiate:ipa locator="+ip.getLocator());
 				  ipl.add(ip);
 			}
 			Collections.sort(ipl,new ItemPanelComparator());
 			}
-			//putItems(ipl.toArray(new JItemPanel[0]));
 			JItemPanel[]ipla=ipl.toArray(new JItemPanel[0]);
-			System.out.println("EntityFacetPanel:instantiate:ipla="+ipla.length);	
+		//	System.out.println("EntityFacetPanel:instantiate:ipla="+ipla.length);	
 			putItems(ipla);
 		 return this;
 	}

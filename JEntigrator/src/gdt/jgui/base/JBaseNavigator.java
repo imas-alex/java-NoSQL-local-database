@@ -21,6 +21,10 @@ import java.awt.event.ActionListener;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.InputStreamReader;
+import java.lang.reflect.Method;
+import java.net.URL;
+import java.net.URLClassLoader;
+import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.Properties;
 import java.util.logging.Logger;
@@ -28,6 +32,7 @@ import gdt.data.entity.ArchiveHandler;
 import gdt.data.entity.BaseHandler;
 import gdt.data.entity.EntitiesArchiveFilter;
 import gdt.data.entity.EntityHandler;
+import gdt.data.entity.facet.ExtensionMain;
 import gdt.data.grain.Core;
 import gdt.data.grain.Identity;
 import gdt.data.grain.Locator;
@@ -108,21 +113,23 @@ private Logger LOGGER=Logger.getLogger(JBaseNavigator.class.getName());
 					    FileFilter filter = new FileNameExtensionFilter("JAR file", "jar");
 					    chooser.setFileFilter(filter);
 					    if (chooser.showOpenDialog(JBaseNavigator.this) == JFileChooser.APPROVE_OPTION) { 
+					    	
 					    	String extension$=chooser.getSelectedFile().getPath();
 					    	
 					    	System.out.println("BaseNavigator.install extension="+extension$);
 					    	System.out.println("Working Directory = " +
 					                System.getProperty("user.dir"));
 					    	try{
-					    	ProcessBuilder pb = new ProcessBuilder(System.getProperty("java.home")+"/bin/java", "-jar", extension$, entihome$);
-					    	Process p = pb.start();
-					    	BufferedReader in = new BufferedReader(new InputStreamReader(p.getInputStream()));
-					    	String s = "";
-					    	while((s = in.readLine()) != null){
-					    	    System.out.println(s);
-					    	}
-					    	int status = p.waitFor();
-					    	System.out.println("Successfully installed: " + status);
+					    		String[] args=new String[]{entihome$};
+					    		String path = JBaseNavigator.class.getProtectionDomain().getCodeSource().getLocation().getPath();
+						    	String decodedPath$ = URLDecoder.decode(path, "UTF-8");
+						    	URL[] urls = { new URL("jar:file:"+extension$+"!/") };
+								URLClassLoader cl = URLClassLoader.newInstance(urls);
+								
+								Class<?>cls=cl.loadClass("gdt.data.extension.Main");
+								ExtensionMain em=(ExtensionMain)cls.newInstance();
+								em.main(args);
+							
 					    	}catch(Exception ee){
 					    		LOGGER.severe(ee.toString());
 					    	}
@@ -245,7 +252,8 @@ private Logger LOGGER=Logger.getLogger(JBaseNavigator.class.getName());
 				reindexItem.addActionListener(new ActionListener() {
 					@Override
 					public void actionPerformed(ActionEvent e) {
-						
+					 reindex();
+						/*	
 						Entigrator entigrator=console.getEntigrator(entihome$);
 						entigrator.indx_rebuild(null);
 						String [] sa=entigrator.indx_listEntities();
@@ -269,7 +277,9 @@ private Logger LOGGER=Logger.getLogger(JBaseNavigator.class.getName());
 						entityLocator$=EntityHandler.getEntityLocator(entigrator, entity);
 						 JEntityPrimaryMenu.reindexEntity(console,entityLocator$);
 						}
+					*/
 					}
+				   
 				});
 				menu.add(reindexItem);
 				
@@ -325,6 +335,32 @@ private Logger LOGGER=Logger.getLogger(JBaseNavigator.class.getName());
 	 * Get context locator. 
 	 * @return the locator.
 	 */	
+	private void reindex(){
+		Entigrator entigrator=console.getEntigrator(entihome$);
+		entigrator.indx_rebuild(null);
+		String [] sa=entigrator.indx_listEntities();
+		Sack entity;
+		String entityLocator$;
+		for(String s:sa){
+			entity=entigrator.getEntityAtKey(s);
+			if(entity==null)
+				continue;
+			if(!"extension".equals(entity.getProperty("entity")))
+				continue;
+		entityLocator$=EntityHandler.getEntityLocator(entigrator, entity);
+		 JEntityPrimaryMenu.reindexEntity(console,entityLocator$);
+		}
+		for(String s:sa){
+			entity=entigrator.getEntityAtKey(s);
+			if(entity==null)
+				continue;
+			if("extension".equals(entity.getProperty("entity")))
+				continue;
+		entityLocator$=EntityHandler.getEntityLocator(entigrator, entity);
+		 JEntityPrimaryMenu.reindexEntity(console,entityLocator$);
+		}
+
+	}
 	@Override
 	public String getLocator() {
 		Properties locator=new Properties();

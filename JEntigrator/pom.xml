@@ -46,18 +46,14 @@
   </build>
   <dependencies>
   	<dependency>
-  		<groupId>codec</groupId>
-  		<artifactId>codec</artifactId>
-  		<scope>system</scope>
+	  	<groupId>commons-codec</groupId>
+  		<artifactId>commons-codec</artifactId>
   		<version>1.10</version>
-  		<systemPath>${basedir}/libs/commons-codec-1.10.jar</systemPath>
   	</dependency>
   	<dependency>
-  		<groupId>compress</groupId>
-  		<artifactId>compress</artifactId>
-  		<scope>system</scope>
-  		<version>1.10</version>
-  		<systemPath>${basedir}/libs/commons-compress-1.10.jar</systemPath>
-  	</dependency>
+  		<groupId>org.apache.commons</groupId>
+ 			 <artifactId>commons-compress</artifactId>
+  			<version>1.10</version>
+</dependency>
   </dependencies>
 </project>

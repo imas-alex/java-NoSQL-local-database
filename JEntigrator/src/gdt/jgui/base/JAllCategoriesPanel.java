@@ -114,7 +114,7 @@ Hashtable<String,JItemPanel> items;
 			 for(FacetHandler fh:fha){
 				 try{
 			  fh$=fh.getClassName();
-			  System.out.println("AllCategoriesPanel:instantiate:fh="+fh.getClass().getName());		 
+//			  System.out.println("AllCategoriesPanel:instantiate:fh="+fh.getClass().getName());		 
 			  itemPanel=getItem(fh$);
 			   if(itemPanel==null){
 			  cpLocator$=entigrator.getLocator(fh$);
@@ -122,7 +122,7 @@ Hashtable<String,JItemPanel> items;
 			  
 			  facetRenderer=JConsoleHandler.getFacetRenderer(entigrator, fh.getClass().getName());
 			
-			  System.out.println("AllCategoriesPanel:instantiate:renderer="+facetRenderer.getClass().getName());		 
+//			  System.out.println("AllCategoriesPanel:instantiate:renderer="+facetRenderer.getClass().getName());		 
 			 
 			  cpLocator.setProperty(JCategoryPanel.RENDERER,facetRenderer.getClass().getName());
 			  cpLocator$=Locator.toString(cpLocator); 
@@ -141,7 +141,7 @@ Hashtable<String,JItemPanel> items;
      			}	 
 			 }
 		 }
-		 System.out.println("AllCategoriesPanel:instantiate:END MAKE CATEGORY PANELS");
+	//	 System.out.println("AllCategoriesPanel:instantiate:END MAKE CATEGORY PANELS");
 			
 		Collections.sort(ipl,new ItemPanelComparator()); 
 		putItems(ipl.toArray(new JItemPanel[0]));
