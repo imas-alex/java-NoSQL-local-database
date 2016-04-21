@@ -1,8 +1,8 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
-  <groupId>JEntigrator</groupId>
+  <groupId>com.github.imas-alex</groupId>
   <artifactId>JEntigrator</artifactId>
-  <version>0.0.1-SNAPSHOT</version>
+  <version>0.0.1</version>
   <name>JEntigrator</name>
   <description>The entigrator application</description>
   <url>https://github.com/imas-alex/JEntigrator</url>
@@ -80,24 +80,10 @@
           </execution>
       </executions>
   </plugin>
-   
-   <plugin>
-      <groupId>org.apache.maven.plugins</groupId>
-      <artifactId>maven-gpg-plugin</artifactId>
-      <executions>
-          <execution>
-              <id>sign-artifacts</id>
-              <phase>verify</phase>
-              <goals>
-                  <goal>sign</goal>
-              </goals>
-          </execution>
-      </executions>
-  </plugin>
       <plugin>
-      	<groupId>JEntigrator</groupId>
+      	<groupId>com.github.imas-alex</groupId>
       	<artifactId>JEntigrator</artifactId>
-      	<version>0.0.1-SNAPSHOT</version>
+      	<version>0.0.1</version>
       </plugin>
     </plugins>
   </build>
@@ -112,18 +98,19 @@
  			 <artifactId>commons-compress</artifactId>
   			<version>1.10</version>
 </dependency>
+ 
   </dependencies>
  <distributionManagement>
   <!-- Repository for snapshots -->
-  <repository>
-      <id>jentigrator</id>
+  <snapshotRepository>
+      <id>ossrh</id>
       <url>https://oss.sonatype.org/content/repositories/snapshots</url>
+  </snapshotRepository>
+  <!-- Repository for releases -->
+   <repository>
+    <id>ossrh</id>
+    <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
   </repository>
- 
 </distributionManagement> 
-<parent>
-  <groupId>org.sonatype.oss</groupId>
-  <artifactId>oss-parent</artifactId>
-  <version>7</version>
-</parent>
+
 </project>
