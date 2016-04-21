@@ -2,7 +2,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>com.github.imas-alex</groupId>
   <artifactId>JEntigrator</artifactId>
-  <version>0.0.1</version>
+  <version>0.0.2-SNAPSHOT</version>
   <name>JEntigrator</name>
   <description>The entigrator application</description>
   <url>https://github.com/imas-alex/JEntigrator</url>
@@ -83,7 +83,7 @@
       <plugin>
       	<groupId>com.github.imas-alex</groupId>
       	<artifactId>JEntigrator</artifactId>
-      	<version>0.0.1</version>
+      	<version>0.0.2-SNAPSHOT</version>
       </plugin>
     </plugins>
   </build>
