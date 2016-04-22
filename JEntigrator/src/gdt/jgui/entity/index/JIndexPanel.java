@@ -1063,12 +1063,10 @@ private Sack orderGroupDefault(Sack index,String groupKey$){
 								return;
 								}
 								String responseLocator$=getLocator();
-								System.out.println("IndexPanel:open:response locator="+Locator.remove(responseLocator$,Locator.LOCATOR_ICON));
+							//	System.out.println("IndexPanel:open:response locator="+Locator.remove(responseLocator$,Locator.LOCATOR_ICON));
 								
 								selection$=Locator.append(selection$, JRequester.REQUESTER_RESPONSE_LOCATOR, Locator.compressText(responseLocator$));
-								//selection$=Locator.remove(selection$, Locator.LOCATOR_SCOPE);
-								//selection$=Locator.append(selection$, BaseHandler.HANDLER_CLASS,JIndexPanel.class.getName());
-								System.out.println("IndexPanel:open:selection="+Locator.remove(Locator.remove(selection$, Locator.LOCATOR_ICON),JRequester.REQUESTER_RESPONSE_LOCATOR));
+							//	System.out.println("IndexPanel:open:selection="+Locator.remove(Locator.remove(selection$, Locator.LOCATOR_ICON),JRequester.REQUESTER_RESPONSE_LOCATOR));
 								
 								JConsoleHandler.execute(console, selection$);
 								
