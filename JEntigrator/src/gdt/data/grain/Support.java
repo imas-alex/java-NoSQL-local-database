@@ -228,7 +228,7 @@ public class Support {
  	 * Copy the icon file from the class path into the target directory. 
  	 * @param handler the class
  	 * @param icon$ the name of the icon file.
- 	 * @return input stream.
+ 	 *  @param directory$ the icons directory path .
  	 */    
     public static void addHandlerIcon(Class<?> handler,String icon$,String directory$) {
  		try {

@@ -763,7 +763,7 @@ public static String pasteComponents(JMainConsole console,String locator$){
 }
 /**
  * Execute the response locator.
- * @param the main console
+ * @param console the main console
  * @param locator$ the response locator.
  */
 @Override

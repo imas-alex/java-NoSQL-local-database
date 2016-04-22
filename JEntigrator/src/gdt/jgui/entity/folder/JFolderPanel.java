@@ -393,7 +393,7 @@ public class JFolderPanel extends JItemsListPanel implements JFacetRenderer,JReq
 	/**
 	 * Rebuild entity parameters and indexes.
 	 * @param console the main console.
-	 * @param entitgrator the entigrator.
+	 * @param entigrator the entigrator.
 	 * @param entity the entity.
 	 */
 	@Override

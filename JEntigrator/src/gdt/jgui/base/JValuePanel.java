@@ -42,9 +42,9 @@ import javax.swing.JOptionPane;
 * This context displays actions 
 * to manage property values:
 * Add value - to add a property value
-* Delete <property value> - to delete the property value.
-* Edit <property value> - to edit the property value.
-* Take off <property name> - to remove the property from 
+* Delete 'property value' - to delete the property value.
+* Edit 'property value' - to edit the property value.
+* Take off 'property name' - to remove the property from 
 * the selected entity.
 * Clear values - to remove unused property values.
 * The context will be shown by the click on the Value label 

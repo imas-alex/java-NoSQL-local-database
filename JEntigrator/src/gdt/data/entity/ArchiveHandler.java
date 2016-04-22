@@ -288,7 +288,7 @@ public class ArchiveHandler {
 	/**
 	 * Compress the database into the tar archive file. 
 	 * @param  entigrator entigrator instance,
-	 * locator$ container of arguments 
+	 * @param locator$ container of arguments 
 	 * in the string form. 
 	 * @return true if success false otherwise.
 	 */
@@ -315,7 +315,8 @@ public class ArchiveHandler {
 	 }
 	 /**
 		 * Compress the database into the tgz archive file. 
-		 * @param  entigrator entigrator instance, locator$ container of arguments in the string form. 
+		 * @param  entigrator entigrator instance
+		 * @param locator$ container of arguments in the string form. 
 		 * @return true if success false otherwise.
 		 */
 	 public boolean compressDatabaseToTgz(Entigrator entigrator,String locator$){
@@ -562,7 +563,7 @@ public  boolean compressEntitiesToZip(Entigrator entigrator,String locator$){
 }
 /**
  * Discover if the tar file contains the default directory for entities entities
- * @param  tarFile$ the path of the archive file.
+ * @param  tarfile$ the path of the archive file.
  *  @return true if contains, false otherwise.
  */
 public static boolean hasEntitiesDirInTar(String tarfile$) {
@@ -597,7 +598,7 @@ private static boolean hasEntitiesDirInTarStream(TarArchiveInputStream tis) {
 }
 /**
  * Discover if the tar.gz file contains the default directory for entities entities
- * @param  tgzFile$ the path of the archive file.
+ * @param  tgzfile$ the path of the archive file.
  *  @return true if contains, false otherwise.
  */
 public static boolean hasEntitiesDirInTgz(String tgzfile$) {
@@ -631,7 +632,7 @@ private static boolean hasPropertyIndexInTarStream(TarArchiveInputStream tis) {
 }
 /**
  * Discover if the tar file contains the property index
- * @param  tarFile$ the path of the archive file.
+ * @param  tarfile$ the path of the archive file.
  *  @return true if contains, false otherwise.
  */
 public static boolean hasPropertyIndexInTar(String tarfile$) {
@@ -645,7 +646,7 @@ public static boolean hasPropertyIndexInTar(String tarfile$) {
 }
 /**
  * Discover if the tar.gz file contains the property index
- * @param  tar.gz archive file.
+ * @param  tgzfile$ archive file.
  *  @return true if contains, false otherwise.
  */
 public static boolean hasPropertyIndexInTgz(String tgzfile$) {
@@ -813,7 +814,7 @@ private static void extractEntitiesFromZip(String targetDirectory$,String zipfil
 }
 /**
  * Extract archive file into the target directory
- * @param targetDirectory the path of the target directory
+ * @param targetDirectory$ the path of the target directory
  * @param file$ the archive file path
  * 
  * 

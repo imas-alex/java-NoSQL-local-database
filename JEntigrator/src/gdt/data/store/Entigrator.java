@@ -421,7 +421,6 @@ private Sack indx_getProperty(String propertyName$) {
 	 * Change property name.
 	 *  @param propertyName$ old property name
 	 *  @param newPropertyName$ new property name.
-	 * @return entity if success null otherwise.
 	 */
 public void prp_editPropertyName(String propertyName$,String newPropertyName$) {
     Core core = propertyIndex.getElementItem("property", propertyName$);
@@ -869,7 +868,8 @@ public String[] indx_listEntities(Properties criteria) {
     }
     /**
      * Take off the property from the entity. 
-     *  @param entity the entity,propertyName$ the property name.
+     *  @param entity the entity
+     *  @param propertyName$ the property name.
      * @return the entity.
      */   
     public Sack ent_takeOffProperty(Sack entity, String propertyName$) {
@@ -1109,7 +1109,7 @@ private boolean ent_propertyAlreadyAssigned(Sack entity, String propertyName$, S
  * Assign property to the entity. 
  *  @param entity the entity
  *  @param propertyName$ property name
- *  @param propertyValue$property value.
+ *  @param propertyValue$ property value.
  *  @return the entity.
  */ 
     public Sack ent_assignProperty(Sack entity, String propertyName$, String propertyValue$) {
@@ -2569,6 +2569,7 @@ return null;
 /**
  * Copy the icon from the class resource
  *  into icons folder.
+ *  @param handler the handler class
  *  @param icon$ the name of icon resource.
  */ 
 public void saveHandlerIcon(Class<?> handler,String icon$) {

@@ -61,6 +61,7 @@ public class JConsoleHandler {
 	 * Execute a handle request.
 	 *  @param console the main console
 	 *  @param locator$ the request locator.
+	 *  @return the status string.
 	 */
 		public static String execute(JMainConsole console,String locator$){
         try{
@@ -112,6 +113,7 @@ public class JConsoleHandler {
 		 * List all databases in the given directory
 		 *  @param console the main console
 		 *  @param entiroot$ the directory.
+		 *  @return the array of database items in the directory.
 		 */
 
 		public  JItemPanel[] listBases(JMainConsole console,String entiroot$){

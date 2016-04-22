@@ -3,7 +3,7 @@
   <groupId>com.github.imas-alex</groupId>
   <artifactId>Community</artifactId>
   <version>0.0.1-SNAPSHOT</version>
-   <name>JEntigrator</name>
+   <name>Community</name>
   <description>The community extension for the entigrator application</description>
   <url>https://github.com/imas-alex/Community</url>
   <issueManagement>
@@ -50,7 +50,43 @@
           <target>1.7</target>
         </configuration>
       </plugin>
+        <plugin>
+    <groupId>org.apache.maven.plugins</groupId>
+    <artifactId>maven-jar-plugin</artifactId>
+       <configuration>
+      <archive>
+        <manifest>
+           <addClasspath>true</addClasspath>
+               <classpathPrefix>lib/</classpathPrefix>
+              <mainClass>gdt.jgui.console.JMainConsole</mainClass>
+        </manifest>
+      </archive>
+    </configuration>
+  </plugin>
+   <plugin>
+      <artifactId>maven-assembly-plugin</artifactId>
+      <version>2.3</version>
+      <configuration>
+          <descriptorRefs>
+              <descriptorRef>jar-with-dependencies</descriptorRef>
+          </descriptorRefs>
+      </configuration>
+      <executions>
+          <execution>
+              <phase>package</phase>
+              <goals>
+                  <goal>single</goal>
+              </goals>
+          </execution>
+      </executions>
+  </plugin>
+      <plugin>
+      	<groupId>com.github.imas-alex</groupId>
+      	<artifactId>Community</artifactId>
+      	<version>0.0.1-SNAPSHOT</version>
+      </plugin>
     </plugins>
+  
   </build>
   <dependencies>
   	<dependency>

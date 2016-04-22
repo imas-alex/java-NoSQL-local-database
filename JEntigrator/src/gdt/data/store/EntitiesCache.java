@@ -52,7 +52,6 @@ public EntitiesCache(Entigrator entigrator){
 /**
 	 * Put entity into the cache.
 	 *  @param entity the entity.
-	 * @return true if success false otherwise.
 	 */
 public synchronized void put(Sack entity){
 	entity.putAttribute(new Core(null,Entigrator.TIMESTAMP,String.valueOf(System.currentTimeMillis())));

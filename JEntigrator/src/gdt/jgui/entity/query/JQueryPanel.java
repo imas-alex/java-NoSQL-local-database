@@ -662,7 +662,7 @@ private String[] select(){
 	/**
 	 * Execute the response locator.
 	 * @param console the main console.
-	 * @param the response locator.
+	 * @param locator$ the response locator.
 	 * 
 	 */
 	@Override

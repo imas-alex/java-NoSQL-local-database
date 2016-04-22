@@ -1,0 +1,92 @@
+[INFO] Scanning for projects...
+[WARNING] 
+[WARNING] Some problems were encountered while building the effective model for JEntigrator:JEntigrator:jar:0.0.1-SNAPSHOT
+[WARNING] 'build.plugins.plugin.version' for org.apache.maven.plugins:maven-gpg-plugin is missing. @ line 84, column 12
+[WARNING] 'build.plugins.plugin.version' for org.apache.maven.plugins:maven-jar-plugin is missing. @ line 53, column 15
+[WARNING] 
+[WARNING] It is highly recommended to fix these problems because they threaten the stability of your build.
+[WARNING] 
+[WARNING] For this reason, future Maven versions might no longer support building such malformed projects.
+[WARNING] 
+[INFO]                                                                         
+[INFO] ------------------------------------------------------------------------
+[INFO] Building JEntigrator 0.0.1-SNAPSHOT
+[INFO] ------------------------------------------------------------------------
+[INFO] 
+[INFO] --- maven-clean-plugin:2.5:clean (default-clean) @ JEntigrator ---
+[INFO] Deleting /home/imasa/git/github/JEntigrator/target
+[INFO] 
+[INFO] --- maven-enforcer-plugin:1.0:enforce (enforce-maven) @ JEntigrator ---
+[INFO] 
+[INFO] --- maven-resources-plugin:2.3:resources (default-resources) @ JEntigrator ---
+[INFO] Using 'UTF-8' encoding to copy filtered resources.
+[INFO] Copying 55 resources
+[INFO] 
+[INFO] --- maven-compiler-plugin:3.3:compile (default-compile) @ JEntigrator ---
+[INFO] Changes detected - recompiling the module!
+[INFO] Compiling 108 source files to /home/imasa/git/github/JEntigrator/target/classes
+[INFO] /home/imasa/git/github/JEntigrator/src/gdt/jgui/entity/folder/JFolderPanel.java: /home/imasa/git/github/JEntigrator/src/gdt/jgui/entity/folder/JFolderPanel.java uses unchecked or unsafe operations.
+[INFO] /home/imasa/git/github/JEntigrator/src/gdt/jgui/entity/folder/JFolderPanel.java: Recompile with -Xlint:unchecked for details.
+[INFO] 
+[INFO] --- maven-resources-plugin:2.3:testResources (default-testResources) @ JEntigrator ---
+[INFO] Using 'UTF-8' encoding to copy filtered resources.
+[INFO] skip non existing resourceDirectory /home/imasa/git/github/JEntigrator/src/test/resources
+[INFO] 
+[INFO] --- maven-compiler-plugin:3.3:testCompile (default-testCompile) @ JEntigrator ---
+[INFO] No sources to compile
+[INFO] 
+[INFO] --- maven-surefire-plugin:2.10:test (default-test) @ JEntigrator ---
+[INFO] No tests to run.
+[INFO] Surefire report directory: /home/imasa/git/github/JEntigrator/target/surefire-reports
+
+-------------------------------------------------------
+ T E S T S
+-------------------------------------------------------
+
+Results :
+
+Tests run: 0, Failures: 0, Errors: 0, Skipped: 0
+
+[INFO] 
+[INFO] --- maven-jar-plugin:2.2:jar (default-jar) @ JEntigrator ---
+[INFO] Building jar: /home/imasa/git/github/JEntigrator/target/JEntigrator-0.0.1-SNAPSHOT.jar
+[INFO] 
+[INFO] --- maven-assembly-plugin:2.3:single (default) @ JEntigrator ---
+[INFO] META-INF/MANIFEST.MF already added, skipping
+[INFO] META-INF/NOTICE.txt already added, skipping
+[INFO] META-INF/LICENSE.txt already added, skipping
+[INFO] META-INF/MANIFEST.MF already added, skipping
+[INFO] Building jar: /home/imasa/git/github/JEntigrator/target/JEntigrator-0.0.1-SNAPSHOT-jar-with-dependencies.jar
+[INFO] META-INF/MANIFEST.MF already added, skipping
+[INFO] META-INF/NOTICE.txt already added, skipping
+[INFO] META-INF/LICENSE.txt already added, skipping
+[INFO] META-INF/MANIFEST.MF already added, skipping
+[INFO] 
+[INFO] --- maven-gpg-plugin:1.6:sign (sign-artifacts) @ JEntigrator ---
+[INFO] 
+[INFO] --- maven-install-plugin:2.3:install (default-install) @ JEntigrator ---
+[INFO] Installing /home/imasa/git/github/JEntigrator/target/JEntigrator-0.0.1-SNAPSHOT.jar to /home/imasa/.m2/repository/JEntigrator/JEntigrator/0.0.1-SNAPSHOT/JEntigrator-0.0.1-SNAPSHOT.jar
+[INFO] Installing /home/imasa/git/github/JEntigrator/pom.xml to /home/imasa/.m2/repository/JEntigrator/JEntigrator/0.0.1-SNAPSHOT/JEntigrator-0.0.1-SNAPSHOT.pom
+[INFO] Installing /home/imasa/git/github/JEntigrator/target/JEntigrator-0.0.1-SNAPSHOT-jar-with-dependencies.jar to /home/imasa/.m2/repository/JEntigrator/JEntigrator/0.0.1-SNAPSHOT/JEntigrator-0.0.1-SNAPSHOT-jar-with-dependencies.jar
+[INFO] Installing /home/imasa/git/github/JEntigrator/target/JEntigrator-0.0.1-SNAPSHOT.jar.asc to /home/imasa/.m2/repository/JEntigrator/JEntigrator/0.0.1-SNAPSHOT/JEntigrator-0.0.1-SNAPSHOT.jar.asc
+[INFO] Installing /home/imasa/git/github/JEntigrator/target/JEntigrator-0.0.1-SNAPSHOT.pom.asc to /home/imasa/.m2/repository/JEntigrator/JEntigrator/0.0.1-SNAPSHOT/JEntigrator-0.0.1-SNAPSHOT.pom.asc
+[INFO] Installing /home/imasa/git/github/JEntigrator/target/JEntigrator-0.0.1-SNAPSHOT-jar-with-dependencies.jar.asc to /home/imasa/.m2/repository/JEntigrator/JEntigrator/0.0.1-SNAPSHOT/JEntigrator-0.0.1-SNAPSHOT-jar-with-dependencies.jar.asc
+[INFO] 
+[INFO] --- maven-deploy-plugin:2.7:deploy (default-deploy) @ JEntigrator ---
+Downloading: https://oss.sonatype.org/content/repositories/snapshots/JEntigrator/JEntigrator/0.0.1-SNAPSHOT/maven-metadata.xml
+Uploading: https://oss.sonatype.org/content/repositories/snapshots/JEntigrator/JEntigrator/0.0.1-SNAPSHOT/JEntigrator-0.0.1-20160420.102511-1.jar
+2/648 KB   4/648 KB   6/648 KB   8/648 KB   10/648 KB   12/648 KB   14/648 KB   16/648 KB   18/648 KB   20/648 KB   22/648 KB   24/648 KB   26/648 KB   28/648 KB   30/648 KB   32/648 KB   34/648 KB   36/648 KB   38/648 KB   40/648 KB   42/648 KB   44/648 KB   46/648 KB   48/648 KB   50/648 KB   52/648 KB   54/648 KB   56/648 KB   58/648 KB   60/648 KB   62/648 KB   64/648 KB   66/648 KB   68/648 KB   70/648 KB   72/648 KB   74/648 KB   76/648 KB   78/648 KB   80/648 KB   82/648 KB   84/648 KB   86/648 KB   88/648 KB   90/648 KB   92/648 KB   94/648 KB   96/648 KB   98/648 KB   100/648 KB   102/648 KB   104/648 KB   106/648 KB   108/648 KB   110/648 KB   112/648 KB   114/648 KB   116/648 KB   118/648 KB   120/648 KB   122/648 KB   124/648 KB   126/648 KB   128/648 KB   130/648 KB   132/648 KB   134/648 KB   136/648 KB   138/648 KB   140/648 KB   142/648 KB   144/648 KB   146/648 KB   148/648 KB   150/648 KB   152/648 KB   154/648 KB   156/648 KB   158/648 KB   160/648 KB   162/648 KB   164/648 KB   166/648 KB   168/648 KB   170/648 KB   172/648 KB   174/648 KB   176/648 KB   178/648 KB   180/648 KB   182/648 KB   184/648 KB   186/648 KB   188/648 KB   190/648 KB   192/648 KB   194/648 KB   196/648 KB   198/648 KB   200/648 KB   202/648 KB   204/648 KB   206/648 KB   208/648 KB   210/648 KB   212/648 KB   214/648 KB   216/648 KB   218/648 KB   220/648 KB   222/648 KB   224/648 KB   226/648 KB   228/648 KB   230/648 KB   232/648 KB   234/648 KB   236/648 KB   238/648 KB   240/648 KB   242/648 KB   244/648 KB   246/648 KB   248/648 KB   250/648 KB   252/648 KB   254/648 KB   256/648 KB   258/648 KB   260/648 KB   262/648 KB   264/648 KB   266/648 KB   268/648 KB   270/648 KB   272/648 KB   274/648 KB   276/648 KB   278/648 KB   280/648 KB   282/648 KB   284/648 KB   286/648 KB   288/648 KB   290/648 KB   292/648 KB   294/648 KB   296/648 KB   298/648 KB   300/648 KB   302/648 KB   304/648 KB   306/648 KB   308/648 KB   310/648 KB   312/648 KB   314/648 KB   316/648 KB   318/648 KB   320/648 KB   322/648 KB   324/648 KB   326/648 KB   328/648 KB   330/648 KB   332/648 KB   334/648 KB   336/648 KB   338/648 KB   340/648 KB   342/648 KB   344/648 KB   346/648 KB   348/648 KB   350/648 KB   352/648 KB   354/648 KB   356/648 KB   358/648 KB   360/648 KB   362/648 KB   364/648 KB   366/648 KB   368/648 KB   370/648 KB   372/648 KB   374/648 KB   376/648 KB   378/648 KB   380/648 KB   382/648 KB   384/648 KB   386/648 KB   388/648 KB   390/648 KB   392/648 KB   394/648 KB   396/648 KB   398/648 KB   400/648 KB   402/648 KB   404/648 KB   406/648 KB   408/648 KB   410/648 KB   412/648 KB   414/648 KB   416/648 KB   418/648 KB   420/648 KB   422/648 KB   424/648 KB   426/648 KB   428/648 KB   430/648 KB   432/648 KB   434/648 KB   436/648 KB   438/648 KB   440/648 KB   442/648 KB   444/648 KB   446/648 KB   448/648 KB   450/648 KB   452/648 KB   454/648 KB   456/648 KB   458/648 KB   460/648 KB   462/648 KB   464/648 KB   466/648 KB   468/648 KB   470/648 KB   472/648 KB   474/648 KB   476/648 KB   478/648 KB   480/648 KB   482/648 KB   484/648 KB   486/648 KB   488/648 KB   490/648 KB   492/648 KB   494/648 KB   496/648 KB   498/648 KB   500/648 KB   502/648 KB   504/648 KB   506/648 KB   508/648 KB   510/648 KB   512/648 KB   514/648 KB   516/648 KB   518/648 KB   520/648 KB   522/648 KB   524/648 KB   526/648 KB   528/648 KB   530/648 KB   532/648 KB   534/648 KB   536/648 KB   538/648 KB   540/648 KB   542/648 KB   544/648 KB   546/648 KB   548/648 KB   550/648 KB   552/648 KB   554/648 KB   556/648 KB   558/648 KB   560/648 KB   562/648 KB   564/648 KB   566/648 KB   568/648 KB   570/648 KB   572/648 KB   574/648 KB   576/648 KB   578/648 KB   580/648 KB   582/648 KB   584/648 KB   586/648 KB   588/648 KB   590/648 KB   592/648 KB   594/648 KB   596/648 KB   598/648 KB   600/648 KB   602/648 KB   604/648 KB   606/648 KB   608/648 KB   610/648 KB   612/648 KB   614/648 KB   616/648 KB   618/648 KB   620/648 KB   622/648 KB   624/648 KB   626/648 KB   628/648 KB   630/648 KB   632/648 KB   634/648 KB   636/648 KB   638/648 KB   640/648 KB   642/648 KB   644/648 KB   646/648 KB   648/648 KB                Uploading: https://oss.sonatype.org/content/repositories/snapshots/JEntigrator/JEntigrator/0.0.1-SNAPSHOT/JEntigrator-0.0.1-20160420.102511-1.pom
+2/4 KB       4/4 KB            [INFO] ------------------------------------------------------------------------
+[INFO] BUILD FAILURE
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time: 8.872s
+[INFO] Finished at: Wed Apr 20 12:25:14 CEST 2016
+[INFO] Final Memory: 29M/360M
+[INFO] ------------------------------------------------------------------------
+[ERROR] Failed to execute goal org.apache.maven.plugins:maven-deploy-plugin:2.7:deploy (default-deploy) on project JEntigrator: Failed to deploy artifacts: Could not transfer artifact JEntigrator:JEntigrator:jar:0.0.1-20160420.102511-1 from/to sonatype-nexus-snapshots (https://oss.sonatype.org/content/repositories/snapshots/): Failed to transfer file: https://oss.sonatype.org/content/repositories/snapshots/JEntigrator/JEntigrator/0.0.1-SNAPSHOT/JEntigrator-0.0.1-20160420.102511-1.jar. Return code is: 401, ReasonPhrase: Unauthorized. -> [Help 1]
+[ERROR] 
+[ERROR] To see the full stack trace of the errors, re-run Maven with the -e switch.
+[ERROR] Re-run Maven using the -X switch to enable full debug logging.
+[ERROR] 
+[ERROR] For more information about the errors and possible solutions, please read the following articles:
+[ERROR] [Help 1] http://cwiki.apache.org/confluence/display/MAVEN/MojoExecutionException

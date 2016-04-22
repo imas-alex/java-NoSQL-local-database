@@ -231,7 +231,8 @@ public class Locator {
     /**
    	 * Append the name/value pairs from the other locator. If the name
    	 * already exists it will be ignored. 
-   	 * @param locator$ the target locator string, locator2$ the second locator string. 
+   	 * @param locator$ the target locator string
+   	 * @param locator2$ the second locator string. 
 	 * @return  the result locator string.   
    	 */
     public static String merge(String locator$,String locator2$) {
@@ -279,15 +280,16 @@ public class Locator {
  public static void sort(ArrayList<String> list){
     	Collections.sort(list, new LocatorComparator());
     }
- /**
-	 * Compare locators by title
-	 * @param l1$ first locator
-	 * @param l2$ second locator 
-	 *@return  result of titles comparison   
-	 *     
-	 */
+ 
     public static class LocatorComparator implements Comparator<String>{
-	    @Override
+    	/**
+    	 * Compare locators by title
+    	 * @param l1$ first locator
+    	 * @param l2$ second locator 
+    	 *@return  result of titles comparison   
+    	 *     
+    	 */
+    	@Override
 	    public int compare(String l1$, String l2$) {
 	    	try{
 	    		Properties locator=Locator.toProperties(l1$);

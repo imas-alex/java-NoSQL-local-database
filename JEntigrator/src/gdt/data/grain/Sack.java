@@ -246,10 +246,10 @@ public class Sack extends Identity {
    	 * @param element$ the name of the element. 
 	 * @return the no-sorted array of names.   
    	 */
-    public String[] elementListNoSorted(String element) {
-        if (element == null)
+    public String[] elementListNoSorted(String element$) {
+        if (element$ == null)
             return null;
-        Core[] cores = elementGet(element);
+        Core[] cores = elementGet(element$);
         if (cores == null)
             return null;
         int cnt = Array.getLength(cores);
@@ -263,22 +263,22 @@ public class Sack extends Identity {
    	 * @param element$ the name of the element. 
 	 * @return the array of cores.   
    	 */
-    public Core[] elementGet(String element) {
-        return enumerateElement(element);
+    public Core[] elementGet(String element$) {
+        return enumerateElement(element$);
     }
     /**
    	 * Replace element with the array of cores.
    	 * @param element$ the name of the element
    	 * @param ca array of cores. 
    	 */
-    public void elementReplace(String element, Core[] ca) {
-        removeElement(element);
-        if (element == null)
+    public void elementReplace(String element$, Core[] ca) {
+        removeElement(element$);
+        if (element$ == null)
             return;
-        createElement(element);
+        createElement(element$);
         if (ca == null)
             return;
-        for (Core aCa : ca) putElementItem(element, aCa);
+        for (Core aCa : ca) putElementItem(element$, aCa);
     }
 
     
@@ -311,12 +311,12 @@ public class Sack extends Identity {
 	 * @return the no-sorted array of names.   
   	 */
 
-    public String[] listItemsAtType(String element, String type$) {
+    public String[] listItemsAtType(String element$, String type$) {
         if (type$ == null)
             return null;
-        if (element == null)
+        if (element$ == null)
             return null;
-        Stack<String> s = listElement(element);
+        Stack<String> s = listElement(element$);
         if (s == null)
             return null;
         int cnt = s.size();
@@ -325,7 +325,7 @@ public class Sack extends Identity {
         Stack<String> out = new Stack<String>();
         Core core;
         while (!s.isEmpty()) {
-            core = getElementItem(element, s.pop().toString());
+            core = getElementItem(element$, s.pop().toString());
             if (core.type.equals(type$))
                 out.push(core.name);
         }
@@ -368,12 +368,13 @@ public class Sack extends Identity {
     }
     /**
   	 * Check if the sack has the element
+	 * @param element$ the name of element
 	 * @return true if contains , false if not.   
   	 */
-    public boolean existsElement(String element) {
-        if(element==null)
+    public boolean existsElement(String element$) {
+        if(element$==null)
         	return false;
-    	return elements.containsKey(element.trim());
+    	return elements.containsKey(element$.trim());
     }
     /**
   	 * Find  first core having the given value and return its name.
@@ -483,15 +484,15 @@ public class Sack extends Identity {
   	 * @param item$ the name of the core
   	 * @return the value of the core having the given name.
   	 */  
-    public String getElementItemAt(String element, String item) {
-        if (element == null)
+    public String getElementItemAt(String element$, String item$) {
+        if (element$ == null)
             return null;
-        if (item == null)
-            item = "";
-        BTree bTree = (BTree) elements.get(element);
+        if (item$ == null)
+            item$ = "";
+        BTree bTree = (BTree) elements.get(element$);
         if (bTree == null)
             return null;
-        Core core = (Core) bTree.get(item);
+        Core core = (Core) bTree.get(item$);
         if (core == null)
             return null;
         if (core.value == null)
@@ -504,11 +505,11 @@ public class Sack extends Identity {
   	 * @param element$ the name of the element
   	 * @param item$ the name of the core
   	 */  
-    public void removeElementItem(String element, String item$) {
-        if (element == null || item$ == null) {
+    public void removeElementItem(String element$, String item$) {
+        if (element$ == null || item$ == null) {
             return;
         }
-        BTree bTree = (BTree) elements.get(element);
+        BTree bTree = (BTree) elements.get(element$);
         if (bTree == null) {
             return;
         }
@@ -692,6 +693,7 @@ public synchronized boolean saveXML(String fname$){
 	 * Write the sack into the output stream. 
 	 * @param os output stream.
 	 * @return true if success, false otherwise.
+	 * @throws java.io.IOException write failed.
 	 */  
     public boolean writeXML(OutputStream os) throws IOException {
     	final Logger LOGGER= Logger.getLogger(Sack.class.getName()); 

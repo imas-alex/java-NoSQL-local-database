@@ -45,7 +45,7 @@ public String[] getContent() {
 }
 /**
  * Put a string into the clipboard.
- * 
+ * @param s$ the string to put.
  */
 public void putString(String s$) {
         if(sl.contains(s$))
@@ -61,7 +61,7 @@ public void clear() {
 }
 /**
  * Store clipboard on the disk. 
- * 
+ * @param console the main console.
  */
 public static void store(JMainConsole console){
 	try{
@@ -87,6 +87,7 @@ public static void store(JMainConsole console){
 }
 /**
  * Restore clipboard from the disk. 
+ * @param console the main console.
  * 
  */
 public static void restore(JMainConsole console){

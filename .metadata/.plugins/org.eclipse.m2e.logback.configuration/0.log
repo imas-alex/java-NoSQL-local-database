@@ -815,3 +815,467 @@ Caused by: org.codehaus.plexus.util.xml.pull.XmlPullParserException: Duplicated 
 2016-04-19 23:53:38,222 [Worker-75] INFO  o.e.m.c.i.embedder.EclipseLogger - Copying 7 resources
 2016-04-19 23:53:38,234 [Worker-75] WARN  o.e.m.c.i.embedder.EclipseLogger - Using platform encoding (UTF-8 actually) to copy filtered resources, i.e. build is platform dependent!
 2016-04-19 23:53:38,235 [Worker-75] INFO  o.e.m.c.i.embedder.EclipseLogger - skip non existing resourceDirectory /home/imasa/git/github/Community/src/test/resources
+2016-04-19 23:55:04,341 [Worker-68] INFO  o.e.m.c.i.embedder.EclipseLogger - Using 'UTF-8' encoding to copy filtered resources.
+2016-04-19 23:55:04,346 [Worker-68] INFO  o.e.m.c.i.embedder.EclipseLogger - Copying 55 resources
+2016-04-19 23:55:04,348 [Worker-68] INFO  o.e.m.c.i.embedder.EclipseLogger - Using 'UTF-8' encoding to copy filtered resources.
+2016-04-19 23:55:04,349 [Worker-68] INFO  o.e.m.c.i.embedder.EclipseLogger - skip non existing resourceDirectory /home/imasa/git/github/JEntigrator/src/test/resources
+2016-04-19 23:55:04,503 [Worker-68] WARN  o.e.m.c.i.embedder.EclipseLogger - Using platform encoding (UTF-8 actually) to copy filtered resources, i.e. build is platform dependent!
+2016-04-19 23:55:04,505 [Worker-68] INFO  o.e.m.c.i.embedder.EclipseLogger - Copying 7 resources
+2016-04-19 23:55:04,509 [Worker-68] WARN  o.e.m.c.i.embedder.EclipseLogger - Using platform encoding (UTF-8 actually) to copy filtered resources, i.e. build is platform dependent!
+2016-04-19 23:55:04,509 [Worker-68] INFO  o.e.m.c.i.embedder.EclipseLogger - skip non existing resourceDirectory /home/imasa/git/github/Community/src/test/resources
+2016-04-19 23:55:27,171 [Worker-76] INFO  o.e.m.c.i.l.LifecycleMappingFactory - Using org.eclipse.m2e.jdt.JarLifecycleMapping lifecycle mapping for MavenProject: JEntigrator:JEntigrator:0.0.1-SNAPSHOT @ /home/imasa/git/github/JEntigrator/pom.xml.
+2016-04-19 23:55:27,295 [Worker-76] INFO  o.e.m.c.i.embedder.EclipseLogger - Using 'UTF-8' encoding to copy filtered resources.
+2016-04-19 23:55:27,297 [Worker-76] INFO  o.e.m.c.i.embedder.EclipseLogger - Copying 0 resource
+2016-04-19 23:55:27,298 [Worker-76] INFO  o.e.m.c.i.embedder.EclipseLogger - Using 'UTF-8' encoding to copy filtered resources.
+2016-04-19 23:55:27,298 [Worker-76] INFO  o.e.m.c.i.embedder.EclipseLogger - skip non existing resourceDirectory /home/imasa/git/github/JEntigrator/src/test/resources
+2016-04-20 11:32:18,157 [Worker-7] INFO  o.e.m.c.i.l.LifecycleMappingFactory - Using org.eclipse.m2e.jdt.JarLifecycleMapping lifecycle mapping for MavenProject: JEntigrator:JEntigrator:0.0.1-SNAPSHOT @ /home/imasa/git/github/JEntigrator/pom.xml.
+2016-04-20 11:32:18,540 [Worker-7] INFO  o.e.m.c.i.embedder.EclipseLogger - Using 'UTF-8' encoding to copy filtered resources.
+2016-04-20 11:32:18,549 [Worker-7] INFO  o.e.m.c.i.embedder.EclipseLogger - Copying 55 resources
+2016-04-20 11:32:18,579 [Worker-7] INFO  o.e.m.c.i.embedder.EclipseLogger - Using 'UTF-8' encoding to copy filtered resources.
+2016-04-20 11:32:18,580 [Worker-7] INFO  o.e.m.c.i.embedder.EclipseLogger - skip non existing resourceDirectory /home/imasa/git/github/JEntigrator/src/test/resources
+2016-04-20 11:32:19,113 [Worker-10] INFO  o.e.m.c.i.l.LifecycleMappingFactory - Using org.eclipse.m2e.jdt.JarLifecycleMapping lifecycle mapping for MavenProject: Community:Community:0.0.1-SNAPSHOT @ /home/imasa/git/github/Community/pom.xml.
+2016-04-20 11:32:19,159 [Worker-10] WARN  o.e.m.c.i.embedder.EclipseLogger - Using platform encoding (UTF-8 actually) to copy filtered resources, i.e. build is platform dependent!
+2016-04-20 11:32:19,167 [Worker-10] INFO  o.e.m.c.i.embedder.EclipseLogger - Copying 7 resources
+2016-04-20 11:32:19,177 [Worker-10] WARN  o.e.m.c.i.embedder.EclipseLogger - Using platform encoding (UTF-8 actually) to copy filtered resources, i.e. build is platform dependent!
+2016-04-20 11:32:19,178 [Worker-10] INFO  o.e.m.c.i.embedder.EclipseLogger - skip non existing resourceDirectory /home/imasa/git/github/Community/src/test/resources
+2016-04-20 17:39:53,404 [Worker-7] INFO  o.e.m.c.i.l.LifecycleMappingFactory - Using org.eclipse.m2e.jdt.JarLifecycleMapping lifecycle mapping for MavenProject: JEntigrator:JEntigrator:0.0.1-SNAPSHOT @ /home/imasa/git/github/JEntigrator/pom.xml.
+2016-04-20 17:39:53,753 [Worker-7] INFO  o.e.m.c.i.embedder.EclipseLogger - Using 'UTF-8' encoding to copy filtered resources.
+2016-04-20 17:39:53,766 [Worker-7] INFO  o.e.m.c.i.embedder.EclipseLogger - Copying 55 resources
+2016-04-20 17:39:53,808 [Worker-7] INFO  o.e.m.c.i.embedder.EclipseLogger - Using 'UTF-8' encoding to copy filtered resources.
+2016-04-20 17:39:53,810 [Worker-7] INFO  o.e.m.c.i.embedder.EclipseLogger - skip non existing resourceDirectory /home/imasa/git/github/JEntigrator/src/test/resources
+2016-04-20 17:39:54,213 [Worker-7] INFO  o.e.m.c.i.l.LifecycleMappingFactory - Using org.eclipse.m2e.jdt.JarLifecycleMapping lifecycle mapping for MavenProject: Community:Community:0.0.1-SNAPSHOT @ /home/imasa/git/github/Community/pom.xml.
+2016-04-20 17:39:54,271 [Worker-7] WARN  o.e.m.c.i.embedder.EclipseLogger - Using platform encoding (UTF-8 actually) to copy filtered resources, i.e. build is platform dependent!
+2016-04-20 17:39:54,277 [Worker-7] INFO  o.e.m.c.i.embedder.EclipseLogger - Copying 7 resources
+2016-04-20 17:39:54,289 [Worker-7] WARN  o.e.m.c.i.embedder.EclipseLogger - Using platform encoding (UTF-8 actually) to copy filtered resources, i.e. build is platform dependent!
+2016-04-20 17:39:54,291 [Worker-7] INFO  o.e.m.c.i.embedder.EclipseLogger - skip non existing resourceDirectory /home/imasa/git/github/Community/src/test/resources
+2016-04-20 17:39:55,425 [Worker-5] WARN  o.e.m.c.i.embedder.EclipseLogger - Using platform encoding (UTF-8 actually) to copy filtered resources, i.e. build is platform dependent!
+2016-04-20 17:39:55,432 [Worker-5] INFO  o.e.m.c.i.embedder.EclipseLogger - Copying 0 resource
+2016-04-20 17:39:55,436 [Worker-5] WARN  o.e.m.c.i.embedder.EclipseLogger - Using platform encoding (UTF-8 actually) to copy filtered resources, i.e. build is platform dependent!
+2016-04-20 17:39:55,439 [Worker-5] INFO  o.e.m.c.i.embedder.EclipseLogger - skip non existing resourceDirectory /home/imasa/git/github/Community/src/test/resources
+2016-04-20 17:40:05,441 [Worker-8] INFO  o.e.m.c.i.embedder.EclipseLogger - Using 'UTF-8' encoding to copy filtered resources.
+2016-04-20 17:40:05,441 [Worker-8] INFO  o.e.m.c.i.embedder.EclipseLogger - Copying 0 resource
+2016-04-20 17:40:05,442 [Worker-8] INFO  o.e.m.c.i.embedder.EclipseLogger - Using 'UTF-8' encoding to copy filtered resources.
+2016-04-20 17:40:05,443 [Worker-8] INFO  o.e.m.c.i.embedder.EclipseLogger - skip non existing resourceDirectory /home/imasa/git/github/JEntigrator/src/test/resources
+2016-04-20 17:40:14,064 [Worker-14] INFO  o.e.m.c.i.embedder.EclipseLogger - Using 'UTF-8' encoding to copy filtered resources.
+2016-04-20 17:40:14,064 [Worker-14] INFO  o.e.m.c.i.embedder.EclipseLogger - Copying 0 resource
+2016-04-20 17:40:14,066 [Worker-14] INFO  o.e.m.c.i.embedder.EclipseLogger - Using 'UTF-8' encoding to copy filtered resources.
+2016-04-20 17:40:14,066 [Worker-14] INFO  o.e.m.c.i.embedder.EclipseLogger - skip non existing resourceDirectory /home/imasa/git/github/JEntigrator/src/test/resources
+2016-04-20 17:40:33,828 [Worker-8] INFO  o.e.m.c.i.embedder.EclipseLogger - Using 'UTF-8' encoding to copy filtered resources.
+2016-04-20 17:40:33,828 [Worker-8] INFO  o.e.m.c.i.embedder.EclipseLogger - Copying 0 resource
+2016-04-20 17:40:33,829 [Worker-8] INFO  o.e.m.c.i.embedder.EclipseLogger - Using 'UTF-8' encoding to copy filtered resources.
+2016-04-20 17:40:33,829 [Worker-8] INFO  o.e.m.c.i.embedder.EclipseLogger - skip non existing resourceDirectory /home/imasa/git/github/JEntigrator/src/test/resources
+2016-04-20 17:40:42,592 [Worker-5] INFO  o.e.m.c.i.embedder.EclipseLogger - Using 'UTF-8' encoding to copy filtered resources.
+2016-04-20 17:40:42,593 [Worker-5] INFO  o.e.m.c.i.embedder.EclipseLogger - Copying 0 resource
+2016-04-20 17:40:42,595 [Worker-5] INFO  o.e.m.c.i.embedder.EclipseLogger - Using 'UTF-8' encoding to copy filtered resources.
+2016-04-20 17:40:42,595 [Worker-5] INFO  o.e.m.c.i.embedder.EclipseLogger - skip non existing resourceDirectory /home/imasa/git/github/JEntigrator/src/test/resources
+2016-04-20 17:40:51,118 [Worker-13] INFO  o.e.m.c.i.embedder.EclipseLogger - Using 'UTF-8' encoding to copy filtered resources.
+2016-04-20 17:40:51,118 [Worker-13] INFO  o.e.m.c.i.embedder.EclipseLogger - Copying 0 resource
+2016-04-20 17:40:51,122 [Worker-13] INFO  o.e.m.c.i.embedder.EclipseLogger - Using 'UTF-8' encoding to copy filtered resources.
+2016-04-20 17:40:51,122 [Worker-13] INFO  o.e.m.c.i.embedder.EclipseLogger - skip non existing resourceDirectory /home/imasa/git/github/JEntigrator/src/test/resources
+2016-04-20 18:34:05,529 [Worker-5] INFO  o.e.m.c.i.l.LifecycleMappingFactory - Using org.eclipse.m2e.jdt.JarLifecycleMapping lifecycle mapping for MavenProject: JEntigrator:JEntigrator:0.0.1-SNAPSHOT @ /home/imasa/git/github/JEntigrator/pom.xml.
+2016-04-20 18:34:05,832 [Worker-5] INFO  o.e.m.c.i.embedder.EclipseLogger - Using 'UTF-8' encoding to copy filtered resources.
+2016-04-20 18:34:05,844 [Worker-5] INFO  o.e.m.c.i.embedder.EclipseLogger - Copying 55 resources
+2016-04-20 18:34:05,872 [Worker-5] INFO  o.e.m.c.i.embedder.EclipseLogger - Using 'UTF-8' encoding to copy filtered resources.
+2016-04-20 18:34:05,873 [Worker-5] INFO  o.e.m.c.i.embedder.EclipseLogger - skip non existing resourceDirectory /home/imasa/git/github/JEntigrator/src/test/resources
+2016-04-20 18:34:06,773 [Worker-2] INFO  o.e.m.c.i.l.LifecycleMappingFactory - Using org.eclipse.m2e.jdt.JarLifecycleMapping lifecycle mapping for MavenProject: Community:Community:0.0.1-SNAPSHOT @ /home/imasa/git/github/Community/pom.xml.
+2016-04-20 18:34:06,862 [Worker-2] WARN  o.e.m.c.i.embedder.EclipseLogger - Using platform encoding (UTF-8 actually) to copy filtered resources, i.e. build is platform dependent!
+2016-04-20 18:34:06,868 [Worker-2] INFO  o.e.m.c.i.embedder.EclipseLogger - Copying 7 resources
+2016-04-20 18:34:06,884 [Worker-2] WARN  o.e.m.c.i.embedder.EclipseLogger - Using platform encoding (UTF-8 actually) to copy filtered resources, i.e. build is platform dependent!
+2016-04-20 18:34:06,886 [Worker-2] INFO  o.e.m.c.i.embedder.EclipseLogger - skip non existing resourceDirectory /home/imasa/git/github/Community/src/test/resources
+2016-04-20 18:35:42,542 [Worker-20] INFO  o.e.m.c.i.l.LifecycleMappingFactory - Using org.eclipse.m2e.jdt.JarLifecycleMapping lifecycle mapping for MavenProject: JEntigrator:JEntigrator:0.0.1-SNAPSHOT @ /home/imasa/git/github/JEntigrator/pom.xml.
+2016-04-20 18:35:42,581 [Worker-20] INFO  o.e.m.c.i.embedder.EclipseLogger - Using 'UTF-8' encoding to copy filtered resources.
+2016-04-20 18:35:42,584 [Worker-20] INFO  o.e.m.c.i.embedder.EclipseLogger - Copying 0 resource
+2016-04-20 18:35:42,586 [Worker-20] INFO  o.e.m.c.i.embedder.EclipseLogger - Using 'UTF-8' encoding to copy filtered resources.
+2016-04-20 18:35:42,586 [Worker-20] INFO  o.e.m.c.i.embedder.EclipseLogger - skip non existing resourceDirectory /home/imasa/git/github/JEntigrator/src/test/resources
+2016-04-20 19:10:05,285 [Worker-26] INFO  o.e.m.c.i.l.LifecycleMappingFactory - Using org.eclipse.m2e.jdt.JarLifecycleMapping lifecycle mapping for MavenProject: JEntigrator:JEntigrator:0.0.1-SNAPSHOT @ /home/imasa/git/github/JEntigrator/pom.xml.
+2016-04-20 19:10:05,326 [Worker-26] INFO  o.e.m.c.i.embedder.EclipseLogger - Using 'UTF-8' encoding to copy filtered resources.
+2016-04-20 19:10:05,327 [Worker-26] INFO  o.e.m.c.i.embedder.EclipseLogger - Copying 0 resource
+2016-04-20 19:10:05,329 [Worker-26] INFO  o.e.m.c.i.embedder.EclipseLogger - Using 'UTF-8' encoding to copy filtered resources.
+2016-04-20 19:10:05,329 [Worker-26] INFO  o.e.m.c.i.embedder.EclipseLogger - skip non existing resourceDirectory /home/imasa/git/github/JEntigrator/src/test/resources
+2016-04-20 19:10:05,588 [Worker-26] WARN  o.e.m.c.i.embedder.EclipseLogger - Using platform encoding (UTF-8 actually) to copy filtered resources, i.e. build is platform dependent!
+2016-04-20 19:10:05,592 [Worker-26] INFO  o.e.m.c.i.embedder.EclipseLogger - Copying 7 resources
+2016-04-20 19:10:05,597 [Worker-26] WARN  o.e.m.c.i.embedder.EclipseLogger - Using platform encoding (UTF-8 actually) to copy filtered resources, i.e. build is platform dependent!
+2016-04-20 19:10:05,597 [Worker-26] INFO  o.e.m.c.i.embedder.EclipseLogger - skip non existing resourceDirectory /home/imasa/git/github/Community/src/test/resources
+2016-04-20 19:10:59,567 [Worker-29] INFO  o.e.m.c.i.l.LifecycleMappingFactory - Using org.eclipse.m2e.jdt.JarLifecycleMapping lifecycle mapping for MavenProject: JEntigrator:JEntigrator:0.0.1-SNAPSHOT @ /home/imasa/git/github/JEntigrator/pom.xml.
+2016-04-20 19:10:59,600 [Worker-29] INFO  o.e.m.c.i.embedder.EclipseLogger - Using 'UTF-8' encoding to copy filtered resources.
+2016-04-20 19:10:59,601 [Worker-29] INFO  o.e.m.c.i.embedder.EclipseLogger - Copying 0 resource
+2016-04-20 19:10:59,602 [Worker-29] INFO  o.e.m.c.i.embedder.EclipseLogger - Using 'UTF-8' encoding to copy filtered resources.
+2016-04-20 19:10:59,602 [Worker-29] INFO  o.e.m.c.i.embedder.EclipseLogger - skip non existing resourceDirectory /home/imasa/git/github/JEntigrator/src/test/resources
+2016-04-20 19:10:59,777 [Worker-29] WARN  o.e.m.c.i.embedder.EclipseLogger - Using platform encoding (UTF-8 actually) to copy filtered resources, i.e. build is platform dependent!
+2016-04-20 19:10:59,779 [Worker-29] INFO  o.e.m.c.i.embedder.EclipseLogger - Copying 7 resources
+2016-04-20 19:10:59,783 [Worker-29] WARN  o.e.m.c.i.embedder.EclipseLogger - Using platform encoding (UTF-8 actually) to copy filtered resources, i.e. build is platform dependent!
+2016-04-20 19:10:59,784 [Worker-29] INFO  o.e.m.c.i.embedder.EclipseLogger - skip non existing resourceDirectory /home/imasa/git/github/Community/src/test/resources
+2016-04-21 11:41:42,973 [Worker-6] INFO  o.e.m.c.i.l.LifecycleMappingFactory - Using org.eclipse.m2e.jdt.JarLifecycleMapping lifecycle mapping for MavenProject: JEntigrator:JEntigrator:0.0.1-SNAPSHOT @ /home/imasa/git/github/JEntigrator/pom.xml.
+2016-04-21 11:41:43,370 [Worker-6] INFO  o.e.m.c.i.embedder.EclipseLogger - Using 'UTF-8' encoding to copy filtered resources.
+2016-04-21 11:41:43,384 [Worker-6] INFO  o.e.m.c.i.embedder.EclipseLogger - Copying 55 resources
+2016-04-21 11:41:43,421 [Worker-6] INFO  o.e.m.c.i.embedder.EclipseLogger - Using 'UTF-8' encoding to copy filtered resources.
+2016-04-21 11:41:43,421 [Worker-6] INFO  o.e.m.c.i.embedder.EclipseLogger - skip non existing resourceDirectory /home/imasa/git/github/JEntigrator/src/test/resources
+2016-04-21 11:41:44,572 [Worker-7] INFO  o.e.m.c.i.l.LifecycleMappingFactory - Using org.eclipse.m2e.jdt.JarLifecycleMapping lifecycle mapping for MavenProject: Community:Community:0.0.1-SNAPSHOT @ /home/imasa/git/github/Community/pom.xml.
+2016-04-21 11:41:44,606 [Worker-7] WARN  o.e.m.c.i.embedder.EclipseLogger - Using platform encoding (UTF-8 actually) to copy filtered resources, i.e. build is platform dependent!
+2016-04-21 11:41:44,617 [Worker-7] INFO  o.e.m.c.i.embedder.EclipseLogger - Copying 7 resources
+2016-04-21 11:41:44,632 [Worker-7] WARN  o.e.m.c.i.embedder.EclipseLogger - Using platform encoding (UTF-8 actually) to copy filtered resources, i.e. build is platform dependent!
+2016-04-21 11:41:44,633 [Worker-7] INFO  o.e.m.c.i.embedder.EclipseLogger - skip non existing resourceDirectory /home/imasa/git/github/Community/src/test/resources
+2016-04-21 12:58:10,740 [Worker-29] INFO  o.e.m.c.i.l.LifecycleMappingFactory - Using org.eclipse.m2e.jdt.JarLifecycleMapping lifecycle mapping for MavenProject: com.github.imas-alex:JEntigrator:0.0.1-SNAPSHOT @ /home/imasa/git/github/JEntigrator/pom.xml.
+2016-04-21 12:58:10,786 [Worker-29] INFO  o.e.m.c.i.l.LifecycleMappingFactory - Using org.eclipse.m2e.jdt.JarLifecycleMapping lifecycle mapping for MavenProject: Community:Community:0.0.1-SNAPSHOT @ /home/imasa/git/github/Community/pom.xml.
+2016-04-21 12:58:10,861 [Worker-29] INFO  o.e.m.c.i.embedder.EclipseLogger - Using 'UTF-8' encoding to copy filtered resources.
+2016-04-21 12:58:10,862 [Worker-29] INFO  o.e.m.c.i.embedder.EclipseLogger - Copying 0 resource
+2016-04-21 12:58:10,864 [Worker-29] INFO  o.e.m.c.i.embedder.EclipseLogger - Using 'UTF-8' encoding to copy filtered resources.
+2016-04-21 12:58:10,864 [Worker-29] INFO  o.e.m.c.i.embedder.EclipseLogger - skip non existing resourceDirectory /home/imasa/git/github/JEntigrator/src/test/resources
+2016-04-21 12:58:11,045 [Worker-29] WARN  o.e.m.c.i.embedder.EclipseLogger - Using platform encoding (UTF-8 actually) to copy filtered resources, i.e. build is platform dependent!
+2016-04-21 12:58:11,049 [Worker-29] INFO  o.e.m.c.i.embedder.EclipseLogger - Copying 7 resources
+2016-04-21 12:58:11,056 [Worker-29] WARN  o.e.m.c.i.embedder.EclipseLogger - Using platform encoding (UTF-8 actually) to copy filtered resources, i.e. build is platform dependent!
+2016-04-21 12:58:11,057 [Worker-29] INFO  o.e.m.c.i.embedder.EclipseLogger - skip non existing resourceDirectory /home/imasa/git/github/Community/src/test/resources
+2016-04-21 13:47:22,577 [Worker-34] INFO  o.e.m.c.i.l.LifecycleMappingFactory - Using org.eclipse.m2e.jdt.JarLifecycleMapping lifecycle mapping for MavenProject: com.github.imas-alex:JEntigrator:0.0.1-SNAPSHOT @ /home/imasa/git/github/JEntigrator/pom.xml.
+2016-04-21 13:47:22,603 [Worker-34] INFO  o.e.m.c.i.embedder.EclipseLogger - Using 'UTF-8' encoding to copy filtered resources.
+2016-04-21 13:47:22,603 [Worker-34] INFO  o.e.m.c.i.embedder.EclipseLogger - Copying 0 resource
+2016-04-21 13:47:22,604 [Worker-34] INFO  o.e.m.c.i.embedder.EclipseLogger - Using 'UTF-8' encoding to copy filtered resources.
+2016-04-21 13:47:22,604 [Worker-34] INFO  o.e.m.c.i.embedder.EclipseLogger - skip non existing resourceDirectory /home/imasa/git/github/JEntigrator/src/test/resources
+2016-04-21 13:47:22,835 [Worker-34] WARN  o.e.m.c.i.embedder.EclipseLogger - Using platform encoding (UTF-8 actually) to copy filtered resources, i.e. build is platform dependent!
+2016-04-21 13:47:22,838 [Worker-34] INFO  o.e.m.c.i.embedder.EclipseLogger - Copying 7 resources
+2016-04-21 13:47:22,843 [Worker-34] WARN  o.e.m.c.i.embedder.EclipseLogger - Using platform encoding (UTF-8 actually) to copy filtered resources, i.e. build is platform dependent!
+2016-04-21 13:47:22,843 [Worker-34] INFO  o.e.m.c.i.embedder.EclipseLogger - skip non existing resourceDirectory /home/imasa/git/github/Community/src/test/resources
+2016-04-21 13:49:44,505 [Worker-36] INFO  o.e.m.c.i.l.LifecycleMappingFactory - Using org.eclipse.m2e.jdt.JarLifecycleMapping lifecycle mapping for MavenProject: com.github.imas-alex:JEntigrator:0.0.1-SNAPSHOT @ /home/imasa/git/github/JEntigrator/pom.xml.
+2016-04-21 13:49:44,529 [Worker-36] INFO  o.e.m.c.i.embedder.EclipseLogger - Using 'UTF-8' encoding to copy filtered resources.
+2016-04-21 13:49:44,529 [Worker-36] INFO  o.e.m.c.i.embedder.EclipseLogger - Copying 0 resource
+2016-04-21 13:49:44,530 [Worker-36] INFO  o.e.m.c.i.embedder.EclipseLogger - Using 'UTF-8' encoding to copy filtered resources.
+2016-04-21 13:49:44,530 [Worker-36] INFO  o.e.m.c.i.embedder.EclipseLogger - skip non existing resourceDirectory /home/imasa/git/github/JEntigrator/src/test/resources
+2016-04-21 13:53:37,765 [Worker-34] INFO  o.e.m.c.i.l.LifecycleMappingFactory - Using org.eclipse.m2e.jdt.JarLifecycleMapping lifecycle mapping for MavenProject: com.github.imas-alex:JEntigrator:0.0.1-SNAPSHOT @ /home/imasa/git/github/JEntigrator/pom.xml.
+2016-04-21 13:53:37,787 [Worker-34] INFO  o.e.m.c.i.embedder.EclipseLogger - Using 'UTF-8' encoding to copy filtered resources.
+2016-04-21 13:53:37,788 [Worker-34] INFO  o.e.m.c.i.embedder.EclipseLogger - Copying 0 resource
+2016-04-21 13:53:37,788 [Worker-34] INFO  o.e.m.c.i.embedder.EclipseLogger - Using 'UTF-8' encoding to copy filtered resources.
+2016-04-21 13:53:37,788 [Worker-34] INFO  o.e.m.c.i.embedder.EclipseLogger - skip non existing resourceDirectory /home/imasa/git/github/JEntigrator/src/test/resources
+2016-04-21 14:26:39,762 [Worker-40] INFO  o.e.m.c.i.embedder.EclipseLogger - Using 'UTF-8' encoding to copy filtered resources.
+2016-04-21 14:26:39,763 [Worker-40] INFO  o.e.m.c.i.embedder.EclipseLogger - Copying 0 resource
+2016-04-21 14:26:39,764 [Worker-40] INFO  o.e.m.c.i.embedder.EclipseLogger - Using 'UTF-8' encoding to copy filtered resources.
+2016-04-21 14:26:39,764 [Worker-40] INFO  o.e.m.c.i.embedder.EclipseLogger - skip non existing resourceDirectory /home/imasa/git/github/JEntigrator/src/test/resources
+2016-04-21 14:26:39,767 [Worker-40] WARN  o.e.m.c.i.embedder.EclipseLogger - Using platform encoding (UTF-8 actually) to copy filtered resources, i.e. build is platform dependent!
+2016-04-21 14:26:39,767 [Worker-40] INFO  o.e.m.c.i.embedder.EclipseLogger - Copying 0 resource
+2016-04-21 14:26:39,768 [Worker-40] WARN  o.e.m.c.i.embedder.EclipseLogger - Using platform encoding (UTF-8 actually) to copy filtered resources, i.e. build is platform dependent!
+2016-04-21 14:26:39,769 [Worker-40] INFO  o.e.m.c.i.embedder.EclipseLogger - skip non existing resourceDirectory /home/imasa/git/github/Community/src/test/resources
+2016-04-21 14:29:50,331 [Worker-40] INFO  o.e.m.c.i.l.LifecycleMappingFactory - Using org.eclipse.m2e.jdt.JarLifecycleMapping lifecycle mapping for MavenProject: com.github.imas-alex:JEntigrator:0.0.1-SNAPSHOT @ /home/imasa/git/github/JEntigrator/pom.xml.
+2016-04-21 14:29:50,372 [Worker-40] WARN  o.e.m.c.i.embedder.EclipseLogger - Using platform encoding (UTF-8 actually) to copy filtered resources, i.e. build is platform dependent!
+2016-04-21 14:29:50,373 [Worker-40] INFO  o.e.m.c.i.embedder.EclipseLogger - Copying 0 resource
+2016-04-21 14:29:50,373 [Worker-40] WARN  o.e.m.c.i.embedder.EclipseLogger - Using platform encoding (UTF-8 actually) to copy filtered resources, i.e. build is platform dependent!
+2016-04-21 14:29:50,373 [Worker-40] INFO  o.e.m.c.i.embedder.EclipseLogger - skip non existing resourceDirectory /home/imasa/git/github/JEntigrator/src/test/resources
+2016-04-21 15:32:00,518 [Worker-46] INFO  o.e.m.c.i.l.LifecycleMappingFactory - Using org.eclipse.m2e.jdt.JarLifecycleMapping lifecycle mapping for MavenProject: com.github.imas-alex:JEntigrator:0.0.1-SNAPSHOT @ /home/imasa/git/github/JEntigrator/pom.xml.
+2016-04-21 15:32:00,550 [Worker-46] WARN  o.e.m.c.i.embedder.EclipseLogger - Using platform encoding (UTF-8 actually) to copy filtered resources, i.e. build is platform dependent!
+2016-04-21 15:32:00,551 [Worker-46] INFO  o.e.m.c.i.embedder.EclipseLogger - Copying 0 resource
+2016-04-21 15:32:00,553 [Worker-46] WARN  o.e.m.c.i.embedder.EclipseLogger - Using platform encoding (UTF-8 actually) to copy filtered resources, i.e. build is platform dependent!
+2016-04-21 15:32:00,555 [Worker-46] INFO  o.e.m.c.i.embedder.EclipseLogger - skip non existing resourceDirectory /home/imasa/git/github/JEntigrator/src/test/resources
+2016-04-21 15:35:29,755 [Worker-48] INFO  o.e.m.c.i.l.LifecycleMappingFactory - Using org.eclipse.m2e.jdt.JarLifecycleMapping lifecycle mapping for MavenProject: com.github.imas-alex:JEntigrator:0.0.1-SNAPSHOT @ /home/imasa/git/github/JEntigrator/pom.xml.
+2016-04-21 15:35:29,778 [Worker-48] WARN  o.e.m.c.i.embedder.EclipseLogger - Using platform encoding (UTF-8 actually) to copy filtered resources, i.e. build is platform dependent!
+2016-04-21 15:35:29,778 [Worker-48] INFO  o.e.m.c.i.embedder.EclipseLogger - Copying 0 resource
+2016-04-21 15:35:29,779 [Worker-48] WARN  o.e.m.c.i.embedder.EclipseLogger - Using platform encoding (UTF-8 actually) to copy filtered resources, i.e. build is platform dependent!
+2016-04-21 15:35:29,779 [Worker-48] INFO  o.e.m.c.i.embedder.EclipseLogger - skip non existing resourceDirectory /home/imasa/git/github/JEntigrator/src/test/resources
+2016-04-21 15:41:37,711 [Worker-48] INFO  o.e.m.c.i.l.LifecycleMappingFactory - Using org.eclipse.m2e.jdt.JarLifecycleMapping lifecycle mapping for MavenProject: com.github.imas-alex:JEntigrator:0.0.1 @ /home/imasa/git/github/JEntigrator/pom.xml.
+2016-04-21 15:41:38,029 [Worker-43] INFO  o.e.m.c.i.e.AbstractTransferListenerAdapter - Downloaded https://repo.maven.apache.org/maven2/com/github/imas-alex/JEntigrator/0.0.1/JEntigrator-0.0.1.pom
+2016-04-21 15:41:38,033 [Worker-43] WARN  o.e.m.c.i.embedder.EclipseLogger - The POM for com.github.imas-alex:JEntigrator:jar:0.0.1 is missing, no dependency information available
+2016-04-21 15:41:38,035 [Worker-48] WARN  o.e.m.c.i.embedder.EclipseLogger - The POM for com.github.imas-alex:JEntigrator:jar:0.0.1 is missing, no dependency information available
+2016-04-21 15:41:38,160 [Worker-48] INFO  o.e.m.c.i.e.AbstractTransferListenerAdapter - Downloaded https://repo.maven.apache.org/maven2/com/github/imas-alex/JEntigrator/0.0.1/JEntigrator-0.0.1.jar
+2016-04-21 15:41:38,198 [Worker-48] WARN  o.e.m.c.i.embedder.EclipseLogger - Using platform encoding (UTF-8 actually) to copy filtered resources, i.e. build is platform dependent!
+2016-04-21 15:41:38,198 [Worker-48] INFO  o.e.m.c.i.embedder.EclipseLogger - Copying 0 resource
+2016-04-21 15:41:38,201 [Worker-48] WARN  o.e.m.c.i.embedder.EclipseLogger - Using platform encoding (UTF-8 actually) to copy filtered resources, i.e. build is platform dependent!
+2016-04-21 15:41:38,201 [Worker-48] INFO  o.e.m.c.i.embedder.EclipseLogger - skip non existing resourceDirectory /home/imasa/git/github/JEntigrator/src/test/resources
+2016-04-21 15:41:57,227 [Worker-47] INFO  o.e.m.c.i.l.LifecycleMappingFactory - Using org.eclipse.m2e.jdt.JarLifecycleMapping lifecycle mapping for MavenProject: com.github.imas-alex:JEntigrator:0.0.1 @ /home/imasa/git/github/JEntigrator/pom.xml.
+2016-04-21 15:41:57,257 [Worker-47] WARN  o.e.m.c.i.embedder.EclipseLogger - Using platform encoding (UTF-8 actually) to copy filtered resources, i.e. build is platform dependent!
+2016-04-21 15:41:57,258 [Worker-47] INFO  o.e.m.c.i.embedder.EclipseLogger - Copying 0 resource
+2016-04-21 15:41:57,258 [Worker-47] WARN  o.e.m.c.i.embedder.EclipseLogger - Using platform encoding (UTF-8 actually) to copy filtered resources, i.e. build is platform dependent!
+2016-04-21 15:41:57,259 [Worker-47] INFO  o.e.m.c.i.embedder.EclipseLogger - skip non existing resourceDirectory /home/imasa/git/github/JEntigrator/src/test/resources
+2016-04-21 15:53:24,721 [Worker-48] INFO  o.e.m.c.i.l.LifecycleMappingFactory - Using org.eclipse.m2e.jdt.JarLifecycleMapping lifecycle mapping for MavenProject: com.github.imas-alex:JEntigrator:SNAPSHOT-0.0.1 @ /home/imasa/git/github/JEntigrator/pom.xml.
+2016-04-21 15:53:24,775 [Worker-48] WARN  o.e.m.c.i.embedder.EclipseLogger - Using platform encoding (UTF-8 actually) to copy filtered resources, i.e. build is platform dependent!
+2016-04-21 15:53:24,776 [Worker-48] INFO  o.e.m.c.i.embedder.EclipseLogger - Copying 0 resource
+2016-04-21 15:53:24,777 [Worker-48] WARN  o.e.m.c.i.embedder.EclipseLogger - Using platform encoding (UTF-8 actually) to copy filtered resources, i.e. build is platform dependent!
+2016-04-21 15:53:24,778 [Worker-48] INFO  o.e.m.c.i.embedder.EclipseLogger - skip non existing resourceDirectory /home/imasa/git/github/JEntigrator/src/test/resources
+2016-04-21 16:00:45,006 [Worker-47] INFO  o.e.m.c.i.l.LifecycleMappingFactory - Using org.eclipse.m2e.jdt.JarLifecycleMapping lifecycle mapping for MavenProject: com.github.imas-alex:JEntigrator:0.0.1-SNAPSHOT @ /home/imasa/git/github/JEntigrator/pom.xml.
+2016-04-21 16:00:45,050 [Worker-47] WARN  o.e.m.c.i.embedder.EclipseLogger - Using platform encoding (UTF-8 actually) to copy filtered resources, i.e. build is platform dependent!
+2016-04-21 16:00:45,050 [Worker-47] INFO  o.e.m.c.i.embedder.EclipseLogger - Copying 0 resource
+2016-04-21 16:00:45,051 [Worker-47] WARN  o.e.m.c.i.embedder.EclipseLogger - Using platform encoding (UTF-8 actually) to copy filtered resources, i.e. build is platform dependent!
+2016-04-21 16:00:45,052 [Worker-47] INFO  o.e.m.c.i.embedder.EclipseLogger - skip non existing resourceDirectory /home/imasa/git/github/JEntigrator/src/test/resources
+2016-04-21 16:23:08,459 [Worker-56] INFO  o.e.m.c.i.l.LifecycleMappingFactory - Using org.eclipse.m2e.jdt.JarLifecycleMapping lifecycle mapping for MavenProject: com.github.imas-alex:JEntigrator:0.0.3-SNAPSHOT @ /home/imasa/git/github/JEntigrator/pom.xml.
+2016-04-21 16:23:08,506 [Worker-56] WARN  o.e.m.c.i.embedder.EclipseLogger - Using platform encoding (UTF-8 actually) to copy filtered resources, i.e. build is platform dependent!
+2016-04-21 16:23:08,508 [Worker-56] INFO  o.e.m.c.i.embedder.EclipseLogger - Copying 55 resources
+2016-04-21 16:23:08,510 [Worker-56] WARN  o.e.m.c.i.embedder.EclipseLogger - Using platform encoding (UTF-8 actually) to copy filtered resources, i.e. build is platform dependent!
+2016-04-21 16:23:08,511 [Worker-56] INFO  o.e.m.c.i.embedder.EclipseLogger - skip non existing resourceDirectory /home/imasa/git/github/JEntigrator/src/test/resources
+2016-04-21 16:23:08,516 [Worker-56] WARN  o.e.m.c.i.embedder.EclipseLogger - Using platform encoding (UTF-8 actually) to copy filtered resources, i.e. build is platform dependent!
+2016-04-21 16:23:08,517 [Worker-56] INFO  o.e.m.c.i.embedder.EclipseLogger - Copying 0 resource
+2016-04-21 16:23:08,519 [Worker-56] WARN  o.e.m.c.i.embedder.EclipseLogger - Using platform encoding (UTF-8 actually) to copy filtered resources, i.e. build is platform dependent!
+2016-04-21 16:23:08,519 [Worker-56] INFO  o.e.m.c.i.embedder.EclipseLogger - skip non existing resourceDirectory /home/imasa/git/github/Community/src/test/resources
+2016-04-21 16:24:42,287 [Worker-53] WARN  o.e.m.c.i.embedder.EclipseLogger - Using platform encoding (UTF-8 actually) to copy filtered resources, i.e. build is platform dependent!
+2016-04-21 16:24:42,291 [Worker-53] INFO  o.e.m.c.i.embedder.EclipseLogger - Copying 55 resources
+2016-04-21 16:24:42,294 [Worker-53] WARN  o.e.m.c.i.embedder.EclipseLogger - Using platform encoding (UTF-8 actually) to copy filtered resources, i.e. build is platform dependent!
+2016-04-21 16:24:42,295 [Worker-53] INFO  o.e.m.c.i.embedder.EclipseLogger - skip non existing resourceDirectory /home/imasa/git/github/JEntigrator/src/test/resources
+2016-04-21 16:25:26,675 [Worker-53] WARN  o.e.m.c.i.embedder.EclipseLogger - Using platform encoding (UTF-8 actually) to copy filtered resources, i.e. build is platform dependent!
+2016-04-21 16:25:26,678 [Worker-53] INFO  o.e.m.c.i.embedder.EclipseLogger - Copying 55 resources
+2016-04-21 16:25:26,681 [Worker-53] WARN  o.e.m.c.i.embedder.EclipseLogger - Using platform encoding (UTF-8 actually) to copy filtered resources, i.e. build is platform dependent!
+2016-04-21 16:25:26,682 [Worker-53] INFO  o.e.m.c.i.embedder.EclipseLogger - skip non existing resourceDirectory /home/imasa/git/github/JEntigrator/src/test/resources
+2016-04-21 16:27:13,622 [Worker-56] WARN  o.e.m.c.i.embedder.EclipseLogger - Using platform encoding (UTF-8 actually) to copy filtered resources, i.e. build is platform dependent!
+2016-04-21 16:27:13,628 [Worker-56] INFO  o.e.m.c.i.embedder.EclipseLogger - Copying 55 resources
+2016-04-21 16:27:13,633 [Worker-56] WARN  o.e.m.c.i.embedder.EclipseLogger - Using platform encoding (UTF-8 actually) to copy filtered resources, i.e. build is platform dependent!
+2016-04-21 16:27:13,634 [Worker-56] INFO  o.e.m.c.i.embedder.EclipseLogger - skip non existing resourceDirectory /home/imasa/git/github/JEntigrator/src/test/resources
+2016-04-21 16:27:47,374 [Worker-52] WARN  o.e.m.c.i.embedder.EclipseLogger - Using platform encoding (UTF-8 actually) to copy filtered resources, i.e. build is platform dependent!
+2016-04-21 16:27:47,382 [Worker-52] INFO  o.e.m.c.i.embedder.EclipseLogger - Copying 55 resources
+2016-04-21 16:27:47,386 [Worker-52] WARN  o.e.m.c.i.embedder.EclipseLogger - Using platform encoding (UTF-8 actually) to copy filtered resources, i.e. build is platform dependent!
+2016-04-21 16:27:47,387 [Worker-52] INFO  o.e.m.c.i.embedder.EclipseLogger - skip non existing resourceDirectory /home/imasa/git/github/JEntigrator/src/test/resources
+2016-04-21 16:28:16,482 [Worker-53] WARN  o.e.m.c.i.embedder.EclipseLogger - Using platform encoding (UTF-8 actually) to copy filtered resources, i.e. build is platform dependent!
+2016-04-21 16:28:16,487 [Worker-53] INFO  o.e.m.c.i.embedder.EclipseLogger - Copying 55 resources
+2016-04-21 16:28:16,489 [Worker-53] WARN  o.e.m.c.i.embedder.EclipseLogger - Using platform encoding (UTF-8 actually) to copy filtered resources, i.e. build is platform dependent!
+2016-04-21 16:28:16,489 [Worker-53] INFO  o.e.m.c.i.embedder.EclipseLogger - skip non existing resourceDirectory /home/imasa/git/github/JEntigrator/src/test/resources
+2016-04-21 16:28:56,148 [Worker-51] WARN  o.e.m.c.i.embedder.EclipseLogger - Using platform encoding (UTF-8 actually) to copy filtered resources, i.e. build is platform dependent!
+2016-04-21 16:28:56,152 [Worker-51] INFO  o.e.m.c.i.embedder.EclipseLogger - Copying 55 resources
+2016-04-21 16:28:56,159 [Worker-51] WARN  o.e.m.c.i.embedder.EclipseLogger - Using platform encoding (UTF-8 actually) to copy filtered resources, i.e. build is platform dependent!
+2016-04-21 16:28:56,160 [Worker-51] INFO  o.e.m.c.i.embedder.EclipseLogger - skip non existing resourceDirectory /home/imasa/git/github/JEntigrator/src/test/resources
+2016-04-21 16:29:05,903 [Worker-53] WARN  o.e.m.c.i.embedder.EclipseLogger - Using platform encoding (UTF-8 actually) to copy filtered resources, i.e. build is platform dependent!
+2016-04-21 16:29:05,905 [Worker-53] INFO  o.e.m.c.i.embedder.EclipseLogger - Copying 55 resources
+2016-04-21 16:29:05,906 [Worker-53] WARN  o.e.m.c.i.embedder.EclipseLogger - Using platform encoding (UTF-8 actually) to copy filtered resources, i.e. build is platform dependent!
+2016-04-21 16:29:05,906 [Worker-53] INFO  o.e.m.c.i.embedder.EclipseLogger - skip non existing resourceDirectory /home/imasa/git/github/JEntigrator/src/test/resources
+2016-04-21 16:29:17,677 [Worker-56] WARN  o.e.m.c.i.embedder.EclipseLogger - Using platform encoding (UTF-8 actually) to copy filtered resources, i.e. build is platform dependent!
+2016-04-21 16:29:17,679 [Worker-56] INFO  o.e.m.c.i.embedder.EclipseLogger - Copying 55 resources
+2016-04-21 16:29:17,682 [Worker-56] WARN  o.e.m.c.i.embedder.EclipseLogger - Using platform encoding (UTF-8 actually) to copy filtered resources, i.e. build is platform dependent!
+2016-04-21 16:29:17,683 [Worker-56] INFO  o.e.m.c.i.embedder.EclipseLogger - skip non existing resourceDirectory /home/imasa/git/github/JEntigrator/src/test/resources
+2016-04-21 16:29:59,194 [Worker-51] WARN  o.e.m.c.i.embedder.EclipseLogger - Using platform encoding (UTF-8 actually) to copy filtered resources, i.e. build is platform dependent!
+2016-04-21 16:29:59,197 [Worker-51] INFO  o.e.m.c.i.embedder.EclipseLogger - Copying 55 resources
+2016-04-21 16:29:59,200 [Worker-51] WARN  o.e.m.c.i.embedder.EclipseLogger - Using platform encoding (UTF-8 actually) to copy filtered resources, i.e. build is platform dependent!
+2016-04-21 16:29:59,200 [Worker-51] INFO  o.e.m.c.i.embedder.EclipseLogger - skip non existing resourceDirectory /home/imasa/git/github/JEntigrator/src/test/resources
+2016-04-21 16:31:31,273 [Worker-57] WARN  o.e.m.c.i.embedder.EclipseLogger - Using platform encoding (UTF-8 actually) to copy filtered resources, i.e. build is platform dependent!
+2016-04-21 16:31:31,276 [Worker-57] INFO  o.e.m.c.i.embedder.EclipseLogger - Copying 55 resources
+2016-04-21 16:31:31,278 [Worker-57] WARN  o.e.m.c.i.embedder.EclipseLogger - Using platform encoding (UTF-8 actually) to copy filtered resources, i.e. build is platform dependent!
+2016-04-21 16:31:31,278 [Worker-57] INFO  o.e.m.c.i.embedder.EclipseLogger - skip non existing resourceDirectory /home/imasa/git/github/JEntigrator/src/test/resources
+2016-04-21 16:32:01,046 [Worker-56] WARN  o.e.m.c.i.embedder.EclipseLogger - Using platform encoding (UTF-8 actually) to copy filtered resources, i.e. build is platform dependent!
+2016-04-21 16:32:01,053 [Worker-56] INFO  o.e.m.c.i.embedder.EclipseLogger - Copying 55 resources
+2016-04-21 16:32:01,055 [Worker-56] WARN  o.e.m.c.i.embedder.EclipseLogger - Using platform encoding (UTF-8 actually) to copy filtered resources, i.e. build is platform dependent!
+2016-04-21 16:32:01,056 [Worker-56] INFO  o.e.m.c.i.embedder.EclipseLogger - skip non existing resourceDirectory /home/imasa/git/github/JEntigrator/src/test/resources
+2016-04-21 16:32:58,900 [Worker-56] WARN  o.e.m.c.i.embedder.EclipseLogger - Using platform encoding (UTF-8 actually) to copy filtered resources, i.e. build is platform dependent!
+2016-04-21 16:32:58,906 [Worker-56] INFO  o.e.m.c.i.embedder.EclipseLogger - Copying 55 resources
+2016-04-21 16:32:58,908 [Worker-56] WARN  o.e.m.c.i.embedder.EclipseLogger - Using platform encoding (UTF-8 actually) to copy filtered resources, i.e. build is platform dependent!
+2016-04-21 16:32:58,909 [Worker-56] INFO  o.e.m.c.i.embedder.EclipseLogger - skip non existing resourceDirectory /home/imasa/git/github/JEntigrator/src/test/resources
+2016-04-21 16:33:31,832 [Worker-52] WARN  o.e.m.c.i.embedder.EclipseLogger - Using platform encoding (UTF-8 actually) to copy filtered resources, i.e. build is platform dependent!
+2016-04-21 16:33:31,838 [Worker-52] INFO  o.e.m.c.i.embedder.EclipseLogger - Copying 55 resources
+2016-04-21 16:33:31,840 [Worker-52] WARN  o.e.m.c.i.embedder.EclipseLogger - Using platform encoding (UTF-8 actually) to copy filtered resources, i.e. build is platform dependent!
+2016-04-21 16:33:31,840 [Worker-52] INFO  o.e.m.c.i.embedder.EclipseLogger - skip non existing resourceDirectory /home/imasa/git/github/JEntigrator/src/test/resources
+2016-04-21 16:34:17,857 [Worker-56] WARN  o.e.m.c.i.embedder.EclipseLogger - Using platform encoding (UTF-8 actually) to copy filtered resources, i.e. build is platform dependent!
+2016-04-21 16:34:17,859 [Worker-56] INFO  o.e.m.c.i.embedder.EclipseLogger - Copying 55 resources
+2016-04-21 16:34:17,864 [Worker-56] WARN  o.e.m.c.i.embedder.EclipseLogger - Using platform encoding (UTF-8 actually) to copy filtered resources, i.e. build is platform dependent!
+2016-04-21 16:34:17,865 [Worker-56] INFO  o.e.m.c.i.embedder.EclipseLogger - skip non existing resourceDirectory /home/imasa/git/github/JEntigrator/src/test/resources
+2016-04-21 16:35:22,285 [Worker-53] WARN  o.e.m.c.i.embedder.EclipseLogger - Using platform encoding (UTF-8 actually) to copy filtered resources, i.e. build is platform dependent!
+2016-04-21 16:35:22,288 [Worker-53] INFO  o.e.m.c.i.embedder.EclipseLogger - Copying 55 resources
+2016-04-21 16:35:22,291 [Worker-53] WARN  o.e.m.c.i.embedder.EclipseLogger - Using platform encoding (UTF-8 actually) to copy filtered resources, i.e. build is platform dependent!
+2016-04-21 16:35:22,292 [Worker-53] INFO  o.e.m.c.i.embedder.EclipseLogger - skip non existing resourceDirectory /home/imasa/git/github/JEntigrator/src/test/resources
+2016-04-21 16:36:39,836 [Worker-53] WARN  o.e.m.c.i.embedder.EclipseLogger - Using platform encoding (UTF-8 actually) to copy filtered resources, i.e. build is platform dependent!
+2016-04-21 16:36:39,838 [Worker-53] INFO  o.e.m.c.i.embedder.EclipseLogger - Copying 55 resources
+2016-04-21 16:36:39,839 [Worker-53] WARN  o.e.m.c.i.embedder.EclipseLogger - Using platform encoding (UTF-8 actually) to copy filtered resources, i.e. build is platform dependent!
+2016-04-21 16:36:39,840 [Worker-53] INFO  o.e.m.c.i.embedder.EclipseLogger - skip non existing resourceDirectory /home/imasa/git/github/JEntigrator/src/test/resources
+2016-04-21 16:37:21,580 [Worker-51] WARN  o.e.m.c.i.embedder.EclipseLogger - Using platform encoding (UTF-8 actually) to copy filtered resources, i.e. build is platform dependent!
+2016-04-21 16:37:21,582 [Worker-51] INFO  o.e.m.c.i.embedder.EclipseLogger - Copying 55 resources
+2016-04-21 16:37:21,583 [Worker-51] WARN  o.e.m.c.i.embedder.EclipseLogger - Using platform encoding (UTF-8 actually) to copy filtered resources, i.e. build is platform dependent!
+2016-04-21 16:37:21,584 [Worker-51] INFO  o.e.m.c.i.embedder.EclipseLogger - skip non existing resourceDirectory /home/imasa/git/github/JEntigrator/src/test/resources
+2016-04-21 16:38:08,079 [Worker-57] WARN  o.e.m.c.i.embedder.EclipseLogger - Using platform encoding (UTF-8 actually) to copy filtered resources, i.e. build is platform dependent!
+2016-04-21 16:38:08,082 [Worker-57] INFO  o.e.m.c.i.embedder.EclipseLogger - Copying 55 resources
+2016-04-21 16:38:08,085 [Worker-57] WARN  o.e.m.c.i.embedder.EclipseLogger - Using platform encoding (UTF-8 actually) to copy filtered resources, i.e. build is platform dependent!
+2016-04-21 16:38:08,087 [Worker-57] INFO  o.e.m.c.i.embedder.EclipseLogger - skip non existing resourceDirectory /home/imasa/git/github/JEntigrator/src/test/resources
+2016-04-21 16:38:46,790 [Worker-52] WARN  o.e.m.c.i.embedder.EclipseLogger - Using platform encoding (UTF-8 actually) to copy filtered resources, i.e. build is platform dependent!
+2016-04-21 16:38:46,792 [Worker-52] INFO  o.e.m.c.i.embedder.EclipseLogger - Copying 55 resources
+2016-04-21 16:38:46,794 [Worker-52] WARN  o.e.m.c.i.embedder.EclipseLogger - Using platform encoding (UTF-8 actually) to copy filtered resources, i.e. build is platform dependent!
+2016-04-21 16:38:46,794 [Worker-52] INFO  o.e.m.c.i.embedder.EclipseLogger - skip non existing resourceDirectory /home/imasa/git/github/JEntigrator/src/test/resources
+2016-04-21 16:39:40,719 [Worker-52] WARN  o.e.m.c.i.embedder.EclipseLogger - Using platform encoding (UTF-8 actually) to copy filtered resources, i.e. build is platform dependent!
+2016-04-21 16:39:40,723 [Worker-52] INFO  o.e.m.c.i.embedder.EclipseLogger - Copying 55 resources
+2016-04-21 16:39:40,725 [Worker-52] WARN  o.e.m.c.i.embedder.EclipseLogger - Using platform encoding (UTF-8 actually) to copy filtered resources, i.e. build is platform dependent!
+2016-04-21 16:39:40,725 [Worker-52] INFO  o.e.m.c.i.embedder.EclipseLogger - skip non existing resourceDirectory /home/imasa/git/github/JEntigrator/src/test/resources
+2016-04-21 16:40:46,046 [Worker-51] WARN  o.e.m.c.i.embedder.EclipseLogger - Using platform encoding (UTF-8 actually) to copy filtered resources, i.e. build is platform dependent!
+2016-04-21 16:40:46,048 [Worker-51] INFO  o.e.m.c.i.embedder.EclipseLogger - Copying 55 resources
+2016-04-21 16:40:46,049 [Worker-51] WARN  o.e.m.c.i.embedder.EclipseLogger - Using platform encoding (UTF-8 actually) to copy filtered resources, i.e. build is platform dependent!
+2016-04-21 16:40:46,049 [Worker-51] INFO  o.e.m.c.i.embedder.EclipseLogger - skip non existing resourceDirectory /home/imasa/git/github/JEntigrator/src/test/resources
+2016-04-21 22:28:11,073 [Worker-4] INFO  o.e.m.c.i.l.LifecycleMappingFactory - Using org.eclipse.m2e.jdt.JarLifecycleMapping lifecycle mapping for MavenProject: com.github.imas-alex:JEntigrator:0.0.3-SNAPSHOT @ /home/imasa/git/github/JEntigrator/pom.xml.
+2016-04-21 22:28:11,370 [Worker-4] INFO  o.e.m.c.i.l.LifecycleMappingFactory - Using org.eclipse.m2e.jdt.JarLifecycleMapping lifecycle mapping for MavenProject: Community:Community:0.0.1-SNAPSHOT @ /home/imasa/git/github/Community/pom.xml.
+2016-04-21 22:28:11,744 [Worker-4] WARN  o.e.m.c.i.embedder.EclipseLogger - Using platform encoding (UTF-8 actually) to copy filtered resources, i.e. build is platform dependent!
+2016-04-21 22:28:11,760 [Worker-4] INFO  o.e.m.c.i.embedder.EclipseLogger - Copying 55 resources
+2016-04-21 22:28:11,783 [Worker-4] WARN  o.e.m.c.i.embedder.EclipseLogger - Using platform encoding (UTF-8 actually) to copy filtered resources, i.e. build is platform dependent!
+2016-04-21 22:28:11,784 [Worker-4] INFO  o.e.m.c.i.embedder.EclipseLogger - skip non existing resourceDirectory /home/imasa/git/github/JEntigrator/src/test/resources
+2016-04-21 22:28:11,980 [Worker-6] WARN  o.e.m.c.i.embedder.EclipseLogger - Using platform encoding (UTF-8 actually) to copy filtered resources, i.e. build is platform dependent!
+2016-04-21 22:28:11,984 [Worker-6] INFO  o.e.m.c.i.embedder.EclipseLogger - Copying 7 resources
+2016-04-21 22:28:11,986 [Worker-6] WARN  o.e.m.c.i.embedder.EclipseLogger - Using platform encoding (UTF-8 actually) to copy filtered resources, i.e. build is platform dependent!
+2016-04-21 22:28:11,987 [Worker-6] INFO  o.e.m.c.i.embedder.EclipseLogger - skip non existing resourceDirectory /home/imasa/git/github/Community/src/test/resources
+2016-04-21 22:29:07,369 [Worker-6] WARN  o.e.m.c.i.embedder.EclipseLogger - Using platform encoding (UTF-8 actually) to copy filtered resources, i.e. build is platform dependent!
+2016-04-21 22:29:07,377 [Worker-6] INFO  o.e.m.c.i.embedder.EclipseLogger - Copying 55 resources
+2016-04-21 22:29:07,381 [Worker-6] WARN  o.e.m.c.i.embedder.EclipseLogger - Using platform encoding (UTF-8 actually) to copy filtered resources, i.e. build is platform dependent!
+2016-04-21 22:29:07,381 [Worker-6] INFO  o.e.m.c.i.embedder.EclipseLogger - skip non existing resourceDirectory /home/imasa/git/github/JEntigrator/src/test/resources
+2016-04-21 22:30:11,526 [Worker-9] WARN  o.e.m.c.i.embedder.EclipseLogger - Using platform encoding (UTF-8 actually) to copy filtered resources, i.e. build is platform dependent!
+2016-04-21 22:30:11,528 [Worker-9] INFO  o.e.m.c.i.embedder.EclipseLogger - Copying 55 resources
+2016-04-21 22:30:11,539 [Worker-9] WARN  o.e.m.c.i.embedder.EclipseLogger - Using platform encoding (UTF-8 actually) to copy filtered resources, i.e. build is platform dependent!
+2016-04-21 22:30:11,540 [Worker-9] INFO  o.e.m.c.i.embedder.EclipseLogger - skip non existing resourceDirectory /home/imasa/git/github/JEntigrator/src/test/resources
+2016-04-21 22:30:42,914 [Worker-5] WARN  o.e.m.c.i.embedder.EclipseLogger - Using platform encoding (UTF-8 actually) to copy filtered resources, i.e. build is platform dependent!
+2016-04-21 22:30:42,920 [Worker-5] INFO  o.e.m.c.i.embedder.EclipseLogger - Copying 55 resources
+2016-04-21 22:30:42,927 [Worker-5] WARN  o.e.m.c.i.embedder.EclipseLogger - Using platform encoding (UTF-8 actually) to copy filtered resources, i.e. build is platform dependent!
+2016-04-21 22:30:42,928 [Worker-5] INFO  o.e.m.c.i.embedder.EclipseLogger - skip non existing resourceDirectory /home/imasa/git/github/JEntigrator/src/test/resources
+2016-04-21 22:31:17,000 [Worker-6] WARN  o.e.m.c.i.embedder.EclipseLogger - Using platform encoding (UTF-8 actually) to copy filtered resources, i.e. build is platform dependent!
+2016-04-21 22:31:17,005 [Worker-6] INFO  o.e.m.c.i.embedder.EclipseLogger - Copying 55 resources
+2016-04-21 22:31:17,013 [Worker-6] WARN  o.e.m.c.i.embedder.EclipseLogger - Using platform encoding (UTF-8 actually) to copy filtered resources, i.e. build is platform dependent!
+2016-04-21 22:31:17,013 [Worker-6] INFO  o.e.m.c.i.embedder.EclipseLogger - skip non existing resourceDirectory /home/imasa/git/github/JEntigrator/src/test/resources
+2016-04-21 22:32:16,128 [Worker-6] WARN  o.e.m.c.i.embedder.EclipseLogger - Using platform encoding (UTF-8 actually) to copy filtered resources, i.e. build is platform dependent!
+2016-04-21 22:32:16,136 [Worker-6] INFO  o.e.m.c.i.embedder.EclipseLogger - Copying 55 resources
+2016-04-21 22:32:16,139 [Worker-6] WARN  o.e.m.c.i.embedder.EclipseLogger - Using platform encoding (UTF-8 actually) to copy filtered resources, i.e. build is platform dependent!
+2016-04-21 22:32:16,140 [Worker-6] INFO  o.e.m.c.i.embedder.EclipseLogger - skip non existing resourceDirectory /home/imasa/git/github/JEntigrator/src/test/resources
+2016-04-21 22:35:29,975 [Worker-15] WARN  o.e.m.c.i.embedder.EclipseLogger - Using platform encoding (UTF-8 actually) to copy filtered resources, i.e. build is platform dependent!
+2016-04-21 22:35:29,977 [Worker-15] INFO  o.e.m.c.i.embedder.EclipseLogger - Copying 55 resources
+2016-04-21 22:35:29,981 [Worker-15] WARN  o.e.m.c.i.embedder.EclipseLogger - Using platform encoding (UTF-8 actually) to copy filtered resources, i.e. build is platform dependent!
+2016-04-21 22:35:29,982 [Worker-15] INFO  o.e.m.c.i.embedder.EclipseLogger - skip non existing resourceDirectory /home/imasa/git/github/JEntigrator/src/test/resources
+2016-04-21 22:36:40,156 [Worker-1] WARN  o.e.m.c.i.embedder.EclipseLogger - Using platform encoding (UTF-8 actually) to copy filtered resources, i.e. build is platform dependent!
+2016-04-21 22:36:40,159 [Worker-1] INFO  o.e.m.c.i.embedder.EclipseLogger - Copying 55 resources
+2016-04-21 22:36:40,162 [Worker-1] WARN  o.e.m.c.i.embedder.EclipseLogger - Using platform encoding (UTF-8 actually) to copy filtered resources, i.e. build is platform dependent!
+2016-04-21 22:36:40,163 [Worker-1] INFO  o.e.m.c.i.embedder.EclipseLogger - skip non existing resourceDirectory /home/imasa/git/github/JEntigrator/src/test/resources
+2016-04-21 22:38:12,513 [Worker-1] WARN  o.e.m.c.i.embedder.EclipseLogger - Using platform encoding (UTF-8 actually) to copy filtered resources, i.e. build is platform dependent!
+2016-04-21 22:38:12,516 [Worker-1] INFO  o.e.m.c.i.embedder.EclipseLogger - Copying 55 resources
+2016-04-21 22:38:12,521 [Worker-1] WARN  o.e.m.c.i.embedder.EclipseLogger - Using platform encoding (UTF-8 actually) to copy filtered resources, i.e. build is platform dependent!
+2016-04-21 22:38:12,522 [Worker-1] INFO  o.e.m.c.i.embedder.EclipseLogger - skip non existing resourceDirectory /home/imasa/git/github/JEntigrator/src/test/resources
+2016-04-21 22:38:29,178 [Worker-2] WARN  o.e.m.c.i.embedder.EclipseLogger - Using platform encoding (UTF-8 actually) to copy filtered resources, i.e. build is platform dependent!
+2016-04-21 22:38:29,181 [Worker-2] INFO  o.e.m.c.i.embedder.EclipseLogger - Copying 55 resources
+2016-04-21 22:38:29,188 [Worker-2] WARN  o.e.m.c.i.embedder.EclipseLogger - Using platform encoding (UTF-8 actually) to copy filtered resources, i.e. build is platform dependent!
+2016-04-21 22:38:29,192 [Worker-2] INFO  o.e.m.c.i.embedder.EclipseLogger - skip non existing resourceDirectory /home/imasa/git/github/JEntigrator/src/test/resources
+2016-04-21 22:40:06,423 [Worker-15] WARN  o.e.m.c.i.embedder.EclipseLogger - Using platform encoding (UTF-8 actually) to copy filtered resources, i.e. build is platform dependent!
+2016-04-21 22:40:06,425 [Worker-15] INFO  o.e.m.c.i.embedder.EclipseLogger - Copying 55 resources
+2016-04-21 22:40:06,426 [Worker-15] WARN  o.e.m.c.i.embedder.EclipseLogger - Using platform encoding (UTF-8 actually) to copy filtered resources, i.e. build is platform dependent!
+2016-04-21 22:40:06,427 [Worker-15] INFO  o.e.m.c.i.embedder.EclipseLogger - skip non existing resourceDirectory /home/imasa/git/github/JEntigrator/src/test/resources
+2016-04-21 22:41:58,454 [Worker-10] WARN  o.e.m.c.i.embedder.EclipseLogger - Using platform encoding (UTF-8 actually) to copy filtered resources, i.e. build is platform dependent!
+2016-04-21 22:41:58,457 [Worker-10] INFO  o.e.m.c.i.embedder.EclipseLogger - Copying 55 resources
+2016-04-21 22:41:58,462 [Worker-10] WARN  o.e.m.c.i.embedder.EclipseLogger - Using platform encoding (UTF-8 actually) to copy filtered resources, i.e. build is platform dependent!
+2016-04-21 22:41:58,463 [Worker-10] INFO  o.e.m.c.i.embedder.EclipseLogger - skip non existing resourceDirectory /home/imasa/git/github/JEntigrator/src/test/resources
+2016-04-21 22:42:49,026 [Worker-15] WARN  o.e.m.c.i.embedder.EclipseLogger - Using platform encoding (UTF-8 actually) to copy filtered resources, i.e. build is platform dependent!
+2016-04-21 22:42:49,028 [Worker-15] INFO  o.e.m.c.i.embedder.EclipseLogger - Copying 55 resources
+2016-04-21 22:42:49,035 [Worker-15] WARN  o.e.m.c.i.embedder.EclipseLogger - Using platform encoding (UTF-8 actually) to copy filtered resources, i.e. build is platform dependent!
+2016-04-21 22:42:49,036 [Worker-15] INFO  o.e.m.c.i.embedder.EclipseLogger - skip non existing resourceDirectory /home/imasa/git/github/JEntigrator/src/test/resources
+2016-04-21 22:44:01,882 [Worker-10] WARN  o.e.m.c.i.embedder.EclipseLogger - Using platform encoding (UTF-8 actually) to copy filtered resources, i.e. build is platform dependent!
+2016-04-21 22:44:01,885 [Worker-10] INFO  o.e.m.c.i.embedder.EclipseLogger - Copying 55 resources
+2016-04-21 22:44:01,889 [Worker-10] WARN  o.e.m.c.i.embedder.EclipseLogger - Using platform encoding (UTF-8 actually) to copy filtered resources, i.e. build is platform dependent!
+2016-04-21 22:44:01,890 [Worker-10] INFO  o.e.m.c.i.embedder.EclipseLogger - skip non existing resourceDirectory /home/imasa/git/github/JEntigrator/src/test/resources
+2016-04-21 22:44:58,876 [Worker-1] WARN  o.e.m.c.i.embedder.EclipseLogger - Using platform encoding (UTF-8 actually) to copy filtered resources, i.e. build is platform dependent!
+2016-04-21 22:44:58,878 [Worker-1] INFO  o.e.m.c.i.embedder.EclipseLogger - Copying 55 resources
+2016-04-21 22:44:58,886 [Worker-1] WARN  o.e.m.c.i.embedder.EclipseLogger - Using platform encoding (UTF-8 actually) to copy filtered resources, i.e. build is platform dependent!
+2016-04-21 22:44:58,886 [Worker-1] INFO  o.e.m.c.i.embedder.EclipseLogger - skip non existing resourceDirectory /home/imasa/git/github/JEntigrator/src/test/resources
+2016-04-21 22:45:34,934 [Worker-11] WARN  o.e.m.c.i.embedder.EclipseLogger - Using platform encoding (UTF-8 actually) to copy filtered resources, i.e. build is platform dependent!
+2016-04-21 22:45:34,936 [Worker-11] INFO  o.e.m.c.i.embedder.EclipseLogger - Copying 55 resources
+2016-04-21 22:45:34,938 [Worker-11] WARN  o.e.m.c.i.embedder.EclipseLogger - Using platform encoding (UTF-8 actually) to copy filtered resources, i.e. build is platform dependent!
+2016-04-21 22:45:34,938 [Worker-11] INFO  o.e.m.c.i.embedder.EclipseLogger - skip non existing resourceDirectory /home/imasa/git/github/JEntigrator/src/test/resources
+2016-04-21 22:46:18,090 [Worker-6] WARN  o.e.m.c.i.embedder.EclipseLogger - Using platform encoding (UTF-8 actually) to copy filtered resources, i.e. build is platform dependent!
+2016-04-21 22:46:18,094 [Worker-6] INFO  o.e.m.c.i.embedder.EclipseLogger - Copying 55 resources
+2016-04-21 22:46:18,096 [Worker-6] WARN  o.e.m.c.i.embedder.EclipseLogger - Using platform encoding (UTF-8 actually) to copy filtered resources, i.e. build is platform dependent!
+2016-04-21 22:46:18,097 [Worker-6] INFO  o.e.m.c.i.embedder.EclipseLogger - skip non existing resourceDirectory /home/imasa/git/github/JEntigrator/src/test/resources
+2016-04-21 22:46:48,025 [Worker-11] WARN  o.e.m.c.i.embedder.EclipseLogger - Using platform encoding (UTF-8 actually) to copy filtered resources, i.e. build is platform dependent!
+2016-04-21 22:46:48,028 [Worker-11] INFO  o.e.m.c.i.embedder.EclipseLogger - Copying 55 resources
+2016-04-21 22:46:48,029 [Worker-11] WARN  o.e.m.c.i.embedder.EclipseLogger - Using platform encoding (UTF-8 actually) to copy filtered resources, i.e. build is platform dependent!
+2016-04-21 22:46:48,030 [Worker-11] INFO  o.e.m.c.i.embedder.EclipseLogger - skip non existing resourceDirectory /home/imasa/git/github/JEntigrator/src/test/resources
+2016-04-21 22:47:31,777 [Worker-2] WARN  o.e.m.c.i.embedder.EclipseLogger - Using platform encoding (UTF-8 actually) to copy filtered resources, i.e. build is platform dependent!
+2016-04-21 22:47:31,780 [Worker-2] INFO  o.e.m.c.i.embedder.EclipseLogger - Copying 55 resources
+2016-04-21 22:47:31,782 [Worker-2] WARN  o.e.m.c.i.embedder.EclipseLogger - Using platform encoding (UTF-8 actually) to copy filtered resources, i.e. build is platform dependent!
+2016-04-21 22:47:31,783 [Worker-2] INFO  o.e.m.c.i.embedder.EclipseLogger - skip non existing resourceDirectory /home/imasa/git/github/JEntigrator/src/test/resources
+2016-04-21 22:48:06,652 [Worker-11] WARN  o.e.m.c.i.embedder.EclipseLogger - Using platform encoding (UTF-8 actually) to copy filtered resources, i.e. build is platform dependent!
+2016-04-21 22:48:06,655 [Worker-11] INFO  o.e.m.c.i.embedder.EclipseLogger - Copying 55 resources
+2016-04-21 22:48:06,657 [Worker-11] WARN  o.e.m.c.i.embedder.EclipseLogger - Using platform encoding (UTF-8 actually) to copy filtered resources, i.e. build is platform dependent!
+2016-04-21 22:48:06,658 [Worker-11] INFO  o.e.m.c.i.embedder.EclipseLogger - skip non existing resourceDirectory /home/imasa/git/github/JEntigrator/src/test/resources
+2016-04-21 22:48:37,494 [Worker-2] WARN  o.e.m.c.i.embedder.EclipseLogger - Using platform encoding (UTF-8 actually) to copy filtered resources, i.e. build is platform dependent!
+2016-04-21 22:48:37,496 [Worker-2] INFO  o.e.m.c.i.embedder.EclipseLogger - Copying 55 resources
+2016-04-21 22:48:37,498 [Worker-2] WARN  o.e.m.c.i.embedder.EclipseLogger - Using platform encoding (UTF-8 actually) to copy filtered resources, i.e. build is platform dependent!
+2016-04-21 22:48:37,498 [Worker-2] INFO  o.e.m.c.i.embedder.EclipseLogger - skip non existing resourceDirectory /home/imasa/git/github/JEntigrator/src/test/resources
+2016-04-21 22:49:11,129 [Worker-2] WARN  o.e.m.c.i.embedder.EclipseLogger - Using platform encoding (UTF-8 actually) to copy filtered resources, i.e. build is platform dependent!
+2016-04-21 22:49:11,135 [Worker-2] INFO  o.e.m.c.i.embedder.EclipseLogger - Copying 55 resources
+2016-04-21 22:49:11,145 [Worker-2] WARN  o.e.m.c.i.embedder.EclipseLogger - Using platform encoding (UTF-8 actually) to copy filtered resources, i.e. build is platform dependent!
+2016-04-21 22:49:11,146 [Worker-2] INFO  o.e.m.c.i.embedder.EclipseLogger - skip non existing resourceDirectory /home/imasa/git/github/JEntigrator/src/test/resources
+2016-04-21 22:49:30,649 [Worker-15] WARN  o.e.m.c.i.embedder.EclipseLogger - Using platform encoding (UTF-8 actually) to copy filtered resources, i.e. build is platform dependent!
+2016-04-21 22:49:30,651 [Worker-15] INFO  o.e.m.c.i.embedder.EclipseLogger - Copying 55 resources
+2016-04-21 22:49:30,653 [Worker-15] WARN  o.e.m.c.i.embedder.EclipseLogger - Using platform encoding (UTF-8 actually) to copy filtered resources, i.e. build is platform dependent!
+2016-04-21 22:49:30,654 [Worker-15] INFO  o.e.m.c.i.embedder.EclipseLogger - skip non existing resourceDirectory /home/imasa/git/github/JEntigrator/src/test/resources
+2016-04-21 22:50:47,305 [Worker-1] WARN  o.e.m.c.i.embedder.EclipseLogger - Using platform encoding (UTF-8 actually) to copy filtered resources, i.e. build is platform dependent!
+2016-04-21 22:50:47,310 [Worker-1] INFO  o.e.m.c.i.embedder.EclipseLogger - Copying 55 resources
+2016-04-21 22:50:47,314 [Worker-1] WARN  o.e.m.c.i.embedder.EclipseLogger - Using platform encoding (UTF-8 actually) to copy filtered resources, i.e. build is platform dependent!
+2016-04-21 22:50:47,316 [Worker-1] INFO  o.e.m.c.i.embedder.EclipseLogger - skip non existing resourceDirectory /home/imasa/git/github/JEntigrator/src/test/resources
+2016-04-21 22:51:26,128 [Worker-10] WARN  o.e.m.c.i.embedder.EclipseLogger - Using platform encoding (UTF-8 actually) to copy filtered resources, i.e. build is platform dependent!
+2016-04-21 22:51:26,135 [Worker-10] INFO  o.e.m.c.i.embedder.EclipseLogger - Copying 55 resources
+2016-04-21 22:51:26,138 [Worker-10] WARN  o.e.m.c.i.embedder.EclipseLogger - Using platform encoding (UTF-8 actually) to copy filtered resources, i.e. build is platform dependent!
+2016-04-21 22:51:26,139 [Worker-10] INFO  o.e.m.c.i.embedder.EclipseLogger - skip non existing resourceDirectory /home/imasa/git/github/JEntigrator/src/test/resources
+2016-04-21 22:52:05,042 [Worker-15] WARN  o.e.m.c.i.embedder.EclipseLogger - Using platform encoding (UTF-8 actually) to copy filtered resources, i.e. build is platform dependent!
+2016-04-21 22:52:05,044 [Worker-15] INFO  o.e.m.c.i.embedder.EclipseLogger - Copying 55 resources
+2016-04-21 22:52:05,045 [Worker-15] WARN  o.e.m.c.i.embedder.EclipseLogger - Using platform encoding (UTF-8 actually) to copy filtered resources, i.e. build is platform dependent!
+2016-04-21 22:52:05,046 [Worker-15] INFO  o.e.m.c.i.embedder.EclipseLogger - skip non existing resourceDirectory /home/imasa/git/github/JEntigrator/src/test/resources
+2016-04-21 22:53:13,531 [Worker-10] WARN  o.e.m.c.i.embedder.EclipseLogger - Using platform encoding (UTF-8 actually) to copy filtered resources, i.e. build is platform dependent!
+2016-04-21 22:53:13,537 [Worker-10] INFO  o.e.m.c.i.embedder.EclipseLogger - Copying 55 resources
+2016-04-21 22:53:13,539 [Worker-10] WARN  o.e.m.c.i.embedder.EclipseLogger - Using platform encoding (UTF-8 actually) to copy filtered resources, i.e. build is platform dependent!
+2016-04-21 22:53:13,539 [Worker-10] INFO  o.e.m.c.i.embedder.EclipseLogger - skip non existing resourceDirectory /home/imasa/git/github/JEntigrator/src/test/resources
+2016-04-21 22:53:56,123 [Worker-10] WARN  o.e.m.c.i.embedder.EclipseLogger - Using platform encoding (UTF-8 actually) to copy filtered resources, i.e. build is platform dependent!
+2016-04-21 22:53:56,125 [Worker-10] INFO  o.e.m.c.i.embedder.EclipseLogger - Copying 55 resources
+2016-04-21 22:53:56,125 [Worker-10] WARN  o.e.m.c.i.embedder.EclipseLogger - Using platform encoding (UTF-8 actually) to copy filtered resources, i.e. build is platform dependent!
+2016-04-21 22:53:56,126 [Worker-10] INFO  o.e.m.c.i.embedder.EclipseLogger - skip non existing resourceDirectory /home/imasa/git/github/JEntigrator/src/test/resources
+2016-04-21 22:54:18,537 [Worker-10] WARN  o.e.m.c.i.embedder.EclipseLogger - Using platform encoding (UTF-8 actually) to copy filtered resources, i.e. build is platform dependent!
+2016-04-21 22:54:18,538 [Worker-10] INFO  o.e.m.c.i.embedder.EclipseLogger - Copying 55 resources
+2016-04-21 22:54:18,540 [Worker-10] WARN  o.e.m.c.i.embedder.EclipseLogger - Using platform encoding (UTF-8 actually) to copy filtered resources, i.e. build is platform dependent!
+2016-04-21 22:54:18,540 [Worker-10] INFO  o.e.m.c.i.embedder.EclipseLogger - skip non existing resourceDirectory /home/imasa/git/github/JEntigrator/src/test/resources
+2016-04-21 22:55:45,456 [Worker-2] WARN  o.e.m.c.i.embedder.EclipseLogger - Using platform encoding (UTF-8 actually) to copy filtered resources, i.e. build is platform dependent!
+2016-04-21 22:55:45,461 [Worker-2] INFO  o.e.m.c.i.embedder.EclipseLogger - Copying 55 resources
+2016-04-21 22:55:45,463 [Worker-2] WARN  o.e.m.c.i.embedder.EclipseLogger - Using platform encoding (UTF-8 actually) to copy filtered resources, i.e. build is platform dependent!
+2016-04-21 22:55:45,464 [Worker-2] INFO  o.e.m.c.i.embedder.EclipseLogger - skip non existing resourceDirectory /home/imasa/git/github/JEntigrator/src/test/resources
+2016-04-21 22:56:48,118 [Worker-11] WARN  o.e.m.c.i.embedder.EclipseLogger - Using platform encoding (UTF-8 actually) to copy filtered resources, i.e. build is platform dependent!
+2016-04-21 22:56:48,120 [Worker-11] INFO  o.e.m.c.i.embedder.EclipseLogger - Copying 55 resources
+2016-04-21 22:56:48,122 [Worker-11] WARN  o.e.m.c.i.embedder.EclipseLogger - Using platform encoding (UTF-8 actually) to copy filtered resources, i.e. build is platform dependent!
+2016-04-21 22:56:48,124 [Worker-11] INFO  o.e.m.c.i.embedder.EclipseLogger - skip non existing resourceDirectory /home/imasa/git/github/JEntigrator/src/test/resources
+2016-04-21 22:57:31,750 [Worker-11] WARN  o.e.m.c.i.embedder.EclipseLogger - Using platform encoding (UTF-8 actually) to copy filtered resources, i.e. build is platform dependent!
+2016-04-21 22:57:31,757 [Worker-11] INFO  o.e.m.c.i.embedder.EclipseLogger - Copying 55 resources
+2016-04-21 22:57:31,761 [Worker-11] WARN  o.e.m.c.i.embedder.EclipseLogger - Using platform encoding (UTF-8 actually) to copy filtered resources, i.e. build is platform dependent!
+2016-04-21 22:57:31,764 [Worker-11] INFO  o.e.m.c.i.embedder.EclipseLogger - skip non existing resourceDirectory /home/imasa/git/github/JEntigrator/src/test/resources
+2016-04-21 22:58:15,084 [Worker-10] WARN  o.e.m.c.i.embedder.EclipseLogger - Using platform encoding (UTF-8 actually) to copy filtered resources, i.e. build is platform dependent!
+2016-04-21 22:58:15,086 [Worker-10] INFO  o.e.m.c.i.embedder.EclipseLogger - Copying 55 resources
+2016-04-21 22:58:15,090 [Worker-10] WARN  o.e.m.c.i.embedder.EclipseLogger - Using platform encoding (UTF-8 actually) to copy filtered resources, i.e. build is platform dependent!
+2016-04-21 22:58:15,090 [Worker-10] INFO  o.e.m.c.i.embedder.EclipseLogger - skip non existing resourceDirectory /home/imasa/git/github/JEntigrator/src/test/resources
+2016-04-21 23:00:26,744 [Worker-10] WARN  o.e.m.c.i.embedder.EclipseLogger - Using platform encoding (UTF-8 actually) to copy filtered resources, i.e. build is platform dependent!
+2016-04-21 23:00:26,750 [Worker-10] INFO  o.e.m.c.i.embedder.EclipseLogger - Copying 55 resources
+2016-04-21 23:00:26,751 [Worker-10] WARN  o.e.m.c.i.embedder.EclipseLogger - Using platform encoding (UTF-8 actually) to copy filtered resources, i.e. build is platform dependent!
+2016-04-21 23:00:26,751 [Worker-10] INFO  o.e.m.c.i.embedder.EclipseLogger - skip non existing resourceDirectory /home/imasa/git/github/JEntigrator/src/test/resources
+2016-04-21 23:04:26,094 [Worker-1] WARN  o.e.m.c.i.embedder.EclipseLogger - Using platform encoding (UTF-8 actually) to copy filtered resources, i.e. build is platform dependent!
+2016-04-21 23:04:26,095 [Worker-1] INFO  o.e.m.c.i.embedder.EclipseLogger - Copying 55 resources
+2016-04-21 23:04:26,097 [Worker-1] WARN  o.e.m.c.i.embedder.EclipseLogger - Using platform encoding (UTF-8 actually) to copy filtered resources, i.e. build is platform dependent!
+2016-04-21 23:04:26,097 [Worker-1] INFO  o.e.m.c.i.embedder.EclipseLogger - skip non existing resourceDirectory /home/imasa/git/github/JEntigrator/src/test/resources
+2016-04-22 12:57:20,408 [Worker-0] INFO  o.e.m.c.i.l.LifecycleMappingFactory - Using org.eclipse.m2e.jdt.JarLifecycleMapping lifecycle mapping for MavenProject: com.github.imas-alex:JEntigrator:0.0.3-SNAPSHOT @ /home/imasa/git/github/JEntigrator/pom.xml.
+2016-04-22 12:57:20,861 [Worker-0] INFO  o.e.m.c.i.l.LifecycleMappingFactory - Using org.eclipse.m2e.jdt.JarLifecycleMapping lifecycle mapping for MavenProject: Community:Community:0.0.1-SNAPSHOT @ /home/imasa/git/github/Community/pom.xml.
+2016-04-22 12:57:22,248 [Worker-0] WARN  o.e.m.c.i.embedder.EclipseLogger - Using platform encoding (UTF-8 actually) to copy filtered resources, i.e. build is platform dependent!
+2016-04-22 12:57:22,277 [Worker-0] INFO  o.e.m.c.i.embedder.EclipseLogger - Copying 55 resources
+2016-04-22 12:57:22,334 [Worker-0] WARN  o.e.m.c.i.embedder.EclipseLogger - Using platform encoding (UTF-8 actually) to copy filtered resources, i.e. build is platform dependent!
+2016-04-22 12:57:22,336 [Worker-0] INFO  o.e.m.c.i.embedder.EclipseLogger - skip non existing resourceDirectory /home/imasa/git/github/JEntigrator/src/test/resources
+2016-04-22 12:57:22,623 [Worker-17] WARN  o.e.m.c.i.embedder.EclipseLogger - Using platform encoding (UTF-8 actually) to copy filtered resources, i.e. build is platform dependent!
+2016-04-22 12:57:22,630 [Worker-17] INFO  o.e.m.c.i.embedder.EclipseLogger - Copying 7 resources
+2016-04-22 12:57:22,637 [Worker-17] WARN  o.e.m.c.i.embedder.EclipseLogger - Using platform encoding (UTF-8 actually) to copy filtered resources, i.e. build is platform dependent!
+2016-04-22 12:57:22,639 [Worker-17] INFO  o.e.m.c.i.embedder.EclipseLogger - skip non existing resourceDirectory /home/imasa/git/github/Community/src/test/resources
+2016-04-22 13:00:48,225 [Worker-6] INFO  o.e.m.c.i.l.LifecycleMappingFactory - Using org.eclipse.m2e.jdt.JarLifecycleMapping lifecycle mapping for MavenProject: Community:Community:0.0.1-SNAPSHOT @ /home/imasa/git/github/Community/pom.xml.
+2016-04-22 13:01:42,934 [Worker-10] INFO  o.e.m.c.i.l.LifecycleMappingFactory - Using org.eclipse.m2e.jdt.JarLifecycleMapping lifecycle mapping for MavenProject: Community:Community:0.0.1-SNAPSHOT @ /home/imasa/git/github/Community/pom.xml.
+2016-04-22 13:01:42,973 [Worker-10] WARN  o.e.m.c.i.embedder.EclipseLogger - Using platform encoding (UTF-8 actually) to copy filtered resources, i.e. build is platform dependent!
+2016-04-22 13:01:42,976 [Worker-10] INFO  o.e.m.c.i.embedder.EclipseLogger - Copying 0 resource
+2016-04-22 13:01:42,977 [Worker-10] WARN  o.e.m.c.i.embedder.EclipseLogger - Using platform encoding (UTF-8 actually) to copy filtered resources, i.e. build is platform dependent!
+2016-04-22 13:01:42,978 [Worker-10] INFO  o.e.m.c.i.embedder.EclipseLogger - skip non existing resourceDirectory /home/imasa/git/github/Community/src/test/resources
+2016-04-22 13:01:44,370 [Worker-4] WARN  o.e.m.c.i.embedder.EclipseLogger - Using platform encoding (UTF-8 actually) to copy filtered resources, i.e. build is platform dependent!
+2016-04-22 13:01:44,374 [Worker-4] INFO  o.e.m.c.i.embedder.EclipseLogger - Copying 7 resources
+2016-04-22 13:01:44,384 [Worker-4] WARN  o.e.m.c.i.embedder.EclipseLogger - Using platform encoding (UTF-8 actually) to copy filtered resources, i.e. build is platform dependent!
+2016-04-22 13:01:44,387 [Worker-4] INFO  o.e.m.c.i.embedder.EclipseLogger - skip non existing resourceDirectory /home/imasa/git/github/Community/src/test/resources
+2016-04-22 13:02:19,090 [Worker-10] INFO  o.e.m.c.i.l.LifecycleMappingFactory - Using org.eclipse.m2e.jdt.JarLifecycleMapping lifecycle mapping for MavenProject: com.github.imas-alex:Community:0.0.1-SNAPSHOT @ /home/imasa/git/github/Community/pom.xml.
+2016-04-22 13:02:19,151 [Worker-10] WARN  o.e.m.c.i.embedder.EclipseLogger - Using platform encoding (UTF-8 actually) to copy filtered resources, i.e. build is platform dependent!
+2016-04-22 13:02:19,152 [Worker-10] INFO  o.e.m.c.i.embedder.EclipseLogger - Copying 0 resource
+2016-04-22 13:02:19,153 [Worker-10] WARN  o.e.m.c.i.embedder.EclipseLogger - Using platform encoding (UTF-8 actually) to copy filtered resources, i.e. build is platform dependent!
+2016-04-22 13:02:19,153 [Worker-10] INFO  o.e.m.c.i.embedder.EclipseLogger - skip non existing resourceDirectory /home/imasa/git/github/Community/src/test/resources
+2016-04-22 13:09:06,564 [Worker-4] INFO  o.e.m.c.i.l.LifecycleMappingFactory - Using org.eclipse.m2e.jdt.JarLifecycleMapping lifecycle mapping for MavenProject: com.github.imas-alex:Community:0.0.1-SNAPSHOT @ /home/imasa/git/github/Community/pom.xml.
+2016-04-22 13:09:06,619 [Worker-4] WARN  o.e.m.c.i.embedder.EclipseLogger - Using platform encoding (UTF-8 actually) to copy filtered resources, i.e. build is platform dependent!
+2016-04-22 13:09:06,620 [Worker-4] INFO  o.e.m.c.i.embedder.EclipseLogger - Copying 0 resource
+2016-04-22 13:09:06,622 [Worker-4] WARN  o.e.m.c.i.embedder.EclipseLogger - Using platform encoding (UTF-8 actually) to copy filtered resources, i.e. build is platform dependent!
+2016-04-22 13:09:06,622 [Worker-4] INFO  o.e.m.c.i.embedder.EclipseLogger - skip non existing resourceDirectory /home/imasa/git/github/Community/src/test/resources
+2016-04-22 13:11:12,021 [Worker-19] INFO  o.e.m.c.i.l.LifecycleMappingFactory - Using org.eclipse.m2e.jdt.JarLifecycleMapping lifecycle mapping for MavenProject: com.github.imas-alex:Community:0.0.1-SNAPSHOT @ /home/imasa/git/github/Community/pom.xml.
+2016-04-22 13:11:12,052 [Worker-19] WARN  o.e.m.c.i.embedder.EclipseLogger - Using platform encoding (UTF-8 actually) to copy filtered resources, i.e. build is platform dependent!
+2016-04-22 13:11:12,052 [Worker-19] INFO  o.e.m.c.i.embedder.EclipseLogger - Copying 0 resource
+2016-04-22 13:11:12,059 [Worker-19] WARN  o.e.m.c.i.embedder.EclipseLogger - Using platform encoding (UTF-8 actually) to copy filtered resources, i.e. build is platform dependent!
+2016-04-22 13:11:12,059 [Worker-19] INFO  o.e.m.c.i.embedder.EclipseLogger - skip non existing resourceDirectory /home/imasa/git/github/Community/src/test/resources
+2016-04-22 13:27:42,733 [Worker-19] WARN  o.e.m.c.i.embedder.EclipseLogger - Using platform encoding (UTF-8 actually) to copy filtered resources, i.e. build is platform dependent!
+2016-04-22 13:27:42,734 [Worker-19] INFO  o.e.m.c.i.embedder.EclipseLogger - Copying 0 resource
+2016-04-22 13:27:42,736 [Worker-19] WARN  o.e.m.c.i.embedder.EclipseLogger - Using platform encoding (UTF-8 actually) to copy filtered resources, i.e. build is platform dependent!
+2016-04-22 13:27:42,736 [Worker-19] INFO  o.e.m.c.i.embedder.EclipseLogger - skip non existing resourceDirectory /home/imasa/git/github/Community/src/test/resources
+2016-04-22 13:45:37,933 [Worker-25] INFO  o.e.m.c.i.l.LifecycleMappingFactory - Using org.eclipse.m2e.jdt.JarLifecycleMapping lifecycle mapping for MavenProject: com.github.imas-alex:Community:0.0.1-SNAPSHOT @ /home/imasa/git/github/Community/pom.xml.
+2016-04-22 13:45:37,958 [Worker-25] WARN  o.e.m.c.i.embedder.EclipseLogger - Using platform encoding (UTF-8 actually) to copy filtered resources, i.e. build is platform dependent!
+2016-04-22 13:45:37,958 [Worker-25] INFO  o.e.m.c.i.embedder.EclipseLogger - Copying 0 resource
+2016-04-22 13:45:37,959 [Worker-25] WARN  o.e.m.c.i.embedder.EclipseLogger - Using platform encoding (UTF-8 actually) to copy filtered resources, i.e. build is platform dependent!
+2016-04-22 13:45:37,960 [Worker-25] INFO  o.e.m.c.i.embedder.EclipseLogger - skip non existing resourceDirectory /home/imasa/git/github/Community/src/test/resources
+2016-04-22 16:05:19,505 [Worker-26] INFO  o.e.m.c.i.l.LifecycleMappingFactory - Using org.eclipse.m2e.jdt.JarLifecycleMapping lifecycle mapping for MavenProject: com.github.imas-alex:Community:0.0.1-SNAPSHOT @ /home/imasa/git/github/Community/pom.xml.
+2016-04-22 16:05:19,563 [Worker-26] WARN  o.e.m.c.i.embedder.EclipseLogger - Using platform encoding (UTF-8 actually) to copy filtered resources, i.e. build is platform dependent!
+2016-04-22 16:05:19,563 [Worker-26] INFO  o.e.m.c.i.embedder.EclipseLogger - Copying 0 resource
+2016-04-22 16:05:19,565 [Worker-26] WARN  o.e.m.c.i.embedder.EclipseLogger - Using platform encoding (UTF-8 actually) to copy filtered resources, i.e. build is platform dependent!
+2016-04-22 16:05:19,566 [Worker-26] INFO  o.e.m.c.i.embedder.EclipseLogger - skip non existing resourceDirectory /home/imasa/git/github/Community/src/test/resources

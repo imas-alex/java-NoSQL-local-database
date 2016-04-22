@@ -330,7 +330,7 @@ private void paste(){
 /**
  * Execute the response locator.
  * @param console the main console.
- * @param the response locator.
+ * @param locator$ the response locator.
  * 
  */
 	@Override
@@ -535,7 +535,7 @@ private void paste(){
 	}
 /**
  * Add referenced entities into the referenced entities list.
- * @param entitgrator the entigrator.
+ * @param entigrator the entigrator.
  * @param entityKey$ the entity key.
  * @param rel the referenced entities list. 
  */

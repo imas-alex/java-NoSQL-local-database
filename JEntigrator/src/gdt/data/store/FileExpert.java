@@ -41,7 +41,8 @@ public class FileExpert extends File {
 	 * Copy all files from source to target directory.
 	 * Existing files will be overwritten.
 	 *  @param sourceRoot$ the source directory
-	 *  @param the targetRoot$ the targetDirectory
+	 *  @param targetRoot$ the targetDirectory
+	 *  @throws java.io.IOException copy failed.
 	 * 
 	 */
     public static void copyAll(String sourceRoot$, String targetRoot$) throws IOException {
@@ -55,6 +56,7 @@ public class FileExpert extends File {
    	 *  @param mode one of the integer values 
    	 *  ADD(keep existing), OVERWRITE(replace existing) or UPDATE
    	 *  (replace existing if newer).
+   	 *   @throws java.io.IOException copy failed.
    	 */
     public static void copyAll(String sourceRoot$, String targetRoot$, int mode) throws IOException {
     	final Logger LOGGER= Logger.getLogger(FileExpert.class.getName());   
@@ -286,7 +288,7 @@ public class FileExpert extends File {
     /**
    	 * Get the extension of the file name.
    	 * 
-   	 *  @param path$ path or file name.
+   	 *  @param fname$ path or file name.
    	 *  @return extension.
    	 */
     public static String getExtension(String fname$) {

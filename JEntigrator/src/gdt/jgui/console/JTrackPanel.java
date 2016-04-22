@@ -82,8 +82,9 @@ public class JTrackPanel extends JItemsListPanel {
 	}
 /**
  * Create the track panel.
- * @param consolethe main console.
+ * @param console the main console.
  * @param locator$ the track panel locator.
+ * @return the  context.
  */
 	@Override
 	public JContext instantiate(JMainConsole console, String locator$) {
@@ -120,7 +121,7 @@ private JItemPanel[] listMembers(JMainConsole console){
 }
 /**
  * Pop the previous context on the top of the track stack. 
- * @param console
+ * @param console the main console.
  * @return the top context locator.
  */
 public static String popMember(JMainConsole console){

@@ -178,6 +178,7 @@ public class JItemPanel extends JPanel {
 }
 	/**
 	 * Get item's title.
+	 * @return the item title.
 	 */
 public String getTitle(){
 	return title$;

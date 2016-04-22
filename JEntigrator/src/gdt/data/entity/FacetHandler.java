@@ -67,11 +67,13 @@ public abstract class FacetHandler {
      */	
     public abstract String getClassName();
     /**
-     * Adapt the clone of the entity.  
+     * Adapt the clone of the entity. 
+     * @param entigrator the entigrator.  
      */	
      public abstract void adaptClone( Entigrator entigrator);
      /**
       * Adapt the the entity after rename.   
+      * @param entigrator the entigrator.  
       */	
      public abstract void adaptRename( Entigrator entigrator);
      /**

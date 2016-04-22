@@ -30,10 +30,12 @@ public interface JContext {
 	public static final String CONTEXT_TYPE="context type";
 /**
  * Get the panel to put into the main console.
+ * @return the context panel.
  */
 	public abstract JPanel getPanel();
 	/**
 	 * Get the context menu to put into the main console.
+	 * @return the context menu.
 	 */	
 	public abstract JMenu getContextMenu();
 	/**

@@ -42,8 +42,8 @@ import org.apache.commons.codec.binary.Base64;
 * This context displays actions 
 * to manage property names:
 * Add property - to add a property name
-* Delete <property name> - to delete the property name.
-* Edit <property name> - to edit the property name.
+* Delete 'property name' - to delete the property name.
+* Edit 'property name' - to edit the property name.
 * Clear properties - to remove unused property names and values.
 * The context will be shown by the click on the Property label 
 * in the design database context.  

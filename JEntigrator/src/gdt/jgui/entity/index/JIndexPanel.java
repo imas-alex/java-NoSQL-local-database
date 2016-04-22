@@ -780,7 +780,7 @@ private Sack orderGroupDefault(Sack index,String groupKey$){
 	/**
 	 * Rebuild entity parameters and indexes.
 	 * @param console the main console.
-	 * @param entitgrator the entigrator.
+	 * @param entigrator the entigrator.
 	 * @param entity the entity.
 	 */
 	@Override
@@ -1469,7 +1469,7 @@ private Sack pasteItemToGroup(Sack index,String groupKey$,String itemLocator$){
 	}
 	/**
 	 * Add referenced entities into the referenced entities list.
-	 * @param entitgrator the entigrator.
+	 * @param entigrator the entigrator.
 	 * @param entityKey$ the entity key.
 	 * @param rel the referenced entities list. 
 	 */	

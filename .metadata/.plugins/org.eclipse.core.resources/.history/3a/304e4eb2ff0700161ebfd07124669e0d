@@ -1,0 +1,353 @@
+package gdt.data.store;
+/*
+ * Copyright 2016 Alexander Imas
+ * This file is part of JEntigrator.
+
+    JEntigrator is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    JEntigrator is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with JEntigrator.  If not, see <http://www.gnu.org/licenses/>.
+ */
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.nio.channels.FileChannel;
+import java.util.Stack;
+import java.util.logging.Logger;
+/**
+* This class provides methods to handle files and directories.    
+* @author  Alexander Imas
+* @version 1.0
+* @since   2016-03-11
+*/
+public class FileExpert extends File {
+	private static final long serialVersionUID = 1L;
+	public static final int ADD = 1;
+    private static final int OVERWRITE = 2;
+    private static final int UPDATE = 3;
+    private FileExpert(String pathname) {
+        super(pathname);
+    }
+    /**
+	 * Copy all files from source to target directory.
+	 * Existing files will be overwritten.
+	 *  @param sourceRoot$ the source directory
+	 *  @param targetRoot$ the targetDirectory
+	 *   @throws java.io.IOException
+	 * 
+	 */
+    public static void copyAll(String sourceRoot$, String targetRoot$) throws IOException {
+        copyAll(sourceRoot$, targetRoot$, OVERWRITE);
+    }
+    /**
+   	 * Copy all files from source to target directory.
+   	 * 
+   	 *  @param sourceRoot$ the source directory
+   	 *  @param targetRoot$ the targetDirectory
+   	 *  @param mode one of the integer values 
+   	 *  ADD(keep existing), OVERWRITE(replace existing) or UPDATE
+   	 *  (replace existing if newer).
+   	 */
+    public static void copyAll(String sourceRoot$, String targetRoot$, int mode) throws IOException {
+    	final Logger LOGGER= Logger.getLogger(FileExpert.class.getName());   
+    	if (sourceRoot$ == null){
+    		LOGGER.severe(":copyAll:source  is null");
+    		return;
+
+    	}
+        if (targetRoot$ == null){
+        	LOGGER.severe(":copyAll:target  is null");
+    		return;
+        }
+        File sourceRoot = new File(sourceRoot$);
+        if (!sourceRoot.exists()) {
+        	LOGGER.severe(":copyAll:source  does not exist");
+            return;
+        }
+        File[] fa ;
+        if (!sourceRoot.isDirectory()) {
+            fa = new File[1];
+            fa[0] = sourceRoot;
+        } else
+            fa = sourceRoot.listFiles();
+        if (fa == null) {
+        	LOGGER.severe(":copyAll:source is empty");
+            return;
+        }
+        File out ;
+        File dir ;
+        FileChannel sourceChannel ;
+        FileChannel destinationChannel;
+        FileOutputStream fos ;
+        FileInputStream fis;
+        for (File aFa : fa) {
+            //System.out.println("fa["+String.valueOf(i)+"]="+fa[i].getPath());
+            if (aFa.isDirectory()) {
+                dir = new File(targetRoot$ + "/" + aFa.getName());
+                if (!dir.exists())
+                    dir.mkdir();
+                copyLocalDirectory(sourceRoot$, targetRoot$, sourceRoot$ + "/" + aFa.getName());
+            } else {
+
+                File targetDir = new File(targetRoot$);
+                if (!targetDir.exists())
+                    targetDir.mkdirs();
+                out = new File(targetRoot$ + "/" + aFa.getName());
+                if (!out.exists())
+                    out.createNewFile();
+                else {
+                    {
+                        if (mode == ADD)
+                            continue;
+                        if (mode == UPDATE)
+                            if (out.lastModified() >= aFa.lastModified())
+                                continue;
+                    }
+                }
+                fis=new FileInputStream(aFa);
+                sourceChannel =fis.getChannel();
+                fos = new FileOutputStream(out);
+                destinationChannel = fos.getChannel();
+                sourceChannel.transferTo(0, sourceChannel.size(), destinationChannel);
+                sourceChannel.close();
+                fis.close();
+                destinationChannel.close();
+                fos.close();
+            }
+        }
+    }
+
+    private static void copyLocalDirectory(String sourceRoot$, String targetRoot$, String sourceCurrent$) {
+        copyLocalDirectory(sourceRoot$, targetRoot$, sourceCurrent$, OVERWRITE);
+    }
+    private static void copyLocalDirectory(String sourceRoot$, String targetRoot$, String sourceCurrent$, int mode) {
+    	final Logger LOGGER= Logger.getLogger(FileExpert.class.getName()); 
+    	String offset$ = getLocalPath(sourceRoot$, sourceCurrent$);
+        if (offset$ == null && !sourceRoot$.equals(sourceCurrent$)) {
+           // System.out.println("FileExpert:copyLocalDirectory: offset is null");
+        	LOGGER.severe(":copyLocalDirectory:offset is null");
+        	return;
+        }
+        File sourceCurrent = new File(sourceCurrent$);
+        if (!sourceCurrent.exists()) {
+        	LOGGER.severe(":copyLocalDirectory:sourceCurrent does not exist");
+        	return;
+        }
+        if (!sourceCurrent.isDirectory()) {
+        	LOGGER.severe(":copyLocalDirectory:sourceCurrent is not a directory");
+        	return;
+        }
+        File[] fa = sourceCurrent.listFiles();
+        if (fa == null) {
+        	LOGGER.severe(":copyLocalDirectory:sourceCurrent is empty");
+        	return;
+        }
+        File out ;
+        File dir ;
+        FileChannel sourceChannel;
+        FileChannel destinationChannel;
+        for (File aFa : fa) {
+            if (aFa.isDirectory()) {
+                if (offset$!=null)
+                {
+                    dir = new File(targetRoot$ + "/" + offset$ + "/" + aFa.getName());
+                    if (!dir.exists())
+                        dir.mkdir();
+                } else {
+                    dir = new File(targetRoot$ + "/" + aFa.getName());
+                    if (!dir.exists())
+                        dir.mkdir();
+                }
+                copyLocalDirectory(sourceRoot$, targetRoot$, sourceCurrent$ + "/" + aFa.getName(), mode);
+            } else {
+                try {
+                    out = new File(targetRoot$ + "/" + offset$ + "/" + aFa.getName());
+                    if (!out.exists())
+                        out.createNewFile();
+                    else {
+                        if (mode == ADD)
+                            continue;
+                        if (mode == UPDATE)
+                            if (out.lastModified() >= aFa.lastModified())
+                                continue;
+                    }
+                    sourceChannel = new FileInputStream(aFa).getChannel();
+                    destinationChannel = new FileOutputStream(out).getChannel();
+                    sourceChannel.transferTo(0, sourceChannel.size(), destinationChannel);
+                    sourceChannel.close();
+                    destinationChannel.close();
+                } catch (Exception e) {
+                	LOGGER.severe(":copyLocalDirectory:"+e.toString());
+                }
+            }
+        }
+    }
+
+    private static String getLocalPath(String sourceRoot$, String sourceCurrent$) {
+        if (sourceRoot$ == null)
+            return null;
+        if (sourceCurrent$ == null)
+            return null;
+        String ret$ = sourceCurrent$.substring(sourceRoot$.length());
+        while (String.valueOf(ret$.charAt(0)).equals(System.getProperty("file.separator")))
+            ret$ = ret$.substring(1);
+        return ret$;
+    }
+    /**
+   	 * Remove all files from the directory.
+   	 * 
+   	 *  @param target$ the directory
+   	 */
+    public static void clear(String target$) {
+    	final Logger LOGGER= Logger.getLogger(FileExpert.class.getName()); 
+    	if (target$ == null) {
+    		LOGGER.severe(":clear:null target");
+    		return;
+        }
+        FileExpert target = new FileExpert(target$);
+        if (!target.exists()) {
+        	LOGGER.severe(":clear:not exists target=" + target$);
+        	return;
+        }
+        if (!target.isDirectory()) {
+        	LOGGER.severe(":clear:not a directory target=" + target$);
+            return;
+        }
+        String[] list = target.childrenFilePaths();
+        if (list != null)
+            for (String aList : list) {
+                if (!new File(aList).delete())
+                    System.out.println("can not delete " + aList);
+            }
+        list = target.childrenDirectoryPaths();
+        if (list == null){
+        	LOGGER.severe(":clear:no childeren directories");
+            return;
+        }
+        for (String aList : list) {
+            clear(aList);
+            try {
+                new File(aList).delete();
+            } catch (Exception e) {
+                LOGGER.severe(":clear:cannot delete child=" + aList);
+            }
+        }
+    }
+ 
+    public static void copyFile(File in, File out) throws Exception {
+    	FileInputStream fis=new FileInputStream(in);
+    	FileChannel sourceChannel = fis.getChannel();
+    	FileOutputStream fos=new FileOutputStream(out);
+    	FileChannel destinationChannel = fos.getChannel();
+        sourceChannel.transferTo(0, sourceChannel.size(), destinationChannel);
+        sourceChannel.close();
+        destinationChannel.close();
+        fis.close();
+        fos.close();
+        out.setLastModified(in.lastModified());
+    }
+
+   
+    /**
+   	 * Get file name without extension.
+   	 * 
+   	 *  @param path$ path or file name.
+   	 *  @return basic file name.
+   	 */
+
+  
+    public static String getBasicFilename(String path$) {
+    	final Logger LOGGER= Logger.getLogger(FileExpert.class.getName());
+    	try {
+            File file = new File(path$);
+            String fname$=file.getName();
+            String ext$=null;
+            int cnt = fname$.lastIndexOf(46);
+            if (cnt >0){
+            	ext$=fname$.substring(cnt + 1, fname$.length());
+            }
+            if(ext$==null)
+            	return fname$;
+            else
+            	return fname$.substring(0,cnt);
+        } catch (Exception e) {
+        	LOGGER.severe(e.toString());
+            return null;
+        }
+    }
+    /**
+   	 * Get the extension of the file name.
+   	 * 
+   	 *  @param fname$ path or file name.
+   	 *  @return extension.
+   	 */
+    public static String getExtension(String fname$) {
+        if (fname$ == null)
+            return null;
+        int cnt = fname$.lastIndexOf(46);
+        if (cnt < 0)
+            return null;
+        return fname$.substring(cnt + 1, fname$.length());
+    }
+   
+  private  String[] childrenFilePaths() {
+        if (isFile()) {
+            return null;
+        }
+        File[] fa = listFiles();
+        if (fa == null)
+            return null;
+        Stack<File> s = new Stack<File>();
+        for (File aFa : fa)
+            if (aFa.isFile())
+                s.push(aFa);
+        int cnt = s.size();
+        if (cnt < 1)
+            return null;
+        String[] ret = new String[cnt];
+        for (int i = 0; i < cnt; i++)
+            ret[i] = ((File) s.pop()).getAbsolutePath();
+        return ret;
+    }
+    String[] childrenDirectoryPaths() {
+        if (isFile()) {
+            return null;
+        }
+        File[] fa = listFiles();
+        if (fa == null)
+            return null;
+        Stack<File> s = new Stack<File>();
+        for (File aFa : fa)
+            if (aFa.isDirectory())
+                s.push(aFa);
+        int cnt = s.size();
+        if (cnt < 1)
+            return null;
+        String[] ret = new String[cnt];
+        for (int i = 0; i < cnt; i++)
+            ret[i] = ((File) s.pop()).getAbsolutePath();
+        return ret;
+    }
+     
+    /**
+   	 * Delete the directory and its content
+   	 * 
+   	 *  @param target$ directory path
+   	 *  @return true if success ,false otherwise.
+   	 */    
+     public static boolean delete(String target$) {
+         clear(target$);
+         return new File(target$).delete();
+     }
+  
+}
+

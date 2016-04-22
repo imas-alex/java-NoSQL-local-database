@@ -222,7 +222,7 @@ private void clearContextMenu(){
 /**
  * Put the context into the main console.
  * @param context the context.
- * @param the context locator.
+ * @param locator$ the context locator.
  */
 public void putContext(JContext context,String locator$){
 	//System.out.println("MainConsole:putContext:BEGIN:context="+context.getClass().getName());
@@ -261,7 +261,7 @@ public void putContext(JContext context,String locator$){
 }
 /**
  * Get the content panel of the main frame.
- * @return
+ * @return the content panel.
  */
 public Component getContentPanel(){
 	 return	frmEntigrator.getContentPane();

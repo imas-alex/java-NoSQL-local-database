@@ -328,8 +328,8 @@ private String getTarLocator() {
 	}
 	/**
 	 * Execute the response action.
-	 * @param the main console.
-	 * @param theresponse locator.
+	 * @param console the main console.
+	 * @param locator$ the response locator.
 	 */
 	@Override
 	public void response(JMainConsole console, String locator$) {
