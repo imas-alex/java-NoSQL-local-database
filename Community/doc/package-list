@@ -1,1 +1,8 @@
+gdt.data.entity
+gdt.data.extension
+gdt.jgui.entity.address
 gdt.jgui.entity.bank
+gdt.jgui.entity.contact
+gdt.jgui.entity.email
+gdt.jgui.entity.person
+gdt.jgui.entity.phone
