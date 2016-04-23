@@ -1,4 +1,0 @@
-cd JEntigrator
-mvn package >buildEntigrator.txt
-cd ../Community
-mvn package >buildCommunity.txt
