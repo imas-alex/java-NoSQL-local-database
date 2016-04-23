@@ -1,2 +1,0 @@
-cd ./JEntigrator/target
-java -cp ./../libs/commons-codec-1.10.jar:./../libs/commons-compress-1.10.jar:./JEntigrator-0.0.1-SNAPSHOT.jar gdt.jgui.console.JMainConsole
