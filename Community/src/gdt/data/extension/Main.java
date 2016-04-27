@@ -107,14 +107,14 @@ public class Main implements ExtensionMain{
         	 extension.createElement("fhandler");
          else
         	 extension.clearElement("fhandler");
-         extension.putElementItem("fhandler", new Core(null,"gdt.data.entity.ExtensionHandler",null));
-         extension.putElementItem("jfacet", new Core(null,"gdt.data.entity.FieldsHandler",null));
+         extension.putElementItem("fhandler", new Core(null,"gdt.data.entity.facet.ExtensionHandler",null));
+         extension.putElementItem("jfacet", new Core(null,"gdt.data.entity.facet.FieldsHandler",null));
          if(!extension.existsElement("jfacet"))
         	 extension.createElement("jfacet");
          else
         	 extension.clearElement("jfacet");
-         extension.putElementItem("jfacet", new Core(null,"gdt.data.entity.ExtensionHandler","gdt.jgui.entity.extension.JExtensionFacetOpenItem"));
-         extension.putElementItem("jfacet", new Core("gdt.jgui.entity.fields.JFieldsFacetAddItem","gdt.data.entity.FieldsHandler","gdt.jgui.entity.fields.JFieldsFacetOpenItem"));
+         extension.putElementItem("jfacet", new Core(null,"gdt.data.entity.facet.ExtensionHandler","gdt.jgui.entity.extension.JExtensionFacetOpenItem"));
+         extension.putElementItem("jfacet", new Core("gdt.jgui.entity.fields.JFieldsFacetAddItem","gdt.data.entity.facet.FieldsHandler","gdt.jgui.entity.fields.JFieldsFacetOpenItem"));
          if(!extension.existsElement("field"))
         	 extension.createElement("field");
          else

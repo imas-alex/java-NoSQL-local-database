@@ -234,7 +234,7 @@ public class JPhoneFacetOpenItem extends JFacetOpenItem implements JRequester{
 			phoneLocator$=Locator.append(phoneLocator$, JRequester.REQUESTER_RESPONSE_LOCATOR, requesterResponseLocator$);
 			phoneLocator$=Locator.append(phoneLocator$, BaseHandler.HANDLER_METHOD,"instantiate");
 			phoneLocator$=Locator.append(phoneLocator$, JTextEditor.TEXT,phone$);
-			System.out.println("JPhoneFacetOpenItem:openFacet:phone locator="+phoneLocator$);
+	//		System.out.println("JPhoneFacetOpenItem:openFacet:phone locator="+phoneLocator$);
 			JConsoleHandler.execute(console, phoneLocator$);
 		}catch(Exception e){
 			LOGGER.severe(e.toString());
