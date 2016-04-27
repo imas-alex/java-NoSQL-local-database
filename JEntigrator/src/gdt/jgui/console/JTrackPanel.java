@@ -178,7 +178,7 @@ public static void putMember(JMainConsole console,String locator$){
 		 mType$=locator.getProperty(JContext.CONTEXT_TYPE);
 		//System.out.println("TrackPanel:putMember:mTitle="+mTitle$+" mType="+mType$);
 		if(mTitle$==null||mType$==null){
-			System.out.println("TrackPanel:putMember:candidate="+candidate$);
+			//System.out.println("TrackPanel:putMember:candidate="+candidate$);
 			continue;
 		}
          if (mTitle$.equals(title$)&&mType$.equals(type$)){

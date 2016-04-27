@@ -41,15 +41,15 @@ public class Locator {
 	/**
 	 * Separate items within an array
 	 */
-    public static final String ARRAY_DELIMITER ="_§A_";
+    public static final String ARRAY_DELIMITER ="_;A_";
     /**
 	 * Separates name/value pairs
 	 */
-    public static final String NAME_DELIMITER ="_§N_";
+    public static final String NAME_DELIMITER ="_;N_";
     /**
    	 * Separates groups
    	 */
-    public static final String GROUP_DELIMITER ="_§G_"; 
+    public static final String GROUP_DELIMITER ="_;G_"; 
     /**
    	 * Locator's title
    	 */

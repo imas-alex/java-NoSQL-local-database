@@ -71,7 +71,7 @@ public static JFacetOpenItem getFacetOpenItemInstance(JMainConsole console,Strin
 		String entityKey$=locator.getProperty(EntityHandler.ENTITY_KEY);
 		String extension$=locator.getProperty(BaseHandler.HANDLER_LOCATION);
 		String handler$=locator.getProperty(BaseHandler.HANDLER_CLASS);
-		System.out.println("JFacetItem:getFacetOpenItemInstance:handler="+handler$+" extension="+extension$);
+//		System.out.println("JFacetItem:getFacetOpenItemInstance:handler="+handler$+" extension="+extension$);
 		Entigrator entigrator=console.getEntigrator(entihome$);
 		JFacetOpenItem facetOpenItem;
 		if(extension$==null||"null".equals(extension$))

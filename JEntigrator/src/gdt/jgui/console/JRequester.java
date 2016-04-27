@@ -30,6 +30,10 @@ public interface JRequester {
 	 * The response locator tag.
 	 */
 	public static final String REQUESTER_RESPONSE_LOCATOR="requester response locator";
+	/**
+	 * The responser  tag.
+	 */
+	public static final String RESPONSER="responser";
    /**
     * Execute the response locator.
     * @param console the main console

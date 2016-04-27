@@ -387,7 +387,7 @@ private Logger LOGGER=Logger.getLogger(JBaseNavigator.class.getName());
 	 */	
 	@Override
 	public JContext instantiate(JMainConsole console, String locator$) {
-		System.out.println("JBaseNavigator:instantiate:locator="+Locator.remove(locator$,Locator.LOCATOR_ICON));
+		//System.out.println("JBaseNavigator:instantiate:locator="+Locator.remove(locator$,Locator.LOCATOR_ICON));
 		this.console=console;
 		Properties locator=Locator.toProperties(locator$);
 		entihome$=locator.getProperty(Entigrator.ENTIHOME);

@@ -188,22 +188,30 @@ public static FacetHandler[] listAllHandlers( Entigrator entigrator){
  */	 
 public static String createBlankDatabase(String entihome$){
 	try{
+		System.out.println("BaseHandler:createBlankDatabase.entihome="+entihome$);
 		File entihome=new File(entihome$);
-		if(entihome.exists()){
-			return "File '"+entihome$+"' already exists";
+		if(!entihome.exists()){
+			entihome.mkdir();
 		}
-		entihome.mkdir();
+		
 		File propertyBase=new File(entihome$+"/"+Entigrator.PROPERTY_BASE+"/data/");
-		propertyBase.mkdirs();
+		if(!propertyBase.exists())
+		    propertyBase.mkdirs();
 		File propertyMap=new File(entihome$+"/"+Entigrator.PROPERTY_MAP+"/data/");
-		propertyMap.mkdirs();
+		if(!propertyMap.exists())
+			propertyMap.mkdirs();
 		File entityBase=new File(entihome$+"/"+Entigrator.PROPERTY_BASE+"/data/");
+		if(!entityBase.exists())
 		entityBase.mkdirs();
-		Entigrator entigrator=new Entigrator(new String[]{entihome$});
-   	    Sack folder=entigrator.ent_new("folder", "Icons",Entigrator.ICONS);
-   	   folder.putAttribute(new Core(null,"icon","folder.png"));
-	   entigrator.save(folder);
-	   folder=entigrator.ent_assignProperty(folder, "folder", folder.getProperty("label"));
+		 Entigrator entigrator=new Entigrator(new String[]{entihome$});
+		 String[] sa=entigrator.indx_listEntities("label", "Icons");
+		 Sack folder=null;
+		 if(sa==null){
+			 folder=entigrator.ent_new("folder", "Icons",Entigrator.ICONS);
+   	         folder.putAttribute(new Core(null,"icon","folder.png"));
+	         entigrator.save(folder);
+	         folder=entigrator.ent_assignProperty(folder, "folder", folder.getProperty("label"));
+		 }
 	   File folderHome=new File(entihome$+"/"+Entigrator.ICONS);
 	   if(!folderHome.exists())
 		    folderHome.mkdir();

@@ -158,12 +158,15 @@ public JBasesPanel(){
 	@Override
 	public void response(JMainConsole console, String locator$) {
 	try{
+		System.out.println("JBasesPanel:response:locator="+Locator.remove(locator$, Locator.LOCATOR_ICON));
 		Properties locator=Locator.toProperties(locator$);
 		String text$=locator.getProperty(JTextEditor.TEXT);
 		String entiroot$=locator.getProperty(BaseHandler.ENTIROOT);
 	    BaseHandler.createBlankDatabase(entiroot$+"/"+text$);
+	    System.out.println("JBasesPanel:response:database created");
 	    Entigrator entigrator=new Entigrator(new String[]{entiroot$+"/"+text$});
 	    entigrator.indx_rebuild(null);
+	    System.out.println("JBasesPanel:response:index rebuilt");
 			String [] sa=entigrator.indx_listEntities();
 			Sack entity;
 			String entityLocator$;
@@ -173,21 +176,14 @@ public JBasesPanel(){
 					continue;
 				if(!"extension".equals(entity.getProperty("entity")))
 					continue;
-		entityLocator$=EntityHandler.getEntityLocator(entigrator, entity);
-		 JEntityPrimaryMenu.reindexEntity(console,entityLocator$);
+				entityLocator$=EntityHandler.getEntityLocator(entigrator, entity);
+				JEntityPrimaryMenu.reindexEntity(console,entityLocator$);
 			}
-			for(String s:sa){
-				entity=entigrator.getEntityAtKey(s);
-				if(entity==null)
-					continue;
-				if("extension".equals(entity.getProperty("entity")))
-					continue;
-			entityLocator$=EntityHandler.getEntityLocator(entigrator, entity);
-			 JEntityPrimaryMenu.reindexEntity(console,entityLocator$);
-			}		
+			 System.out.println("JBasesPanel:response:entities reindexed");
 		    console.putEntigrator(entigrator);
 		    refreshAllEntitiesQuery(console,entigrator.getEntihome());
 		    refreshListProcedure(console,entigrator.getEntihome());
+		    System.out.println("JBasesPanel:response:refreshed queries and procedures");
 		    JBaseNavigator jbn=new JBaseNavigator();
 		    String jbnLocator$=jbn.getLocator();
 		    jbnLocator$=Locator.append( jbnLocator$, Entigrator.ENTIHOME,entigrator.getEntihome());

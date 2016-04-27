@@ -65,13 +65,13 @@ public class JConsoleHandler {
 	 */
 		public static String execute(JMainConsole console,String locator$){
         try{
-  //      System.out.println("ConsoleHandler:execute:locator="+locator$);	
+    //    System.out.println("ConsoleHandler:execute:locator="+Locator.remove(locator$, Locator.LOCATOR_ICON));	
        	 Properties locator=Locator.toProperties(locator$);
        	 String handlerScope$=locator.getProperty(BaseHandler.HANDLER_SCOPE);
        	String handlerClass$=locator.getProperty(BaseHandler.HANDLER_CLASS);
         String method$=locator.getProperty(BaseHandler.HANDLER_METHOD);
         String entihome$=locator.getProperty(Entigrator.ENTIHOME);
-      //  System.out.println("ConsoleHandler:execute:handler="+handlerClass$+" method="+method$+" entihome="+entihome$);
+     //   System.out.println("ConsoleHandler:execute:handler="+handlerClass$+" method="+method$+" entihome="+entihome$);
        if(CONSOLE_SCOPE.equals(handlerScope$)){
     	   if(JTrackPanel.class.getName().equals(handlerClass$)){
     		   JTrackPanel trackPanel=new JTrackPanel(console);

@@ -891,5 +891,33 @@ private void adaptRename(Entigrator entigrator,Sack entity){
 		Logger.getLogger(JEntityPrimaryMenu.class.getName()).severe("e:"+e.toString());
 	}
 }
+public void deleteEntity(JMainConsole console,String locator$){
+	  try{
+		  Properties locator=Locator.toProperties(locator$);
+		 entihome$=locator.getProperty(Entigrator.ENTIHOME);
+		  Entigrator entigrator=console.getEntigrator(entihome$);
+		 entityKey$=locator.getProperty(EntityHandler.ENTITY_KEY);
+		 Sack entity=entigrator.getEntityAtKey(entityKey$);
+	  int response = JOptionPane.showConfirmDialog(console.getContentPanel(), "Delete entity ?", "Confirm",
+			        JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
+		   if (response == JOptionPane.YES_OPTION) {
+			   entigrator.deleteEntity(entity);
+			   if(requesterResponseLocator$!=null){
+					try{
+					   byte[] ba=Base64.decodeBase64(requesterResponseLocator$);
+					   String responseLocator$=new String(ba,"UTF-8");
+					   JConsoleHandler.execute(console, responseLocator$);
+						}catch(Exception ee){
+							LOGGER.severe(ee.toString());
+						}
+				}else{
+					console.back();
+					console.back();
+				}
+			  } 
+	  }catch(Exception e){
+		  LOGGER.severe(e.toString());
+	  }
+	}
 }
 

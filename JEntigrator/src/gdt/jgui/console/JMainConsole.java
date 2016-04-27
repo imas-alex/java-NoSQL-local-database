@@ -159,6 +159,7 @@ public class JMainConsole {
 					Properties editorLocator=Locator.toProperties(editorLocator$);
 					editorLocator.setProperty(JRequester.REQUESTER_RESPONSE_LOCATOR, Locator.compressText(locator$));
 					editorLocator.setProperty(JTextEditor.TEXT,"New_base");
+					editorLocator.setProperty(Entigrator.ENTIHOME,entiroot$+"/New_base");
 					String teLocator$=Locator.toString(editorLocator);
 			    	JConsoleHandler.execute(JMainConsole.this, teLocator$);
 				
@@ -349,7 +350,7 @@ private class OpenWorkspace extends AbstractAction {
 				if(track.size()>0)
 				  JTrackPanel.popMember(JMainConsole.this);
 		    	String locator$=JTrackPanel.popMember(JMainConsole.this);
-		    	System.out.println("JMainConsole:BackTrack:locator="+Locator.remove(locator$, Locator.LOCATOR_ICON));
+		    	//System.out.println("JMainConsole:BackTrack:locator="+Locator.remove(locator$, Locator.LOCATOR_ICON));
 		    	if(locator$!=null){
 		    	    JConsoleHandler.execute(JMainConsole.this, locator$);
 		    	}

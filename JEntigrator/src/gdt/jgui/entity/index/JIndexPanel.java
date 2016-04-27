@@ -617,7 +617,7 @@ private String[] listOrderedGroupMembers(Sack index,String groupKey$){
 				LOGGER.info(ee.toString());
 			}
 		}
-		System.out.println("JIndexPanel:listOrderedGroupMembers.cl="+cl.size());
+	//	System.out.println("JIndexPanel:listOrderedGroupMembers.cl="+cl.size());
 		Collections.sort(cl, new NumberNodeComparator());
 		ca=cl.toArray(new Core[0]);
 		String[] sa=new String[ca.length];
@@ -1042,7 +1042,7 @@ private Sack orderGroupDefault(Sack index,String groupKey$){
 							public void actionPerformed(ActionEvent e) { 
 								Properties locator=Locator.toProperties(selection$);
 							//	String locatorType$=locator.getProperty(Locator.LOCATOR_TYPE);
-								System.out.println("IndexPanel:open:node type="+locatorType$);
+							//	System.out.println("IndexPanel:open:node type="+locatorType$);
 								if(JFolderPanel.LOCATOR_TYPE_FILE.equals(locatorType$)){
 									String filePath$=locator.getProperty(JFolderPanel.FILE_PATH);
 									File itemFile=new File(filePath$);
@@ -1067,7 +1067,7 @@ private Sack orderGroupDefault(Sack index,String groupKey$){
 								
 								selection$=Locator.append(selection$, JRequester.REQUESTER_RESPONSE_LOCATOR, Locator.compressText(responseLocator$));
 							//	System.out.println("IndexPanel:open:selection="+Locator.remove(Locator.remove(selection$, Locator.LOCATOR_ICON),JRequester.REQUESTER_RESPONSE_LOCATOR));
-								
+								selection$=Locator.append(selection$,Entigrator.ENTIHOME,entihome$);
 								JConsoleHandler.execute(console, selection$);
 								
 							}

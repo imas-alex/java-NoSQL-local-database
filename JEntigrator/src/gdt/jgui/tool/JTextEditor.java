@@ -92,7 +92,7 @@ public JTextEditor() {
 		doneItem.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-//				System.out.println("TextEditor:done:text="+editorPane.getText());
+				//System.out.println("TextEditor:done:text="+editorPane.getText());
 				if(requesterResponseLocator$!=null){
 					try{
 					   byte[] ba=Base64.decodeBase64(requesterResponseLocator$);
@@ -101,13 +101,15 @@ public JTextEditor() {
 					   if(base64)
 						   text$=Locator.compressText(text$);
 					   responseLocator$=Locator.append(responseLocator$, TEXT, text$);
-	//				   System.out.println("TextEditor:done:response locator="+responseLocator$);
+					//   System.out.println("TextEditor:done:response locator="+Locator.remove(responseLocator$, Locator.LOCATOR_ICON));
 					   JConsoleHandler.execute(console, responseLocator$);
 						}catch(Exception ee){
 							LOGGER.severe(ee.toString());
 						}
-				}else
+				}else{
+					 //System.out.println("TextEditor:done:requester locator is null");
 				  console.back();
+				}
 			}
 		} );
 		menu.add(doneItem);

@@ -284,11 +284,12 @@ public JFieldsEditor() {
 		} );
 		menu.add(addItemItem);
 		if(postMenu!=null){
-		System.out.println("JFieldsEditor:postMenu="+postMenu.length);
+		//System.out.println("JFieldsEditor:postMenu="+postMenu.length);
 			for(JMenuItem jmi:postMenu)
 				menu.add(jmi);
-		}else
-			System.out.println("JFieldsEditor:postMenu empty");
+		}
+		//else
+		//	System.out.println("JFieldsEditor:postMenu empty");
 			
 		
 		return menu;

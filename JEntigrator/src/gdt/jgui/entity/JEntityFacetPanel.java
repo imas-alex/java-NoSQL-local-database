@@ -180,12 +180,12 @@ private JFacetOpenItem[] getFacetOpenItems(){
 				if(extension$!=null)
 				  itemLocator.setProperty(BaseHandler.HANDLER_LOCATION,extension$);
 		     	itemLocator.setProperty(BaseHandler.HANDLER_CLASS, aCa.value);
-     	System.out.println("EntityFacetPanel:getFacetOpenItems:handler class="+aCa.value);
+     	//System.out.println("EntityFacetPanel:getFacetOpenItems:handler class="+aCa.value);
 		     	String itemLocator$= Locator.toString(itemLocator);
 		     	openItem=JFacetOpenItem.getFacetOpenItemInstance(console,itemLocator$);
 		     	
 			    if(openItem!=null){
-			    	System.out.println("EntityFacetPanel:getFacetOpenItems:open item="+openItem.getFacetName());    	
+			    //	System.out.println("EntityFacetPanel:getFacetOpenItems:open item="+openItem.getFacetName());    	
 		     	   foil.add(openItem);
 			    }
 			  //  else
@@ -194,7 +194,7 @@ private JFacetOpenItem[] getFacetOpenItems(){
 				LOGGER.info("ee:"+ee.toString());
 			}
 		}
-	    System.out.println("EntityFacetPanel:getFacetOpenItems:FINISH");
+	  //  System.out.println("EntityFacetPanel:getFacetOpenItems:FINISH");
      return foil.toArray(new JFacetOpenItem[0]);	
 	}catch(Exception e){
 		LOGGER.info("e:"+e.toString());
