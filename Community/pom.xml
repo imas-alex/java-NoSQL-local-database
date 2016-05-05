@@ -5,9 +5,9 @@
   <version>0.0.2-SNAPSHOT</version>
    <name>Community</name>
   <description>The community extension for the entigrator application</description>
-  <url>https://github.com/imas-alex/Community</url>
+  <url>https://github.com/imas-alex/java-NoSQL-local-database</url>
   <issueManagement>
-		<url>https://github.com/imas-alex/Community/issues</url>
+		<url>https://github.com/imas-alex/java-NoSQL-local-database/issues</url>
 		<system>GitHub Issues</system>
 	</issueManagement>
 	<licenses>
@@ -20,8 +20,8 @@
 	</licenses>
 	<scm>
 		<url>https://github.com/imas-alex/Community</url>
-		<connection>scm:git:git://github.com/imas-alex/Community.git</connection>
-		<developerConnection>scm:git:git@github.com:imas-alex/Community.git</developerConnection>
+		<connection>scm:git:git://github.com/imas-alex.git</connection>
+		<developerConnection>scm:git:git@github.com:imas-alex/java-NoSQL-local-database.git</developerConnection>
 	</scm>
 	<developers>
 		<developer>

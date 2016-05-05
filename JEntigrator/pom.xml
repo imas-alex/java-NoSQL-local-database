@@ -2,12 +2,12 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>com.github.imas-alex</groupId>
   <artifactId>JEntigrator</artifactId>
-  <version>0.0.1</version>
+  <version>0.0.2-SNAPSHOT</version>
   <name>JEntigrator</name>
   <description>The entigrator application</description>
-  <url>https://github.com/imas-alex/JEntigrator</url>
+  <url>https://github.com/imas-alex/java-NoSQL-local-database</url>
   <issueManagement>
-		<url>https://github.com/imas-alex/JEntigrator/issues</url>
+		<url>https://github.com/imas-alex/java-NoSQL-local-database/issues</url>
 		<system>GitHub Issues</system>
 	</issueManagement>
 	<licenses>
@@ -20,8 +20,8 @@
 	</licenses>
 	<scm>
 		<url>https://github.com/imas-alex/JEntigrator</url>
-		<connection>scm:git:git://github.com/imas-alex/JEntigrator.git</connection>
-		<developerConnection>scm:git:git@github.com:imas-alex/JEntigrator.git</developerConnection>
+		<connection>scm:git:git://github.com/imas-alex/java-NoSQL-local-database.git</connection>
+		<developerConnection>scm:git:git@github.com:imas-alex/java-NoSQL-local-database.git</developerConnection>
 	</scm>
 	<developers>
 		<developer>
