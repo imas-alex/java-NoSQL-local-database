@@ -58,7 +58,6 @@ import gdt.jgui.tool.JTextEditor;
 import javax.swing.JTextField;
 import javax.swing.event.MenuEvent;
 import javax.swing.event.MenuListener;
-
 import org.apache.commons.codec.binary.Base64;
 
 public class JContactEditor extends JPanel implements JContext,JFacetRenderer,JRequester{

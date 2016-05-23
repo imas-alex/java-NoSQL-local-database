@@ -48,20 +48,20 @@ import gdt.jgui.console.JMainConsole;
 public class JEntitiesPanel extends JItemsListPanel{
 	private static final long serialVersionUID = 1L;
 	private Logger LOGGER=Logger.getLogger(JEntitiesPanel.class.getName());
-	String entihome$;
-    String list$;
-    String entityKey$;
-    JMenuItem pasteItem;
-    JMenuItem copyItem;
-    JMenuItem reindexItem;
-    JMenuItem deleteItem;
-    JMenuItem archiveItem;
-    JMenuItem removeComponentsItem; 
-    JMenuItem removeContainersItem; 
-    String requesterResponseLocator$;
-    String containerKey$;
-    String componentKey$;
-    private JMenuItem[] mia;
+	protected String entihome$;
+	protected String list$;
+	protected String entityKey$;
+	protected JMenuItem pasteItem;
+	protected JMenuItem copyItem;
+	protected JMenuItem reindexItem;
+	protected JMenuItem deleteItem;
+	protected JMenuItem archiveItem;
+	protected JMenuItem removeComponentsItem; 
+	protected JMenuItem removeContainersItem; 
+	protected String requesterResponseLocator$;
+	protected String containerKey$;
+	protected String componentKey$;
+ //   protected JMenuItem[] mia;
 /**
  * The default constructor.
  */
@@ -77,7 +77,7 @@ public class JEntitiesPanel extends JItemsListPanel{
 	@Override
 	public JMenu getContextMenu() {
 		menu=super.getContextMenu();
-		 mia=null;
+		mia=null;
 		 int cnt=menu.getItemCount();
 		 if(cnt>0){
 			 mia=new JMenuItem[cnt];
@@ -88,11 +88,14 @@ public class JEntitiesPanel extends JItemsListPanel{
 			@Override
 			public void menuSelected(MenuEvent e) {
 				menu.removeAll();
-				if(mia!=null){
-					for(JMenuItem mi:mia)
-						menu.add(mi);
-				}
-		
+				if(mia!=null)
+					 for(JMenuItem mi:mia)
+					try{
+			  			 if(mi!=null) 
+			  			 menu.add(mi);
+			  			}catch(Exception ee){
+			  				 System.out.println("JEntitiesPanel:getConextMenu:"+ee.toString());
+			  			}
 			Properties locator=Locator.toProperties(locator$);
 				if(locator.getProperty(EntityHandler.ENTITY_CONTAINER)!=null){
 				if(JEntityPrimaryMenu.hasToPaste(console, locator$)){
@@ -349,7 +352,7 @@ public String getTitle() {
 	public String getType() {
 		return "Entities";
 	}
-	private static JItemPanel[] listEntitiesAtLabelList(JMainConsole console,String locator$){
+	public static JItemPanel[] listEntitiesAtLabelList(JMainConsole console,String locator$){
 		try{
 			   Properties locator=Locator.toProperties(locator$);
 			   String list$=locator.getProperty(EntityHandler.ENTITY_LIST);

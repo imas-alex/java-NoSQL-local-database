@@ -64,12 +64,13 @@ public abstract class JFacetOpenItem extends JItemPanel {
  */
 public static JFacetOpenItem getFacetOpenItemInstance(JMainConsole console,String locator$){
 		try{
-//		System.out.println("FacetAddItem:getFacetOpenItemInstance:locator="+locator$);
+		System.out.println("JFacetOpenItem:getFacetOpenItemInstance:locator="+locator$);
 			
 		Properties locator=Locator.toProperties(locator$);
 		String entihome$=locator.getProperty(Entigrator.ENTIHOME);
 		String entityKey$=locator.getProperty(EntityHandler.ENTITY_KEY);
 		String extension$=locator.getProperty(BaseHandler.HANDLER_LOCATION);
+		System.out.println("JFacetOpenItem:getFacetOpenItemInstance:extension="+extension$);
 		String handler$=locator.getProperty(BaseHandler.HANDLER_CLASS);
 //		System.out.println("JFacetItem:getFacetOpenItemInstance:handler="+handler$+" extension="+extension$);
 		Entigrator entigrator=console.getEntigrator(entihome$);
@@ -81,12 +82,27 @@ public static JFacetOpenItem getFacetOpenItemInstance(JMainConsole console,Strin
 		Properties  foiLocator=Locator.toProperties(facetOpenItem.getLocator());
 		foiLocator.setProperty(Entigrator.ENTIHOME, entihome$);
 		foiLocator.setProperty(EntityHandler.ENTITY_KEY, entityKey$);
-		if(extension$!=null)
+		if(extension$!=null){
 		   foiLocator.setProperty(BaseHandler.HANDLER_LOCATION, extension$);
-  		foiLocator.setProperty(Locator.LOCATOR_CHECKABLE, Locator.LOCATOR_TRUE);
-  		facetOpenItem.instantiate(console, Locator.toString(foiLocator));
+		  
+		}
   		
-		return facetOpenItem;
+  		
+  		facetOpenItem.instantiate(console, Locator.toString(foiLocator));
+  	//	System.out.println("JFacetOpenItem:getFacetOpenItemInstance:handler="+handler$);
+  		facetOpenItem.entihome$=entihome$;
+  		facetOpenItem.icon$=facetOpenItem.getFacetIcon();
+  		if(facetOpenItem.icon$!=null)
+  		  foiLocator.setProperty(Locator.LOCATOR_ICON, facetOpenItem.icon$);
+  		if(facetOpenItem.isRemovable())
+  			 foiLocator.setProperty(Locator.LOCATOR_CHECKABLE, Locator.LOCATOR_TRUE);
+  		else
+  			 foiLocator.setProperty(Locator.LOCATOR_CHECKABLE, Locator.LOCATOR_FALSE);
+  		facetOpenItem.instantiate(console, Locator.toString(foiLocator));
+		//if(facetOpenItem.icon$!=null)
+		//    foiLocator.setProperty(Locator.LOCATOR_ICON,facetOpenItem.icon$);
+  		//System.out.println("JFacetOpenItem:getFacetOpenItemInstance:icon="+facetOpenItem.icon$);
+  		return facetOpenItem;
 		}catch(Exception e){
 			Logger.getLogger(JFacetAddItem.class.getName()).severe(e.toString());
 			return null;

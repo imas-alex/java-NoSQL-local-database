@@ -22,6 +22,7 @@ import gdt.jgui.console.JMainConsole;
 import gdt.jgui.console.JRequester;
 import gdt.jgui.entity.JEntitiesPanel;
 import gdt.jgui.entity.JEntityFacetPanel;
+import gdt.jgui.entity.fields.JFieldsFacetOpenItem;
 import gdt.jgui.tool.JTextEditor;
 /**
  * This class represents the folder facet in the list
@@ -221,5 +222,16 @@ public class JFolderFacetAddItem extends JFacetAddItem{
 			this.locator$=locator$;
 			return locator$;
 	}
-
+	@Override
+	public String getIconResource() {
+		return "folder.png";
+	}
+	@Override
+	public String getFacetOpenClass() {
+		return JFolderFacetOpenItem.class.getName();
+	}
+	@Override
+	public String getFacetAddClass() {
+		return JFolderFacetAddItem.class.getName();
+	}
 }

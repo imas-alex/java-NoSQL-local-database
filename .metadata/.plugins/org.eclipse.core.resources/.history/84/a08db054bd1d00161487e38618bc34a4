@@ -1,0 +1,63 @@
+package gdt.jgui.entity.graph;
+
+import java.util.Properties;
+import java.util.logging.Logger;
+
+import gdt.data.entity.EntityHandler;
+import gdt.data.grain.Locator;
+import gdt.data.grain.Sack;
+import gdt.data.store.Entigrator;
+import gdt.jgui.console.JContext;
+import gdt.jgui.console.JItemPanel;
+import gdt.jgui.console.JMainConsole;
+import gdt.jgui.entity.JEntitiesPanel;
+
+public class JGraphNodes extends JEntitiesPanel{
+	private Logger LOGGER=Logger.getLogger(JGraphNodes.class.getName());
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	  public JGraphNodes (){
+	        super();	
+	    }
+	  @Override
+		public JContext instantiate(JMainConsole console, String locator$) {
+		  try{
+				this. console=console;
+				this.locator$=locator$;
+				 Properties locator=Locator.toProperties(locator$);
+				 //list$=locator.getProperty(EntityHandler.ENTITY_LIST);
+				 entityKey$=locator.getProperty(EntityHandler.ENTITY_KEY);
+				 entihome$=locator.getProperty(Entigrator.ENTIHOME);
+				 Entigrator  entigrator=console.getEntigrator(entihome$);
+				 Sack graph=entigrator.getEntity(entityKey$);
+				 String[] sa=graph.elementList("node");
+				 if(sa!=null){
+					list$=Locator.toString(sa);
+					locator$=Locator.append(locator$,EntityHandler.ENTITY_LIST ,list$);
+				 
+	        	// containerKey$=locator.getProperty(EntityHandler.ENTITY_CONTAINER);
+	        	// componentKey$=locator.getProperty(EntityHandler.ENTITY_COMPONENT);
+				 JItemPanel[] ipl= listEntitiesAtLabelList( console,locator$);
+	        	 putItems(ipl);
+				 }
+	        	return this;
+	        }catch(Exception e){
+	        
+	        LOGGER.severe(e.toString());
+	        }
+		  
+		  JContext context=super.instantiate(console, locator$);
+		  return context;
+	  } 
+	  @Override
+	  /**
+	   * Get the context title.
+	   * @return the context title.	
+	   */
+	  public String getTitle() {
+	  		return "Nodes";
+	  		
+	  	}
+}

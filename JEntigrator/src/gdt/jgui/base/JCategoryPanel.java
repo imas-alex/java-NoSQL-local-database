@@ -116,6 +116,9 @@ public class JCategoryPanel extends JItemsListPanel {
 		renderer$=locator.getProperty(RENDERER);
 	//	System.out.println("JCategoryPanel:instantiate:renderer="+renderer$);
 		JFacetRenderer facetRenderer=(JFacetRenderer)JConsoleHandler.getHandlerInstance(entigrator, renderer$);
+		String frLocator$=facetRenderer.getLocator();
+		frLocator$=Locator.append(frLocator$, Entigrator.ENTIHOME, entihome$);
+		facetRenderer.instantiate(console,frLocator$ );
 		entityType$=facetRenderer.getEntityType();
     	categoryIcon$=facetRenderer.getCategoryIcon();
 		categoryTitle$=facetRenderer.getCategoryTitle();
@@ -167,7 +170,7 @@ public class JCategoryPanel extends JItemsListPanel {
 			newItem.addActionListener(new ActionListener() {
 				@Override
 				public void actionPerformed(ActionEvent e) {
-		//			System.out.println("JCategoryPanel:new:renderer="+renderer$);
+				//	System.out.println("JCategoryPanel:new:renderer="+renderer$);
 					Entigrator entigrator=console.getEntigrator(entihome$);	
 					JFacetRenderer facetRenderer=(JFacetRenderer)JConsoleHandler.getHandlerInstance(entigrator, renderer$);
 					String fcLocator$=facetRenderer.getLocator();

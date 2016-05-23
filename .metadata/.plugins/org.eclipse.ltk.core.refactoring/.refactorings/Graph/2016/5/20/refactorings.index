@@ -1,0 +1,19 @@
+1462725979512	Copy compilation unit
+1462726602692	Rename type 'JAddressEditor'
+1462727312490	Rename type 'JAddressFacetAddItem'
+1462727951764	Rename type 'JAddressFacetOpenItem'
+1462895640547	Copy compilation unit
+1462895660911	Rename type 'JNodeEditor'
+1462896573288	Copy compilation unit
+1462896596589	Rename type 'JNodeFacetAddItem'
+1462896965125	Copy compilation unit
+1462897021327	Rename type 'JNodeFacetOpenItem'
+1462974201249	Rename type 'JWeblinkItem'
+1462974556014	Rename type 'JWeblinksPanel'
+1462988741700	Rename local variable 'addressEditor'
+1462988756265	Rename local variable 'aeLocator$'
+1462992683610	Rename local variable 'fe'
+1462992696664	Rename local variable 'feLocator$'
+1463049773710	Rename local variable 'wleLocator$'
+1463066492979	Rename local variable 'inNodeItem'
+1463067840925	Rename local variable 'wle'

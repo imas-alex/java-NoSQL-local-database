@@ -19,6 +19,7 @@ package gdt.jgui.console;
 import gdt.data.entity.BaseHandler;
 import gdt.data.entity.EntityHandler;
 import gdt.data.entity.FacetHandler;
+import gdt.data.entity.facet.ExtensionHandler;
 import gdt.data.grain.Locator;
 import gdt.data.store.Entigrator;
 import java.util.Properties;
@@ -41,13 +42,15 @@ public abstract class JFacetAddItem extends JItemPanel implements JRequester{
 	 * Tag of  adding mode.	
 	 */
 	public static final String ADD_MODE="add mode";
+	protected String entihome$;
+	protected String entityKey$;
+	protected String method$;
+	protected String extension$;
+	protected String addItem$;
 	/**
 	 * Set mode to add facet as component.	
 	 */
 	public static final String ADD_MODE_COMPONENT="add mode component";
-	protected String entihome$;
-	protected String entityKey$;
-	protected String method$;
 	/**
 	 * Default constructor.	
 	 */
@@ -60,23 +63,46 @@ public abstract class JFacetAddItem extends JItemPanel implements JRequester{
      * @param locator$ the requester string.
 	 * @return the JFacetAddItem.
 	 */	
+	@Override
 	public JFacetAddItem instantiate(JMainConsole console,String locator$){
 		try{
+			
+			System.out.println("JFacetAddItem:instantiate:locator="+locator$);  
 			Properties locator=Locator.toProperties(locator$);
 			entihome$=locator.getProperty(Entigrator.ENTIHOME);
 			entityKey$=locator.getProperty(EntityHandler.ENTITY_KEY);
 			method$=locator.getProperty(BaseHandler.HANDLER_METHOD);
-			locator$=getLocator();
+			extension$=locator.getProperty(BaseHandler.HANDLER_LOCATION);
+			addItem$=locator.getProperty(BaseHandler.HANDLER_CLASS);
+			Entigrator entigrator=console.getEntigrator(entihome$);
+			JFacetAddItem addItem;
+			if(extension$==null)
+			    addItem=(JFacetAddItem)JConsoleHandler.getHandlerInstance(entigrator, addItem$);
+			else
+				addItem=(JFacetAddItem)JConsoleHandler.getHandlerInstance(entigrator, addItem$,extension$);
+			locator$=addItem.getLocator();
+			System.out.println("FacetAddItem:instantiate:0:faiLocator="+locator$); 
+			//getLocator();
 			if(entihome$!=null)
 				locator$=Locator.append(locator$, Entigrator.ENTIHOME, entihome$);
 			if(entityKey$!=null)
 				locator$=Locator.append(locator$, EntityHandler.ENTITY_KEY, entityKey$);
 			if(method$!=null)
 				locator$=Locator.append(locator$, BaseHandler.HANDLER_METHOD, method$);
-	        locator$=markAppliedUncheckable(console, locator$);
-			this.locator$=locator$;
+			
+			if(extension$!=null){
+				locator$=Locator.append(locator$, BaseHandler.HANDLER_LOCATION,extension$);
+				String iconResource$=addItem.getIconResource();
+				if(iconResource$!=null)
+					 icon$=ExtensionHandler.loadIcon(entigrator, extension$,iconResource$);
+				if(icon$!=null)
+					locator$=Locator.append(locator$,Locator.LOCATOR_ICON,icon$);
+			}
+			
+			System.out.println("FacetAddItem:instantiate:1:faiLocator="+locator$);  
+			locator$=markAppliedUncheckable(console, locator$);
 			super.instantiate(console, locator$);
-		//	System.out.println("FacetAddItem:instantiate:faiLocator="+this.locator$);
+		
 		}catch(Exception e){
 			Logger.getLogger(JFacetAddItem.class.getName()).severe(e.toString());
 		}
@@ -85,7 +111,9 @@ public abstract class JFacetAddItem extends JItemPanel implements JRequester{
 public abstract void addFacet(JMainConsole console, String locator$);
 public abstract void addComponent(JMainConsole console, String locator$);
 public abstract FacetHandler getFacetHandler();
-
+public abstract String getIconResource();
+public abstract String getFacetOpenClass();
+public abstract String getFacetAddClass();
 public String markAppliedUncheckable(JMainConsole console, String locator$){
 	try{
 	FacetHandler fh=getFacetHandler();

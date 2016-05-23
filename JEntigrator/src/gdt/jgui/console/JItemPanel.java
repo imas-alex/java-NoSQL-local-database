@@ -82,6 +82,7 @@ public class JItemPanel extends JPanel {
 	          title$=locator.getProperty(Locator.LOCATOR_TITLE);
 	          if(title$!=null){
 	        	 title = new JLabel(title$, JLabel.LEFT);
+	        	 title.setText(title$);
 	        	 title.setOpaque(true);
 	        	 title.addMouseListener(new MousePopupListener());
 	      		title.setAlignmentX(Component.LEFT_ALIGNMENT);
@@ -132,6 +133,7 @@ public class JItemPanel extends JPanel {
 		try{
 			this.console=console;
 			this.locator$=locator$;
+			this.removeAll();
 	          Properties locator=Locator.toProperties(locator$);
 	          if(Locator.LOCATOR_TRUE.equals(locator.getProperty(Locator.LOCATOR_CHECKABLE))){
 	        	  checkbox = new JCheckBox();
@@ -140,14 +142,17 @@ public class JItemPanel extends JPanel {
 	      			if(checkbox!=null)
 	      			checkbox.setSelected(true);
 	          }
+	          title = new JLabel(title$, JLabel.LEFT);
+	          //title.setIcon(null);
 	          title$=locator.getProperty(Locator.LOCATOR_TITLE);
 	          if(title$!=null){
-	        	 title = new JLabel(title$, JLabel.LEFT);
+	        	 title.setText(title$); 
 	        	 title.setOpaque(true);
 	        	 title.addMouseListener(new MousePopupListener());
 	      		title.setAlignmentX(Component.LEFT_ALIGNMENT);
 	      		add(title,BorderLayout.WEST );
 	          icon$=locator.getProperty(Locator.LOCATOR_ICON);
+	          
 	          if(icon$!=null){
 	        	  byte[] ba=Base64.decodeBase64(icon$);
 	        	  ImageIcon icon = new ImageIcon(ba);
@@ -181,6 +186,7 @@ public class JItemPanel extends JPanel {
 	 * @return the item title.
 	 */
 public String getTitle(){
+	title.setText(title$);
 	return title$;
 }
 /**
@@ -210,7 +216,17 @@ public void setChecked(boolean checked){
 	if(checkbox!=null)
 		checkbox.setSelected(checked);
 }
-
+public void resetIcon(){
+	 if(icon$!=null){
+   	  byte[] ba=Base64.decodeBase64(icon$);
+   	  ImageIcon icon = new ImageIcon(ba);
+   	  Image image= icon.getImage().getScaledInstance(24, 24, 0);
+   	  icon.setImage(image);
+   	  title.setIcon(icon); 
+   	  title.repaint();
+   	  title.revalidate();
+     }
+}
 class MousePopupListener extends MouseAdapter {
   boolean isPopup=false;
 	public void mousePressed(MouseEvent e) {

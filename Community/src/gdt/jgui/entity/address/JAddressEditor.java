@@ -157,7 +157,7 @@ public class JAddressEditor extends JFieldsEditor {
 	public void reindex(JMainConsole console, Entigrator entigrator, Sack entity) {
 		 try{
 			// System.out.println("JPhoneEditor:reindex:0:entity="+entity.getProperty("label"));
-		    	String fhandler$=PhoneHandler.class.getName();
+		    	String fhandler$=AddressHandler.class.getName();
 		    	if(entity.getElementItem("fhandler", fhandler$)!=null){
 					//System.out.println("JPhoneEditor:reindex:1:entity="+entity.getProperty("label"));
 		    		entity.putElementItem("jfacet", new Core(JAddressFacetAddItem.class.getName(),fhandler$,JAddressFacetOpenItem.class.getName()));

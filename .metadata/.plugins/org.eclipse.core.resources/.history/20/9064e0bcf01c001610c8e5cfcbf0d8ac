@@ -1,0 +1,142 @@
+package gdt.jgui.entity.graph;
+
+import java.util.ArrayList;
+
+import javax.swing.JMenu;
+import javax.swing.JPanel;
+
+import gdt.data.entity.GraphHandler;
+import gdt.data.entity.facet.ExtensionHandler;
+import gdt.data.grain.Locator;
+import gdt.data.grain.Sack;
+import gdt.data.store.Entigrator;
+import gdt.jgui.console.JContext;
+import gdt.jgui.console.JFacetRenderer;
+import gdt.jgui.console.JMainConsole;
+import gdt.jgui.console.JRequester;
+import gdt.jgui.entity.JReferenceEntry;
+
+public class JGraphRenderer implements JContext , JFacetRenderer,JRequester{
+	private String entihome$;
+    private String entityKey$;
+    private String entityLabel$;
+    private Sack graph;
+    String requesterResponseLocator$;
+	@Override
+	public void response(JMainConsole console, String locator$) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public String addIconToLocator(String locator$) {
+		// TODO Auto-generated method stub
+		return locator$;
+	}
+
+	@Override
+	public String getFacetHandler() {
+		return GraphHandler.class.getName();
+	}
+
+	@Override
+	public String getEntityType() {
+		return "graph";
+	}
+
+	@Override
+	public String getCategoryIcon() {
+		if(entihome$!=null){
+			locator.setProperty(Entigrator.ENTIHOME,entihome$);
+			Entigrator entigrator=console.getEntigrator(entihome$);
+		 icon$=ExtensionHandler.loadIcon(entigrator, GraphHandler.EXTENSION_KEY,"graph.png");
+		if(icon$!=null)
+		    	locator.setProperty(Locator.LOCATOR_ICON,icon$);
+		}
+	}
+
+	@Override
+	public String getCategoryTitle() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void adaptClone(JMainConsole console, String locator$) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void adaptRename(JMainConsole console, String locator$) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void collectReferences(Entigrator entigrator, String entiyKey$, ArrayList<JReferenceEntry> sl) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void reindex(JMainConsole console, Entigrator entigrator, Sack entity) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public String newEntity(JMainConsole console, String locator$) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public JPanel getPanel() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public JMenu getContextMenu() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public String getLocator() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public JContext instantiate(JMainConsole console, String locator$) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public String getTitle() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public String getSubtitle() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public String getType() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void close() {
+		// TODO Auto-generated method stub
+		
+	}
+
+}

@@ -37,6 +37,7 @@ import gdt.jgui.console.JMainConsole;
 import gdt.jgui.console.JRequester;
 import gdt.jgui.entity.JEntitiesPanel;
 import gdt.jgui.entity.JEntityFacetPanel;
+import gdt.jgui.entity.fields.JFieldsFacetOpenItem;
 import gdt.jgui.tool.JTextEditor;
 /**
  * This class represents the webset facet in the list
@@ -217,5 +218,17 @@ public class JWebsetFacetAddItem extends JFacetAddItem{
 			}	
 			this.locator$=locator$;
 			return locator$;
+	}
+	@Override
+	public String getIconResource() {
+		return "globe.png";
+	}
+	@Override
+	public String getFacetOpenClass() {
+		return JWebsetFacetOpenItem.class.getName();
+	}
+	@Override
+	public String getFacetAddClass() {
+		return JWebsetFacetAddItem.class.getName();
 	}
 }

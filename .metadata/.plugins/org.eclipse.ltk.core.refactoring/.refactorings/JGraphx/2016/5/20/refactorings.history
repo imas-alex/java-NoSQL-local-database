@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<session version="1.0">
+<refactoring comment="Copy element &apos;com&apos; to &apos;JgraphExamples/src&apos;&#x0A;- Original project: &apos;JGraphx&apos;&#x0A;- Destination element: &apos;JgraphExamples/src&apos;&#x0A;- Original element: &apos;com&apos;" description="Copy folder" destination="=JgraphExamples/src" element1="examples/com" files="0" flags="589830" folders="1" id="org.eclipse.jdt.ui.copy" policy="org.eclipse.jdt.ui.copyResources" stamp="1463141995976" units="0" version="1.0"/>
+</session>

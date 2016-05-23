@@ -226,7 +226,7 @@ private void clearContextMenu(){
  * @param locator$ the context locator.
  */
 public void putContext(JContext context,String locator$){
-	//System.out.println("MainConsole:putContext:BEGIN:context="+context.getClass().getName());
+	System.out.println("MainConsole:putContext:BEGIN:context="+context.getClass().getName());
 	try{
 	int cnt=frmEntigrator.getContentPane().getComponentCount();
 	if(cnt>0){
@@ -237,18 +237,28 @@ public void putContext(JContext context,String locator$){
 	}catch(Exception e){
 		Logger.getLogger(getClass().getName()).severe(e.toString());
 	}
+	
 	frmEntigrator.getContentPane().removeAll();
+	
 	context.instantiate(this, locator$);
+	
 	frmEntigrator.getContentPane().add(context.getPanel(),BorderLayout.CENTER );
+	
 	frmEntigrator.setTitle(context.getTitle());
+	
 	JTrackPanel.putMember(this, context.getLocator());
+	try{
 	contextMenu=context.getContextMenu();
+	
 	if(contextMenu!=null){
 		clearContextMenu();
 		menuBar.add(contextMenu);
 		contextMenu.setVisible(true);
 	}else
 		clearContextMenu();	
+	}catch(Exception e){
+		Logger.getLogger(getClass().getName()).severe("cannot get context menu for context="+context.getClass().getName()+".error:"+ e.toString()); 	
+	}
 	String subtitle$=context.getSubtitle();
 	if(subtitle$!=null){
 	subtitle.setText(subtitle$);
@@ -260,6 +270,7 @@ public void putContext(JContext context,String locator$){
 	frmEntigrator.getContentPane().repaint();
 //	System.out.println("MainConsole:putContext:FINISH:");
 }
+
 /**
  * Get the content panel of the main frame.
  * @return the content panel.

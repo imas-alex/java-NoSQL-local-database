@@ -1,4 +1,6 @@
 package gdt.data.entity.facet;
+import java.io.ByteArrayOutputStream;
+import java.io.InputStream;
 /*
  * Copyright 2016 Alexander Imas
  * This file is part of JEntigrator.
@@ -19,8 +21,13 @@ package gdt.data.entity.facet;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.ArrayList;
+import java.util.Enumeration;
 import java.util.Properties;
 import java.util.logging.Logger;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipFile;
+
+import org.apache.commons.codec.binary.Base64;
 
 import gdt.data.entity.EntityHandler;
 import gdt.data.entity.FacetHandler;
@@ -152,7 +159,47 @@ private Logger LOGGER=Logger.getLogger(ExtensionHandler.class.getName());
 			return null;
 		}
 	}
-
+	public static String loadIcon(Entigrator entigrator,String extension$,String resource$){
+		try{
+			
+	//System.out.println("ExtensionHandler:loadIcon:extension="+extension$+" handler="+handlerClass$);
+			Sack extension=entigrator.getEntityAtKey(extension$);
+			String lib$=extension.getElementItemAt("field", "lib");
+			String jar$=entigrator.getEntihome()+"/"+extension$+"/"+lib$;
+	//		System.out.println("ExtensionHandler:loadIcon:jar="+jar$);
+			  ZipFile zf = new ZipFile(jar$);
+			    Enumeration<? extends ZipEntry> entries = zf.entries();
+			    ZipEntry ze;
+			    String[] sa;
+			    while (entries.hasMoreElements()) {
+			      try{
+			    	ze = entries.nextElement();
+			      sa=ze.getName().split("/");
+		//	      System.out.println("ExtensionHandler:loadIcon:zip entry="+sa[sa.length-1]);
+			      if(resource$.equals(sa[sa.length-1])){
+			    	  InputStream is=zf.getInputStream(ze);
+		//	    	  System.out.println("ExtensionHandler:loadIcon:input stream="+is.toString());
+						ByteArrayOutputStream bos = new ByteArrayOutputStream();
+				            byte[] b = new byte[1024];
+				            int bytesRead = 0;
+				            while ((bytesRead = is.read(b)) != -1) {
+				               bos.write(b, 0, bytesRead);
+				            }
+				            byte[] ba = bos.toByteArray();
+				            is.close();
+				           return Base64.encodeBase64String(ba);
+			      }
+			      }catch(Exception e){
+			    	  
+			      }
+			    }
+			return null;
+		}catch(Exception e){
+			Logger.getLogger(ExtensionHandler.class.getName()).severe(e.toString());
+			return null;
+		}
+		
+	}
 	private void adaptLabel(Entigrator entigrator){
 		 try{
 				Sack entity=entigrator.getEntityAtKey(entityKey$);

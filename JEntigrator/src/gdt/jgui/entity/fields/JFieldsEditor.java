@@ -336,6 +336,7 @@ public JFieldsEditor() {
 			Properties locator=Locator.toProperties(locator$);
 			entihome$=locator.getProperty(Entigrator.ENTIHOME);
 			entityKey$=locator.getProperty(EntityHandler.ENTITY_KEY);
+			
 			requesterResponseLocator$=locator.getProperty(JRequester.REQUESTER_RESPONSE_LOCATOR);
 			table = new JTable();
 			  DefaultTableModel model=new DefaultTableModel(
@@ -645,7 +646,7 @@ public JFieldsEditor() {
 				String icons$=entihome$+"/"+Entigrator.ICONS;
 				Support.addHandlerIcon(getClass(), "fields.png", icons$);
 				newEntity=entigrator.ent_reindex(newEntity);
-				newEntity.print();
+			//	newEntity.print();
 				reindex(console, entigrator, newEntity);
 				JEntityFacetPanel efp=new JEntityFacetPanel(); 
 				String efpLocator$=efp.getLocator();

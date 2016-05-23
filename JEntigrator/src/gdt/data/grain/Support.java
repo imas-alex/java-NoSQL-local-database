@@ -172,12 +172,20 @@ public class Support {
     	try {
     		InputStream is=handler.getResourceAsStream(resource$);
         	if(is!=null){
-        		//System.out.println("Support:getClassResource:resource stream="+is.toString());
+        		System.out.println("Support:getClassResource:resource stream="+is.toString());
         		return is;
-        	}else{
-        		//System.out.println("Support:getClassResource:cannot get resource stream");            		
-        	
-    		String handler$=handler.getName();
+        	}
+        	else{
+        	//	System.out.println("Support:getClassResource:cannot get embedded resource stream for handler="+handler.getName());            		
+        	ClassLoader classLoader=handler.getClassLoader();
+        	//if(classLoader!=null)
+        	//	System.out.println("Support:getClassResource:class loader="+classLoader.toString());
+    		is=classLoader.getResourceAsStream(resource$);
+    		//if(is!=null)
+    		//	System.out.println("Support:getClassResource:resourse stream="+is.toString());
+    		//else
+    		//	System.out.println("Support:getClassResource:cannot get resource stream");
+        	String handler$=handler.getName();
     		//System.out.println("Support:getClassResource:class="+handler$);
     		String handlerName$=handler.getSimpleName();
     		//System.out.println("Support:getClassResource:class name="+handlerName$);
@@ -208,6 +216,7 @@ public class Support {
  	 */ 
     public static String readHandlerIcon(Class<?> handler,String icon$) {
  		try {
+ 			System.out.println("Support:readHandlerIcon:handler="+handler.getName()+" icon="+icon$);
  			//InputStream is=handler.getResourceAsStream(icon$);
  			InputStream is= getClassResource(handler,icon$);
  			ByteArrayOutputStream bos = new ByteArrayOutputStream();

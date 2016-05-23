@@ -12,6 +12,7 @@
 		<item value="false" key="WizardProjectsImportPage.STORE_COPY_PROJECT_ID"/>
 		<item value="false" key="WizardProjectsImportPage.STORE_ARCHIVE_SELECTED"/>
 		<list key="WizardProjectsImportPage.STORE_DIRECTORIES">
+			<item value="/home/imasa/Downloads/neoclipse-master/org.neo4j.neoclipse"/>
 			<item value="/home/imasa/git/github/Community"/>
 			<item value="/home/imasa/git/github/JEntigrator"/>
 		</list>

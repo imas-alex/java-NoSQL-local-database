@@ -2,11 +2,24 @@
 <section name="Workbench">
 	<item value="true" key="CommitDialog.showUntracked"/>
 	<list key="CommitDialog.authorValues">
+		<item value="Alexander Imas &lt;alexander.imas@gmail.com&gt;"/>
 		<item value="imasa &lt;alexander.imas@gmail.com&gt;"/>
 	</list>
 	<list key="CommitDialog.committerValues">
+		<item value="Alexander Imas &lt;alexander.imas@gmail.com&gt;"/>
 		<item value="imasa &lt;alexander.imas@gmail.com&gt;"/>
 	</list>
+	<section name="org.eclipse.egit.ui.internal.push.PushResultDialog.dialogBounds">
+		<item value="650" key="DIALOG_WIDTH"/>
+		<item value="1|Ubuntu|11.0|0|GTK|1|" key="DIALOG_FONT_NAME"/>
+		<item value="455" key="DIALOG_HEIGHT"/>
+		<item value="444" key="DIALOG_X_ORIGIN"/>
+		<item value="154" key="DIALOG_Y_ORIGIN"/>
+		<list key="sashWeights">
+			<item value="600"/>
+			<item value="400"/>
+		</list>
+	</section>
 	<section name="org.eclipse.egit.ui.COMMIT_DIALOG_SECTION">
 		<item value="626" key="DIALOG_WIDTH"/>
 		<item value="1|Ubuntu|11.0|0|GTK|1|" key="DIALOG_FONT_NAME"/>

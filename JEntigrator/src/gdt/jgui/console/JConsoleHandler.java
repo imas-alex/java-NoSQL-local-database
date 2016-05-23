@@ -71,6 +71,7 @@ public class JConsoleHandler {
        	String handlerClass$=locator.getProperty(BaseHandler.HANDLER_CLASS);
         String method$=locator.getProperty(BaseHandler.HANDLER_METHOD);
         String entihome$=locator.getProperty(Entigrator.ENTIHOME);
+        String extension$=locator.getProperty(BaseHandler.HANDLER_LOCATION);
      //   System.out.println("ConsoleHandler:execute:handler="+handlerClass$+" method="+method$+" entihome="+entihome$);
        if(CONSOLE_SCOPE.equals(handlerScope$)){
     	   if(JTrackPanel.class.getName().equals(handlerClass$)){
@@ -82,13 +83,19 @@ public class JConsoleHandler {
     	   Entigrator entigrator=null;
     	   if(entihome$!=null)
     	      entigrator=console.getEntigrator(entihome$);
-    	 
+    	 if(extension$==null)
     	   obj =getHandlerInstance(entigrator, handlerClass$);
-    	 
+    	 else
+    		 obj =getHandlerInstance(entigrator, handlerClass$,extension$); 
     	   if (obj instanceof JContext){
-    //	    	 System.out.println("ConsoleHandler:execute:context="+handlerClass$);
-    	    	   console.putContext((JContext)obj,locator$);
+    	    	// System.out.println("ConsoleHandler:execute:context="+handlerClass$);
+    	    	// if(console==null)
+    	    	//	 System.out.println("ConsoleHandler:execute:consoleis null");
+    	    	
+    	    	 console.putContext((JContext)obj,locator$);
+    	    	
     	    	   if(method$!=null){
+    	    		 //  System.out.println("ConsoleHandler:execute:method="+method$); 
    	    	    	Method method = obj.getClass().getDeclaredMethod(method$,JMainConsole.class,String.class);
    	    	    	method.invoke((JContext)obj,console, locator$);
    	    	    	  }
@@ -207,37 +214,44 @@ public static JFacetRenderer getFacetRenderer(Entigrator entigrator,String fhand
  */
 public static Object getHandlerInstance(Entigrator entigrator,String handlerClass$){
 try{
-	//System.out.println("ConsoleHandler:getHandlerInstance:handler="+handlerClass$);
+	System.out.println("ConsoleHandler:getHandlerInstance:handler="+handlerClass$);
 	if(handlerClass$==null||"null".equals(handlerClass$)){
 		System.out.println("ConsoleHandler:getHandlerInstance:argument null");
 		return null;
 	}
+	
 	try{
 //		System.out.println("ConsoleHandler:getHandlerInstance:forName");
 			return Class.forName(handlerClass$).newInstance();
 	}catch(ClassNotFoundException ee){
+		System.out.println("ConsoleHandler:getHandlerInstance:embedded class not found");
+	//
+	//	
 	String[]sa=entigrator.indx_listEntities("entity", "extension");
-	if(sa==null)
+	if(sa==null){
+		System.out.println("ConsoleHandler:getHandlerInstance:no extensions");
 		return null;
+	}
 	Sack extension;
 	Core[] ca;
 	for(String aSa:sa){
 		extension=entigrator.getEntityAtKey(aSa);
+		System.out.println("ConsoleHandler:getHandlerInstance:try extension="+extension.getProperty("label"));
 		ca=extension.elementGet("content.fhandler");
 		if(ca!=null)
 			for(Core aCa:ca){
 				if(handlerClass$.equals(aCa.name)){
-					System.out.println("ConsoleHandler:getHandlerInstance:aCa.name");	
+					System.out.println("ConsoleHandler:getHandlerInstance:aCa.name="+aCa.name);	
 					Object obj= ExtensionHandler.loadHandlerInstance( entigrator,extension.getKey(), handlerClass$);
-					//System.out.println("ConsoleHandler:getHandlerInstance:22");
+					System.out.println("ConsoleHandler:getHandlerInstance:handler="+handlerClass$);
 					return obj;
 				}
 			}
 		ca=extension.elementGet("content.jfacet");
 		if(ca!=null)
 			for(Core aCa:ca){
-	//			System.out.println("ConsoleHandler:getHandlerInstance:jfacet: type="+aCa.type+" name="+aCa.name+" value="+aCa.value);	
-				if(handlerClass$.equals(aCa.type)||handlerClass$.equals(aCa.value)){
+				System.out.println("ConsoleHandler:getHandlerInstance:jfacet: type="+aCa.type+" name="+aCa.name+" value="+aCa.value);	
+				if(handlerClass$.equals(aCa.type)||handlerClass$.equals(aCa.value)||handlerClass$.equals(aCa.name)){
 						Object obj= ExtensionHandler.loadHandlerInstance( entigrator,extension.getKey(), handlerClass$);
 						return obj;
 				}
@@ -254,6 +268,55 @@ try{
 			}
 		}
 	    }
+	return null;
+	}catch(Exception e){
+		Logger.getLogger(ExtensionHandler.class.getName()).severe(e.toString());
+		return null;
+	}
+}
+public static Object getHandlerInstance(Entigrator entigrator,String handlerClass$,String extension$){
+try{
+	System.out.println("ConsoleHandler:getHandlerInstance:handler="+handlerClass$+" extension ="+extension$);
+	if(handlerClass$==null||"null".equals(handlerClass$)|extension$==null){
+		System.out.println("ConsoleHandler:getHandlerInstance:argument null");
+		return null;
+	}
+if(entigrator==null)
+	System.out.println("ConsoleHandler:getHandlerInstance:entigrator is null");
+	Sack extension=entigrator.getEntity(extension$);
+	if(extension==null)
+		System.out.println("ConsoleHandler:getHandlerInstance:extension is null");
+	Core[] ca;
+	System.out.println("ConsoleHandler:getHandlerInstance:try extension="+extension.getProperty("label"));
+		ca=extension.elementGet("content.fhandler");
+		if(ca!=null)
+			for(Core aCa:ca){
+				if(handlerClass$.equals(aCa.name)){
+					System.out.println("ConsoleHandler:getHandlerInstance:aCa.name="+aCa.name);	
+					Object obj= ExtensionHandler.loadHandlerInstance( entigrator,extension.getKey(), handlerClass$);
+					System.out.println("ConsoleHandler:getHandlerInstance:handler="+handlerClass$);
+					return obj;
+				}
+			}
+		ca=extension.elementGet("content.jfacet");
+		if(ca!=null)
+			for(Core aCa:ca){
+				System.out.println("ConsoleHandler:getHandlerInstance:jfacet: type="+aCa.type+" name="+aCa.name+" value="+aCa.value);	
+				if(handlerClass$.equals(aCa.type)||handlerClass$.equals(aCa.value)||handlerClass$.equals(aCa.name)){
+						Object obj= ExtensionHandler.loadHandlerInstance( entigrator,extension.getKey(), handlerClass$);
+						return obj;
+				}
+			}
+		ca=extension.elementGet("content.jrenderer");
+		if(ca!=null)
+			for(Core aCa:ca){
+		//		System.out.println("ConsoleHandler:getHandlerInstance:jrenderer: type="+aCa.type+" name="+aCa.name+" value="+aCa.value);	
+				if(handlerClass$.equals(aCa.value)){
+					Object obj= ExtensionHandler.loadHandlerInstance( entigrator,extension.getKey(), handlerClass$);
+					//System.out.println("ConsoleHandler:getHandlerInstance:2");
+					return obj;
+				}
+			}
 	return null;
 	}catch(Exception e){
 		Logger.getLogger(ExtensionHandler.class.getName()).severe(e.toString());

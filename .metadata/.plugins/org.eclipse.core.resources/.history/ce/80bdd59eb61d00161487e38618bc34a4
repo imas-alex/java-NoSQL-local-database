@@ -1,0 +1,12 @@
+package gdt.jgui.entity.graph;
+
+import gdt.jgui.entity.JEntitiesPanel;
+
+public class JGraphNodes extends JEntitiesPanel{
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+}

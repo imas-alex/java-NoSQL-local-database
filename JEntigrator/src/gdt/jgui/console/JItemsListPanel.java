@@ -55,6 +55,7 @@ public  abstract class JItemsListPanel extends JPanel implements JContext{
     JMenuItem selectItem;
     JMenuItem unselectItem;
     protected JMenu menu;
+    protected JMenuItem[] mia;
     protected String locator$;
    /**
     * Get the basic context menu for lists.
@@ -99,9 +100,9 @@ public  abstract class JItemsListPanel extends JPanel implements JContext{
     	setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
 		 if(ipa!=null)
 			 for(JItemPanel aIpl:ipa){
-				 aIpl.revalidate();
-				 aIpl.repaint();
-				// System.out.println("ItemsListPanel:putItems:aIpl="+aIpl.getLocator());
+				// aIpl.revalidate();
+				// aIpl.repaint();
+				// System.out.println("ItemsListPanel:putItems:aIpl="+aIpl.getTitle());
 				 panel.add(aIpl);
 			 }
 		

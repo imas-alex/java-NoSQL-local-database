@@ -121,7 +121,7 @@ public void response(JMainConsole console, String locator$) {
 
 public void addFacet(JMainConsole console, String locator$) {
 	try{
-	//   System.out.println("JFieldsFacetAddItem:addFacet:locator:"+locator$);
+	   System.out.println("JFieldsFacetAddItem:addFacet:locator:"+locator$);
 	   Properties locator=Locator.toProperties(locator$);
 	   String entihome$=locator.getProperty(Entigrator.ENTIHOME);
 	   String entityKey$=locator.getProperty(EntityHandler.ENTITY_KEY);
@@ -223,6 +223,18 @@ public String  markAppliedUncheckable(JMainConsole console,String locator$) {
 		}	
 		this.locator$=locator$;
 		return locator$;
+}
+@Override
+public String getIconResource() {
+	return "fields.png";
+}
+@Override
+public String getFacetOpenClass() {
+	return JFieldsFacetOpenItem.class.getName();
+}
+@Override
+public String getFacetAddClass() {
+	return JFieldsFacetAddItem.class.getName();
 }
 }
 

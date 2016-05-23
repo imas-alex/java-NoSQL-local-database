@@ -101,7 +101,7 @@ public JTextEditor() {
 					   if(base64)
 						   text$=Locator.compressText(text$);
 					   responseLocator$=Locator.append(responseLocator$, TEXT, text$);
-					//   System.out.println("TextEditor:done:response locator="+Locator.remove(responseLocator$, Locator.LOCATOR_ICON));
+					   System.out.println("TextEditor:done:response locator="+Locator.remove(responseLocator$, Locator.LOCATOR_ICON));
 					   JConsoleHandler.execute(console, responseLocator$);
 						}catch(Exception ee){
 							LOGGER.severe(ee.toString());

@@ -38,6 +38,7 @@ import gdt.data.store.Entigrator;
 import gdt.jgui.console.JConsoleHandler;
 import gdt.jgui.console.JContext;
 import gdt.jgui.console.JFacetAddItem;
+import gdt.jgui.console.JFacetOpenItem;
 import gdt.jgui.console.JItemsListPanel;
 import gdt.jgui.console.JMainConsole;
 import gdt.jgui.entity.bookmark.JBookmarksFacetAddItem;
@@ -52,7 +53,7 @@ import gdt.jgui.entity.webset.JWebsetFacetAddItem;
 public class JEntityAddFacets extends JItemsListPanel {
 private static final long serialVersionUID = 1L;
 private Logger LOGGER=Logger.getLogger(JEntityAddFacets.class.getName());
-	String entihome$;
+String entihome$;
 String entityKey$;
 String entityLabel$;
 String locator$;
@@ -138,14 +139,14 @@ public JEntityAddFacets() {
 		try{
 			this.console=console;
 			this.locator$=locator$;
-	//		System.out.println("EntityAddFacets:instantiate:locator="+locator$);
+	//		System.out.println("JEntityAddFacets:instantiate:locator="+locator$);
 			Properties locator=Locator.toProperties(locator$);
 			entihome$=locator.getProperty(Entigrator.ENTIHOME);
 			entityKey$=locator.getProperty(EntityHandler.ENTITY_KEY);
 			entityLabel$=locator.getProperty(EntityHandler.ENTITY_LABEL);
 			putItems(getAllFacetAddItems());
-			revalidate();
-			repaint();
+			//revalidate();
+			//repaint();
 		}catch(Exception e){
 			LOGGER.severe(e.toString());
 		}
@@ -197,36 +198,65 @@ private JFacetAddItem[] getAllFacetAddItems(){
 		fail.add(bookmarksItem);		
 		
 		//extensions
-		
+		System.out.println("JEntityAddFacets:getAllFacetAddItems:check extensions");
 		Entigrator entigrator=console.getEntigrator(entihome$);
 		String[] sa=entigrator.indx_listEntities("entity","extension");
+		
 		String facetAddItemClass$;
 		JFacetAddItem addItem;
+		System.out.println("JEntityAddFacets:getAllFacetAddItems:sa="+sa.length);
 		if(sa!=null){
 			Sack extension;
 		for(String aSa:sa){
 			try{
 				extension=entigrator.getEntityAtKey(aSa);
+				System.out.println("JEntityAddFacets:getAllFacetAddItems:extension="+extension.getProperty("label"));
 				Core[] ca=extension.elementGet("content.jfacet");
+				//String extension$;
+				String facetAddClass$;
+				String icon$;
+				String iconResource$;
 				if(ca!=null)
 					for(Core aCa:ca){
+						try{
 						facetAddItemClass$=aCa.type;
 						addItem=(JFacetAddItem)ExtensionHandler.loadHandlerInstance(entigrator, aSa, facetAddItemClass$);
+						facetAddClass$=addItem.getFacetAddClass();
+						
 						itemLocator$=addItem.getLocator();
+						System.out.println("JEntityAddFacets:getAllFacetAddItems:item locator="+itemLocator$);
 						itemLocator$=Locator.append(itemLocator$,Entigrator.ENTIHOME ,entihome$);
 						itemLocator$=Locator.append(itemLocator$,EntityHandler.ENTITY_KEY ,entityKey$);
-						itemLocator$=addItem.markAppliedUncheckable(console, itemLocator$);
+						itemLocator$=Locator.append(itemLocator$,BaseHandler.HANDLER_LOCATION ,aSa);
+						itemLocator$=Locator.append(itemLocator$,BaseHandler.HANDLER_CLASS ,facetAddClass$);
+						//itemLocator$=addItem.markAppliedUncheckable(console, itemLocator$);
+						iconResource$=addItem.getIconResource();
+						if(iconResource$!=null){
+							icon$=ExtensionHandler.loadIcon(entigrator, aSa, iconResource$);
+							if(icon$!=null)
+								itemLocator$=Locator.append(itemLocator$,Locator.LOCATOR_ICON,icon$);
+						}
+						System.out.println("JEntityAddFacets:getAllFacetAddItems:item="+addItem.getClass().getName());
 						addItem.instantiate(console, itemLocator$);
-						System.out.println("EntityAddFacets:getAllFacetAddItems:item="+addItem.getClass().getName());
 						fail.add(addItem);
+						}catch(Exception eee){
+							LOGGER.info(eee.toString());
+						}
 					}
 			}catch(Exception ee){
 				LOGGER.info(ee.toString());
 			}
 		}
-	}
+	}else
+		System.out.println("JEntityAddFacets:getAllFacetAddItems:mo extensions found");	
 	Collections.sort(fail,new ItemPanelComparator());
 	JFacetAddItem[]faia=fail.toArray(new JFacetAddItem[0]);
+	/*
+	for(JFacetAddItem fai:faia){
+	 	if(fai!=null)
+		System.out.println("EntityAddFacets:getAllFacetAddItems:fai="+fai.getTitle());
+	}
+	*/
 	return faia;
 	}catch(Exception e){
 		LOGGER.severe(e.toString());
@@ -235,11 +265,18 @@ private JFacetAddItem[] getAllFacetAddItems(){
 }
 private void applyFacets(){
 	//System.out.println("EntityAddFacets:applyFacets:");
+	String facetHandlerClass$;
 	try{
 		String[] sa=listSelectedItems();
         for(String aSa:sa ){
-        //	System.out.println("EntityAddFacets:applyFacets:aSa:"+aSa);
+        	
             aSa=Locator.append(aSa, BaseHandler.HANDLER_METHOD, JFacetAddItem.METHOD_ADD_FACET);
+            facetHandlerClass$=Locator.getProperty(aSa,JFacetOpenItem.FACET_HANDLER_CLASS);
+            if(facetHandlerClass$!=null)
+            aSa=Locator.append(aSa,BaseHandler.HANDLER_CLASS,facetHandlerClass$ );
+            aSa=Locator.append(aSa,Entigrator.ENTIHOME,entihome$);
+            aSa=Locator.append(aSa,EntityHandler.ENTITY_KEY,entityKey$);
+            System.out.println("EntityAddFacets:applyFacets:aSa:"+aSa);
             JConsoleHandler.execute(console, aSa);
         }
 	}catch(Exception e){

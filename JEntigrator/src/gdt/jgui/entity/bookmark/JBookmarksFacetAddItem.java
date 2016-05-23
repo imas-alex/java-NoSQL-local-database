@@ -37,6 +37,7 @@ import gdt.jgui.console.JMainConsole;
 import gdt.jgui.console.JRequester;
 import gdt.jgui.entity.JEntitiesPanel;
 import gdt.jgui.entity.JEntityFacetPanel;
+import gdt.jgui.entity.fields.JFieldsFacetOpenItem;
 import gdt.jgui.tool.JTextEditor;
 /**
  * This class represents the bookmarks facet in the list
@@ -174,5 +175,15 @@ public class JBookmarksFacetAddItem extends JFacetAddItem{
 	public FacetHandler getFacetHandler() {
 		return new BookmarksHandler();
 	}
-
+@Override
+public String getIconResource() {
+	return "bookmark.png";
+}
+@Override
+public String getFacetOpenClass() {
+	return JBookmarksFacetOpenItem.class.getName();
+}
+public String getFacetAddClass() {
+	return JBookmarksFacetAddItem.class.getName();
+}
 }

@@ -1,0 +1,208 @@
+package gdt.jgui.entity.graph;
+
+import java.util.ArrayList;
+import java.util.Properties;
+import java.util.logging.Logger;
+
+import javax.swing.JMenu;
+import javax.swing.JPanel;
+
+import gdt.data.entity.BaseHandler;
+import gdt.data.entity.EntityHandler;
+import gdt.data.entity.GraphHandler;
+import gdt.data.entity.facet.ExtensionHandler;
+import gdt.data.entity.facet.IndexHandler;
+import gdt.data.grain.Core;
+import gdt.data.grain.Identity;
+import gdt.data.grain.Locator;
+import gdt.data.grain.Sack;
+import gdt.data.store.Entigrator;
+import gdt.jgui.console.JConsoleHandler;
+import gdt.jgui.console.JContext;
+import gdt.jgui.console.JFacetRenderer;
+import gdt.jgui.console.JMainConsole;
+import gdt.jgui.console.JRequester;
+import gdt.jgui.entity.JReferenceEntry;
+
+import gdt.jgui.tool.JTextEditor;
+
+public class JGraphRenderer extends JPanel implements JContext , JFacetRenderer,JRequester{
+	private Logger LOGGER=Logger.getLogger(getClass().getName());
+	private static final String ACTION_CREATE_GRAPH="action create graph";
+	private JMainConsole console;
+	private String entihome$;
+    private String entityKey$;
+    private String entityLabel$;
+    private Sack graph;
+    String requesterResponseLocator$;
+	@Override
+	public void response(JMainConsole console, String locator$) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public String addIconToLocator(String locator$) {
+		// TODO Auto-generated method stub
+		return locator$;
+	}
+
+	@Override
+	public String getFacetHandler() {
+		return GraphHandler.class.getName();
+	}
+
+	@Override
+	public String getEntityType() {
+		return "graph";
+	}
+
+	@Override
+	public String getCategoryIcon() {
+try{
+		Entigrator entigrator=console.getEntigrator(entihome$);
+		return ExtensionHandler.loadIcon(entigrator, GraphHandler.EXTENSION_KEY,"graph.png");
+}catch(Exception e){
+	LOGGER.severe(e.toString());
+	return null;
+}
+	}
+
+	@Override
+	public String getCategoryTitle() {
+		return "Graphs";
+	}
+
+	@Override
+	public void adaptClone(JMainConsole console, String locator$) {
+		try{
+			Properties locator=Locator.toProperties(locator$);
+			String entihome$=locator.getProperty(Entigrator.ENTIHOME);
+			String entityKey$=locator.getProperty(EntityHandler.ENTITY_KEY);
+			Entigrator entigrator=console.getEntigrator(entihome$);
+			Sack entity=entigrator.getEntityAtKey(entityKey$);
+			String entityLocator$=EntityHandler.getEntityLocator(entigrator, entity);
+			GraphHandler graphHandler=new GraphHandler();
+			graphHandler.instantiate(entityLocator$);
+			graphHandler.adaptClone(entigrator);
+		}catch(Exception e){
+			LOGGER.severe(e.toString());
+		}
+		
+	}
+
+	@Override
+	public void adaptRename(JMainConsole console, String locator$) {
+		try{
+			Properties locator=Locator.toProperties(locator$);
+			String entihome$=locator.getProperty(Entigrator.ENTIHOME);
+			String entityKey$=locator.getProperty(EntityHandler.ENTITY_KEY);
+			Entigrator entigrator=console.getEntigrator(entihome$);
+			Sack entity=entigrator.getEntityAtKey(entityKey$);
+			String entityLocator$=EntityHandler.getEntityLocator(entigrator, entity);
+			GraphHandler graphHandler=new GraphHandler();
+			graphHandler.instantiate(entityLocator$);
+			graphHandler.adaptRename(entigrator);
+		}catch(Exception e){
+			LOGGER.severe(e.toString());
+		}
+		
+	}
+
+	@Override
+	public void collectReferences(Entigrator entigrator, String entiyKey$, ArrayList<JReferenceEntry> sl) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void reindex(JMainConsole console, Entigrator entigrator, Sack entity) {
+		try{	
+	    	String graphHandler$=GraphHandler.class.getName();
+	    	if(entity.getElementItem("fhandler", graphHandler$)!=null){
+				entity.putElementItem("jfacet", new Core(null,graphHandler$,JGraphFacetOpenItem.class.getName()));
+				entigrator.save(entity);
+			}
+	    }catch(Exception e){
+	    	Logger.getLogger(getClass().getName()).severe(e.toString());
+	    }
+		
+	}
+
+	@Override
+	public String newEntity(JMainConsole console, String locator$) {
+		try{
+			Properties locator=Locator.toProperties(locator$);
+			String entihome$=locator.getProperty(Entigrator.ENTIHOME);
+			JTextEditor textEditor=new JTextEditor();
+		    String teLocator$=textEditor.getLocator();
+		    teLocator$=Locator.append(teLocator$, Entigrator.ENTIHOME,entihome$);
+		    teLocator$=Locator.append(teLocator$, JTextEditor.TEXT_TITLE,"New index");
+		    String text$="NewGraph"+Identity.key().substring(0, 4);
+		    teLocator$=Locator.append(teLocator$, JTextEditor.TEXT,text$);
+		    JGraphRenderer gr=new JGraphRenderer();
+		    String grLocator$=gr.getLocator();
+		    grLocator$=Locator.append(grLocator$, Entigrator.ENTIHOME,entihome$);
+		    grLocator$=Locator.append(grLocator$, EntityHandler.ENTITY_KEY,entityKey$);
+		    grLocator$=Locator.append(grLocator$, BaseHandler.HANDLER_METHOD,"response");
+		    grLocator$=Locator.append(grLocator$, JRequester.REQUESTER_ACTION,ACTION_CREATE_GRAPH);
+		    String requesterResponseLocator$=Locator.compressText(grLocator$);
+		    teLocator$=Locator.append(teLocator$,JRequester.REQUESTER_RESPONSE_LOCATOR,requesterResponseLocator$);
+		    JConsoleHandler.execute(console, teLocator$);
+		    
+			
+		}catch(Exception ee){   
+			LOGGER.severe(ee.toString());
+			
+		}
+		return null;
+	}
+
+	@Override
+	public JPanel getPanel() {
+		return this;
+	}
+
+	@Override
+	public JMenu getContextMenu() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public String getLocator() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public JContext instantiate(JMainConsole console, String locator$) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public String getTitle() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public String getSubtitle() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public String getType() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void close() {
+		// TODO Auto-generated method stub
+		
+	}
+
+}
