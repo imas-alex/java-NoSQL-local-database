@@ -477,7 +477,7 @@ return menu;
 			    	String fhandler$=EdgeHandler.class.getName();
 			    	if(entity.getElementItem("fhandler", fhandler$)!=null){
 						//System.out.println("JContactEditor:reindex:1:entity="+entity.getProperty("label"));
-			    		entity.putElementItem("jfacet", new Core(JEdgeFacetAddItem.class.getName(),fhandler$,JEdgeFacetOpenItem.class.getName()));
+			    		entity.putElementItem("jfacet", new Core(null,fhandler$,JEdgeFacetOpenItem.class.getName()));
 						entity.putElementItem("fhandler", new Core(null,fhandler$,EdgeHandler.EXTENSION_KEY));
 						entigrator.save(entity);
 					}
