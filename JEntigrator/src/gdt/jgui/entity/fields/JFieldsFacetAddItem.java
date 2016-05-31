@@ -68,7 +68,7 @@ public String getLocator(){
 		locator.setProperty(EntityHandler.ENTITY_KEY,entityKey$);
 	if(entihome$!=null)
 		locator.setProperty(Entigrator.ENTIHOME,entihome$);
-	 icon$=Support.readHandlerIcon(getClass(), "fields.png");
+	 icon$=Support.readHandlerIcon(null,getClass(), "fields.png");
 	if(icon$!=null)
 	    	locator.setProperty(Locator.LOCATOR_ICON,icon$);
 	 locator$=Locator.toString(locator);

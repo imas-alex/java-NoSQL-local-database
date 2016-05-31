@@ -85,7 +85,7 @@ public JBasesPanel(){
 	    locator.setProperty(BaseHandler.ENTIROOT,entiroot$);
 	    File file = new File(entiroot$);
 	    locator.setProperty(Locator.LOCATOR_TITLE, file.getName());
-	    String icon$=Support.readHandlerIcon(JBasesPanel.class, "bases.png");
+	    String icon$=Support.readHandlerIcon(null,JBasesPanel.class, "bases.png");
 	    if(icon$!=null)
 	    	locator.setProperty(Locator.LOCATOR_ICON,icon$);
 	    locator.setProperty(BaseHandler.HANDLER_SCOPE,JConsoleHandler.CONSOLE_SCOPE);

@@ -219,7 +219,7 @@ private boolean setDivider=true;
 				locator.setProperty(Entigrator.ENTIHOME,entihome$);
 			if(entityLabel$!=null)
 				locator.setProperty(EntityHandler.ENTITY_LABEL,entityLabel$);
-			String icon$=Support.readHandlerIcon(getClass(), "procedure.png");
+			String icon$=Support.readHandlerIcon(null,getClass(), "procedure.png");
 	    	locator.setProperty(Locator.LOCATOR_ICON,icon$);
 			return Locator.toString(locator);
 			}catch(Exception e){
@@ -323,7 +323,7 @@ private boolean setDivider=true;
 	 */
 	@Override
 	public String addIconToLocator(String locator$) {
-		String icon$=Support.readHandlerIcon(JProcedurePanel.class, "procedure.png");
+		String icon$=Support.readHandlerIcon(null,JProcedurePanel.class, "procedure.png");
 	    if(icon$!=null)
 	    	return Locator.append(locator$, Locator.LOCATOR_ICON,icon$);
 	    else
@@ -351,7 +351,7 @@ private boolean setDivider=true;
 	 */
 	@Override
 	public String getCategoryIcon() {
-		return Support.readHandlerIcon(getClass(), "procedure.png");
+		return Support.readHandlerIcon(null,getClass(), "procedure.png");
 	}
 	/**
 	 * Get category title for entities having the facet type.

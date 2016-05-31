@@ -1,6 +1,4 @@
 package gdt.data.entity.facet;
-import java.io.ByteArrayOutputStream;
-import java.io.InputStream;
 /*
  * Copyright 2016 Alexander Imas
  * This file is part of JEntigrator.
@@ -18,8 +16,14 @@ import java.io.InputStream;
     You should have received a copy of the GNU General Public License
     along with JEntigrator.  If not, see <http://www.gnu.org/licenses/>.
  */
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.InputStream;
+import java.lang.reflect.Constructor;
+
 import java.net.URL;
 import java.net.URLClassLoader;
+import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.Properties;
@@ -31,6 +35,7 @@ import org.apache.commons.codec.binary.Base64;
 
 import gdt.data.entity.EntityHandler;
 import gdt.data.entity.FacetHandler;
+
 import gdt.data.grain.Locator;
 import gdt.data.grain.Sack;
 import gdt.data.store.Entigrator;
@@ -103,25 +108,63 @@ private Logger LOGGER=Logger.getLogger(ExtensionHandler.class.getName());
 	
 	public static Object loadHandlerInstance(Entigrator entigrator,String extension$,String handlerClass$){
 		try{
-	//	System.out.println("ExtensionHandler:loadHandlerInstance:extension="+extension$+" handler="+handlerClass$);
+		System.out.println("ExtensionHandler:loadHandlerInstance:extension="+extension$+" handler="+handlerClass$);
 			Object obj=null;
 			Sack extension=entigrator.getEntityAtKey(extension$);
 			String lib$=extension.getElementItemAt("field", "lib");
 			String jar$="jar:file:" +entigrator.getEntihome()+"/"+extension$+"/"+lib$+"!/";
-			URL[] urls = { new URL(jar$) };
+			ArrayList <URL> urll=new ArrayList<URL>();
+			urll.add(new URL(jar$));
+			//URL[] urls = { new URL(jar$) };
+			String[]sa=extension.elementListNoSorted("classpath");
+			if(sa!=null){
+				File file; 
+				for(String s:sa){
+					file=new File(entigrator.getEntihome()+"/"+extension$+"/"+s);
+					if(file.exists())
+						urll.add(new URL("jar:file:"+file.getPath()+"!/"));
+				}
+			}
+			URL[] urls=urll.toArray(new URL[0]);
 			URLClassLoader cl = URLClassLoader.newInstance(urls);
 			Class<?>cls=entigrator.getClass(handlerClass$);
 			if(cls==null){
 					cls=cl.loadClass(handlerClass$);
-					entigrator.putClass(handlerClass$, cls);
+					
+			        if(cls==null)
+			        	System.out.println("ExtensionHandler:loadHandlerInstance:cannot load class ="+handlerClass$);
+			        	else{
+			        		System.out.println("ExtensionHandler:loadHandlerInstance:found class ="+handlerClass$);
+			        		entigrator.putClass(handlerClass$, cls);
+			        	}
+			        
 			}
 			//else
 			//	System.out.println("ExtensionHandler:loadHandlerInstance:found in cache");
 			//ClassLoader cll = Thread.currentThread().getContextClassLoader();
 			
 	//		System.out.println("ExtensionHandler:loadHandlerInstance:cls="+cls.getName());
-			obj=cls.newInstance();
-	//	System.out.println("ExtensionHandler:loadHandlerInstance:obj="+obj.toString());
+			//Thread.currentThread().setContextClassLoader(cl);
+			try{
+				System.out.println("ExtensionHandler:loadHandlerInstance:1");	
+				Constructor[] ctors = cls.getDeclaredConstructors();
+				System.out.println("ExtensionHandler:loadHandlerInstance:ctors="+ctors.length);
+				Constructor ctor = null;
+				for (int i = 0; i < ctors.length; i++) {
+				    ctor = ctors[i];
+				    if (ctor.getGenericParameterTypes().length == 0)
+					break;
+				}
+				ctor.setAccessible(true);
+		 	    obj = ctor.newInstance();
+				//obj=cls.newInstance();
+			System.out.println("ExtensionHandler:loadHandlerInstance:2");	
+			}catch(java.lang.NoClassDefFoundError ee){
+				System.out.println("ExtensionHandler:loadHandlerInstance:"+ee.toString());
+				return null;
+			}
+			if(obj!=null)
+		      System.out.println("ExtensionHandler:loadHandlerInstance:obj="+obj.toString());
 		    return obj;
 		}catch(Exception e){
 			Logger.getLogger(ExtensionHandler.class.getName()).severe(e.toString());
@@ -200,6 +243,40 @@ private Logger LOGGER=Logger.getLogger(ExtensionHandler.class.getName());
 		}
 		
 	}
+	public static InputStream getResourceStream(Entigrator entigrator,String extension$,String resource$){
+		try{
+			
+	System.out.println("ExtensionHandler:getResourceStream:extension="+extension$+" resource="+resource$);
+			Sack extension=entigrator.getEntityAtKey(extension$);
+			String lib$=extension.getElementItemAt("field", "lib");
+			String jar$=entigrator.getEntihome()+"/"+extension$+"/"+lib$;
+	//		System.out.println("ExtensionHandler:loadIcon:jar="+jar$);
+			  ZipFile zf = new ZipFile(jar$);
+			    Enumeration<? extends ZipEntry> entries = zf.entries();
+			    ZipEntry ze;
+			    String[] sa;
+			    while (entries.hasMoreElements()) {
+			      try{
+			    	ze = entries.nextElement();
+			      sa=ze.getName().split("/");
+			 //     System.out.println("ExtensionHandler:loadIcon:zip entry="+sa[sa.length-1]);
+			      if(resource$.equals(sa[sa.length-1])){
+			    	  InputStream is=zf.getInputStream(ze);
+			    	  if(is!=null)
+			    		  return is;
+	
+			      }
+			      }catch(Exception e){
+			    	  
+			      }
+			    }
+			return null;
+		}catch(Exception e){
+			Logger.getLogger(ExtensionHandler.class.getName()).severe(e.toString());
+			return null;
+		}
+		
+	}
 	private void adaptLabel(Entigrator entigrator){
 		 try{
 				Sack entity=entigrator.getEntityAtKey(entityKey$);
@@ -246,5 +323,110 @@ private Logger LOGGER=Logger.getLogger(ExtensionHandler.class.getName());
 	public String getClassName() {
 		return getClass().getName();
 	}
+//
+	public static  void addExtensionLibraries(Entigrator entigrator,String extension$){
+		try{
+			System.out.println("ExtensionHandler:addExtensionLibraries:extension="+extension$);
+				Object obj=null;
+				Sack extension=entigrator.getEntityAtKey(extension$);
+				String lib$=extension.getElementItemAt("field", "lib");
+				String jar$="jar:file:" +entigrator.getEntihome()+"/"+extension$+"/"+lib$+"!/";
+				ArrayList <URL> urll=new ArrayList<URL>();
+				urll.add(new URL(jar$));
+				//URL[] urls = { new URL(jar$) };
+				String[]sa=extension.elementListNoSorted("classpath");
+				if(sa!=null){
+					File file; 
+					for(String s:sa){
+						file=new File(entigrator.getEntihome()+"/"+extension$+"/"+s);
+						if(file.exists())
+							urll.add(new URL("jar:file:"+file.getPath()+"!/"));
+					}
+				}
+				URL[] urls=urll.toArray(new URL[0]);
+				URLClassLoader urlClassLoader = (URLClassLoader) Thread.currentThread().getContextClassLoader();
+				
+				ExtensionClassLoader extensionLoader = new ExtensionClassLoader(urlClassLoader);
+				for(URL url:urls)
+				    extensionLoader.addURL(url);
+				 Thread.currentThread().setContextClassLoader(extensionLoader);
+				//URLClassLoader cl = URLClassLoader.newInstance(urls);
+				
+		}catch(Exception e){
+			Logger.getLogger(ExtensionHandler.class.getName()).severe(e.toString());
+		}
+	}
+	public static class ExtensionClassLoader extends URLClassLoader{
+		public ExtensionClassLoader(URLClassLoader classLoader) {
+		    super(classLoader.getURLs());
+		}
+		@Override
+		public void addURL(URL url) {
+		    super.addURL(url);
+		}
 
+		}
+	public static String getClasspath(Entigrator entigrator){
+	try{
+		String[] sa=entigrator.indx_listEntities("entity","extension");
+		if(sa==null)
+			return null;
+		Sack extension;
+		//=entigrator.getEntityAtKey(extension$);
+		String lib$;
+		//=extension.getElementItemAt("field", "lib");
+		String jar$;
+		//="jar:file:" +entigrator.getEntihome()+"/"+extension$+"/"+lib$+"!/";
+		File  file; 
+		StringBuffer sb=new StringBuffer();
+		String[]ca;
+		String separator$=System.getProperty("path.separator");
+		if(sa!=null){
+			for(String s:sa)
+			{
+				try{
+				extension=entigrator.getEntityAtKey(s);
+				lib$=extension.getElementItemAt("field", "lib");
+				file=new File(entigrator.getEntihome()+"/"+s+"/"+lib$);
+				if(file.exists())
+					sb=sb.append(separator$+file.getPath());
+				ca=extension.elementListNoSorted("classpath");
+				if(ca!=null){
+					 
+					for(String c:ca){
+						file=new File(entigrator.getEntihome()+"/"+s+"/"+s);
+						if(file.exists())
+							sb=sb.append(separator$+file.getPath());
+					}
+				}
+				}catch(Exception ee){
+					Logger.getLogger(ExtensionHandler.class.getName()).info(ee.toString());	
+				}
+			}
+		}
+		File dependencies=new File(entigrator.getEntihome()+"/"+Entigrator.DEPENDENCIES);
+		if(dependencies.exists()&&dependencies.isDirectory()){
+			String[] da=dependencies.list();
+			if(da!=null)
+				for(String d:da){
+					if(d.endsWith(".jar"))
+						sb=sb.append(separator$+entigrator.getEntihome()+"/"+Entigrator.DEPENDENCIES+"/"+d);
+				}
+			
+		}
+		return sb.toString();
+		/*
+		 String path$ = JMainConsole.class.getProtectionDomain().getCodeSource().getLocation().getPath();
+         // System.out.println("Community:main.path="+path$);
+          String jar$ = URLDecoder.decode(path$, "UTF-8");
+          jar$=jar$.replace("file:", "");
+          jar$=jar$.replace("!/", "");
+          File jar=new File(jar$);
+          */
+	}catch(Exception e){
+		Logger.getLogger(ExtensionHandler.class.getName()).severe(e.toString());	
+	}
+	return null;
+	}
+	//
 }

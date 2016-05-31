@@ -125,7 +125,7 @@ public JEntityAddFacets() {
 	       locator.setProperty(Locator.LOCATOR_TITLE, getTitle());
 		   locator.setProperty(BaseHandler.HANDLER_SCOPE,JConsoleHandler.CONSOLE_SCOPE);
 		   locator.setProperty(BaseHandler.HANDLER_CLASS,JEntityAddFacets.class.getName());
-		   String icon$=Support.readHandlerIcon(getClass(), "facet.png");
+		   String icon$=Support.readHandlerIcon(null,getClass(), "facet.png");
 		   locator.setProperty(Locator.LOCATOR_ICON,icon$);
 		   return Locator.toString(locator);
 	}
@@ -273,7 +273,7 @@ private void applyFacets(){
             aSa=Locator.append(aSa, BaseHandler.HANDLER_METHOD, JFacetAddItem.METHOD_ADD_FACET);
             facetHandlerClass$=Locator.getProperty(aSa,JFacetOpenItem.FACET_HANDLER_CLASS);
             if(facetHandlerClass$!=null)
-            aSa=Locator.append(aSa,BaseHandler.HANDLER_CLASS,facetHandlerClass$ );
+            //aSa=Locator.append(aSa,BaseHandler.HANDLER_CLASS,facetHandlerClass$ );
             aSa=Locator.append(aSa,Entigrator.ENTIHOME,entihome$);
             aSa=Locator.append(aSa,EntityHandler.ENTITY_KEY,entityKey$);
             System.out.println("EntityAddFacets:applyFacets:aSa:"+aSa);

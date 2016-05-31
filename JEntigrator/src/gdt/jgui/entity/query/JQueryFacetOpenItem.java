@@ -69,7 +69,7 @@ public String getLocator(){
 		locator.setProperty(EntityHandler.ENTITY_KEY,entityKey$);
 	if(entihome$!=null)
 		locator.setProperty(Entigrator.ENTIHOME,entihome$);
-	 String icon$=Support.readHandlerIcon(gdt.jgui.entity.JEntityPrimaryMenu.class, "query.png");
+	 String icon$=Support.readHandlerIcon(null,JEntityPrimaryMenu.class, "query.png");
     if(icon$!=null)
     	locator.setProperty(Locator.LOCATOR_ICON,icon$);
     if(entihome$!=null){   
@@ -127,7 +127,7 @@ public String getFacetName() {
  */
 @Override
 public String getFacetIcon() {
-	return Support.readHandlerIcon(JEntityPrimaryMenu.class, "query.png");
+	return Support.readHandlerIcon(null,JEntityPrimaryMenu.class, "query.png");
 }
 
 @Override

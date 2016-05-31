@@ -191,7 +191,7 @@ public class JEntitiesPanel extends JItemsListPanel{
 				        	//locator$=getLocator();
 			        	  apLocator$=Locator.append(apLocator$,Entigrator.ENTIHOME,entihome$);
 						  apLocator$=Locator.append(apLocator$, EntityHandler.ENTITY_LIST,Locator.toString(ea));
-					      String icon$=Support.readHandlerIcon(JEntityPrimaryMenu.class, "archive.png");
+					      String icon$=Support.readHandlerIcon(null,JEntityPrimaryMenu.class, "archive.png");
 					      apLocator$=Locator.append(apLocator$, Locator.LOCATOR_ICON,icon$);
 						  JConsoleHandler.execute(console, apLocator$);
 							}
@@ -281,14 +281,14 @@ public class JEntitiesPanel extends JItemsListPanel{
 			       locator.setProperty(EntityHandler.ENTITY_LIST,list$);
 		    if(entityKey$!=null)
 			       locator.setProperty(EntityHandler.ENTITY_KEY,entityKey$);
-		    String icon$=Support.readHandlerIcon(JEntitiesPanel.class, "entities.png");
+		    String icon$=Support.readHandlerIcon(null,JEntitiesPanel.class, "entities.png");
 		    if(containerKey$!=null){
 			       locator.setProperty(EntityHandler.ENTITY_CONTAINER,containerKey$);
-			       icon$=Support.readHandlerIcon(JEntitiesPanel.class, "clip.png");
+			       icon$=Support.readHandlerIcon(null,JEntitiesPanel.class, "clip.png");
 		    }
 		    if(componentKey$!=null){
 			       locator.setProperty(EntityHandler.ENTITY_COMPONENT,componentKey$);
-			       icon$=Support.readHandlerIcon(JEntitiesPanel.class, "box.png");
+			       icon$=Support.readHandlerIcon(null,JEntitiesPanel.class, "box.png");
 		    }
     	    locator.setProperty(Locator.LOCATOR_TITLE, getTitle());
 		    if(icon$!=null)

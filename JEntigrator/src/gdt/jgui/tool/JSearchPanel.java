@@ -87,7 +87,7 @@ JMenuItem listItem;
 			       locator.setProperty(Entigrator.ENTIHOME,entihome$);
 		   locator.setProperty(BaseHandler.HANDLER_SCOPE,JConsoleHandler.CONSOLE_SCOPE);
 		   locator.setProperty(BaseHandler.HANDLER_CLASS,getClass().getName());
-		   String icon$=Support.readHandlerIcon(JEntityPrimaryMenu.class, "search.png");
+		   String icon$=Support.readHandlerIcon(null,JEntityPrimaryMenu.class, "search.png");
 		   locator.setProperty( Locator.LOCATOR_ICON,icon$);
 		   return Locator.toString(locator);
 		}

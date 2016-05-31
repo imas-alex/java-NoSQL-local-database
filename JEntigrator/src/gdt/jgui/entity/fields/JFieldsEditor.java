@@ -313,7 +313,7 @@ public JFieldsEditor() {
 				locator.setProperty(EntityHandler.ENTITY_KEY,entityKey$);
 			if(entihome$!=null)
 				locator.setProperty(Entigrator.ENTIHOME,entihome$);
-				 String icon$=Support.readHandlerIcon(JFieldsEditor.class, "fields.png");
+				 String icon$=Support.readHandlerIcon(null,JFieldsEditor.class, "fields.png");
 			    if(icon$!=null)
 			    	locator.setProperty(Locator.LOCATOR_ICON,icon$);
 			return Locator.toString(locator);
@@ -689,7 +689,7 @@ public JFieldsEditor() {
  */
 	@Override
 	public String addIconToLocator(String locator$) {
-		String icon$=Support.readHandlerIcon(JFieldsEditor.class, "fields.png");
+		String icon$=Support.readHandlerIcon(null,JFieldsEditor.class, "fields.png");
 	    if(icon$!=null)
 		return Locator.append(locator$, Locator.LOCATOR_ICON,icon$);
 	    else
@@ -792,7 +792,7 @@ public JFieldsEditor() {
 	 */
 	@Override
 	public String getCategoryIcon() {
-		return Support.readHandlerIcon(getClass(), "fields.png");
+		return Support.readHandlerIcon(null,getClass(), "fields.png");
 	}
 	/**
 	 * Get category title.
@@ -814,7 +814,7 @@ public JFieldsEditor() {
 	    String editorLocator$=textEditor.getLocator();
 	    editorLocator$=Locator.append(editorLocator$, JTextEditor.TEXT, "Fields"+Identity.key().substring(0,4));
 	    editorLocator$=Locator.append(editorLocator$,Locator.LOCATOR_TITLE,"Fields entity");
-	    String icon$=Support.readHandlerIcon(getClass(), "fields.png");
+	    String icon$=Support.readHandlerIcon(null,getClass(), "fields.png");
 	    editorLocator$=Locator.append(editorLocator$,Locator.LOCATOR_ICON,icon$);
 	    JFieldsEditor fe=new JFieldsEditor();
 	    String feLocator$=fe.getLocator();

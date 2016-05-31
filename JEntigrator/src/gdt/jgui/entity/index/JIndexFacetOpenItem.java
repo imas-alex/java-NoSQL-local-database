@@ -65,7 +65,7 @@ public class JIndexFacetOpenItem extends JFacetOpenItem implements JRequester{
 			locator.setProperty(EntityHandler.ENTITY_KEY,entityKey$);
 		if(entihome$!=null)
 			locator.setProperty(Entigrator.ENTIHOME,entihome$);
-		 String icon$=Support.readHandlerIcon(JEntitiesPanel.class, "index.png");
+		 String icon$=Support.readHandlerIcon(null,JEntitiesPanel.class, "index.png");
 		    if(icon$!=null)
 		    	locator.setProperty(Locator.LOCATOR_ICON,icon$);
 		    if(entihome$!=null)   
@@ -105,7 +105,7 @@ public class JIndexFacetOpenItem extends JFacetOpenItem implements JRequester{
 	 */
 	@Override
 	public String getFacetIcon() {
-		return Support.readHandlerIcon(JEntitiesPanel.class, "index.png");
+		return Support.readHandlerIcon(null,JEntitiesPanel.class, "index.png");
 	}
 /**
  * No action. 

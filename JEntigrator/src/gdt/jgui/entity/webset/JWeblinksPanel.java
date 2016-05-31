@@ -100,7 +100,7 @@ public JWeblinksPanel() {
 			       locator.setProperty(EntityHandler.ENTITY_KEY,entityKey$);
 		    if(entityLabel$!=null)
 			       locator.setProperty(EntityHandler.ENTITY_LABEL,entityLabel$);
-		    String icon$=Support.readHandlerIcon(JEntitiesPanel.class, "globe.png");
+		    String icon$=Support.readHandlerIcon(null,JEntitiesPanel.class, "globe.png");
 		    locator.setProperty(Locator.LOCATOR_TITLE, getTitle());
 		    if(icon$!=null)
 		    	locator.setProperty(Locator.LOCATOR_ICON,icon$);
@@ -189,7 +189,7 @@ private JItemPanel[] getItems(JMainConsole console,Sack entity){
 					  ipLocator.setProperty(Locator.LOCATOR_CHECKABLE, Locator.LOCATOR_TRUE);
 					  icon$=entity.getElementItemAt("web.icon", aCa.name);
 					  if(icon$==null||"null".equals(icon$))
-					 	  icon$=Support.readHandlerIcon(JEntitiesPanel.class, "globe.png");
+					 	  icon$=Support.readHandlerIcon(null,JEntitiesPanel.class, "globe.png");
 					  ipLocator.setProperty(Locator.LOCATOR_ICON,icon$); 
 					  Core login=entity.getElementItem("web.login", aCa.name);
 					  if(login!=null){
@@ -294,7 +294,7 @@ menu.addMenuListener(new MenuListener(){
 			entity.putElementItem("web", new Core("Google",webLinkKey$,"http://www.google.com"));
 			if(!entity.existsElement("web.icon"))
 				entity.createElement("web.icon");
-			String icon$=Support.readHandlerIcon(JEntitiesPanel.class, "globe.png");
+			String icon$=Support.readHandlerIcon(null,JEntitiesPanel.class, "globe.png");
 			entity.putElementItem("web.icon", new Core(null,webLinkKey$,icon$));
 			entigrator.save(entity);
 			JWeblinkEditor wle=new JWeblinkEditor();

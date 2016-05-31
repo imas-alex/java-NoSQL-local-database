@@ -67,11 +67,14 @@ Hashtable<String,JItemPanel> items;
 	    locator.setProperty(Locator.LOCATOR_TITLE, getTitle());
 	    if(entihome$!=null){
 	    locator.setProperty(Entigrator.ENTIHOME,entihome$);
-	    locator.setProperty(Locator.LOCATOR_TITLE, getTitle());
-	    }
-	    String icon$=Support.readHandlerIcon(getClass(), "category.png");
+	
+	    String icon$=Support.readHandlerIcon(null,JAllCategoriesPanel.class, "category.png");
+	//    System.out.println("JAllCategoriesPanel:getLocator:icon="+icon$);
 	    if(icon$!=null)
 	    	locator.setProperty(Locator.LOCATOR_ICON,icon$);
+	    }
+	   // 
+	    locator.setProperty(Locator.LOCATOR_TITLE, getTitle());
 	    locator.setProperty(BaseHandler.HANDLER_SCOPE,JConsoleHandler.CONSOLE_SCOPE);
 	    locator.setProperty(BaseHandler.HANDLER_CLASS,getClass().getName());
 		return Locator.toString(locator);

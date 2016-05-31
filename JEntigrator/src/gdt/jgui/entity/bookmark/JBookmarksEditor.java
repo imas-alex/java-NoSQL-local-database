@@ -249,7 +249,7 @@ private void paste(){
 				locator.setProperty(Entigrator.ENTIHOME,entihome$);
 			if(entityLabel$!=null)
 				locator.setProperty(EntityHandler.ENTITY_LABEL,entityLabel$);
-			String icon$=Support.readHandlerIcon(JEntitiesPanel.class, "bookmark.png");
+			String icon$=Support.readHandlerIcon(null,JEntitiesPanel.class, "bookmark.png");
 	    	locator.setProperty(Locator.LOCATOR_ICON,icon$);
 			return Locator.toString(locator);
 			}catch(Exception e){
@@ -404,7 +404,7 @@ private void paste(){
  */
 	@Override
 	public String addIconToLocator(String locator$) {
-		String icon$=Support.readHandlerIcon(JEntitiesPanel.class, "bookmarks.png");
+		String icon$=Support.readHandlerIcon(null,JEntitiesPanel.class, "bookmarks.png");
 	    if(icon$!=null)
 	    	return Locator.append(locator$, Locator.LOCATOR_ICON,icon$);
 	    else
@@ -432,7 +432,7 @@ private void paste(){
 	 */
 	@Override
 	public String getCategoryIcon() {
-		return Support.readHandlerIcon(JEntitiesPanel.class, "bookmark.png");
+		return Support.readHandlerIcon(null,JEntitiesPanel.class, "bookmark.png");
 	}
 /**
  * Get category title for entities having the facet type.

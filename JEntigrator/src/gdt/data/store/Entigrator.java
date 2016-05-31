@@ -65,6 +65,7 @@ public class Entigrator {
 	   * information about entities. The usage of the quick map accelerates 
 	   * access to entities. 	
 	   */
+	public static final String DEPENDENCIES="_34OGgNhynOBECkS_SlCJt_SNh_SY9Q";
 	public static final String QUICK_MAP="_0Hw7Cb9q5VrmwG6enFmb5GBKIXo";
 	/**
 	 * Reserved attribute name. The entities cache uses time stamp to keep
@@ -2518,7 +2519,7 @@ public String[] ent_listContainers(Sack entity) {
   * @return the icon string .
   */
  public  String readEntityIcon(Sack entity) {
-		String iconString$=Support.readHandlerIcon(getClass(), "box.png");
+		String iconString$=Support.readHandlerIcon(this,getClass(), "box.png");
 	 try {
 			String icon$=entity.getAttributeAt("icon");
 			 if(icon$==null)

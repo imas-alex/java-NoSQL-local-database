@@ -66,8 +66,13 @@ public class JArchivePanel extends  JItemsListPanel implements JRequester{
 		Properties locator=new Properties();
 	    locator.setProperty(Locator.LOCATOR_TYPE, JContext.CONTEXT_TYPE);
 	    locator.setProperty(JContext.CONTEXT_TYPE,getType());
-	    if(entihome$!=null)
+	    if(entihome$!=null){
 	       locator.setProperty(Entigrator.ENTIHOME,entihome$);
+	       Entigrator entigrator=console.getEntigrator(entihome$);
+	       String icon$=Support.readHandlerIcon(entigrator,JEntitiesPanel.class, "archive.png");
+		    if(icon$!=null)
+		    	locator.setProperty(Locator.LOCATOR_ICON,icon$);
+	    }
 	    if(list$!=null)
 		       locator.setProperty(EntityHandler.ENTITY_LIST,list$);
 	    if(entityKey$!=null)
@@ -77,9 +82,7 @@ public class JArchivePanel extends  JItemsListPanel implements JRequester{
 	    if(archiveContent$!=null)
 		       locator.setProperty(ArchiveHandler.ARCHIVE_CONTENT,archiveContent$);
 	    locator.setProperty(Locator.LOCATOR_TITLE, getTitle());
-	    String icon$=Support.readHandlerIcon(JEntitiesPanel.class, "archive.png");
-	    if(icon$!=null)
-	    	locator.setProperty(Locator.LOCATOR_ICON,icon$);
+
 	    locator.setProperty(BaseHandler.HANDLER_SCOPE,JConsoleHandler.CONSOLE_SCOPE);
 	    locator.setProperty(BaseHandler.HANDLER_CLASS,getClass().getName());
 		if(list$!=null)
@@ -131,7 +134,7 @@ private String getTarLocator() {
 		try{
 			Properties tarLocator=new Properties();
 			tarLocator.setProperty(Locator.LOCATOR_TITLE,"Tar");
-			String icon$=Support.readHandlerIcon(JEntityPrimaryMenu.class, "tar.png");
+			String icon$=Support.readHandlerIcon(null,JEntityPrimaryMenu.class, "tar.png");
 			tarLocator.setProperty(Locator.LOCATOR_ICON,icon$);
 			tarLocator.setProperty(BaseHandler.HANDLER_CLASS,getClass().getName());
 			tarLocator.setProperty(BaseHandler.HANDLER_METHOD,"response");
@@ -139,8 +142,12 @@ private String getTarLocator() {
 			tarLocator.setProperty(ArchiveHandler.ARCHIVE_TYPE,ArchiveHandler.ARCHIVE_TYPE_TAR);
 			if(archiveContent$!=null)
 				tarLocator.setProperty(ArchiveHandler.ARCHIVE_CONTENT,archiveContent$);
-			if(entihome$!=null)
+			if(entihome$!=null){
+				
 				tarLocator.setProperty(Entigrator.ENTIHOME,entihome$);
+			
+				
+			}
 			if(entityKey$!=null)
 				tarLocator.setProperty(EntityHandler.ENTITY_KEY,entityKey$);
 			if(entityLabel$!=null)
@@ -176,7 +183,7 @@ private String getTarLocator() {
 		try{
 			Properties tgzLocator=new Properties();
 			tgzLocator.setProperty(Locator.LOCATOR_TITLE,"Tgz");
-			String icon$=Support.readHandlerIcon(JEntityPrimaryMenu.class, "tgz.png");
+			String icon$=Support.readHandlerIcon(null,JEntityPrimaryMenu.class, "tgz.png");
 			tgzLocator.setProperty(Locator.LOCATOR_ICON,icon$);
 			tgzLocator.setProperty(BaseHandler.HANDLER_CLASS,getClass().getName());
 			tgzLocator.setProperty(BaseHandler.HANDLER_METHOD,"response");
@@ -222,7 +229,7 @@ private String getTarLocator() {
 		try{
 			Properties zipLocator=new Properties();
 			zipLocator.setProperty(Locator.LOCATOR_TITLE,"Zip");
-			String icon$=Support.readHandlerIcon(JEntityPrimaryMenu.class, "zip.png");
+			String icon$=Support.readHandlerIcon(null,JEntityPrimaryMenu.class, "zip.png");
 			zipLocator.setProperty(Locator.LOCATOR_ICON,icon$);
 			zipLocator.setProperty(BaseHandler.HANDLER_CLASS,getClass().getName());
 			zipLocator.setProperty(BaseHandler.HANDLER_METHOD,"response");

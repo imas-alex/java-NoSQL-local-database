@@ -138,7 +138,7 @@ public  class JEntityDigestDisplay extends JPanel implements JContext ,JRequeste
 			       locator.setProperty(EntityHandler.ENTITY_LABEL,entityLabel$);
 		    if(selection$!=null)
 			       locator.setProperty(SELECTION,Locator.compressText(selection$));
-		    String icon$=Support.readHandlerIcon(getClass(), "digest.png");
+		    String icon$=Support.readHandlerIcon(null,getClass(), "digest.png");
 			locator.setProperty(Locator.LOCATOR_ICON, icon$);
 	       locator.setProperty(Locator.LOCATOR_TITLE, getTitle());
 		   locator.setProperty(BaseHandler.HANDLER_SCOPE,JConsoleHandler.CONSOLE_SCOPE);
@@ -173,7 +173,7 @@ public  class JEntityDigestDisplay extends JPanel implements JContext ,JRequeste
 		 DefaultMutableTreeNode root = new DefaultMutableTreeNode(entityLabel$);
 		 locator=new Properties();
 		 locator.setProperty(Locator.LOCATOR_TITLE, DIGEST);
-		 String icon$=Support.readHandlerIcon(getClass(), "digest.png");
+		 String icon$=Support.readHandlerIcon(null,getClass(), "digest.png");
 		 locator.setProperty(Locator.LOCATOR_ICON, icon$);
 		 locator.setProperty(NODE_TYPE, NODE_TYPE_ROOT);
 		 root.setUserObject(Locator.toString(locator));

@@ -23,6 +23,7 @@ import java.util.logging.Logger;
 
 import gdt.data.entity.BaseHandler;
 import gdt.data.entity.EntityHandler;
+import gdt.data.entity.facet.BookmarksHandler;
 import gdt.data.grain.Locator;
 import gdt.data.grain.Sack;
 import gdt.data.grain.Support;
@@ -88,8 +89,12 @@ public class JValuePanel extends JItemsListPanel implements JRequester{
 		Properties locator=new Properties();
 	    locator.setProperty(Locator.LOCATOR_TYPE, JContext.CONTEXT_TYPE);
 	    locator.setProperty(JContext.CONTEXT_TYPE,getType());
-	    if(entihome$!=null)
+	    if(entihome$!=null){
 	       locator.setProperty(Entigrator.ENTIHOME,entihome$);
+	       Entigrator entigrator =console.getEntigrator(entihome$); 
+		   String icon$=Support.readHandlerIcon(entigrator,JEntityPrimaryMenu.class, "value.png");
+    	 locator.setProperty(Locator.LOCATOR_ICON,icon$);
+	    }
 	    if(propertyName$!=null)
 		       locator.setProperty(JDesignPanel.PROPERTY_NAME,propertyName$);
 	    if(propertyValue$!=null)
@@ -101,8 +106,7 @@ public class JValuePanel extends JItemsListPanel implements JRequester{
 	    locator.setProperty(Locator.LOCATOR_TITLE, "Value");
 	    locator.setProperty(BaseHandler.HANDLER_SCOPE,JConsoleHandler.CONSOLE_SCOPE);
 	    locator.setProperty(BaseHandler.HANDLER_CLASS,JValuePanel.class.getName());
-	    String icon$=Support.readHandlerIcon(JEntityPrimaryMenu.class, "value.png");
-		 locator.setProperty(Locator.LOCATOR_ICON,icon$);
+	    
 	    return Locator.toString(locator);
 	}
 	/**
@@ -158,7 +162,8 @@ private String getAddValueLocator(){
 			String locator$=textEditor.getLocator();
 			locator$=Locator.append(locator$, Locator.LOCATOR_TITLE,"Add value");
 			locator$=Locator.append(locator$, Entigrator.ENTIHOME,entihome$);
-		    String icon$=Support.readHandlerIcon(JEntityPrimaryMenu.class, "add.png");
+			Entigrator entigrator =console.getEntigrator(entihome$); 
+			String icon$=Support.readHandlerIcon(entigrator,JEntityPrimaryMenu.class, "add.png");
 			locator$=Locator.append(locator$, Locator.LOCATOR_ICON,icon$);
 			String responseLocator$=getLocator();
 			responseLocator$=Locator.append(responseLocator$, BaseHandler.HANDLER_METHOD, "response");
@@ -182,7 +187,8 @@ private String getDeleteValueLocator(){
 			locator.setProperty(Locator.LOCATOR_TITLE,"Delete '"+propertyValue$+"'");
 			locator.setProperty(BaseHandler.HANDLER_CLASS,getClass().getName());
 			locator.setProperty(BaseHandler.HANDLER_METHOD,METHOD_DELETE_VALUE);
-			String icon$=Support.readHandlerIcon(JEntityPrimaryMenu.class, "delete.png");
+			Entigrator entigrator =console.getEntigrator(entihome$); 
+			String icon$=Support.readHandlerIcon(entigrator,JEntityPrimaryMenu.class, "delete.png");
 			 locator.setProperty(Locator.LOCATOR_ICON,icon$);
 			return Locator.toString(locator);
 			}catch(Exception ee){
@@ -198,7 +204,7 @@ private String getAssignValueLocator(){
 				return null;
 			 String   locator$=getLocator();
 			 locator$=Locator.append(locator$, Locator.LOCATOR_TITLE,"Assign '"+propertyName$+":"+propertyValue$+"'");
-			 String icon$=Support.readHandlerIcon(JEntityPrimaryMenu.class, "assign.png");
+			 String icon$=Support.readHandlerIcon(entigrator,JEntityPrimaryMenu.class, "assign.png");
 			 locator$=Locator.append(locator$,Locator.LOCATOR_ICON,icon$);
 			 locator$=Locator.append(locator$,BaseHandler.HANDLER_METHOD,METHOD_ASSIGN_VALUE);
    			return locator$;
@@ -215,7 +221,8 @@ private String getTakeOffValueLocator(){
 				return null;
 			 String   locator$=getLocator();
 			 locator$=Locator.append(locator$, Locator.LOCATOR_TITLE,"Take off '"+propertyName$+"'");
-			 String icon$=Support.readHandlerIcon(JEntityPrimaryMenu.class, "takeoff.png");
+			
+			 String icon$=Support.readHandlerIcon(entigrator,JEntityPrimaryMenu.class, "takeoff.png");
 			 locator$=Locator.append(locator$,Locator.LOCATOR_ICON,icon$);
 			 locator$=Locator.append(locator$,BaseHandler.HANDLER_METHOD,METHOD_TAKE_OFF_VALUE);
 			return locator$;
@@ -227,7 +234,8 @@ private String getTakeOffValueLocator(){
 private String getClearValuesLocator(){
 	 try{
 		String responseLocator$=getLocator();
-		String icon$=Support.readHandlerIcon(JEntityPrimaryMenu.class, "broom.png");
+		Entigrator entigrator =console.getEntigrator(entihome$); 
+		String icon$=Support.readHandlerIcon(entigrator,JEntityPrimaryMenu.class, "broom.png");
 		responseLocator$=Locator.append(responseLocator$,Locator.LOCATOR_ICON,icon$);
 		responseLocator$=Locator.append(responseLocator$,Locator.LOCATOR_TITLE,"Clear values ");
 		responseLocator$=Locator.append(responseLocator$, BaseHandler.HANDLER_METHOD, "response");
@@ -269,7 +277,8 @@ private String getClearValuesLocator(){
 				String requestLocator$=textEditor.getLocator();
 				requestLocator$=Locator.append(requestLocator$, Entigrator.ENTIHOME,entihome$);
 				requestLocator$=Locator.append(requestLocator$, JTextEditor.TEXT,propertyValue$);
-				String icon$=Support.readHandlerIcon(JEntityPrimaryMenu.class, "edit.png");
+				Entigrator entigrator =console.getEntigrator(entihome$); 
+				String icon$=Support.readHandlerIcon(entigrator,JEntityPrimaryMenu.class, "edit.png");
 				requestLocator$=Locator.append(requestLocator$,Locator.LOCATOR_ICON,icon$);
 				requestLocator$=Locator.append(requestLocator$,Locator.LOCATOR_TITLE,"Edit '"+propertyValue$+"'");
 				String responseLocator$=getLocator();
@@ -359,5 +368,22 @@ private String getClearValuesLocator(){
 			return null;
 		}
 	}
-
+	public   void takeOffValue(JMainConsole console,String locator$) {
+		try{
+		//	System.out.println("JValuePanel:takeOffValue:locator="+locator$);
+		    Properties locator=Locator.toProperties(locator$);
+		    String propertyName$=locator.getProperty(JDesignPanel.PROPERTY_NAME);
+		    String entihome$=locator.getProperty(Entigrator.ENTIHOME);
+		    String entityKey$=locator.getProperty(EntityHandler.ENTITY_KEY);
+			Entigrator entigrator=console.getEntigrator(entihome$);
+			Sack entity=entigrator.getEntityAtKey(entityKey$);
+			entigrator.ent_takeOffProperty(entity, propertyName$);
+			JDesignPanel designPanel=new JDesignPanel();
+			String designLocator$=designPanel.getLocator();
+			designLocator$=Locator.append(designLocator$,Entigrator.ENTIHOME,entihome$);
+		    JConsoleHandler.execute(console, designLocator$);
+		}catch(Exception e){
+		Logger.getLogger(getClass().getName()).severe(e.toString());
+		}
+	}
 }

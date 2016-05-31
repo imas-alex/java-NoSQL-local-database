@@ -163,7 +163,7 @@ public JTextEditor() {
 	    	locator.setProperty(JRequester.REQUESTER_RESPONSE_LOCATOR, requesterResponseLocator$);
 	   locator.setProperty(BaseHandler.HANDLER_SCOPE,JConsoleHandler.CONSOLE_SCOPE);
 	   locator.setProperty(BaseHandler.HANDLER_CLASS,JTextEditor.class.getName());
-	   String icon$=Support.readHandlerIcon(JEntitiesPanel.class, "edit.png");
+	   String icon$=Support.readHandlerIcon(null,JEntitiesPanel.class, "edit.png");
        locator.setProperty(Locator.LOCATOR_ICON,icon$);
 	   return Locator.toString(locator);
 	}

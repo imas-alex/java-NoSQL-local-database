@@ -218,7 +218,7 @@ public class JTextEncrypter extends JPanel implements JContext{
 	    	locator.setProperty(JRequester.REQUESTER_RESPONSE_LOCATOR, requesterResponseLocator$);
 	   locator.setProperty(BaseHandler.HANDLER_SCOPE,JConsoleHandler.CONSOLE_SCOPE);
 	   locator.setProperty(BaseHandler.HANDLER_CLASS,JTextEncrypter.class.getName());
-	   String icon$=Support.readHandlerIcon(JEntitiesPanel.class, "lock.png");
+	   String icon$=Support.readHandlerIcon(null,JEntitiesPanel.class, "lock.png");
        locator.setProperty(Locator.LOCATOR_ICON,icon$);
 	   return Locator.toString(locator);
 	}

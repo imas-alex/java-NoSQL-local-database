@@ -65,7 +65,7 @@ public class JWebsetFacetAddItem extends JFacetAddItem{
 			locator.setProperty(EntityHandler.ENTITY_KEY,entityKey$);
 		if(entihome$!=null)
 			locator.setProperty(Entigrator.ENTIHOME,entihome$);
-		 icon$=Support.readHandlerIcon(JEntitiesPanel.class, "globe.png");
+		 icon$=Support.readHandlerIcon(null,JEntitiesPanel.class, "globe.png");
 		if(icon$!=null)
 		    	locator.setProperty(Locator.LOCATOR_ICON,icon$);
 		 locator$=Locator.toString(locator);

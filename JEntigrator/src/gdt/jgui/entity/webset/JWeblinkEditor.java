@@ -126,7 +126,7 @@ public class JWeblinkEditor extends JPanel implements JFacetRenderer,JRequester,
 		gridBagLayout.rowWeights = new double[]{0.0, 0.0, 0.0, 0.0, 0.0};
 		setLayout(gridBagLayout);
 		
-		String icon$=Support.readHandlerIcon(JEntitiesPanel.class, "globe.png");
+		String icon$=Support.readHandlerIcon(null,JEntitiesPanel.class, "globe.png");
 		 byte[] ba=Base64.decodeBase64(icon$);
      	ImageIcon icon = new ImageIcon(ba);
      	Image image= icon.getImage().getScaledInstance(24, 24, 0);
@@ -489,7 +489,7 @@ private void save(){
 		        icon$= Base64.encodeBase64String(ba);
 			}catch(Exception ee){}
 			if(icon$==null)
-			 icon$=Support.readHandlerIcon(JEntitiesPanel.class, "edit.png");
+			 icon$=Support.readHandlerIcon(null,JEntitiesPanel.class, "edit.png");
 	    	locator.setProperty(Locator.LOCATOR_ICON,icon$);
 			return Locator.toString(locator);
 			}catch(Exception e){
@@ -548,7 +548,7 @@ private void save(){
  */
 @Override
 	public String addIconToLocator(String locator$) {
-		String icon$=Support.readHandlerIcon(JEntitiesPanel.class, "globe.png");
+		String icon$=Support.readHandlerIcon(null,JEntitiesPanel.class, "globe.png");
 	    if(icon$!=null)
 		return Locator.append(locator$, Locator.LOCATOR_ICON,icon$);
 	    else
@@ -576,7 +576,7 @@ private void save(){
 	 */
 	@Override
 	public String getCategoryIcon() {
-		return Support.readHandlerIcon(JEntitiesPanel.class, "edit.png");
+		return Support.readHandlerIcon(null,JEntitiesPanel.class, "edit.png");
 	}
 	/**
 	 * Get category title for entities having the facet type.
@@ -662,7 +662,7 @@ private void save(){
 	    String editorLocator$=textEditor.getLocator();
 	    editorLocator$=Locator.append(editorLocator$, JTextEditor.TEXT, "Web links"+Identity.key().substring(0,4));
 	    editorLocator$=Locator.append(editorLocator$,Locator.LOCATOR_TITLE,"Web links entity");
-	    String icon$=Support.readHandlerIcon(JEntitiesPanel.class, "globe.png");
+	    String icon$=Support.readHandlerIcon(null,JEntitiesPanel.class, "globe.png");
 	    editorLocator$=Locator.append(editorLocator$,Locator.LOCATOR_ICON,icon$);
 	    JWeblinkEditor fe=new JWeblinkEditor();
 	    String feLocator$=fe.getLocator();

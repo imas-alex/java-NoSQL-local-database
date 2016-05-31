@@ -78,7 +78,7 @@ public class JBookmarksFacetOpenItem extends JFacetOpenItem implements JRequeste
 			locator.setProperty(EntityHandler.ENTITY_KEY,entityKey$);
 		if(entihome$!=null)
 			locator.setProperty(Entigrator.ENTIHOME,entihome$);
-		 String icon$=Support.readHandlerIcon(JEntitiesPanel.class, "bookmark.png");
+		 String icon$=Support.readHandlerIcon(null,JEntitiesPanel.class, "bookmark.png");
 		    if(icon$!=null)
 		    	locator.setProperty(Locator.LOCATOR_ICON,icon$);
 		    if(entihome$!=null)   
@@ -161,7 +161,7 @@ public class JBookmarksFacetOpenItem extends JFacetOpenItem implements JRequeste
 	 */
 	@Override
 	public String getFacetIcon() {
-		return Support.readHandlerIcon(JEntitiesPanel.class, "bookmark.png");
+		return Support.readHandlerIcon(null,JEntitiesPanel.class, "bookmark.png");
 	}
 /**
  * Get the facet renderer class name.

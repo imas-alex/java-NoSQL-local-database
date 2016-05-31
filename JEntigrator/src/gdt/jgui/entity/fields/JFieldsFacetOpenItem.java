@@ -79,6 +79,7 @@ public String getLocator(){
 	locator.setProperty(BaseHandler.HANDLER_CLASS,JFieldsFacetOpenItem.class.getName());
 	locator.setProperty(BaseHandler.HANDLER_SCOPE,JConsoleHandler.CONSOLE_SCOPE);
 	locator.setProperty(BaseHandler.HANDLER_METHOD,METHOD_OPEN_FACET);
+	
 	locator.setProperty( JContext.CONTEXT_TYPE,"Fields facet");
 	locator.setProperty(Locator.LOCATOR_TITLE,"Fields");
 	locator.setProperty(FACET_HANDLER_CLASS,FieldsHandler.class.getName());
@@ -86,7 +87,7 @@ public String getLocator(){
 		locator.setProperty(EntityHandler.ENTITY_KEY,entityKey$);
 	if(entihome$!=null)
 		locator.setProperty(Entigrator.ENTIHOME,entihome$);
-	 String icon$=Support.readHandlerIcon(JFieldsEditor.class, "fields.png");
+	 String icon$=Support.readHandlerIcon(null,JFieldsEditor.class, "fields.png");
     if(icon$!=null)
     	locator.setProperty(Locator.LOCATOR_ICON,icon$);
     if(entihome$!=null){   
@@ -186,7 +187,7 @@ public String getFacetName() {
  */
 @Override
 public String getFacetIcon() {
-	return Support.readHandlerIcon(JFieldsFacetOpenItem.class, "fields.png");
+	return Support.readHandlerIcon(null,JFieldsFacetOpenItem.class, "fields.png");
 }
 /**
  * Remove the facet from the entity.
@@ -276,8 +277,8 @@ public DefaultMutableTreeNode[] getDigest() {
 		String locator$=getLocator();
 		String nameLocator$;
 		String valueLocator$;
-		String nameIcon$=icon$=Support.readHandlerIcon(JEntitiesPanel.class, "text.png");
-		String valueIcon$=Support.readHandlerIcon(JEntitiesPanel.class, "equal.png");
+		String nameIcon$=icon$=Support.readHandlerIcon(null,JEntitiesPanel.class, "text.png");
+		String valueIcon$=Support.readHandlerIcon(null,JEntitiesPanel.class, "equal.png");
 		ArrayList<DefaultMutableTreeNode>nl=new ArrayList<DefaultMutableTreeNode>();
 		for(Core aCa:ca){
 			nameNode=new DefaultMutableTreeNode();

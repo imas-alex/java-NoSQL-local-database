@@ -421,7 +421,7 @@ private void sort(String header$){
 	   locator.setProperty(BaseHandler.HANDLER_SCOPE,JConsoleHandler.CONSOLE_SCOPE);
 	   locator.setProperty(BaseHandler.HANDLER_CLASS,JEntityEditor.class.getName());
 	   locator.setProperty(BaseHandler.HANDLER_METHOD,"response");
-	   String icon$=Support.readHandlerIcon(JEntityPrimaryMenu.class, "edit.png");
+	   String icon$=Support.readHandlerIcon(null,JEntityPrimaryMenu.class, "edit.png");
 	   locator.setProperty( Locator.LOCATOR_ICON,icon$);
 	   return Locator.toString(locator);
 	}

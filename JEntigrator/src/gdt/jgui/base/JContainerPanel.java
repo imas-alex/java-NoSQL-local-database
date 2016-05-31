@@ -86,8 +86,12 @@ public class JContainerPanel extends JItemsListPanel implements JRequester{
 		Properties locator=new Properties();
 	    locator.setProperty(Locator.LOCATOR_TYPE, JContext.CONTEXT_TYPE);
 	    locator.setProperty(JContext.CONTEXT_TYPE,getType());
-	    if(entihome$!=null)
+	    if(entihome$!=null){
 	       locator.setProperty(Entigrator.ENTIHOME,entihome$);
+	       Entigrator entigrator=console.getEntigrator(entihome$);
+	       String icon$=Support.readHandlerIcon(entigrator,JEntityPrimaryMenu.class, "box.png");
+			 locator.setProperty(Locator.LOCATOR_ICON,icon$);
+	    }
 	    if(propertyName$!=null)
 		       locator.setProperty(JDesignPanel.PROPERTY_NAME,propertyName$);
 	    if(propertyValue$!=null)
@@ -105,8 +109,7 @@ public class JContainerPanel extends JItemsListPanel implements JRequester{
 	    locator.setProperty(Locator.LOCATOR_TITLE, "Container");
 	    locator.setProperty(BaseHandler.HANDLER_SCOPE,JConsoleHandler.CONSOLE_SCOPE);
 	    locator.setProperty(BaseHandler.HANDLER_CLASS,JContainerPanel.class.getName());
-	    String icon$=Support.readHandlerIcon(JEntityPrimaryMenu.class, "box.png");
-		 locator.setProperty(Locator.LOCATOR_ICON,icon$);
+	   
 	    return Locator.toString(locator);
 	}
 	/**
@@ -170,7 +173,8 @@ private String getIncludeLocator(){
             locator$=Locator.append(locator$, Locator.LOCATOR_TITLE,"Include '"+component.getProperty("label")+"'");
             locator$=Locator.append(locator$,BaseHandler.HANDLER_METHOD,"response"); 
             locator$=Locator.append(locator$,JRequester.REQUESTER_ACTION,ACTION_INCLUDE_COMPONENT);
-			String icon$=Support.readHandlerIcon(JEntityPrimaryMenu.class, "include.png");
+			String icon$=Support.readHandlerIcon(entigrator,JEntityPrimaryMenu.class, "include.png");
+			if(icon$!=null)
 			locator$=Locator.append(locator$,Locator.LOCATOR_ICON,icon$);
 			return locator$;
 			}catch(Exception ee){
@@ -190,7 +194,9 @@ private String getExcludeLocator(){
            locator$=Locator.append(locator$, Locator.LOCATOR_TITLE,"Exclude '"+component.getProperty("label")+"'");
            locator$=Locator.append(locator$,BaseHandler.HANDLER_METHOD,"response"); 
            locator$=Locator.append(locator$,JRequester.REQUESTER_ACTION,ACTION_EXCLUDE_COMPONENT);
-			String icon$=Support.readHandlerIcon(JEntityPrimaryMenu.class, "exclude.png");
+           String icon$=Support.readHandlerIcon(entigrator,JEntityPrimaryMenu.class, "exclude.png");
+           //String icon$=Support.readHandlerIcon(JEntityPrimaryMenu.class, "exclude.png");
+           if(icon$!=null)
 			locator$=Locator.append(locator$,Locator.LOCATOR_ICON,icon$);
 			return locator$;
 			}catch(Exception ee){
@@ -210,7 +216,8 @@ private String getListComponentsLocator(){
         locator$=Locator.append(locator$, Locator.LOCATOR_TITLE,"List components");
         locator$=Locator.append(locator$,BaseHandler.HANDLER_METHOD,"response"); 
         locator$=Locator.append(locator$,JRequester.REQUESTER_ACTION,ACTION_LIST_COMPONENTS);
-		String icon$=Support.readHandlerIcon(JEntityPrimaryMenu.class, "entities.png");
+		String icon$=Support.readHandlerIcon(entigrator,JEntityPrimaryMenu.class, "entities.png");
+		if(icon$!=null)
 		locator$=Locator.append(locator$,Locator.LOCATOR_ICON,icon$);
 		return locator$;
 			}catch(Exception ee){
@@ -225,7 +232,8 @@ private String getFacetsLocator(){
        locator$=Locator.append(locator$, Locator.LOCATOR_TITLE,"Facets");
        locator$=Locator.append(locator$,BaseHandler.HANDLER_METHOD,"response"); 
        locator$=Locator.append(locator$,JRequester.REQUESTER_ACTION,ACTION_FACETS);
-		String icon$=Support.readHandlerIcon(JEntityPrimaryMenu.class, "facet.png");
+		String icon$=Support.readHandlerIcon(entigrator,JEntityPrimaryMenu.class, "facet.png");
+		if(icon$!=null)
 		locator$=Locator.append(locator$,Locator.LOCATOR_ICON,icon$);
 		return locator$;
 			}catch(Exception ee){

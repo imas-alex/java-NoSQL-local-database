@@ -145,7 +145,7 @@ public boolean isRemovable() {
 	 */
 	@Override
 	public String getFacetIcon() {
-		return Support.readHandlerIcon(getClass(), "folder.png");
+		return Support.readHandlerIcon(null,getClass(), "folder.png");
 	}
 	/**
 	 * Get the facet renderer class name.
@@ -223,7 +223,7 @@ public boolean isRemovable() {
 			locator.setProperty(EntityHandler.ENTITY_KEY,entityKey$);
 		if(entihome$!=null)
 			locator.setProperty(Entigrator.ENTIHOME,entihome$);
-		 String icon$=Support.readHandlerIcon(JFolderPanel.class, "folder.png");
+		 String icon$=Support.readHandlerIcon(null,JFolderPanel.class, "folder.png");
 		    if(icon$!=null)
 		    	locator.setProperty(Locator.LOCATOR_ICON,icon$);
 		    if(entihome$!=null){   
@@ -263,7 +263,7 @@ public boolean isRemovable() {
 					fileLocator.setProperty(Locator.LOCATOR_TYPE, JFolderPanel.LOCATOR_TYPE_FILE);
 					fileLocator.setProperty(Locator.LOCATOR_CHECKABLE,Locator.LOCATOR_TRUE);
 					fileLocator.setProperty(JEntityDigestDisplay.NODE_TYPE,NODE_TYPE_FILE_NODE);
-					icon$=Support.readHandlerIcon(getClass(), "file.png");
+					icon$=Support.readHandlerIcon(null,getClass(), "file.png");
 					fileLocator.setProperty(Locator.LOCATOR_ICON, icon$);
 					fileLocator.setProperty(BaseHandler.HANDLER_CLASS,getClass().getName());
 					fileLocator.setProperty(BaseHandler.HANDLER_METHOD,"openFile");

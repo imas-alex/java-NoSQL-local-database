@@ -27,6 +27,9 @@ import java.util.Stack;
 import java.util.Vector;
 import java.util.logging.Logger;
 import org.apache.commons.codec.binary.Base64;
+
+import gdt.data.entity.facet.ExtensionHandler;
+import gdt.data.store.Entigrator;
 /**
 * The class collects general-purpose methods. 
 * @author  Alexander Imas
@@ -172,7 +175,7 @@ public class Support {
     	try {
     		InputStream is=handler.getResourceAsStream(resource$);
         	if(is!=null){
-        		System.out.println("Support:getClassResource:resource stream="+is.toString());
+        		//System.out.println("Support:getClassResource:resource stream="+is.toString());
         		return is;
         	}
         	else{
@@ -211,9 +214,10 @@ public class Support {
     /**
  	 * Get an icon encoded as Base64 string located as file in the class path. 
  	 * @param handler the class
- 	 * @param icon$ the name of the icon file.
+ 	 * @param iconResource$ the name of the icon file.
  	 * @return input stream.
  	 */ 
+   /*
     public static String readHandlerIcon(Class<?> handler,String icon$) {
  		try {
  			System.out.println("Support:readHandlerIcon:handler="+handler.getName()+" icon="+icon$);
@@ -228,6 +232,43 @@ public class Support {
  	            byte[] ba = bos.toByteArray();
  	            is.close();
  	           return Base64.encodeBase64String(ba);
+ 		} catch (Exception e) {
+ 			Logger.getLogger(gdt.data.grain.Support.class.getName()).severe(e.toString());
+ 		}
+ 		return null;
+ 	}
+ 	*/
+    public static String readHandlerIcon(Entigrator entigrator,Class<?> handler,String iconResource$) {
+ 		try {
+ 			System.out.println("Support:readHandlerIcon:handler="+handler.getName()+" icon="+iconResource$);
+ 			//InputStream is=handler.getResourceAsStream(icon$);
+ 			InputStream is= getClassResource(handler,iconResource$);
+ 			if(is!=null){
+ 			ByteArrayOutputStream bos = new ByteArrayOutputStream();
+ 	            byte[] b = new byte[1024];
+ 	            int bytesRead = 0;
+ 	            while ((bytesRead = is.read(b)) != -1) {
+ 	               bos.write(b, 0, bytesRead);
+ 	            }
+ 	            byte[] ba = bos.toByteArray();
+ 	            is.close();
+ 	           return Base64.encodeBase64String(ba);
+ 			}else
+ 			{
+ 				if(entigrator==null){
+ 					System.out.println("Support:readHandlerIcon:entigrator is null");
+ 				return null;
+ 				}
+ 				String [] sa=entigrator.indx_listEntities("entity", "extension");
+ 				if(sa!=null){
+ 				String icon$=null;
+ 				for(String s:sa){
+ 				   icon$=ExtensionHandler.loadIcon(entigrator, s, iconResource$);
+ 				   if(icon$!=null)
+ 					   return icon$;
+ 				}
+ 				}
+ 			}
  		} catch (Exception e) {
  			Logger.getLogger(gdt.data.grain.Support.class.getName()).severe(e.toString());
  		}

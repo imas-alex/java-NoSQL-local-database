@@ -58,7 +58,7 @@ public class JFolderFacetAddItem extends JFacetAddItem{
 	    		locator.setProperty(EntityHandler.ENTITY_KEY,entityKey$);
 	    	if(entihome$!=null)
 	    		locator.setProperty(Entigrator.ENTIHOME,entihome$);
-	    	 icon$=Support.readHandlerIcon(getClass(), "folder.png");
+	    	 icon$=Support.readHandlerIcon(null,getClass(), "folder.png");
 	    	if(icon$!=null)
 	    	    	locator.setProperty(Locator.LOCATOR_ICON,icon$);
 	    	 locator$=Locator.toString(locator);

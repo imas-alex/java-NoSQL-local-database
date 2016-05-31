@@ -140,7 +140,7 @@ public class JWebsetFacetOpenItem extends JFacetOpenItem implements JRequester {
 	 */
 	@Override
 	public String getFacetIcon() {
-		return Support.readHandlerIcon(JEntitiesPanel.class, "globe.png");
+		return Support.readHandlerIcon(null,JEntitiesPanel.class, "globe.png");
 	}
 	/**
 	 * Get the context locator.
@@ -160,7 +160,7 @@ public class JWebsetFacetOpenItem extends JFacetOpenItem implements JRequester {
 			locator.setProperty(EntityHandler.ENTITY_KEY,entityKey$);
 		if(entihome$!=null)
 			locator.setProperty(Entigrator.ENTIHOME,entihome$);
-		 String icon$=Support.readHandlerIcon(JEntitiesPanel.class, "globe.png");
+		 String icon$=Support.readHandlerIcon(null,JEntitiesPanel.class, "globe.png");
 		    if(icon$!=null)
 		    	locator.setProperty(Locator.LOCATOR_ICON,icon$);
 		    if(entihome$!=null)   
@@ -241,7 +241,7 @@ public class JWebsetFacetOpenItem extends JFacetOpenItem implements JRequester {
 			String nameLocator$;
 			String valueLocator$;
 			String nameIcon$;//=icon$=Support.readHandlerIcon(JEntitiesPanel.class, "text.png");
-			String valueIcon$=Support.readHandlerIcon(JEntitiesPanel.class, "equal.png");
+			String valueIcon$=Support.readHandlerIcon(null,JEntitiesPanel.class, "equal.png");
 			ArrayList<DefaultMutableTreeNode>nl=new ArrayList<DefaultMutableTreeNode>();
 			for(Core aCa:ca){
 				nameNode=new DefaultMutableTreeNode();

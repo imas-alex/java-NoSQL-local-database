@@ -29,12 +29,18 @@ import gdt.data.grain.Core;
 import gdt.data.grain.Locator;
 import gdt.data.grain.Sack;
 import gdt.data.store.Entigrator;
+
+import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileOutputStream;
+import java.io.InputStream;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Properties;
 import java.util.Stack;
 import java.util.logging.Logger;
+
+import org.apache.commons.codec.binary.Base64;
 /**
 * This class contains methods to process the database
 * @author  Alexander Imas
@@ -215,11 +221,67 @@ public static String createBlankDatabase(String entihome$){
 	   File folderHome=new File(entihome$+"/"+Entigrator.ICONS);
 	   if(!folderHome.exists())
 		    folderHome.mkdir();
-       return null;
+	   Sack dependencies=entigrator.ent_new("folder", "Dependencies",Entigrator.DEPENDENCIES);
+	   dependencies.putAttribute(new Core(null,"icon","folder.png"));
+       entigrator.save(dependencies);
+       folder=entigrator.ent_assignProperty(folder, "folder", folder.getProperty("label"));
+       folderHome=new File(entihome$+"/"+Entigrator.DEPENDENCIES);
+	   if(!folderHome.exists())
+		    folderHome.mkdir();
+	   System.out.println("BaseHandler:createBlankDatabase:1");
+       InputStream is=ExtensionHandler.class.getResourceAsStream("commons-codec-1.10.jar");
+       if(is==null)
+    	   System.out.println("BaseHandler:createBlankDatabase:cannot get input stream");
+       else{
+    	   System.out.println("BaseHandler:createBlankDatabase:found input stream");
+    	   File out=new File(entihome$+"/"+Entigrator.DEPENDENCIES+"/commons-codec-1.10.jar");
+    		FileOutputStream fos = new FileOutputStream(out);
+            byte[] b = new byte[1024];
+            int bytesRead = 0;
+            while ((bytesRead = is.read(b)) != -1) {
+              fos.write(b, 0, bytesRead);
+            }
+            fos.close();
+            is.close();
+       			}
+       is=ExtensionHandler.class.getResourceAsStream("commons-compress-1.10.jar");
+       if(is==null)
+    	   System.out.println("BaseHandler:createBlankDatabase:cannot get input stream");
+       else{
+    	   System.out.println("BaseHandler:createBlankDatabase:found input stream");
+    	   File out=new File(entihome$+"/"+Entigrator.DEPENDENCIES+"/commons-compress-1.10.jar");
+    		FileOutputStream fos = new FileOutputStream(out);
+            byte[] b = new byte[1024];
+            int bytesRead = 0;
+            while ((bytesRead = is.read(b)) != -1) {
+              fos.write(b, 0, bytesRead);
+            }
+            fos.close();
+            is.close();
+       			}
+    return null;	      
 	}catch(Exception e){
 		Logger.getLogger(BaseHandler.class.getName()).severe(e.toString());
 		return e.toString();
 	}
 	
 }
+private static String resolveName(String name,Class c) {
+	  if (name == null) {
+	    return name;
+	  }
+	  if (!name.startsWith("/")) {
+	    while (c.isArray()) {
+	      c = c.getComponentType();
+	    }
+	    String baseName = c.getName();
+	    int index = baseName.lastIndexOf('.');
+	    if (index != -1) {
+	      name = baseName.substring(0, index).replace('.', '/') + "/" + name;
+	    }
+	  } else {
+	    name = name.substring(1);
+	  }
+	  return name;
+	}
 }

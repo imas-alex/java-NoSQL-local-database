@@ -48,7 +48,8 @@ public class JClipboardPanel extends JItemsListPanel {
 		 Properties locator=new Properties();
 		    locator.setProperty(Locator.LOCATOR_TYPE, JContext.CONTEXT_TYPE);
 		    locator.setProperty(Locator.LOCATOR_TITLE,"Clipboard");
-		    String icon$=Support.readHandlerIcon(getClass(), "clipboard.png");
+		    String icon$=Support.readHandlerIcon(null,getClass(), "clipboard.png");
+		    if(icon$!=null)
 		    locator.setProperty(Locator.LOCATOR_ICON,icon$);
 		    locator.setProperty(BaseHandler.HANDLER_SCOPE,JConsoleHandler.CONSOLE_SCOPE);
 		    locator.setProperty(BaseHandler.HANDLER_CLASS,JClipboardPanel.class.getName());

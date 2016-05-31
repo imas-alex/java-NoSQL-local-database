@@ -83,12 +83,21 @@ public class JConsoleHandler {
     	   Entigrator entigrator=null;
     	   if(entihome$!=null)
     	      entigrator=console.getEntigrator(entihome$);
-    	 if(extension$==null)
-    	   obj =getHandlerInstance(entigrator, handlerClass$);
+    	
+    	   if(extension$==null)
+    	      obj =getHandlerInstance(entigrator, handlerClass$);
     	 else
-    		 obj =getHandlerInstance(entigrator, handlerClass$,extension$); 
+    		 obj =getHandlerInstance(entigrator, handlerClass$,extension$);
+    		 
+    	  // obj=Class.forName(handlerClass$).newInstance();
+    	   if(obj==null){
+    		   System.out.println("ConsoleHandler:execute:cannot instantiate "+handlerClass$);
+    	       return null;
+    	   }
+    		   
+    	   
     	   if (obj instanceof JContext){
-    	    	// System.out.println("ConsoleHandler:execute:context="+handlerClass$);
+    	    	 System.out.println("ConsoleHandler:execute:context="+handlerClass$);
     	    	// if(console==null)
     	    	//	 System.out.println("ConsoleHandler:execute:consoleis null");
     	    	
@@ -113,6 +122,7 @@ public class JConsoleHandler {
     	   }
    	    }catch(Exception e){
    		Logger.getLogger(JConsoleHandler.class.getName()).severe(e.toString());
+   	 e.printStackTrace();
    		return null;
    		}
         }
@@ -134,7 +144,7 @@ public class JConsoleHandler {
 		   JItemPanel itemPanel;
 		   JBaseNavigator baseNavigator=new JBaseNavigator();
 		   String baseLocator$=baseNavigator.getLocator();
-		   String icon$=Support.readHandlerIcon(JConsoleHandler.class, "base.png");
+		   String icon$=Support.readHandlerIcon(null,JConsoleHandler.class, "base.png");
 		    if(icon$!=null)
 		    	baseLocator$=Locator.append(baseLocator$,Locator.LOCATOR_ICON,icon$);
 		//    System.out.println("ConsoleHandler:listBases:icon="+icon$);
@@ -142,6 +152,7 @@ public class JConsoleHandler {
 			   baseLocator$=Locator.append(baseLocator$, Entigrator.ENTIHOME, aSa);
 			   File file = new File(aSa);
 			   baseLocator$=Locator.append(baseLocator$,Locator.LOCATOR_TITLE, file.getName());
+			   baseLocator$=Locator.append(baseLocator$,BaseHandler.HANDLER_METHOD,"openDatabase");
 	//		   System.out.println("ConsoleHandler:listBases:base="+Locator.remove(baseLocator$,Locator.LOCATOR_ICON));
 			   itemPanel=new JItemPanel(console,baseLocator$);
 			   ipl.add(itemPanel);
@@ -196,7 +207,7 @@ public static JFacetRenderer getFacetRenderer(Entigrator entigrator,String fhand
 		//		    System.out.println("ConsoleHandler:getFacetRenderer:aca.value="+aCa.value);	 
 					facetOpenItem=(JFacetOpenItem)getHandlerInstance(entigrator,aCa.value);
 					facetRenderer$= facetOpenItem.getFacetRenderer();
-					//System.out.println("JConsoleHandler:getFacetRenderer:facet renderer="+facetRenderer$);	 
+					System.out.println("JConsoleHandler:getFacetRenderer:facet renderer="+facetRenderer$);	 
 						return (JFacetRenderer)ExtensionHandler.loadHandlerInstance( entigrator,extension.getKey(), facetRenderer$);
 				}
 			}catch(Exception e){
@@ -276,11 +287,23 @@ try{
 }
 public static Object getHandlerInstance(Entigrator entigrator,String handlerClass$,String extension$){
 try{
-	System.out.println("ConsoleHandler:getHandlerInstance:handler="+handlerClass$+" extension ="+extension$);
+	System.out.println("ConsoleHandler:getHandlerInstance:2:handler="+handlerClass$+" extension ="+extension$);
+	/*
+	try{
+		Object obj=Class.forName(handlerClass$).newInstance();
+		if(obj!=null){
+		System.out.println("ConsoleHandler:getHandlerInstance:2:forName");
+			return obj;
+		}
+	}catch(ClassNotFoundException ee){
+		System.out.println("ConsoleHandler:getHandlerInstance:2:embedded class not found");
+	}
+	*/
 	if(handlerClass$==null||"null".equals(handlerClass$)|extension$==null){
 		System.out.println("ConsoleHandler:getHandlerInstance:argument null");
 		return null;
 	}
+	
 if(entigrator==null)
 	System.out.println("ConsoleHandler:getHandlerInstance:entigrator is null");
 	Sack extension=entigrator.getEntity(extension$);

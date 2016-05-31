@@ -185,7 +185,7 @@ public class JIndexPanel extends JPanel implements JContext , JFacetRenderer,JRe
 			    	String groupKey$=Identity.key();
 			    	Properties groupLocator=new Properties();
 			    	groupLocator.setProperty(Locator.LOCATOR_TITLE, text$);
-			    	groupLocator.setProperty(Locator.LOCATOR_ICON, Support.readHandlerIcon(JEntitiesPanel.class, "group.png"));
+			    	groupLocator.setProperty(Locator.LOCATOR_ICON, Support.readHandlerIcon(null,JEntitiesPanel.class, "group.png"));
 			    	groupLocator.setProperty(NODE_TYPE,NODE_TYPE_GROUP);
 			    	groupLocator.setProperty(NODE_KEY,groupKey$);
 			    	groupLocator.setProperty(NODE_GROUP_KEY,parentKey$);
@@ -444,7 +444,7 @@ public class JIndexPanel extends JPanel implements JContext , JFacetRenderer,JRe
 				locator.setProperty(EntityHandler.ENTITY_LABEL,entityLabel$);
 			if(selection$!=null)
 				locator.setProperty(SELECTION,Locator.compressText(selection$));
-			String icon$=Support.readHandlerIcon(JEntitiesPanel.class, "index.png");
+			String icon$=Support.readHandlerIcon(null,JEntitiesPanel.class, "index.png");
 	    	locator.setProperty(Locator.LOCATOR_ICON,icon$);
 			return Locator.toString(locator);
 			}catch(Exception e){
@@ -505,7 +505,7 @@ private DefaultMutableTreeNode instantiateNode(Sack index ,String nodeKey$){
     		rootNode = new DefaultMutableTreeNode(entityLabel$);
    		    locator=new Properties();
    		 locator.setProperty(Locator.LOCATOR_TITLE, INDEX);
-   		 String icon$=Support.readHandlerIcon(JEntitiesPanel.class, "index.png");
+   		 String icon$=Support.readHandlerIcon(null,JEntitiesPanel.class, "index.png");
    		 locator.setProperty(Locator.LOCATOR_ICON, icon$);
    		 locator.setProperty(NODE_TYPE, NODE_TYPE_ROOT);
    		 rootNode.setUserObject(Locator.toString(locator));
@@ -691,7 +691,7 @@ private Sack orderGroupDefault(Sack index,String groupKey$){
 	 */
 	@Override
 	public String getCategoryIcon() {
-		return Support.readHandlerIcon(JEntitiesPanel.class, "index.png");
+		return Support.readHandlerIcon(null,JEntitiesPanel.class, "index.png");
 	}
 
 	@Override

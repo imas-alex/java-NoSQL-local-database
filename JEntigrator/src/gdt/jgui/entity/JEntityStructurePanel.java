@@ -262,7 +262,7 @@ public class JEntityStructurePanel extends JPanel implements JContext{
 			       locator.setProperty(EntityHandler.ENTITY_KEY,entityKey$);
 		    if(entityLabel$!=null)
 			       locator.setProperty(EntityHandler.ENTITY_LABEL,entityLabel$);
-		    String icon$=Support.readHandlerIcon(getClass(), "tree.png");
+		    String icon$=Support.readHandlerIcon(null,getClass(), "tree.png");
 			 locator.setProperty(Locator.LOCATOR_ICON, icon$);
  	       locator.setProperty(Locator.LOCATOR_TITLE, getTitle());
 		   locator.setProperty(BaseHandler.HANDLER_SCOPE,JConsoleHandler.CONSOLE_SCOPE);
@@ -286,7 +286,7 @@ public class JEntityStructurePanel extends JPanel implements JContext{
 		 DefaultMutableTreeNode root = new DefaultMutableTreeNode(entityLabel$);
 		 locator=new Properties();
 		 locator.setProperty(Locator.LOCATOR_TITLE, STRUCTURE);
-		 String icon$=Support.readHandlerIcon(getClass(), "tree.png");
+		 String icon$=Support.readHandlerIcon(null,getClass(), "tree.png");
 		 locator.setProperty(Locator.LOCATOR_ICON, icon$);
 		 root.setUserObject(Locator.toString(locator));
 		 DefaultMutableTreeNode parentNode = new DefaultMutableTreeNode(entityLabel$);

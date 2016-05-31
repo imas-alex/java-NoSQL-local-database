@@ -105,6 +105,7 @@ public static JFacetOpenItem getFacetOpenItemInstance(JMainConsole console,Strin
   		return facetOpenItem;
 		}catch(Exception e){
 			Logger.getLogger(JFacetAddItem.class.getName()).severe(e.toString());
+			//e.printStackTrace();
 			return null;
 		}
 	

@@ -121,7 +121,7 @@ public class JFolderPanel extends JItemsListPanel implements JFacetRenderer,JReq
 				locator.setProperty(EntityHandler.ENTITY_KEY,entityKey$);
 			if(entihome$!=null)
 				locator.setProperty(Entigrator.ENTIHOME,entihome$);
-			 String icon$=Support.readHandlerIcon(getClass(), "folder.png");
+			 String icon$=Support.readHandlerIcon(null,getClass(), "folder.png");
 			    if(icon$!=null)
 			    	locator.setProperty(Locator.LOCATOR_ICON,icon$);
 			return Locator.toString(locator);
@@ -171,9 +171,9 @@ public class JFolderPanel extends JItemsListPanel implements JFacetRenderer,JReq
 					fileLocator.setProperty(Locator.LOCATOR_TYPE, LOCATOR_TYPE_FILE);
 					fileLocator.setProperty(Locator.LOCATOR_CHECKABLE,Locator.LOCATOR_TRUE);
 					if(f.isFile())
-					icon$=Support.readHandlerIcon(getClass(), "file.png");
+					icon$=Support.readHandlerIcon(null,getClass(), "file.png");
 					else
-						icon$=Support.readHandlerIcon(getClass(), "folder.png");
+						icon$=Support.readHandlerIcon(null,getClass(), "folder.png");
 					fileLocator.setProperty(Locator.LOCATOR_ICON, icon$);
 					
 					fileLocator.setProperty(BaseHandler.HANDLER_CLASS,getClass().getName());
@@ -324,7 +324,7 @@ public class JFolderPanel extends JItemsListPanel implements JFacetRenderer,JReq
 	 */
 	@Override
 	public String getCategoryIcon() {
-		return Support.readHandlerIcon(getClass(), "folder.png");
+		return Support.readHandlerIcon(null,getClass(), "folder.png");
 	}
 	/**
 	 * Get category title.

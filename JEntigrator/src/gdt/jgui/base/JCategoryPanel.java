@@ -250,8 +250,12 @@ public class JCategoryPanel extends JItemsListPanel {
 		        	String apLocator$=archivePanel.getLocator();
 	        	  apLocator$=Locator.append(apLocator$,Entigrator.ENTIHOME,entihome$);
 				  apLocator$=Locator.append(apLocator$, EntityHandler.ENTITY_LIST,Locator.toString(ea));
-			      String icon$=Support.readHandlerIcon(JEntityPrimaryMenu.class, "archive.png");
-			      apLocator$=Locator.append(apLocator$, Locator.LOCATOR_ICON,icon$);
+				 
+				    String icon$=Support.readHandlerIcon(entigrator,getClass(), "category.png");
+				    if(icon$!=null)
+				    	apLocator$=Locator.append(apLocator$, Locator.LOCATOR_ICON,icon$);
+				 // String icon$=Support.readHandlerIcon(JEntityPrimaryMenu.class, "archive.png");
+			     // apLocator$=Locator.append(apLocator$, Locator.LOCATOR_ICON,icon$);
 				  JConsoleHandler.execute(console, apLocator$);
 					}
 			} );

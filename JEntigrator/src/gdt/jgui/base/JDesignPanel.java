@@ -644,11 +644,13 @@ public String getLocator() {
 	    locator.setProperty(JContext.CONTEXT_TYPE,getType());
 	    locator.setProperty(Locator.LOCATOR_TITLE, "Design");
 	    locator.setProperty(MODE, mode$);
-	   if(entihome$!=null)
+	   if(entihome$!=null){
 	      locator.setProperty(Entigrator.ENTIHOME,entihome$);
-	    String icon$=Support.readHandlerIcon(JBasesPanel.class, "design.png");
+	      Entigrator entigrator=console.getEntigrator(entihome$);
+	    String icon$=Support.readHandlerIcon(entigrator,JBasesPanel.class, "design.png");
 	    if(icon$!=null)
 	    	locator.setProperty(Locator.LOCATOR_ICON,icon$);
+	   }
 	    locator.setProperty(BaseHandler.HANDLER_SCOPE,JConsoleHandler.CONSOLE_SCOPE);
 	    locator.setProperty(BaseHandler.HANDLER_CLASS,JDesignPanel.class.getName());
 	    String propertyName$=(String)propertyComboBox.getSelectedItem();

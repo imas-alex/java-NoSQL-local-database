@@ -20,18 +20,25 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
 import java.lang.reflect.Method;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.net.URLDecoder;
 import java.util.ArrayList;
+import java.util.Map;
 import java.util.Properties;
+import java.util.Set;
+import java.util.Stack;
 import java.util.logging.Logger;
 import gdt.data.entity.ArchiveHandler;
 import gdt.data.entity.BaseHandler;
 import gdt.data.entity.EntitiesArchiveFilter;
 import gdt.data.entity.EntityHandler;
+import gdt.data.entity.facet.ExtensionHandler;
 import gdt.data.entity.facet.ExtensionMain;
 import gdt.data.grain.Core;
 import gdt.data.grain.Identity;
@@ -45,6 +52,7 @@ import gdt.jgui.console.JContext;
 import gdt.jgui.console.JItemPanel;
 import gdt.jgui.console.JItemsListPanel;
 import gdt.jgui.console.JMainConsole;
+import gdt.jgui.console.JTrackPanel;
 import gdt.jgui.entity.JArchivePanel;
 import gdt.jgui.entity.JEntityFacetPanel;
 import gdt.jgui.entity.JEntityPrimaryMenu;
@@ -73,6 +81,7 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 */
 public class JBaseNavigator extends JItemsListPanel {
 	private static final long serialVersionUID = 1L;
+	private final static String CLASSPATH="classpath";
 private Logger LOGGER=Logger.getLogger(JBaseNavigator.class.getName());
 	String entihome$;
 	/**
@@ -129,7 +138,7 @@ private Logger LOGGER=Logger.getLogger(JBaseNavigator.class.getName());
 								Class<?>cls=cl.loadClass("gdt.data.extension.Main");
 								ExtensionMain em=(ExtensionMain)cls.newInstance();
 								em.main(args);
-							
+							    restartClasspath(console, entihome$);
 					    	}catch(Exception ee){
 					    		LOGGER.severe(ee.toString());
 					    	}
@@ -309,6 +318,7 @@ private Logger LOGGER=Logger.getLogger(JBaseNavigator.class.getName());
 					    	FileExpert.clear(entihome$);
 					    	File entihome=new File (entihome$);
 					    	entihome.delete();
+					    	removeClasspath(console, entihome$);
 					    	console.back();
 					    	}catch(Exception ee){
 					    		LOGGER.severe(ee.toString());
@@ -367,13 +377,13 @@ private Logger LOGGER=Logger.getLogger(JBaseNavigator.class.getName());
 	    locator.setProperty(Locator.LOCATOR_TYPE, JContext.CONTEXT_TYPE);
 	    locator.setProperty(JContext.CONTEXT_TYPE,getType());
 	    if(entihome$!=null){
-	    locator.setProperty(Entigrator.ENTIHOME,entihome$);
+	      locator.setProperty(Entigrator.ENTIHOME,entihome$);
 	    File file = new File(entihome$);
 	    locator.setProperty(Locator.LOCATOR_TITLE, file.getName());
-	    }
-	    String icon$=Support.readHandlerIcon(getClass(), "base.png");
+	    String icon$=Support.readHandlerIcon(null,JBaseNavigator.class, "base.png");
 	    if(icon$!=null)
 	    	locator.setProperty(Locator.LOCATOR_ICON,icon$);
+	    }
 	    locator.setProperty(BaseHandler.HANDLER_SCOPE,JConsoleHandler.CONSOLE_SCOPE);
 	    locator.setProperty(BaseHandler.HANDLER_CLASS,JBaseNavigator.class.getName());
 //	    System.out.println("JBaseNavigator:getLocator:locator="+Locator.toString(locator));
@@ -387,7 +397,7 @@ private Logger LOGGER=Logger.getLogger(JBaseNavigator.class.getName());
 	 */	
 	@Override
 	public JContext instantiate(JMainConsole console, String locator$) {
-		//System.out.println("JBaseNavigator:instantiate:locator="+Locator.remove(locator$,Locator.LOCATOR_ICON));
+	//	System.out.println("JBaseNavigator:instantiate:locator="+Locator.remove(locator$,Locator.LOCATOR_ICON));
 		this.console=console;
 		Properties locator=Locator.toProperties(locator$);
 		entihome$=locator.getProperty(Entigrator.ENTIHOME);
@@ -412,9 +422,13 @@ private Logger LOGGER=Logger.getLogger(JBaseNavigator.class.getName());
 		JAllCategoriesPanel allCategoriesPanel=new JAllCategoriesPanel();
 		String allCategoriesLocator$= allCategoriesPanel.getLocator();
 		allCategoriesLocator$=Locator.append(allCategoriesLocator$,Entigrator.ENTIHOME,entihome$);
+		allCategoriesPanel.instantiate(console, allCategoriesLocator$);
+		allCategoriesLocator$= allCategoriesPanel.getLocator();
+		//System.out.println("JBaseNavigator:instantiate:add all categories="+allCategoriesLocator$);
 		JItemPanel allCategoriesItem=new JItemPanel(console, allCategoriesLocator$);
 		ipl.add(allCategoriesItem);
 		putItems(ipl.toArray(new JItemPanel[0]));
+		restartClasspath(console,entihome$);
 		return this;
 	}
 	/**
@@ -823,8 +837,128 @@ private static void updateEntihome(Entigrator entigrator,String entityKey$){
 		
 		//JEntityPrimaryMenu.reindexEntity(console,EntityHandler.getEntityLocator(entigrator, index));
 	}catch(Exception e){
-		Logger.getLogger(JIndexPanel.class.getName()).severe(e.toString());
+		Logger.getLogger(JBaseNavigator.class.getName()).severe(e.toString());
 	}
 }
-
+public static void restartClasspath(JMainConsole console, String entihome$){
+	try{
+		//ProcessBuilder pb = new ProcessBuilder(System.getProperty("java.home")+"/bin/java", "-jar", extension$, entihome$);
+    	//Process p = pb.start();
+		Entigrator entigrator=console.getEntigrator(entihome$);
+		String cp$=ExtensionHandler.getClasspath(entigrator);
+		String path = JMainConsole.class.getProtectionDomain().getCodeSource().getLocation().getPath();
+        URL location=JMainConsole.class.getProtectionDomain().getCodeSource().getLocation();
+		
+        String dir$ = URLDecoder.decode(path, "UTF-8");
+        cp$=" -cp "+dir$+cp$;
+        String oldCp$=restoreClasspath(console,entihome$);
+        if(cp$.equals(oldCp$))
+        	return;
+        storeClasspath(console, entihome$,cp$);
+		//if(true)
+		//	return;
+        ProcessBuilder pb = new ProcessBuilder("/bin/sh"); // or any other program you want to run
+       
+		    Map<String, String> envMap = pb.environment();
+		    envMap.put("CLASSPATH", cp$);
+		    Set<String> keys = envMap.keySet();
+		    for(String key:keys){
+		        System.out.println(key+" ==> "+envMap.get(key));
+		    }
+		    System.out.println("CLASSPATH="+cp$);
+		    System.out.println("DIR="+dir$);
+		    System.out.println("LOCATION="+location);
+		    String cmd$=System.getProperty("java.home")+"/bin/java "+ cp$+" "+JMainConsole.class.getName();
+		   // String cmd$=System.getProperty("java.home")+"/bin/java "+ JMainConsole.class.getName();
+		    //+ JMainConsole.class.getName();
+		    //String cmd$=System.getProperty("java.home")+"/bin/java";
+		    System.out.println("JAVA_RUN="+cmd$);
+		    Runtime.getRuntime().exec(cmd$);
+    
+		   /*
+		    pb.directory(new File(dir$));
+		    pb.command(cmd$);
+		    pb.start();
+		    */
+	}catch(Exception e){
+		Logger.getLogger(JBaseNavigator.class.getName()).severe(e.toString());
+	}
+}
+public static void storeClasspath(JMainConsole console,String entihome$,String classpath$){
+	try{
+		File home=new File(System.getProperty("user.home")+"/.entigrator");
+		if(!home.exists())
+			home.mkdir();
+		File file=new File(home,CLASSPATH);
+		Properties props=new Properties();
+			if(!file.exists())
+				file.createNewFile();
+			else{
+				try{
+					props.load(new FileInputStream(file));
+				}catch(Exception ee){
+					Logger.getLogger(JTrackPanel.class.getName()).info(ee.toString());
+				
+				}
+			}
+		 props.put(entihome$, classpath$);	
+		 FileOutputStream fos = new FileOutputStream(file);
+		 props.store(fos,null );
+		 fos.close();
+	}catch(Exception e){
+		Logger.getLogger(JTrackPanel.class.getName()).severe(e.toString());
+	}
+}
+public static String restoreClasspath(JMainConsole console,String entihome$){
+	try{
+		File home=new File(System.getProperty("user.home")+"/.entigrator");
+		File file=new File(home,CLASSPATH);
+		if(!file.exists())
+			return null;
+		Properties props=new Properties();
+		props.load(new FileInputStream(file));
+		return props.getProperty(entihome$);
+	}catch(Exception e){
+		Logger.getLogger(JTrackPanel.class.getName()).severe(e.toString());
+	}
+	return null;
+}
+public static void removeClasspath(JMainConsole console,String entihome$){
+	try{
+		File home=new File(System.getProperty("user.home")+"/.entigrator");
+		File file=new File(home,CLASSPATH);
+		if(!file.exists())
+			return ;
+		Properties props=new Properties();
+		FileInputStream fis=new FileInputStream(file);
+		props.load(fis);
+		fis.close();
+		props.remove(entihome$);
+		FileOutputStream fos = new FileOutputStream(file);
+		props.store(fos,null );
+		fos.close();
+	}catch(Exception e){
+		Logger.getLogger(JTrackPanel.class.getName()).severe(e.toString());
+	}
+	
+}
+public static void openDatabase(JMainConsole console,String locator$){
+	try{
+		Properties locator=Locator.toProperties(locator$);
+		String entihome$=locator.getProperty(Entigrator.ENTIHOME);
+		File home=new File(System.getProperty("user.home")+"/.entigrator");
+		File file=new File(home,CLASSPATH);
+		if(!file.exists())
+			return ;
+		Properties props=new Properties();
+		props.load(new FileInputStream(file));
+		String cp$=props.getProperty(entihome$);
+	    String cmd$=System.getProperty("java.home")+"/bin/java "+ cp$+" "+JMainConsole.class.getName();
+	    System.out.println("JBaseNavigatoropenDatabase:JAVA_CMD="+cmd$);
+	    Runtime.getRuntime().exec(cmd$);
+	    
+	}catch(Exception e){
+		Logger.getLogger(JTrackPanel.class.getName()).severe(e.toString());
+	}
+}
 }

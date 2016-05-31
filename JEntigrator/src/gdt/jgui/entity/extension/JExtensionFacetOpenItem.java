@@ -42,7 +42,7 @@ public class JExtensionFacetOpenItem extends JFolderFacetOpenItem{
 	 */
 	@Override
 	public String getFacetIcon() {
-		return Support.readHandlerIcon(getClass(), "facet.png");
+		return Support.readHandlerIcon(null,getClass(), "facet.png");
 	}
 	/**
 	 * Get the facet renderer class name.
@@ -70,7 +70,7 @@ public class JExtensionFacetOpenItem extends JFolderFacetOpenItem{
 			locator.setProperty(EntityHandler.ENTITY_KEY,entityKey$);
 		if(entihome$!=null)
 			locator.setProperty(Entigrator.ENTIHOME,entihome$);
-		 String icon$=Support.readHandlerIcon(JExtensionRenderer.class, "facet.png");
+		 String icon$=Support.readHandlerIcon(null,JExtensionRenderer.class, "facet.png");
 		    if(icon$!=null)
 		    	locator.setProperty(Locator.LOCATOR_ICON,icon$);
 	 	locator.setProperty(Locator.LOCATOR_CHECKABLE,Locator.LOCATOR_FALSE);

@@ -38,7 +38,7 @@ public class JExtensionRenderer extends gdt.jgui.entity.folder.JFolderPanel{
 				locator.setProperty(EntityHandler.ENTITY_KEY,entityKey$);
 			if(entihome$!=null)
 				locator.setProperty(Entigrator.ENTIHOME,entihome$);
-			 String icon$=Support.readHandlerIcon(getClass(), "facet.png");
+			 String icon$=Support.readHandlerIcon(null,getClass(), "facet.png");
 			    if(icon$!=null)
 			    	locator.setProperty(Locator.LOCATOR_ICON,icon$);
 			return Locator.toString(locator);
@@ -70,7 +70,7 @@ public class JExtensionRenderer extends gdt.jgui.entity.folder.JFolderPanel{
 	@Override
 	public String getCategoryIcon() {
 		
-		return Support.readHandlerIcon(getClass(), "facet.png");
+		return Support.readHandlerIcon(null,getClass(), "facet.png");
 	}
 	/**
 	 * Get the category title.

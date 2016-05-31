@@ -112,7 +112,7 @@ public JIconSelector() {
 		       locator.setProperty(EntityHandler.ENTITY_KEY,entityKey$);
 	    if(entityLabel$!=null)
 		       locator.setProperty(EntityHandler.ENTITY_LABEL,entityLabel$);
-	    String icon$=Support.readHandlerIcon(JEntitiesPanel.class,"icon.png" );
+	    String icon$=Support.readHandlerIcon(null,JEntitiesPanel.class,"icon.png" );
 	      locator.setProperty(Locator.LOCATOR_ICON,icon$);
 	   locator.setProperty(BaseHandler.HANDLER_CLASS,JIconSelector.class.getName());
 	   return Locator.toString(locator);
