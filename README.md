@@ -12,5 +12,5 @@ The composition data model has the ability to absorb data objects of the special
 
 3.The implementation.
 
-The production environment includes the application jar file and one or more databases. The database is actually the file directory containing data objects and indexes. The persistent form of a data object is an XML file. Each data object has unique identifier and label within the database. The end user interacts with the application via GUI. The main application window built as a frame for contexts. A context is a panel displaing information and controls related to current task. Each facet can have one or more contexts. A user navigate through the set of contexts to perform the certain task.
+The production environment includes the application jar file and one or more databases. The database is actually the file directory containing data objects and indexes. The persistent form of a data object is an XML file. Each data object has unique identifier and label within the database. The end user interacts with the application via GUI. The main application window built as a frame for contexts. A context is a panel displaing information and controls related to the current task. Each facet can have one or more contexts. A user navigates through the set of contexts to perform the certain task.
 
