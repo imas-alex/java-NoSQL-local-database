@@ -1,0 +1,200 @@
+package gdt.jgui.entity.graph;
+
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.ArrayList;
+import java.util.Properties;
+import java.util.logging.Logger;
+
+import javax.swing.JMenu;
+import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
+import javax.swing.event.MenuEvent;
+import javax.swing.event.MenuListener;
+
+import gdt.data.entity.BaseHandler;
+import gdt.data.entity.EntityHandler;
+import gdt.data.entity.GraphHandler;
+import gdt.data.entity.facet.ExtensionHandler;
+import gdt.data.grain.Locator;
+import gdt.data.grain.Sack;
+import gdt.data.store.Entigrator;
+import gdt.jgui.console.JConsoleHandler;
+import gdt.jgui.console.JContext;
+import gdt.jgui.console.JItemsListPanel;
+import gdt.jgui.console.JMainConsole;
+import gdt.jgui.console.JRequester;
+import gdt.jgui.entity.JEntitiesPanel;
+
+public class JGraphViews extends JItemsListPanel implements JRequester{
+	private static final long serialVersionUID = 1L;
+	
+	public static final String ACTION_SAVE_VIEW="action save view";
+	private String entihome$;
+    private String entityKey$;
+    private String entityLabel$;
+    String viewComponentKey$;
+    String action$;
+    JMenu menu1;
+	@Override
+	public String getLocator() {
+		try{
+			Properties locator=new Properties();
+			locator.setProperty(BaseHandler.HANDLER_CLASS,JGraphViews.class.getName());
+			locator.setProperty(BaseHandler.HANDLER_SCOPE,JConsoleHandler.CONSOLE_SCOPE);
+			 locator.setProperty( JContext.CONTEXT_TYPE,getType());
+			locator.setProperty(Locator.LOCATOR_TITLE,getTitle());
+			locator.setProperty(BaseHandler.HANDLER_LOCATION,GraphHandler.EXTENSION_KEY);
+			if(entityKey$!=null)
+				locator.setProperty(EntityHandler.ENTITY_KEY,entityKey$);
+			if(entihome$!=null){
+				locator.setProperty(Entigrator.ENTIHOME,entihome$);
+			Entigrator entigrator=console.getEntigrator(entihome$);
+			String icon$= ExtensionHandler.loadIcon(entigrator, GraphHandler.EXTENSION_KEY,"views.png");
+			    if(icon$!=null)
+			    	locator.setProperty(Locator.LOCATOR_ICON,icon$);
+			}
+			return Locator.toString(locator);
+			}catch(Exception e){
+	        Logger.getLogger(getClass().getName()).severe(e.toString());
+	        return null;
+			}
+	}
+	@Override
+	public JContext instantiate(JMainConsole console, String locator$) {
+	try{
+		Properties locator=Locator.toProperties(locator$);
+		entihome$=locator.getProperty(Entigrator.ENTIHOME);
+		entityKey$=locator.getProperty(EntityHandler.ENTITY_KEY);
+		Entigrator entigrator=console.getEntigrator(entihome$);
+		entityLabel$=entigrator.indx_getLabel(entityKey$);
+		action$=locator.getProperty(JRequester.REQUESTER_ACTION);
+		String viewComponentLabel$=entityLabel$+".view";
+		viewComponentKey$=entigrator.indx_keyAtLabel(viewComponentLabel$);
+		if(viewComponentKey$==null){
+			Sack viewComponent=entigrator.ent_new("graph.vew", viewComponentLabel$);
+			viewComponentKey$=viewComponent.getKey();
+			Sack graph=entigrator.getEntityAtKey(entityKey$);
+			entigrator.col_addComponent(graph, viewComponent);
+					}
+		}catch(Exception e){
+			Logger.getLogger(getClass().getName()).severe(e.toString());
+		}
+		return this;
+	}
+	  @Override
+	  public JMenu getContextMenu() {
+		  //menu=super.getContextMenu();
+	   menu1=new JMenu("Context");
+		  //menu.setName("Context");
+		  menu=super.getContextMenu();
+		  if(menu!=null){
+	      int cnt=menu.getItemCount();
+		//  System.out.println("JGraphNode:getContextMenu:super menu cnt="+cnt);
+		  mia=new JMenuItem[cnt];
+		  for (int i=0;i<cnt;i++)
+			  mia[i]=menu.getItem(i);
+		  }
+		  	
+		  menu1.addMenuListener(new MenuListener(){
+		  	@Override
+		  	public void menuSelected(MenuEvent e) {
+		  		// System.out.println("JGraphNode:getContextMenu:menu selected");
+		  		 menu1.removeAll();
+		  		 if(mia!=null){
+		  		 for(JMenuItem mi:mia)
+		  			try{
+		  			 if(mi!=null&&mi.getText()!=null){ 
+		  			    menu1.add(mi);
+		  			  System.out.println("JGraphNode:getConextMenu:add item="+mi.getText());
+		  			 }
+		  			}catch(Exception ee){
+		  				 System.out.println("JGraphNode:getConextMenu:"+ee.toString());
+		  			}
+		  	
+		  	 }
+		  	
+		  //	 System.out.println("JGraphNode:getContextMenu:2:menu cnt="+menu1.getItemCount());
+		  	 menu1.addSeparator();
+		  
+		  	 if(hasSelectedItems()){
+		  	JMenuItem deleteItem = new JMenuItem("Delete");
+		  	 deleteItem.addActionListener(new ActionListener() {
+		  		@Override
+		  		public void actionPerformed(ActionEvent e) {
+		  			 
+		  			int response = JOptionPane.showConfirmDialog(console.getContentPanel(), "Delete ?", "Confirm",
+		  				        JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
+		  			   if (response == JOptionPane.YES_OPTION) {
+		  				  String[] sa=JGraphViews.this.listSelectedItems();
+		  				  if(sa==null)
+		  					  return;
+		  			
+		  			   }
+		  			   }
+		  	});
+		  	menu1.add(deleteItem);
+		  	 }
+		  	JMenuItem newItem = new JMenuItem("New");
+		  	newItem.addActionListener(new ActionListener() {
+		  		@Override
+		  		public void actionPerformed(ActionEvent e) {
+		  			try{
+		  				Entigrator entigrator=console.getEntigrator(entihome$);
+		  				Sack graph=entigrator.getEntityAtKey(entityKey$);
+		  				
+		  					JEntitiesPanel ep=new JEntitiesPanel();
+		  					String locator$=ep.getLocator();
+		  					locator$=Locator.append(locator$, Entigrator.ENTIHOME, entihome$);
+		  					
+		  					JConsoleHandler.execute(console, locator$);
+		  				
+		  			}catch(Exception ee){
+		  				System.out.println("JGraphNode:getConextMenu:all nodes:"+ee.toString());
+		  			}
+		  		}
+		  	
+		  	});
+		  	newItem.setVisible(true);
+		  	menu1.add(newItem);  
+			
+		  	}
+		  	@Override
+			public void menuDeselected(MenuEvent e) {
+			}
+			@Override
+			public void menuCanceled(MenuEvent e) {
+			}	
+		});
+		return menu1;
+		}
+ 
+	@Override
+	public String getTitle() {
+		return "Graph views";
+	}
+
+	@Override
+	public String getSubtitle() {
+
+		return entihome$;
+	}
+
+	@Override
+	public String getType() {
+		
+		return "graph views";
+	}
+
+	@Override
+	public void close() {
+		// TODO Auto-generated method stub
+		
+	}
+	@Override
+	public void response(JMainConsole console, String locator$) {
+		// TODO Auto-generated method stub
+		
+	}
+
+}

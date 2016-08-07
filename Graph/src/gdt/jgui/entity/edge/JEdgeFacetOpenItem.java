@@ -57,14 +57,16 @@ public String getLocator(){
 	locator.setProperty(FACET_HANDLER_CLASS,EdgeHandler.class.getName());
 	if(entityKey$!=null)
 		locator.setProperty(EntityHandler.ENTITY_KEY,entityKey$);
-	if(entihome$!=null)
+	if(entihome$!=null){
 		locator.setProperty(Entigrator.ENTIHOME,entihome$);
-	 String icon$=Support.readHandlerIcon(JBondsPanel.class, "edge.png");
+		Entigrator entigrator=console.getEntigrator(entihome$);
+	 //String icon$=Support.readHandlerIcon(JBondsPanel.class, "edge.png");
+		String icon$=ExtensionHandler.loadIcon(entigrator, EdgeHandler.EXTENSION_KEY, "edge.png");
     if(icon$!=null)
     	locator.setProperty(Locator.LOCATOR_ICON,icon$);
-    if(entihome$!=null){   
- 	locator.setProperty(Locator.LOCATOR_CHECKABLE,Locator.LOCATOR_TRUE);
-	    }
+    locator.setProperty(Locator.LOCATOR_CHECKABLE,Locator.LOCATOR_TRUE);
+	}
+    
 	return Locator.toString(locator);
 }
 @Override
@@ -74,7 +76,7 @@ public boolean isRemovable() {
 
 @Override
 public String getFacetName() {
-	return "Node";
+	return "Edge";
 }
 @Override
 public String getFacetIcon() {
@@ -95,11 +97,12 @@ public void removeFacet() {
 @Override
 public void openFacet(JMainConsole console,String locator$) {
 	try{
-	//	System.out.println("JAddressFacetOpenItem:openFacet:locator="+locator$);
+		System.out.println("JBondsFacetOpenItem:openFacet:locator="+locator$);
 		Properties locator=Locator.toProperties(locator$);
 		String entihome$=locator.getProperty(Entigrator.ENTIHOME);
 		String entityKey$=locator.getProperty(EntityHandler.ENTITY_KEY);
 		String responseLocator$=getLocator();
+		System.out.println("JBondsFacetOpenItem:openFacet:1");	
 		Properties responseLocator=Locator.toProperties(responseLocator$);
 		responseLocator.setProperty(Entigrator.ENTIHOME, entihome$);
 		responseLocator.setProperty(EntityHandler.ENTITY_KEY, entityKey$);
@@ -114,7 +117,7 @@ public void openFacet(JMainConsole console,String locator$) {
 		//
 		responseLocator$=Locator.toString(responseLocator);
 		String requesterResponseLocator$=Locator.compressText(responseLocator$);
-
+		
 		JBondsPanel bondsPanel=new JBondsPanel();
 		String bpLocator$=bondsPanel.getLocator();
 		bpLocator$=Locator.append(bpLocator$, Entigrator.ENTIHOME, entihome$);

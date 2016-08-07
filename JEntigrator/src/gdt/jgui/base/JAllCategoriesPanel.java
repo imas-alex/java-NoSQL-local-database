@@ -88,7 +88,9 @@ Hashtable<String,JItemPanel> items;
 	 */		
 	@Override
 	public JContext instantiate(JMainConsole console, String locator$) {
-
+        //debug
+		boolean debug=false;
+		//end debug
 		//System.out.println("BaseNavigator:instantiate:locator="+Locator.remove(locator$,Locator.LOCATOR_ICON));
 		Properties locator=Locator.toProperties(locator$);
 		entihome$=locator.getProperty(Entigrator.ENTIHOME);
@@ -117,28 +119,44 @@ Hashtable<String,JItemPanel> items;
 			 for(FacetHandler fh:fha){
 				 try{
 			  fh$=fh.getClassName();
-//			  System.out.println("AllCategoriesPanel:instantiate:fh="+fh.getClass().getName());		 
+			  if("gdt.data.entity.GraphHandler".equals(fh$))
+				  debug=true;
+			  else
+				  debug=false;
+			 if(debug) 
+			     System.out.println("AllCategoriesPanel:instantiate:fh="+fh.getClass().getName());		 
 			  itemPanel=getItem(fh$);
 			   if(itemPanel==null){
-			  cpLocator$=entigrator.getLocator(fh$);
-			  if(cpLocator$==null){
+			  //cpLocator$=entigrator.getLocator(fh$);
+			  //cpLocator$=null;  
+			  //if(cpLocator$==null)
+			  {
 			  
 			  facetRenderer=JConsoleHandler.getFacetRenderer(entigrator, fh.getClass().getName());
-			
-//			  System.out.println("AllCategoriesPanel:instantiate:renderer="+facetRenderer.getClass().getName());		 
+			if(debug)
+			  System.out.println("AllCategoriesPanel:instantiate:renderer="+facetRenderer.getClass().getName());		 
 			 
 			  cpLocator.setProperty(JCategoryPanel.RENDERER,facetRenderer.getClass().getName());
-			  cpLocator$=Locator.toString(cpLocator); 
+			  cpLocator$=Locator.toString(cpLocator);
+			  if(debug)
+				  System.out.println("AllCategoriesPanel:instantiate:category panel(1)="+cpLocator$);		 
+				
 			  cp.instantiate(console, cpLocator$);
 			  cpLocator$=cp.getLocator();
+			  if(debug)
+				  System.out.println("AllCategoriesPanel:instantiate:category panel(2)="+cpLocator$);		 
+			  
 			  entigrator.putLocator(fh$, cpLocator$);
 			  }
-//			  System.out.println("AllCategoriesPanel:instantiate:cpLocator(2)="+cpLocator$);
+			  if(debug)
+			  System.out.println("AllCategoriesPanel:instantiate:cpLocator(2)="+cpLocator$);
 			  itemPanel=new JItemPanel(console,cpLocator$);
 			  putItem(fh$, itemPanel);
 			   }
-			   if(itemPanel!=null)
-				   ipl.add(itemPanel); 
+			   if(itemPanel!=null&&
+				   !ipl.contains(itemPanel))
+				      ipl.add(itemPanel); 
+			
      		   }catch(Exception e){
      				Logger.getLogger(getClass().getName()).info(e.toString());
      			}	 

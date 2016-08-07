@@ -1,0 +1,230 @@
+package gdt.jgui.entity.graph;
+import java.util.ArrayList;
+import java.util.Properties;
+import java.util.logging.Logger;
+
+
+import gdt.data.entity.BaseHandler;
+import gdt.data.entity.EntityHandler;
+import gdt.data.entity.GraphHandler;
+import gdt.data.entity.facet.ExtensionHandler;
+import gdt.data.grain.Locator;
+import gdt.data.grain.Sack;
+import gdt.data.store.Entigrator;
+import gdt.jgui.console.JConsoleHandler;
+import gdt.jgui.console.JContext;
+import gdt.jgui.console.JFacetRenderer;
+import gdt.jgui.console.JItemPanel;
+import gdt.jgui.console.JItemsListPanel;
+import gdt.jgui.console.JMainConsole;
+import gdt.jgui.entity.JEntityFacetPanel;
+import gdt.jgui.entity.JReferenceEntry;
+
+
+public class JViewSelector extends  JItemsListPanel implements   JFacetRenderer{
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	String entihome$;
+    String list$;
+    String entityKey$;
+    String entityLabel$;
+    public JViewSelector() {
+        super();
+ 	}
+	@Override
+	public String getLocator() {
+		Properties locator=new Properties();
+	    locator.setProperty(Locator.LOCATOR_TYPE, JContext.CONTEXT_TYPE);
+	    locator.setProperty(JContext.CONTEXT_TYPE,getType());
+	    if(entihome$!=null){
+	       locator.setProperty(Entigrator.ENTIHOME,entihome$);
+	    Entigrator entigrator=console.getEntigrator(entihome$);
+	    String icon$=ExtensionHandler.loadIcon(entigrator, GraphHandler.EXTENSION_KEY, "graph.png");
+	    if(icon$!=null)
+		    	locator.setProperty(Locator.LOCATOR_ICON,icon$);
+	    }
+	    if(entityKey$!=null)
+		       locator.setProperty(EntityHandler.ENTITY_KEY,entityKey$);
+	    if(entityLabel$!=null)
+		       locator.setProperty(EntityHandler.ENTITY_LABEL,entityLabel$);
+	    locator.setProperty(Locator.LOCATOR_TITLE, getTitle());
+        locator.setProperty(BaseHandler.HANDLER_SCOPE,JConsoleHandler.CONSOLE_SCOPE);
+	    locator.setProperty(BaseHandler.HANDLER_CLASS,getClass().getName());
+		if(list$!=null)
+			locator.setProperty(EntityHandler.ENTITY_LIST, list$);
+	    return Locator.toString(locator);
+	}
+	@Override
+	public JContext instantiate(JMainConsole console, String locator$) {
+	    
+		try{
+	//		System.out.println("JArchivePanel:instantiate:locator="+locator$);
+			 this.console=console;
+			 Properties locator=Locator.toProperties(locator$);
+			 list$=locator.getProperty(EntityHandler.ENTITY_LIST);
+			 entityKey$=locator.getProperty(EntityHandler.ENTITY_KEY);
+			 entihome$=locator.getProperty(Entigrator.ENTIHOME);
+        	 entityLabel$=locator.getProperty(EntityHandler.ENTITY_LABEL);
+        	 if(entityLabel$==null&&entityKey$!=null){
+        		 Entigrator entigrator=console.getEntigrator(entihome$);
+        		 entityLabel$=entigrator.indx_getLabel(entityKey$);
+        	 }
+        	 ArrayList<JItemPanel>ipl=new ArrayList<JItemPanel>();
+        	 String actionLocator$=getNodesLocator();
+        	 JItemPanel nodesItem=new JItemPanel(console, actionLocator$);
+   		  	 ipl.add(nodesItem);
+    		
+   		  	 actionLocator$=getEdgesLocator();
+    		 JItemPanel edgesItem=new JItemPanel(console, actionLocator$);
+		  	 ipl.add(edgesItem);
+		  	 
+   		  	 actionLocator$=getGraphLocator();
+    		 JItemPanel graphItem=new JItemPanel(console, actionLocator$);
+		  	 ipl.add(graphItem);
+		  	  
+		  	 actionLocator$=getFacetsLocator();
+    		 JItemPanel facetsItem=new JItemPanel(console, actionLocator$);
+		  	 ipl.add(facetsItem);
+		  	 
+		  	  putItems(ipl.toArray(new JItemPanel[0]));
+        	return this;
+        }catch(Exception e){
+        
+        Logger.getLogger(JViewSelector.class.getName()).severe(e.toString());
+        }
+        return null;
+        }
+	@Override
+	public String getTitle() {
+		return entityLabel$;
+	}
+
+	@Override
+	public String getSubtitle() {
+		return entihome$;
+	}
+
+	@Override
+	public String getType() {
+		return "Graph view selector";
+	}
+
+	@Override
+	public void close() {
+		
+	}
+private String getNodesLocator(){
+	try{
+		JGraphNodes gn=new JGraphNodes();
+		String gn$=gn.getLocator();
+		gn$=Locator.append(gn$, Entigrator.ENTIHOME, entihome$);
+		gn$=Locator.append(gn$, EntityHandler.ENTITY_KEY, entityKey$);
+		gn$=Locator.append(gn$, EntityHandler.ENTITY_LABEL, entityLabel$);
+		gn.instantiate(console, gn$);
+		return gn.getLocator();
+	}catch(Exception e){
+		 Logger.getLogger(JViewSelector.class.getName()).severe(e.toString());
+	}
+	return null;
+}
+private String getEdgesLocator(){
+/*
+	try{
+		JGraphNodes gn=new JGraphNodes();
+		String gn$=gn.getLocator();
+		gn$=Locator.append(gn$, Entigrator.ENTIHOME, entihome$);
+		gn$=Locator.append(gn$, EntityHandler.ENTITY_KEY, entityKey$);
+		gn$=Locator.append(gn$, EntityHandler.ENTITY_LABEL, entityLabel$);
+		gn.instantiate(console, gn$);
+		return gn.getLocator();
+	}catch(Exception e){
+		 Logger.getLogger(JViewSelector.class.getName()).severe(e.toString());
+	}
+	*/
+	return null;
+}
+private String getGraphLocator(){
+
+	try{
+		JGraphRenderer gr=new JGraphRenderer();
+		String gr$=gr.getLocator();
+		gr$=Locator.append(gr$, Entigrator.ENTIHOME, entihome$);
+		gr$=Locator.append(gr$, EntityHandler.ENTITY_KEY, entityKey$);
+		gr$=Locator.append(gr$, EntityHandler.ENTITY_LABEL, entityLabel$);
+		gr.instantiate(console, gr$);
+		return gr.getLocator();
+	}catch(Exception e){
+		 Logger.getLogger(JViewSelector.class.getName()).severe(e.toString());
+	}
+
+	return null;
+}
+private String getFacetsLocator(){
+
+	try{
+		JEntityFacetPanel fp=new JEntityFacetPanel();
+		String fp$=fp.getLocator();
+		fp$=Locator.append(fp$, Entigrator.ENTIHOME, entihome$);
+		fp$=Locator.append(fp$, EntityHandler.ENTITY_KEY, entityKey$);
+		fp$=Locator.append(fp$, EntityHandler.ENTITY_LABEL, entityLabel$);
+		fp.instantiate(console, fp$);
+		return fp.getLocator();
+	}catch(Exception e){
+		 Logger.getLogger(JViewSelector.class.getName()).severe(e.toString());
+	}
+
+	return null;
+}
+@Override
+public String addIconToLocator(String locator$) {
+	// TODO Auto-generated method stub
+	return null;
+}
+@Override
+public String getFacetHandler() {
+	// TODO Auto-generated method stub
+	return null;
+}
+@Override
+public String getEntityType() {
+	// TODO Auto-generated method stub
+	return null;
+}
+@Override
+public String getCategoryIcon() {
+	// TODO Auto-generated method stub
+	return null;
+}
+@Override
+public String getCategoryTitle() {
+	// TODO Auto-generated method stub
+	return null;
+}
+@Override
+public void adaptClone(JMainConsole console, String locator$) {
+	// TODO Auto-generated method stub
+	
+}
+@Override
+public void adaptRename(JMainConsole console, String locator$) {
+	// TODO Auto-generated method stub
+	
+}
+@Override
+public void collectReferences(Entigrator entigrator, String entiyKey$, ArrayList<JReferenceEntry> sl) {
+	// TODO Auto-generated method stub
+	
+}
+@Override
+public void reindex(JMainConsole console, Entigrator entigrator, Sack entity) {
+	// TODO Auto-generated method stub
+	
+}
+@Override
+public String newEntity(JMainConsole console, String locator$) {
+	// TODO Auto-generated method stub
+	return null;
+}
+}

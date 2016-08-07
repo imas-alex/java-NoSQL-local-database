@@ -16,23 +16,25 @@ package gdt.jgui.entity.contact;
     You should have received a copy of the GNU General Public License
     along with JEntigrator.  If not, see <http://www.gnu.org/licenses/>.
  */
-import java.awt.Image;
+
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Properties;
 import java.util.logging.Logger;
 
-import javax.swing.ImageIcon;
+
 import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
 import javax.swing.tree.DefaultMutableTreeNode;
 
 import org.apache.commons.codec.binary.Base64;
 
+
 import gdt.data.entity.BaseHandler;
 import gdt.data.entity.ContactHandler;
 import gdt.data.entity.EntityHandler;
 import gdt.data.entity.FacetHandler;
+import gdt.data.entity.facet.ExtensionHandler;
 import gdt.data.grain.Locator;
 import gdt.data.grain.Sack;
 import gdt.data.grain.Support;
@@ -56,23 +58,7 @@ public class JContactFacetOpenItem extends JFacetOpenItem implements JRequester{
 	public JContactFacetOpenItem(){
 		super();
 	}
-	public JContactFacetOpenItem(JMainConsole console, String locator$) {
-		super(console, locator$);
-		Properties locator=Locator.toProperties(locator$);
-		entihome$=locator.getProperty(Entigrator.ENTIHOME);
-		entityKey$=locator.getProperty(EntityHandler.ENTITY_KEY);
-		title$=locator.getProperty(Locator.LOCATOR_TITLE);
-		if(title$==null)
-			title$="Contact";
-		if(icon$==null){
-			icon$=Support.readHandlerIcon(JContactFacetOpenItem.class, "contact.png");
-		  byte[] ba=Base64.decodeBase64(icon$);
-      	  ImageIcon icon = new ImageIcon(ba);
-      	  Image image= icon.getImage().getScaledInstance(24, 24, 0);
-      	  icon.setImage(image);
-      	  title.setIcon(icon); 
-		}
-		}
+	
 	@Override
 	public JFacetOpenItem instantiate(JMainConsole console,String locator$){
 		try{
@@ -107,11 +93,14 @@ public class JContactFacetOpenItem extends JFacetOpenItem implements JRequester{
 		locator.setProperty(Locator.LOCATOR_TITLE,"Contact");
 		if(entityKey$!=null)
 			locator.setProperty(EntityHandler.ENTITY_KEY,entityKey$);
-		if(entihome$!=null)
+		if(entihome$!=null){
 			locator.setProperty(Entigrator.ENTIHOME,entihome$);
-		String icon$=Support.readHandlerIcon(JContactFacetOpenItem.class, "contact.png");
+		//String icon$=Support.readHandlerIcon(JContactFacetOpenItem.class, "contact.png");
+			Entigrator entigrator=console.getEntigrator(entihome$);
+			String icon$=ExtensionHandler.loadIcon(entigrator, ContactHandler.EXTENSION_KEY, "contact.png");
 		    if(icon$!=null)
 		    	locator.setProperty(Locator.LOCATOR_ICON,icon$);
+		}
 		locator$=Locator.toString(locator);
 		 return locator$;
 			}catch(Exception e){
@@ -179,7 +168,11 @@ public class JContactFacetOpenItem extends JFacetOpenItem implements JRequester{
 	}
 	@Override
 	public String getFacetIcon() {
-		return Support.readHandlerIcon(JContactFacetOpenItem.class, "contact.png");
+		if(entihome$!=null){
+			Entigrator entigrator=console.getEntigrator(entihome$);
+			return ExtensionHandler.loadIcon(entigrator,ContactHandler.EXTENSION_KEY, "contact.png");
+		}
+		return null;
 	}
 	@Override
 	public void removeFacet() {

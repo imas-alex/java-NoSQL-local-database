@@ -29,6 +29,7 @@ import javax.swing.JMenuItem;
 import gdt.data.entity.EdgeHandler;
 import gdt.data.entity.BaseHandler;
 import gdt.data.entity.EntityHandler;
+import gdt.data.entity.facet.ExtensionHandler;
 import gdt.data.entity.facet.FieldsHandler;
 import gdt.data.grain.Core;
 import gdt.data.grain.Identity;
@@ -94,11 +95,13 @@ public class JEdgeEditor extends JFieldsEditor {
 			}
 			if(entityKey$!=null)
 				locator.setProperty(EntityHandler.ENTITY_KEY,entityKey$);
-			if(entihome$!=null)
+			if(entihome$!=null){
 				locator.setProperty(Entigrator.ENTIHOME,entihome$);
-				 String icon$=Support.readHandlerIcon(JEdgeEditor.class, "edge.png");
+			Entigrator entigrator=console.getEntigrator(entihome$);
+			String icon$= ExtensionHandler.loadIcon(entigrator, EdgeHandler.EXTENSION_KEY,"edge.png");
 			    if(icon$!=null)
 			    	locator.setProperty(Locator.LOCATOR_ICON,icon$);
+			}
 			return Locator.toString(locator);
 			}catch(Exception e){
 	        Logger.getLogger(getClass().getName()).severe(e.toString());
@@ -129,7 +132,13 @@ public class JEdgeEditor extends JFieldsEditor {
 
 	@Override
 	public String getCategoryIcon() {
-		return Support.readHandlerIcon(JEdgeEditor.class, "edge.png");
+		try{
+			Entigrator entigrator=console.getEntigrator(entihome$);
+		return ExtensionHandler.loadIcon(entigrator, EdgeHandler.EXTENSION_KEY,"edge.png");
+		}catch(Exception e){
+			 Logger.getLogger(getClass().getName()).severe(e.toString());
+			 return null;
+		}
 	}
 
 	@Override
@@ -141,7 +150,10 @@ public class JEdgeEditor extends JFieldsEditor {
 	public void reindex(JMainConsole console, Entigrator entigrator, Sack entity) {
 		 try{
 			// System.out.println("JPhoneEditor:reindex:0:entity="+entity.getProperty("label"));
-		    	String fhandler$=EdgeHandler.class.getName();
+			 Object fh= ExtensionHandler.loadHandlerInstance(entigrator,"_Tm142C8Sgti2iAKlDEcEXT2Kj1E","gdt.data.entity.NodeHandler");	
+				System.out.println("JEdgeEditor:reindex="+fh.getClass().getName()); 
+				
+			 String fhandler$=EdgeHandler.class.getName();
 		    	if(entity.getElementItem("fhandler", fhandler$)!=null){
 					//System.out.println("JPhoneEditor:reindex:1:entity="+entity.getProperty("label"));
 		    		entity.putElementItem("jfacet", new Core(null,fhandler$,JEdgeFacetOpenItem.class.getName()));
@@ -159,14 +171,18 @@ public class JEdgeEditor extends JFieldsEditor {
 	    String editorLocator$=textEditor.getLocator();
 	    editorLocator$=Locator.append(editorLocator$, JTextEditor.TEXT, "Edge"+Identity.key().substring(0,4));
 	    editorLocator$=Locator.append(editorLocator$,Locator.LOCATOR_TITLE,"Edge entity");
-	    String icon$=Support.readHandlerIcon(getClass(), "edge.png");
-	    editorLocator$=Locator.append(editorLocator$,Locator.LOCATOR_ICON,icon$);
+	   
 	    JEdgeEditor fe=new JEdgeEditor();
 	    String feLocator$=fe.getLocator();
 	    Properties responseLocator=Locator.toProperties(feLocator$);
 	    entihome$=Locator.getProperty(locator$,Entigrator.ENTIHOME );
-	    if(entihome$!=null)
+	    if(entihome$!=null){
 	      responseLocator.setProperty(Entigrator.ENTIHOME,entihome$);
+	     Entigrator entigrator=console.getEntigrator(entihome$);
+	      String icon$=ExtensionHandler.loadIcon(entigrator, EdgeHandler.EXTENSION_KEY, "edge.png");
+		  if(icon$!=null)
+	      editorLocator$=Locator.append(editorLocator$,Locator.LOCATOR_ICON,icon$);
+	    }
 	    //else
 	    //	System.out.println("JNodeEditor:newEntity:entihome is null");	
 	   responseLocator.setProperty(BaseHandler.HANDLER_CLASS,JEdgeEditor.class.getName());
@@ -255,6 +271,7 @@ public class JEdgeEditor extends JFieldsEditor {
 	}
 	@Override
 	public void collectReferences(Entigrator entigrator, String entityKey$, ArrayList<JReferenceEntry> rel) {
+	
 	}
 	@Override
 	public JFacetRenderer instantiate(JMainConsole console, String locator$) {

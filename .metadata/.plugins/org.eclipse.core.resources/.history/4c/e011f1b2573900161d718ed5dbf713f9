@@ -1,0 +1,5 @@
+package edu.uci.ics.jung.samples;
+
+public enum V {
+
+}

@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<session version="1.0">
+<refactoring comment="Rename local variable &apos;newItem&apos; in &apos;gdt.jgui.entity.graph.JGraphViews.getContextMenu().new MenuListener() {...}.menuSelected(...)&apos; to &apos;mapItem&apos;&#x0A;- Original project: &apos;Graph2&apos;&#x0A;- Original element: &apos;gdt.jgui.entity.graph.JGraphViews.getContextMenu().new MenuListener() {...}.menuSelected(MenuEvent).newItem&apos;&#x0A;- Renamed element: &apos;newItem&apos;&#x0A;- Update references to refactored element" description="Rename local variable &apos;newItem&apos;" id="org.eclipse.jdt.ui.rename.local.variable" input="/src&lt;gdt.jgui.entity.graph{JGraphViews.java[JGraphViews~getContextMenu[~menuSelected~QMenuEvent;@newItem!10318!10358!10328!10334!QJMenuItem;!0!false" name="mapItem" references="true" stamp="1466939713139" version="1.0"/>
+</session>

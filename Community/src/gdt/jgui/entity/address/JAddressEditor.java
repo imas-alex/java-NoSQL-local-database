@@ -30,6 +30,7 @@ import gdt.data.entity.AddressHandler;
 import gdt.data.entity.BaseHandler;
 import gdt.data.entity.EntityHandler;
 import gdt.data.entity.PhoneHandler;
+import gdt.data.entity.facet.ExtensionHandler;
 import gdt.data.entity.facet.FieldsHandler;
 import gdt.data.grain.Core;
 import gdt.data.grain.Identity;
@@ -110,11 +111,15 @@ public class JAddressEditor extends JFieldsEditor {
 			}
 			if(entityKey$!=null)
 				locator.setProperty(EntityHandler.ENTITY_KEY,entityKey$);
-			if(entihome$!=null)
+			
+			if(entihome$!=null){
 				locator.setProperty(Entigrator.ENTIHOME,entihome$);
-				 String icon$=Support.readHandlerIcon(JAddressEditor.class, "address.png");
-			    if(icon$!=null)
+				Entigrator entigrator=console.getEntigrator(entihome$);
+				// String icon$=Support.readHandlerIcon(null,JAddressEditor.class, "address.png");
+			String icon$=ExtensionHandler.loadIcon(entigrator,AddressHandler.EXTENSION_KEY, "address.png");
+			if(icon$!=null)
 			    	locator.setProperty(Locator.LOCATOR_ICON,icon$);
+			}
 			return Locator.toString(locator);
 			}catch(Exception e){
 	        Logger.getLogger(getClass().getName()).severe(e.toString());
@@ -145,7 +150,13 @@ public class JAddressEditor extends JFieldsEditor {
 
 	@Override
 	public String getCategoryIcon() {
-		return Support.readHandlerIcon(JAddressEditor.class, "address.png");
+		try{
+		Entigrator entigrator=console.getEntigrator(entihome$);
+		return ExtensionHandler.loadIcon(entigrator, AddressHandler.EXTENSION_KEY, "address.png");
+		}catch(Exception e){
+			return null;
+		}
+				//Support.readHandlerIcon(null,JAddressEditor.class, "address.png");
 	}
 
 	@Override
@@ -174,7 +185,7 @@ public class JAddressEditor extends JFieldsEditor {
 	    String editorLocator$=textEditor.getLocator();
 	    editorLocator$=Locator.append(editorLocator$, JTextEditor.TEXT, "Address"+Identity.key().substring(0,4));
 	    editorLocator$=Locator.append(editorLocator$,Locator.LOCATOR_TITLE,"Address entity");
-	    String icon$=Support.readHandlerIcon(getClass(), "address.png");
+	    String icon$=Support.readHandlerIcon(null,getClass(), "address.png");
 	    editorLocator$=Locator.append(editorLocator$,Locator.LOCATOR_ICON,icon$);
 	    JAddressEditor fe=new JAddressEditor();
 	    String feLocator$=fe.getLocator();

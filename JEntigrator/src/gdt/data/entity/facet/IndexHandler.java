@@ -17,6 +17,7 @@ package gdt.data.entity.facet;
     along with JEntigrator.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import java.io.File;
 import java.util.Properties;
 import java.util.logging.Logger;
 
@@ -26,6 +27,10 @@ import gdt.data.grain.Core;
 import gdt.data.grain.Locator;
 import gdt.data.grain.Sack;
 import gdt.data.store.Entigrator;
+import gdt.data.store.FileExpert;
+import gdt.jgui.base.JBaseNavigator;
+import gdt.jgui.entity.folder.JFolderPanel;
+import gdt.jgui.entity.index.JIndexPanel;
 /**
 * Contains methods to process an index entity.
 * @author  Alexander Imas
@@ -104,6 +109,44 @@ public class IndexHandler extends FacetHandler{
 	@Override
 	public void adaptRename(Entigrator entigrator) {
 		  adaptLabel(entigrator);
+		
+	}
+	@Override
+	public void completeMigration(Entigrator entigrator) {
+		try{
+			Sack index=entigrator.getEntityAtKey(entityKey$);
+			Core[]ca=index.elementGet("index.jlocator");
+			if(ca==null)
+				return;
+			String oldEntihome$;
+			String filePath$;
+			for(Core c:ca){
+				oldEntihome$=Locator.getProperty(c.value, Entigrator.ENTIHOME);
+				c.value=Locator.append(c.value, Entigrator.ENTIHOME, entigrator.getEntihome());
+				filePath$=Locator.getProperty(c.value, JFolderPanel.FILE_PATH);
+				if(filePath$!=null){
+					try{
+					File sourceFile=new File(filePath$);
+					filePath$=filePath$.replace(oldEntihome$, entigrator.getEntihome());
+					File targetFile=new File(filePath$);
+					File targetFolder=targetFile.getParentFile();
+					if(!targetFolder.exists())
+							targetFolder.mkdirs();
+					if(!targetFile.exists())
+						targetFile.createNewFile();
+					FileExpert.copyFile(sourceFile, targetFile);
+					c.value=Locator.append(c.value, JFolderPanel.FILE_PATH, filePath$);
+					}catch(Exception ee){
+						Logger.getLogger(JIndexPanel.class.getName()).info(ee.toString());	
+					}
+				}
+				index.putElementItem("index.jlocator", c);
+			}
+			
+			entigrator.save(index);
+		}catch(Exception e){
+			Logger.getLogger(JBaseNavigator.class.getName()).severe(e.toString());
+		}
 		
 	}
 

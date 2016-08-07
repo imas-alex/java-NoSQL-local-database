@@ -38,6 +38,7 @@ import gdt.data.entity.ArchiveHandler;
 import gdt.data.entity.BaseHandler;
 import gdt.data.entity.EntitiesArchiveFilter;
 import gdt.data.entity.EntityHandler;
+import gdt.data.entity.FacetHandler;
 import gdt.data.entity.facet.ExtensionHandler;
 import gdt.data.entity.facet.ExtensionMain;
 import gdt.data.grain.Core;
@@ -124,25 +125,25 @@ private Logger LOGGER=Logger.getLogger(JBaseNavigator.class.getName());
 					    if (chooser.showOpenDialog(JBaseNavigator.this) == JFileChooser.APPROVE_OPTION) { 
 					    	
 					    	String extension$=chooser.getSelectedFile().getPath();
-					    	
+					   	
 					    	System.out.println("BaseNavigator.install extension="+extension$);
 					    	System.out.println("Working Directory = " +
 					                System.getProperty("user.dir"));
 					    	try{
 					    		String[] args=new String[]{entihome$};
 					    		String path = JBaseNavigator.class.getProtectionDomain().getCodeSource().getLocation().getPath();
-						    	String decodedPath$ = URLDecoder.decode(path, "UTF-8");
+						    	//String decodedPath$ = URLDecoder.decode(path, "UTF-8");
 						    	URL[] urls = { new URL("jar:file:"+extension$+"!/") };
 								URLClassLoader cl = URLClassLoader.newInstance(urls);
 								
 								Class<?>cls=cl.loadClass("gdt.data.extension.Main");
 								ExtensionMain em=(ExtensionMain)cls.newInstance();
 								em.main(args);
-							    restartClasspath(console, entihome$);
+							  //  restartClasspath(console, entihome$);
 					    	}catch(Exception ee){
 					    		LOGGER.severe(ee.toString());
 					    	}
-				      }
+					    					      }
 					    else {
 					    	Logger.getLogger(JMainConsole.class.getName()).info(" no selection");
 					      }
@@ -176,12 +177,14 @@ private Logger LOGGER=Logger.getLogger(JBaseNavigator.class.getName());
 					    				String entityLocator$;
 					    				Sack entity;
 					    				console.clipboard.clear();
+					    				FacetHandler[] fha=BaseHandler.listAllHandlers(entigrator);
 					    				for(String s:sa){
 					    					entity=entigrator.getEntityAtKey(s);
 					    					if(entity==null)
 					    						continue;
-					    					if("index".equals(entity.getProperty("entity")))
-					    					    updateEntihome(entigrator, s);
+					    					EntityHandler.completeMigration(entigrator, s, fha);
+					    					//if("index".equals(entity.getProperty("entity")))
+					    					//    updateEntihome(entigrator, s);
 					    					entityLocator$=EntityHandler.getEntityLocator(entigrator, entity);
 					    					JEntityPrimaryMenu.reindexEntity(console,entityLocator$);
 					    					console.clipboard.putString(entityLocator$);
@@ -262,31 +265,7 @@ private Logger LOGGER=Logger.getLogger(JBaseNavigator.class.getName());
 					@Override
 					public void actionPerformed(ActionEvent e) {
 					 reindex();
-						/*	
-						Entigrator entigrator=console.getEntigrator(entihome$);
-						entigrator.indx_rebuild(null);
-						String [] sa=entigrator.indx_listEntities();
-						Sack entity;
-						String entityLocator$;
-						for(String s:sa){
-							entity=entigrator.getEntityAtKey(s);
-							if(entity==null)
-								continue;
-							if(!"extension".equals(entity.getProperty("entity")))
-								continue;
-						entityLocator$=EntityHandler.getEntityLocator(entigrator, entity);
-						 JEntityPrimaryMenu.reindexEntity(console,entityLocator$);
-						}
-						for(String s:sa){
-							entity=entigrator.getEntityAtKey(s);
-							if(entity==null)
-								continue;
-							if("extension".equals(entity.getProperty("entity")))
-								continue;
-						entityLocator$=EntityHandler.getEntityLocator(entigrator, entity);
-						 JEntityPrimaryMenu.reindexEntity(console,entityLocator$);
-						}
-					*/
+					
 					}
 				   
 				});
@@ -318,7 +297,7 @@ private Logger LOGGER=Logger.getLogger(JBaseNavigator.class.getName());
 					    	FileExpert.clear(entihome$);
 					    	File entihome=new File (entihome$);
 					    	entihome.delete();
-					    	removeClasspath(console, entihome$);
+					    	//removeClasspath(console, entihome$);
 					    	console.back();
 					    	}catch(Exception ee){
 					    		LOGGER.severe(ee.toString());
@@ -428,7 +407,7 @@ private Logger LOGGER=Logger.getLogger(JBaseNavigator.class.getName());
 		JItemPanel allCategoriesItem=new JItemPanel(console, allCategoriesLocator$);
 		ipl.add(allCategoriesItem);
 		putItems(ipl.toArray(new JItemPanel[0]));
-		restartClasspath(console,entihome$);
+	//	restartClasspath(console,entihome$);
 		return this;
 	}
 	/**
@@ -579,13 +558,6 @@ private  JReferenceEntry[] getToPaste(){
 		return null;
 	Entigrator foreignEntigrator=console.getEntigrator(foreignEntihome$);
 	ArrayList<JReferenceEntry>rel=JReferenceEntry.collectReferences(console, foreignEntigrator, sa);
-	
-	/*
-	ArrayList<JReferenceEntry>rel=new ArrayList<JReferenceEntry>();
-	for(String s:sa){
-	   JEntityPrimaryMenu.collectReferences(console, s, rel);
-	}
-	*/
 	return rel.toArray(new JReferenceEntry[0]);
 	}catch(Exception e){
 		Logger.getLogger(getClass().getName()).severe(e.toString());
@@ -672,6 +644,8 @@ private void paste(boolean keep){
 	    FileExpert.copyFile(sourceEntity,oldEntity);
 	    pastedEntity=Sack.parseXML(oldEntity.getPath());
 	    entigrator.ent_reindex(pastedEntity);
+	    pastedEntity.putAttribute(new Core(null,JReferenceEntry.ORIGIN_ENTIHOME,jre.type));
+	    entigrator.save(pastedEntity);
 	    icon$=pastedEntity.getAttributeAt("icon");
 	    //System.out.println("BaseNavigator:paste:icon="+icon$);
 	    if(icon$!=null){
@@ -714,12 +688,15 @@ private void paste(boolean keep){
 		String entityLocator$;
 		Sack entity;
 		console.clipboard.clear();
+		FacetHandler[] fha=BaseHandler.listAllHandlers(entigrator);
 		for(String s:sa){
 			entity=entigrator.getEntityAtKey(s);
+			
 			if(entity==null)
 				continue;
-			if("index".equals(entity.getProperty("entity")))
-			    updateEntihome(entigrator, s);
+			EntityHandler.completeMigration(entigrator, s, fha);
+			//if("index".equals(entity.getProperty("entity")))
+			 //   updateEntihome(entigrator, s);
 			entityLocator$=EntityHandler.getEntityLocator(entigrator, entity);
 			JEntityPrimaryMenu.reindexEntity(console,entityLocator$);
 			console.clipboard.putString(entityLocator$);
@@ -798,6 +775,7 @@ private static void updateBookmarks(Entigrator entigrator,Sack undo){
 		Logger.getLogger(JBaseNavigator.class.getName()).severe(e.toString());
 	}
 }
+/*
 private static void updateEntihome(Entigrator entigrator,String entityKey$){
 	try{
 		
@@ -840,6 +818,8 @@ private static void updateEntihome(Entigrator entigrator,String entityKey$){
 		Logger.getLogger(JBaseNavigator.class.getName()).severe(e.toString());
 	}
 }
+*/
+/*
 public static void restartClasspath(JMainConsole console, String entihome$){
 	try{
 		//ProcessBuilder pb = new ProcessBuilder(System.getProperty("java.home")+"/bin/java", "-jar", extension$, entihome$);
@@ -875,15 +855,17 @@ public static void restartClasspath(JMainConsole console, String entihome$){
 		    System.out.println("JAVA_RUN="+cmd$);
 		    Runtime.getRuntime().exec(cmd$);
     
-		   /*
+		   
 		    pb.directory(new File(dir$));
 		    pb.command(cmd$);
 		    pb.start();
-		    */
+		   
 	}catch(Exception e){
 		Logger.getLogger(JBaseNavigator.class.getName()).severe(e.toString());
 	}
 }
+*/
+/*
 public static void storeClasspath(JMainConsole console,String entihome$,String classpath$){
 	try{
 		File home=new File(System.getProperty("user.home")+"/.entigrator");
@@ -947,6 +929,7 @@ public static void openDatabase(JMainConsole console,String locator$){
 		Properties locator=Locator.toProperties(locator$);
 		String entihome$=locator.getProperty(Entigrator.ENTIHOME);
 		File home=new File(System.getProperty("user.home")+"/.entigrator");
+		
 		File file=new File(home,CLASSPATH);
 		if(!file.exists())
 			return ;
@@ -961,4 +944,5 @@ public static void openDatabase(JMainConsole console,String locator$){
 		Logger.getLogger(JTrackPanel.class.getName()).severe(e.toString());
 	}
 }
+*/
 }

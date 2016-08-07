@@ -1,5 +1,20 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <qualifiedTypeNameHistroy>
-<fullyQualifiedTypeName name="gdt.data.entity.facet.ExtensionHandler"/>
 <fullyQualifiedTypeName name="gdt.data.entity.GraphHandler"/>
+<fullyQualifiedTypeName name="java.util.Map"/>
+<fullyQualifiedTypeName name="java.util.Set"/>
+<fullyQualifiedTypeName name="java.io.InputStream"/>
+<fullyQualifiedTypeName name="java.io.FileOutputStream"/>
+<fullyQualifiedTypeName name="gdt.data.entity.facet.ExtensionHandler"/>
+<fullyQualifiedTypeName name="javax.swing.JScrollBar"/>
+<fullyQualifiedTypeName name="java.awt.event.AdjustmentListener"/>
+<fullyQualifiedTypeName name="java.awt.event.ComponentAdapter"/>
+<fullyQualifiedTypeName name="java.awt.event.ComponentEvent"/>
+<fullyQualifiedTypeName name="gdt.data.grain.Locator"/>
+<fullyQualifiedTypeName name="org.apache.commons.codec.binary.Base64"/>
+<fullyQualifiedTypeName name="gdt.jgui.console.JItemsListPanel"/>
+<fullyQualifiedTypeName name="java.lang.Integer"/>
+<fullyQualifiedTypeName name="javax.swing.JPopupMenu"/>
+<fullyQualifiedTypeName name="javax.media.j3d.View"/>
+<fullyQualifiedTypeName name="java.awt.Point"/>
 </qualifiedTypeNameHistroy>

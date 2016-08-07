@@ -33,6 +33,7 @@ import gdt.data.entity.EntityHandler;
 import gdt.data.grain.Core;
 import gdt.data.grain.Locator;
 import gdt.data.grain.Sack;
+import gdt.data.grain.Support;
 import gdt.data.store.Entigrator;
 import gdt.jgui.console.JConsoleHandler;
 import gdt.jgui.console.JContext;
@@ -67,8 +68,13 @@ public class JEntityFacetPanel extends JItemsListPanel {
 		 Properties locator=new Properties();
 		    locator.setProperty(Locator.LOCATOR_TYPE, JContext.CONTEXT_TYPE);
 		    locator.setProperty(JContext.CONTEXT_TYPE,getType());
-		    if(entihome$!=null)
+		    if(entihome$!=null){
 		       locator.setProperty(Entigrator.ENTIHOME,entihome$);
+		       Entigrator entigrator=console.getEntigrator(entihome$);
+		       String icon$=Support.readHandlerIcon(entigrator, getClass(), "facet.png");
+		       if(icon$!=null)
+		          locator.setProperty(Locator.LOCATOR_ICON, icon$);
+		    }
 		    if(entityKey$!=null)
 			       locator.setProperty(EntityHandler.ENTITY_KEY,entityKey$);
 		    if(entityLabel$!=null)
@@ -77,7 +83,8 @@ public class JEntityFacetPanel extends JItemsListPanel {
 			       locator.setProperty(Locator.LOCATOR_ICON,entityIcon$);
 		    if(requesterResponseLocator$!=null)
 			       locator.setProperty(JRequester.REQUESTER_RESPONSE_LOCATOR,requesterResponseLocator$);
- 	       locator.setProperty(Locator.LOCATOR_TITLE, getTitle());
+ 	     
+		    locator.setProperty(Locator.LOCATOR_TITLE, getTitle());
 		   locator.setProperty(BaseHandler.HANDLER_SCOPE,JConsoleHandler.CONSOLE_SCOPE);
 		   locator.setProperty(BaseHandler.HANDLER_CLASS,JEntityFacetPanel.class.getName());
 		   return Locator.toString(locator);

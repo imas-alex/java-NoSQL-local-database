@@ -17,8 +17,12 @@ package gdt.jgui.console;
     along with JEntigrator.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.AdjustmentEvent;
+import java.awt.event.AdjustmentListener;
+
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.logging.Logger;
@@ -26,8 +30,11 @@ import java.util.logging.Logger;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
+import javax.swing.JScrollBar;
 import javax.swing.BoxLayout;
 import javax.swing.JScrollPane;
+
+import gdt.data.grain.Locator;
 /**
  * This abstract class is a super class for list consoles
  * which contains instances of the JItemPanel class. 
@@ -35,25 +42,54 @@ import javax.swing.JScrollPane;
  *
  */
 public  abstract class JItemsListPanel extends JPanel implements JContext{
-	JPanel panel;
+	public static final String POSITION="position";
+	protected JPanel panel;
+	protected JScrollPane scrollPane;
+	protected JScrollBar vertical;
+	protected int pos=-1;
+	int calls=-1;
 	/**
 	 * The default constructor.
 	 */
 	public JItemsListPanel() {
 		setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
-		
-		JScrollPane scrollPane = new JScrollPane();
-		
+		scrollPane = new JScrollPane();
 		add(scrollPane);
 		panel = new JPanel();
 		panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
 		scrollPane.getViewport().add(panel);
+		vertical = scrollPane.getVerticalScrollBar();
+		vertical.addAdjustmentListener( new AdjustmentListener() {
+		      
+			@Override
+			public void adjustmentValueChanged(AdjustmentEvent e) {
+			  try{
+				 
+				  if(calls++>2){
+			   			pos=vertical.getValue();
+			   		//	System.out.println("JItemsPanel:AdjustmentListener:position="+pos);
+						return;
+			   		}
+		   	String position$=Locator.getProperty(locator$, POSITION);
+		//   	System.out.println("JItemsListPanel:AdjustmentListener:position given="+pos+" current="+vertical.getValue());
+		   	 if(position$!=null){
+		   		 int position=Integer.parseInt(position$);
+		   		 if(vertical.getValue()!=pos)
+		   		     vertical.setValue(pos);
+		   	 }
+			  }catch(Exception ee){
+				  LOGGER.severe(ee.toString());
+			  }
+			}
+		      });
+		
 	}
 	private static final long serialVersionUID = 1L;
     private Logger LOGGER=Logger.getLogger(JItemsListPanel.class.getName());
     protected JMainConsole console;
     JMenuItem selectItem;
     JMenuItem unselectItem;
+    JMenuItem recentItem;
     protected JMenu menu;
     protected JMenuItem[] mia;
     protected String locator$;
@@ -63,7 +99,7 @@ public  abstract class JItemsListPanel extends JPanel implements JContext{
     @Override
 	public JMenu getContextMenu() {
 	   menu=new JMenu("Context");
-	   menu.setName("Context");
+	  // menu.setName("Context");
 	   selectItem = new JMenuItem("Select all");
 	   selectItem.addActionListener(new ActionListener() {
 			@Override
@@ -88,6 +124,14 @@ public  abstract class JItemsListPanel extends JPanel implements JContext{
 				}
 			} );
 			menu.add(unselectItem);
+			 recentItem = new JMenuItem("Put as recent");
+			   recentItem.addActionListener(new ActionListener() {
+					@Override
+					public void actionPerformed(ActionEvent e) {
+				      console.getRecents().put(getTitle(), getLocator());
+					}
+				} );
+				menu.add(recentItem);	
 		return menu;
 		
 	}
@@ -177,7 +221,11 @@ public  JContext instantiate(JMainConsole console,String locator$){
 	this.locator$=locator$;
 	return this;
 }
-
+public void select(int pos){
+	//int cnt=panel.getComponentCount();
+	//if(pos<cnt&&pos>-1)
+	this.pos=pos;
+}
 public static class ItemPanelComparator implements Comparator<JItemPanel>{
     @Override
     public int compare(JItemPanel o1, JItemPanel o2) {
@@ -187,5 +235,8 @@ public static class ItemPanelComparator implements Comparator<JItemPanel>{
     		return 0;
     	}
     }
+}
+public int getPosition(){
+	return vertical.getValue();
 }
 }

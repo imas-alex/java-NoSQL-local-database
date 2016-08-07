@@ -167,4 +167,35 @@ public static String getEntityLocator( Entigrator entigrator, Sack entity){
     	locator.setProperty(Locator.LOCATOR_ICON,icon$);
 	return Locator.toString(locator);
 }
+public static String getEntityLocator( String entihome$,String entityKey$,String entityLabel$,String icon$){
+	//System.out.println("EntityHandler:getEntityLocator:at entity="+entity.getProperty("label"));
+	Properties locator=new Properties();
+    locator.setProperty(Locator.LOCATOR_TYPE, ENTITY_TYPE);
+    locator.setProperty(Locator.LOCATOR_SCOPE, ENTITY_SCOPE);
+    locator.setProperty(Entigrator.ENTIHOME,entihome$);
+    locator.setProperty(Locator.LOCATOR_TITLE,entityLabel$);
+    locator.setProperty(ENTITY_KEY,entityKey$);
+    locator.setProperty(ENTITY_LABEL,entityLabel$);
+    
+    if(icon$!=null)
+    	locator.setProperty(Locator.LOCATOR_ICON,icon$);
+	return Locator.toString(locator);
+}
+public static void completeMigration (Entigrator entigrator, String entityKey$, FacetHandler[] fha){
+	try{
+		String locator$;
+		
+		for(FacetHandler fh:fha){
+			locator$=getEntityLocatorAtKey(entigrator, entityKey$);
+			if(fh.isApplied(entigrator, locator$)){
+				fh.instantiate(locator$);
+			    fh.completeMigration(entigrator);	
+			}
+		}
+		
+		
+	}catch(Exception e){
+		Logger.getLogger(EntityHandler.class.getName()).severe(e.toString());
+	}
+}
 }

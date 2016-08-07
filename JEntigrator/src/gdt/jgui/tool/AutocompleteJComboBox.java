@@ -26,6 +26,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import javax.swing.DefaultComboBoxModel;
 import javax.swing.JComboBox;
 import javax.swing.SwingUtilities;
 import javax.swing.event.DocumentEvent;
@@ -39,11 +40,18 @@ import javax.swing.text.JTextComponent;
 public class AutocompleteJComboBox extends JComboBox<String> {
 static final long serialVersionUID = 1L;
 String[] terms;
+//Component c;
 	public AutocompleteJComboBox(String[] terms){
 		super();
 		this.terms=terms;
 	setEditable(true);
+	if(terms!=null){
+		DefaultComboBoxModel<String> model=new DefaultComboBoxModel<String>(terms);
+		setModel(model);
+	}
+		
 	Component c = getEditor().getEditorComponent();
+	
 	if ( c instanceof JTextComponent ){
 			final JTextComponent tc = (JTextComponent)c;
 			tc.getDocument().addDocumentListener(new DocumentListener(){
@@ -67,6 +75,7 @@ String[] terms;
 							}
 							setEditable(true);
 							setPopupVisible(true);
+							tc.requestFocus();
 						}
 					});
 				}
@@ -82,6 +91,7 @@ String[] terms;
 				public void changedUpdate(DocumentEvent e) {
 					update();
 				}
+				
 			});
 			tc.addFocusListener(new FocusListener(){
 			@Override
@@ -95,6 +105,7 @@ String[] terms;
 				
 				}
 			});
+			
 		}else{
 			throw new IllegalStateException("Editing component is not a JTextComponent!");
 		}

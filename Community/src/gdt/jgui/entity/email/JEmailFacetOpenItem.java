@@ -29,10 +29,13 @@ import javax.swing.tree.DefaultMutableTreeNode;
 
 import org.apache.commons.codec.binary.Base64;
 
+import gdt.data.entity.AddressHandler;
+import gdt.data.entity.BankHandler;
 import gdt.data.entity.BaseHandler;
 import gdt.data.entity.EmailHandler;
 import gdt.data.entity.EntityHandler;
 import gdt.data.entity.FacetHandler;
+import gdt.data.entity.facet.ExtensionHandler;
 import gdt.data.grain.Locator;
 import gdt.data.grain.Sack;
 import gdt.data.grain.Support;
@@ -56,23 +59,7 @@ public class JEmailFacetOpenItem extends JFacetOpenItem implements JRequester{
 	public JEmailFacetOpenItem(){
 		super();
 	}
-	public JEmailFacetOpenItem(JMainConsole console, String locator$) {
-		super(console, locator$);
-		Properties locator=Locator.toProperties(locator$);
-		entihome$=locator.getProperty(Entigrator.ENTIHOME);
-		entityKey$=locator.getProperty(EntityHandler.ENTITY_KEY);
-		title$=locator.getProperty(Locator.LOCATOR_TITLE);
-		if(title$==null)
-			title$="Email";
-		if(icon$==null){
-			icon$=Support.readHandlerIcon(JEmailFacetOpenItem.class, "email.png");
-		  byte[] ba=Base64.decodeBase64(icon$);
-      	  ImageIcon icon = new ImageIcon(ba);
-      	  Image image= icon.getImage().getScaledInstance(24, 24, 0);
-      	  icon.setImage(image);
-      	  title.setIcon(icon); 
-		}
-		}
+
 	@Override
 	public JFacetOpenItem instantiate(JMainConsole console,String locator$){
 		try{
@@ -107,11 +94,14 @@ public class JEmailFacetOpenItem extends JFacetOpenItem implements JRequester{
 		locator.setProperty(Locator.LOCATOR_TITLE,"Email");
 		if(entityKey$!=null)
 			locator.setProperty(EntityHandler.ENTITY_KEY,entityKey$);
-		if(entihome$!=null)
+		if(entihome$!=null){
 			locator.setProperty(Entigrator.ENTIHOME,entihome$);
-		String icon$=Support.readHandlerIcon(getClass(), "email.png");
+			locator.setProperty(Locator.LOCATOR_CHECKABLE,Locator.LOCATOR_TRUE);
+			Entigrator entigrator=console.getEntigrator(entihome$);
+			String icon$=ExtensionHandler.loadIcon(entigrator,EmailHandler.EXTENSION_KEY, "email.png");
 		    if(icon$!=null)
 		    	locator.setProperty(Locator.LOCATOR_ICON,icon$);
+		}
 		locator$=Locator.toString(locator);
 		 return locator$;
 			}catch(Exception e){
@@ -179,7 +169,11 @@ public class JEmailFacetOpenItem extends JFacetOpenItem implements JRequester{
 	}
 	@Override
 	public String getFacetIcon() {
-		return Support.readHandlerIcon(JEmailFacetOpenItem.class, "email.png");
+		if(entihome$!=null){
+			Entigrator entigrator=console.getEntigrator(entihome$);
+			return ExtensionHandler.loadIcon(entigrator,EmailHandler.EXTENSION_KEY, "email.png");
+		}
+		return null;
 	}
 	@Override
 	public void removeFacet() {

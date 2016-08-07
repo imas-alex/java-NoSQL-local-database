@@ -65,14 +65,14 @@ public class JConsoleHandler {
 	 */
 		public static String execute(JMainConsole console,String locator$){
         try{
-    //    System.out.println("ConsoleHandler:execute:locator="+Locator.remove(locator$, Locator.LOCATOR_ICON));	
+    System.out.println("ConsoleHandler:execute:locator="+Locator.remove(locator$, Locator.LOCATOR_ICON));	
        	 Properties locator=Locator.toProperties(locator$);
        	 String handlerScope$=locator.getProperty(BaseHandler.HANDLER_SCOPE);
        	String handlerClass$=locator.getProperty(BaseHandler.HANDLER_CLASS);
         String method$=locator.getProperty(BaseHandler.HANDLER_METHOD);
         String entihome$=locator.getProperty(Entigrator.ENTIHOME);
         String extension$=locator.getProperty(BaseHandler.HANDLER_LOCATION);
-     //   System.out.println("ConsoleHandler:execute:handler="+handlerClass$+" method="+method$+" entihome="+entihome$);
+        //System.out.println("ConsoleHandler:execute:handler="+handlerClass$+" method="+method$+" entihome="+entihome$);
        if(CONSOLE_SCOPE.equals(handlerScope$)){
     	   if(JTrackPanel.class.getName().equals(handlerClass$)){
     		   JTrackPanel trackPanel=new JTrackPanel(console);
@@ -152,7 +152,7 @@ public class JConsoleHandler {
 			   baseLocator$=Locator.append(baseLocator$, Entigrator.ENTIHOME, aSa);
 			   File file = new File(aSa);
 			   baseLocator$=Locator.append(baseLocator$,Locator.LOCATOR_TITLE, file.getName());
-			   baseLocator$=Locator.append(baseLocator$,BaseHandler.HANDLER_METHOD,"openDatabase");
+			 //  baseLocator$=Locator.append(baseLocator$,BaseHandler.HANDLER_METHOD,"openDatabase");
 	//		   System.out.println("ConsoleHandler:listBases:base="+Locator.remove(baseLocator$,Locator.LOCATOR_ICON));
 			   itemPanel=new JItemPanel(console,baseLocator$);
 			   ipl.add(itemPanel);
@@ -270,7 +270,7 @@ try{
 		ca=extension.elementGet("content.jrenderer");
 		if(ca!=null)
 			for(Core aCa:ca){
-		//		System.out.println("ConsoleHandler:getHandlerInstance:jrenderer: type="+aCa.type+" name="+aCa.name+" value="+aCa.value);	
+				System.out.println("ConsoleHandler:getHandlerInstance:jrenderer: type="+aCa.type+" name="+aCa.name+" value="+aCa.value);	
 				if(handlerClass$.equals(aCa.value)){
 					Object obj= ExtensionHandler.loadHandlerInstance( entigrator,extension.getKey(), handlerClass$);
 					//System.out.println("ConsoleHandler:getHandlerInstance:2");
@@ -288,7 +288,10 @@ try{
 public static Object getHandlerInstance(Entigrator entigrator,String handlerClass$,String extension$){
 try{
 	System.out.println("ConsoleHandler:getHandlerInstance:2:handler="+handlerClass$+" extension ="+extension$);
+	if(extension$==null||"null".equals(extension$))
+		return getHandlerInstance(entigrator, handlerClass$);
 	/*
+	
 	try{
 		Object obj=Class.forName(handlerClass$).newInstance();
 		if(obj!=null){
@@ -304,11 +307,16 @@ try{
 		return null;
 	}
 	
-if(entigrator==null)
+if(entigrator==null){
 	System.out.println("ConsoleHandler:getHandlerInstance:entigrator is null");
-	Sack extension=entigrator.getEntity(extension$);
-	if(extension==null)
+	return null;
+}
+	Sack extension=entigrator.getEntityAtKey(extension$);
+	if(extension==null){
 		System.out.println("ConsoleHandler:getHandlerInstance:extension is null");
+		return null;
+	}
+	
 	Core[] ca;
 	System.out.println("ConsoleHandler:getHandlerInstance:try extension="+extension.getProperty("label"));
 		ca=extension.elementGet("content.fhandler");
@@ -340,6 +348,13 @@ if(entigrator==null)
 					return obj;
 				}
 			}
+		try{
+			Object obj= ExtensionHandler.loadHandlerInstance( entigrator,extension.getKey(), handlerClass$);
+			if(obj!=null)
+				return obj;
+		}catch(Exception ee){
+			Logger.getLogger(JConsoleHandler.class.getName()).info(ee.toString());
+		}
 	return null;
 	}catch(Exception e){
 		Logger.getLogger(ExtensionHandler.class.getName()).severe(e.toString());

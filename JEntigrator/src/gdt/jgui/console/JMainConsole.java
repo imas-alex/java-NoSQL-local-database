@@ -21,6 +21,7 @@ import gdt.data.entity.BaseHandler;
 
 import gdt.data.grain.Locator;
 import gdt.data.store.Entigrator;
+import gdt.jgui.base.JBaseNavigator;
 import gdt.jgui.base.JBasesPanel;
 
 import gdt.jgui.tool.JTextEditor;
@@ -62,11 +63,17 @@ public class JMainConsole {
 	private final Action backTrack = new BackTrack();
 	private final Action clearTrack = new ClearTrack();
 	private final Action showClipboard = new ShowClipboard();
+	private final Action showRecent = new ShowRecent();
+	private final Action baseNavigator = new BaseNavigator();
 	private JMenu contextMenu;
 	private JMenuBar menuBar;
 	JLabel subtitle;
 	JMenuItem File;
-	Hashtable <String,String>categories;
+	JMenuItem BaseNavigator;
+	JMenu trackMenu;
+//	Hashtable <String,String>categories;
+	Hashtable <String,String>recents;
+	String entihome$;
 	public JClipboard clipboard=new JClipboard();
 	/**
 
@@ -83,11 +90,13 @@ public class JMainConsole {
 					console.setTrack(new Stack<String>());
 					JTrackPanel.restoreTrack(console);
 					JClipboard.restore(console);
+					JRecentPanel.restore(console);
 					console.frmEntigrator.addWindowListener(new java.awt.event.WindowAdapter() {
 					    public void windowClosing(WindowEvent winEvt) {
 					      //  System.out.println("MainConsole:exit:user home="+System.getProperty("user.home") );
 					        JTrackPanel.storeTrack(console);
 					        JClipboard.store(console);
+					        JRecentPanel.store(console);
 					        System.exit(0);
 					    }
 					});
@@ -119,6 +128,9 @@ public class JMainConsole {
     		track=new Stack<String>();
     	return track;
     }
+    public Hashtable getRecents(){
+    	return recents;
+    }
 	private void initialize() {
 		frmEntigrator = new JFrame();
 		frmEntigrator.setTitle("Entigrator");
@@ -137,6 +149,7 @@ public class JMainConsole {
 		File = new JMenuItem("Bases");
 		File.setAction(openWorkspace);
 		fileMenu.add(File);
+		recents=new Hashtable<String,String>();
 		JMenuItem newBase = new JMenuItem("New base");
 		newBase.addActionListener(new ActionListener() {
 			@Override
@@ -167,20 +180,30 @@ public class JMainConsole {
 			}
 		} );
 		fileMenu.add(newBase);
-		JMenu trackMenu = new JMenu("Track");
+		trackMenu = new JMenu("Track");
 		menuBar.add(trackMenu);
 		JMenuItem backItem = new JMenuItem("Back");
 		backItem.setAction(backTrack);
 		trackMenu.add(backItem);
+		trackMenu.addSeparator();
 		JMenuItem showItem = new JMenuItem("Show");
 		showItem.setAction(showTrack);
 		trackMenu.add(showItem);
 		JMenuItem clipboardItem = new JMenuItem("Clipboard");
 		clipboardItem.setAction(showClipboard);
 		trackMenu.add(clipboardItem);
+		JMenuItem recentItem = new JMenuItem("Recent");
+		recentItem.setAction(showRecent);
+		trackMenu.add(recentItem);
+		JMenuItem navigatorItem = new JMenuItem("Base navigator");
+		navigatorItem.setAction(baseNavigator);
+		trackMenu.add(navigatorItem);
+		trackMenu.addSeparator();
 		JMenuItem clearItem = new JMenuItem("Clear");
 		clearItem.setAction(clearTrack);
 		trackMenu.add(clearItem);
+		
+		
 	}
 /**
  * Put entigrator into the cache
@@ -197,6 +220,7 @@ public class JMainConsole {
 	 * @return the entigrator.
 	 */
 public Entigrator getEntigrator(String entihome$){
+	try{
 	Entigrator entigrator= entigrators.get(entihome$);
 	if(entigrator==null){
 		entigrator =new Entigrator(new String[]{entihome$});
@@ -206,6 +230,10 @@ public Entigrator getEntigrator(String entihome$){
 		}
 		}
 	return entigrator;
+	}catch(Exception e){
+		Logger.getLogger(getClass().getName()).severe(e.toString());
+		return null;
+	}
 }
 private void clearContextMenu(){
 	int cnt=menuBar.getComponentCount();
@@ -237,16 +265,23 @@ public void putContext(JContext context,String locator$){
 	}catch(Exception e){
 		Logger.getLogger(getClass().getName()).severe(e.toString());
 	}
-	
+	entihome$=Locator.getProperty(locator$, Entigrator.ENTIHOME);
+	System.out.println("MainConsole:putContext:entihome="+entihome$);
+	if(entihome$!=null)
+	    getEntigrator(entihome$);
 	frmEntigrator.getContentPane().removeAll();
 	
 	context.instantiate(this, locator$);
 	
 	frmEntigrator.getContentPane().add(context.getPanel(),BorderLayout.CENTER );
-	
+	//context.getPanel().repaint();
+	//context.getPanel().revalidate();
 	frmEntigrator.setTitle(context.getTitle());
+	String ctxLocator$=context.getLocator();
+	if(ctxLocator$!=null){
+	JTrackPanel.putMember(this,ctxLocator$ );
 	
-	JTrackPanel.putMember(this, context.getLocator());
+	}
 	try{
 	contextMenu=context.getContextMenu();
 	
@@ -266,8 +301,11 @@ public void putContext(JContext context,String locator$){
 	}
 	menuBar.revalidate();
 	menuBar.repaint();
+	
 	frmEntigrator.getContentPane().revalidate();
 	frmEntigrator.getContentPane().repaint();
+	
+	
 //	System.out.println("MainConsole:putContext:FINISH:");
 }
 
@@ -383,7 +421,39 @@ private class OpenWorkspace extends AbstractAction {
 			frmEntigrator.repaint();
 		}
 		}
-
-
+	private class ShowRecent extends AbstractAction {
+		private static final long serialVersionUID = 1L;
+		public ShowRecent() {
+			putValue(NAME, "Show recent");
+			putValue(SHORT_DESCRIPTION, "Display recent content");
+		}
+		public void actionPerformed(ActionEvent e) {
+			try{
+				JRecentPanel recentPanel=new JRecentPanel();
+				JConsoleHandler.execute(JMainConsole.this, recentPanel.getLocator());
+			}catch(Exception ee) {
+			    	Logger.getLogger(JMainConsole.class.getName()).severe(ee.toString());
+			    }
+			     }
+		}
+	private class BaseNavigator extends AbstractAction {
+		private static final long serialVersionUID = 1L;
+		public BaseNavigator() {
+			putValue(NAME, "Base navigator");
+			putValue(SHORT_DESCRIPTION, "Display base navigator");
+		}
+		public void actionPerformed(ActionEvent e) {
+			try{
+				if(entihome$==null)
+					return;
+				JBaseNavigator navigatorPanel=new JBaseNavigator();
+				String np$=navigatorPanel.getLocator();
+				np$=Locator.append(np$, Entigrator.ENTIHOME, entihome$);
+				JConsoleHandler.execute(JMainConsole.this, np$);
+			}catch(Exception ee) {
+			    	Logger.getLogger(JMainConsole.class.getName()).severe(ee.toString());
+			    }
+			     }
+		}
 	}
 

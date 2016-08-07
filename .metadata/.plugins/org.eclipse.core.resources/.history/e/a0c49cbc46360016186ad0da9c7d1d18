@@ -1,0 +1,139 @@
+package gdt.jgui.entity.graph;
+
+import java.util.ArrayList;
+import java.util.Properties;
+import java.util.logging.Logger;
+
+
+import gdt.data.entity.BaseHandler;
+import gdt.data.entity.EdgeHandler;
+import gdt.data.entity.EntityHandler;
+import gdt.data.entity.GraphHandler;
+import gdt.data.entity.facet.ExtensionHandler;
+import gdt.data.grain.Core;
+import gdt.data.grain.Locator;
+import gdt.data.grain.Sack;
+import gdt.data.store.Entigrator;
+import gdt.jgui.console.JConsoleHandler;
+import gdt.jgui.console.JContext;
+import gdt.jgui.console.JItemPanel;
+import gdt.jgui.console.JItemsListPanel;
+import gdt.jgui.console.JMainConsole;
+import gdt.jgui.entity.JEntityFacetPanel;
+
+
+public class JGraphEdgesPanel extends JItemsListPanel{
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	private String entihome$;
+    private String entityKey$;
+    private String entityLabel$;
+    
+    public JGraphEdgesPanel()
+   	{
+   	    super();
+   	    
+   	}  
+	@Override
+	public String getLocator() {
+		try{
+			Properties locator=new Properties();
+			locator.setProperty(BaseHandler.HANDLER_CLASS,JGraphEdgesPanel.class.getName());
+			locator.setProperty(BaseHandler.HANDLER_SCOPE,JConsoleHandler.CONSOLE_SCOPE);
+			 locator.setProperty( JContext.CONTEXT_TYPE,getType());
+			locator.setProperty(Locator.LOCATOR_TITLE,getTitle());
+			locator.setProperty(BaseHandler.HANDLER_LOCATION,GraphHandler.EXTENSION_KEY);
+			if(entityLabel$!=null){
+				locator.setProperty(EntityHandler.ENTITY_LABEL,entityLabel$);
+			}
+			if(entityKey$!=null)
+				locator.setProperty(EntityHandler.ENTITY_KEY,entityKey$);
+			if(entihome$!=null){
+				locator.setProperty(Entigrator.ENTIHOME,entihome$);
+			Entigrator entigrator=console.getEntigrator(entihome$);
+			String icon$= ExtensionHandler.loadIcon(entigrator, EdgeHandler.EXTENSION_KEY,"edge.png");
+			    if(icon$!=null)
+			    	locator.setProperty(Locator.LOCATOR_ICON,icon$);
+			}
+			return Locator.toString(locator);
+			}catch(Exception e){
+	        Logger.getLogger(getClass().getName()).severe(e.toString());
+	        return null;
+			}
+	
+}
+@Override
+public JContext instantiate(JMainConsole console, String locator$) {
+	
+	try{
+			this. console=console;
+			this.locator$=locator$;
+			Properties locator=Locator.toProperties(locator$);
+			 //list$=locator.getProperty(EntityHandler.ENTITY_LIST);
+			 entityKey$=locator.getProperty(EntityHandler.ENTITY_KEY);
+			 entihome$=locator.getProperty(Entigrator.ENTIHOME);
+			 Entigrator  entigrator=console.getEntigrator(entihome$);
+			 Sack graph=entigrator.getEntityAtKey(entityKey$);
+			 Core[] ca=graph.elementGet("edge.entity");
+			 ArrayList <String>sl=new ArrayList<String>(); 
+			 if(ca!=null){
+			  for(Core c:ca){
+				  if(!sl.contains(c.value))
+					  sl.add(c.value);
+			  }
+			  ArrayList <JItemPanel>ipl=new ArrayList<JItemPanel>(); 
+			  String edgeLocator$;
+			  String edgeIcon$;
+			  JItemPanel itemPanel;
+		for(String s:sl){
+			edgeLocator$=EntityHandler.getEntityLocatorAtKey(entigrator, s);
+			edgeLocator$=Locator.append(edgeLocator$,Entigrator.ENTIHOME , entihome$);
+			edgeLocator$=Locator.append(edgeLocator$,Locator.LOCATOR_CHECKABLE , Locator.LOCATOR_TRUE);
+			  JEntityFacetPanel em=new JEntityFacetPanel();
+			   em.instantiate(console, edgeLocator$);
+			   String emLocator$=em.getLocator();
+			   emLocator$=Locator.append(emLocator$,Locator.LOCATOR_CHECKABLE, Locator.LOCATOR_TRUE);
+			   emLocator$=Locator.append(emLocator$,Locator.LOCATOR_TITLE,entigrator.indx_getLabel(s));
+			   edgeIcon$=entigrator.readIconFromIcons(entigrator.getEntityIcon(s));
+			   if(edgeIcon$!=null)
+				   emLocator$=Locator.append(emLocator$,Locator.LOCATOR_ICON,edgeIcon$);
+			   itemPanel=new JItemPanel(console,emLocator$);
+			   ipl.add(itemPanel);
+			
+		}
+      	 putItems(ipl.toArray(new JItemPanel[0]));
+			 }	
+      	 return this;
+      }catch(Exception e){
+      
+      Logger.getLogger(JGraphEdgesPanel.class.getName()).severe(e.toString());
+      }
+	  
+	return null;  
+	  
+} 
+	@Override
+	public String getTitle() {
+		return "Edges";
+	}
+
+	@Override
+	public String getSubtitle() {
+		return entityLabel$;
+	}
+
+	@Override
+	public String getType() {
+		
+		return "Graph edges";
+	}
+
+	@Override
+	public void close() {
+		// TODO Auto-generated method stub
+		
+	}
+
+}

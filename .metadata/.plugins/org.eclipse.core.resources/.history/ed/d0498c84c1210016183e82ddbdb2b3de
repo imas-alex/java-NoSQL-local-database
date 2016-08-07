@@ -1,0 +1,487 @@
+package gdt.jgui.entity.edge;
+/*
+ * Copyright 2016 Alexander Imas
+ * This file is part of JEntigrator.
+
+    JEntigrator is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    JEntigrator is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with JEntigrator.  If not, see <http://www.gnu.org/licenses/>.
+ */
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.Properties;
+import java.util.logging.Logger;
+
+import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
+import javax.swing.JPopupMenu;
+import javax.swing.event.MenuEvent;
+import javax.swing.event.MenuListener;
+import javax.swing.event.PopupMenuEvent;
+import javax.swing.event.PopupMenuListener;
+
+import gdt.data.entity.BaseHandler;
+import gdt.data.entity.EdgeHandler;
+import gdt.data.entity.EntityHandler;
+import gdt.data.entity.NodeHandler;
+import gdt.data.entity.facet.ExtensionHandler;
+import gdt.data.grain.Core;
+import gdt.data.grain.Locator;
+import gdt.data.grain.Sack;
+import gdt.data.store.Entigrator;
+import gdt.jgui.console.JConsoleHandler;
+import gdt.jgui.console.JItemPanel;
+import gdt.jgui.console.JMainConsole;
+import gdt.jgui.console.JRequester;
+import gdt.jgui.entity.JEntityFacetPanel;
+import gdt.jgui.entity.node.JNodeFacetAddItem;
+import gdt.jgui.entity.node.JNodeFacetOpenItem;
+/**
+ *This class represents a 
+ * @author imasa
+ *
+ */
+public class JBondItem extends JItemPanel{
+	private static final long serialVersionUID = 1L;
+	private boolean isCommitted=false;
+	/**
+	 * The constructor.
+	 * @param console the main console.
+	 * @param locator$ the locator string.
+	 */
+	public JBondItem(final JMainConsole console,final String locator$){
+		super(console,locator$);
+		isCommitted=isCommitted(console,locator$);
+		System.out.println("JBondItem:is committed="+isCommitted);
+		Properties locator=Locator.toProperties(JBondItem.this.locator$);
+		String entihome$=locator.getProperty(Entigrator.ENTIHOME);
+		Entigrator entigrator=console.getEntigrator(entihome$);
+		if(isCommitted){
+		   icon$= ExtensionHandler.loadIcon(entigrator,EdgeHandler.EXTENSION_KEY,"bond.png");
+		}else{
+		  icon$= ExtensionHandler.loadIcon(entigrator,EdgeHandler.EXTENSION_KEY,"draft.png");
+		}
+		
+		resetIcon();
+		
+		popup = new JPopupMenu();
+		popup.addPopupMenuListener(new PopupMenuListener(){
+
+			@Override
+			public void popupMenuWillBecomeVisible(PopupMenuEvent e) {
+				isCommitted=isCommitted(console,locator$);
+			}
+			@Override
+			public void popupMenuWillBecomeInvisible(PopupMenuEvent e) {
+				// TODO Auto-generated method stub
+				
+			}
+			@Override
+			public void popupMenuCanceled(PopupMenuEvent e) {
+				// TODO Auto-generated method stub
+				
+			}
+		});
+		JMenuItem openOutItem=new JMenuItem("Open out node");
+		   popup.add(openOutItem);
+		   openOutItem.setHorizontalTextPosition(JMenuItem.RIGHT);
+		   openOutItem.addActionListener(new ActionListener() {
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					try{
+						Properties locator=Locator.toProperties(JBondItem.this.locator$);
+						String entihome$=locator.getProperty(Entigrator.ENTIHOME);
+						String entityKey$=locator.getProperty(EntityHandler.ENTITY_KEY);
+						String bondKey$=locator.getProperty(JBondsPanel.BOND_KEY);
+					//    String nodeKey$=getNodeKeyFromClipboard();
+					    Entigrator entigrator=console.getEntigrator(entihome$);
+						//String nodelabel$=entigrator.indx_getLabel(nodeKey$);
+						Sack host=entigrator.getEntity(entityKey$);
+						Core bond=host.getElementItem("bond", bondKey$);
+						JEntityFacetPanel fp=new JEntityFacetPanel();
+						String fpLocator$=fp.getLocator();
+						fpLocator$=Locator.append(fpLocator$,Entigrator.ENTIHOME, entihome$);
+						fpLocator$=Locator.append(fpLocator$,EntityHandler.ENTITY_KEY, bond.type);
+						JConsoleHandler.execute(console,fpLocator$ );
+					}catch(Exception ee){
+						Logger.getLogger(getClass().getName()).info(ee.toString());
+					}
+				}
+			    });
+		   JMenuItem openInItem=new JMenuItem("Open in node");
+		   popup.add(openInItem);
+		   openInItem.setHorizontalTextPosition(JMenuItem.RIGHT);
+		   openInItem.addActionListener(new ActionListener() {
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					try{
+						Properties locator=Locator.toProperties(JBondItem.this.locator$);
+						String entihome$=locator.getProperty(Entigrator.ENTIHOME);
+						String entityKey$=locator.getProperty(EntityHandler.ENTITY_KEY);
+						String bondKey$=locator.getProperty(JBondsPanel.BOND_KEY);
+					//    String nodeKey$=getNodeKeyFromClipboard();
+					    Entigrator entigrator=console.getEntigrator(entihome$);
+						//String nodelabel$=entigrator.indx_getLabel(nodeKey$);
+						Sack host=entigrator.getEntity(entityKey$);
+						Core bond=host.getElementItem("bond", bondKey$);
+						JEntityFacetPanel fp=new JEntityFacetPanel();
+						String fpLocator$=fp.getLocator();
+						fpLocator$=Locator.append(fpLocator$,Entigrator.ENTIHOME, entihome$);
+						fpLocator$=Locator.append(fpLocator$,EntityHandler.ENTITY_KEY, bond.value);
+						JConsoleHandler.execute(console,fpLocator$ );
+					}catch(Exception ee){
+						Logger.getLogger(getClass().getName()).info(ee.toString());
+					}
+				}
+			    });
+		   JMenuItem openEdgeItem=new JMenuItem("Open edge");
+		   popup.add(openEdgeItem);
+		   openEdgeItem.setHorizontalTextPosition(JMenuItem.RIGHT);
+		   openEdgeItem.addActionListener(new ActionListener() {
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					try{
+						Properties locator=Locator.toProperties(JBondItem.this.locator$);
+						String entihome$=locator.getProperty(Entigrator.ENTIHOME);
+						String entityKey$=locator.getProperty(EntityHandler.ENTITY_KEY);
+						String bondKey$=locator.getProperty(JBondsPanel.BOND_KEY);
+					//    String nodeKey$=getNodeKeyFromClipboard();
+					    Entigrator entigrator=console.getEntigrator(entihome$);
+						//String nodelabel$=entigrator.indx_getLabel(nodeKey$);
+						Sack host=entigrator.getEntity(entityKey$);
+						Core bond=host.getElementItem("bond", bondKey$);
+						JEntityFacetPanel fp=new JEntityFacetPanel();
+						String fpLocator$=fp.getLocator();
+						fpLocator$=Locator.append(fpLocator$,Entigrator.ENTIHOME, entihome$);
+						String edgeKey$=null;
+						if(isHostedByEdge())
+							edgeKey$=entityKey$;
+						if(isHostedByNode())
+							edgeKey$=host.getElementItemAt("edge", bond.name);
+						if(edgeKey$==null)
+							return;
+						fpLocator$=Locator.append(fpLocator$,EntityHandler.ENTITY_KEY, edgeKey$);;
+						JConsoleHandler.execute(console,fpLocator$ );
+					}catch(Exception ee){
+						Logger.getLogger(getClass().getName()).info(ee.toString());
+					}
+				}
+			    });
+		JMenuItem deleteItem=new JMenuItem("Delete");
+		   popup.add(deleteItem);
+		   deleteItem.setHorizontalTextPosition(JMenuItem.RIGHT);
+		   deleteItem.addActionListener(new ActionListener() {
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					try{
+						 int response = JOptionPane.showConfirmDialog(JBondItem.this, "Delete bond ?", "Confirm",
+							       JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
+							   if (response != JOptionPane.YES_OPTION) 
+							       return;
+						Properties locator=Locator.toProperties(JBondItem.this.locator$);
+						String entihome$=locator.getProperty(Entigrator.ENTIHOME);
+						String entityKey$=locator.getProperty(EntityHandler.ENTITY_KEY);
+						String bondKey$=locator.getProperty(JBondsPanel.BOND_KEY);
+					//    String nodeKey$=getNodeKeyFromClipboard();
+					    Entigrator entigrator=console.getEntigrator(entihome$);
+						//String nodelabel$=entigrator.indx_getLabel(nodeKey$);
+						Sack host=entigrator.getEntity(entityKey$);
+						Core bond=host.getElementItem("bond", bondKey$);
+						Sack outNode=entigrator.getEntity(bond.type);
+						Sack inNode=entigrator.getEntity(bond.value);
+						if(outNode!=null)
+							outNode.removeElementItem("bond", bondKey$);
+						if(inNode!=null)
+							inNode.removeElementItem("bond", bondKey$);
+						host.removeElementItem("bond",bondKey$ );
+						entigrator.save(host);
+						if(outNode!=null)
+							entigrator.save(outNode);
+						if(inNode!=null)
+							entigrator.save(inNode);
+						JBondsPanel bp=new JBondsPanel();
+						String bpLocator$=bp.getLocator();
+						bpLocator$=Locator.append(bpLocator$,Entigrator.ENTIHOME, entihome$);
+						bpLocator$=Locator.append(bpLocator$,EntityHandler.ENTITY_KEY, entityKey$);
+						JConsoleHandler.execute(console,bpLocator$ );
+					}catch(Exception ee){
+						Logger.getLogger(getClass().getName()).info(ee.toString());
+					}
+				}
+			    });
+		  if(isHostedByEdge()){
+			
+		   String nodeKey$=getNodeKeyFromClipboard();
+		   if(nodeKey$!=null&&canSetNode()){
+			   popup.addSeparator();  
+		   JMenuItem outNodeItem=new JMenuItem("Set out node");
+		   popup.add(outNodeItem);
+		   outNodeItem.setHorizontalTextPosition(JMenuItem.RIGHT);
+		   outNodeItem.addActionListener(new ActionListener() {
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					try{
+					
+					Properties locator=Locator.toProperties(JBondItem.this.locator$);
+					String entihome$=locator.getProperty(Entigrator.ENTIHOME);
+					String entityKey$=locator.getProperty(EntityHandler.ENTITY_KEY);
+					String bondKey$=locator.getProperty(JBondsPanel.BOND_KEY);
+				    String nodeKey$=getNodeKeyFromClipboard();
+				    Entigrator entigrator=console.getEntigrator(entihome$);
+					//String nodelabel$=entigrator.indx_getLabel(nodeKey$);
+					Sack edge=entigrator.getEntity(entityKey$);
+					Core bond=edge.getElementItem("bond", bondKey$);
+					if (bond==null)
+						bond=new Core(nodeKey$,bondKey$,null);
+					else
+						bond.type=nodeKey$;
+					edge.putElementItem("bond",bond );
+					entigrator.save(edge);
+					JBondsPanel bp=new JBondsPanel();
+					String bpLocator$=bp.getLocator();
+					bpLocator$=Locator.append(bpLocator$,Entigrator.ENTIHOME, entihome$);
+					bpLocator$=Locator.append(bpLocator$,EntityHandler.ENTITY_KEY, entityKey$);
+					JConsoleHandler.execute(console,bpLocator$ );
+					}catch(Exception ee){
+						Logger.getLogger(getClass().getName()).info(ee.toString());
+					}
+				}
+				
+			    });
+		   JMenuItem inNodeItem=new JMenuItem("Set in node");
+		   popup.add(inNodeItem);
+		   inNodeItem.setHorizontalTextPosition(JMenuItem.RIGHT);
+		   inNodeItem.addActionListener(new ActionListener() {
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					try{
+					
+					Properties locator=Locator.toProperties(JBondItem.this.locator$);
+					String entihome$=locator.getProperty(Entigrator.ENTIHOME);
+					String entityKey$=locator.getProperty(EntityHandler.ENTITY_KEY);
+					String bondKey$=locator.getProperty(JBondsPanel.BOND_KEY);
+				    String nodeKey$=getNodeKeyFromClipboard();
+				    Entigrator entigrator=console.getEntigrator(entihome$);
+					//String nodelabel$=entigrator.indx_getLabel(nodeKey$);
+					Sack edge=entigrator.getEntity(entityKey$);
+					Core bond=edge.getElementItem("bond", bondKey$);
+					if (bond==null)
+						bond=new Core(null,bondKey$,nodeKey$);
+					else
+						bond.value=nodeKey$;
+					edge.putElementItem("bond",bond );
+					entigrator.save(edge);
+					JBondsPanel bp=new JBondsPanel();
+					String bpLocator$=bp.getLocator();
+					bpLocator$=Locator.append(bpLocator$,Entigrator.ENTIHOME, entihome$);
+					bpLocator$=Locator.append(bpLocator$,EntityHandler.ENTITY_KEY, entityKey$);
+					JConsoleHandler.execute(console,bpLocator$ );
+					}catch(Exception ee){
+						Logger.getLogger(getClass().getName()).info(ee.toString());
+					}
+				}
+				
+			    });
+		   } 
+		   if(!isCommitted&&canBeCommitted()){
+			   JMenuItem commitItem=new JMenuItem("Commit");
+			   popup.add(commitItem);
+			   commitItem.setHorizontalTextPosition(JMenuItem.RIGHT);
+			   commitItem.addActionListener(new ActionListener() {
+					@Override
+					public void actionPerformed(ActionEvent e) {
+						try{
+						
+						Properties locator=Locator.toProperties(JBondItem.this.locator$);
+						String entihome$=locator.getProperty(Entigrator.ENTIHOME);
+						String entityKey$=locator.getProperty(EntityHandler.ENTITY_KEY);
+						String bondKey$=locator.getProperty(JBondsPanel.BOND_KEY);
+					    Entigrator entigrator=console.getEntigrator(entihome$);
+						Sack edge=entigrator.getEntity(entityKey$);
+						Core bond=edge.getElementItem("bond", bondKey$);
+						Sack outNode=entigrator.getEntity(bond.type);
+						Sack inNode=entigrator.getEntity(bond.value);
+						if(inNode==null||outNode==null){
+							System.out.println("JBondItem:commit:broken bond="+bondKey$);
+							return;
+						}
+						if(!outNode.existsElement("bond"))
+							outNode.createElement("bond");
+						outNode.putElementItem("bond", bond);
+						if(!outNode.existsElement("edge"))
+							outNode.createElement("edge");
+						outNode.putElementItem("edge", new Core(null,bondKey$,edge.getKey()));
+						if(!inNode.existsElement("bond"))
+							inNode.createElement("bond");
+						inNode.putElementItem("bond", bond);
+						if(!inNode.existsElement("edge"))
+							inNode.createElement("edge");
+						inNode.putElementItem("edge", new Core(null,bondKey$,edge.getKey()));
+						if(!outNode.existsElement("fhandler"))
+							outNode.createElement("fhandler");
+						outNode.putElementItem("fhandler", new Core(null, NodeHandler.class.getName(),NodeHandler.EXTENSION_KEY));
+						if(!inNode.existsElement("fhandler"))
+							inNode.createElement("fhandler");
+						inNode.putElementItem("fhandler", new Core(null, NodeHandler.class.getName(),NodeHandler.EXTENSION_KEY));
+						if(!outNode.existsElement("jfacet"))
+							outNode.createElement("jfacet");
+						outNode.putElementItem("jfacet", new Core(JNodeFacetAddItem.class.getName(), NodeHandler.class.getName(),JNodeFacetOpenItem.class.getName()));
+						
+						if(!inNode.existsElement("fhandler"))
+							inNode.createElement("fhandler");
+						inNode.putElementItem("fhandler", new Core(null, NodeHandler.class.getName(),NodeHandler.EXTENSION_KEY));
+						if(!inNode.existsElement("jfacet"))
+							inNode.createElement("jfacet");
+						inNode.putElementItem("jfacet", new Core(JNodeFacetAddItem.class.getName(), NodeHandler.class.getName(),JNodeFacetOpenItem.class.getName()));
+					
+						entigrator.save(outNode);
+						entigrator.save(inNode);
+						entigrator.ent_assignProperty(outNode, "node",outNode.getProperty("label"));
+						entigrator.ent_assignProperty(inNode, "node",inNode.getProperty("label"));
+						JBondsPanel bp=new JBondsPanel();
+						String bpLocator$=bp.getLocator();
+						bpLocator$=Locator.append(bpLocator$,Entigrator.ENTIHOME, entihome$);
+						bpLocator$=Locator.append(bpLocator$,EntityHandler.ENTITY_KEY, entityKey$);
+						JConsoleHandler.execute(console,bpLocator$ );
+						}catch(Exception ee){
+							Logger.getLogger(getClass().getName()).info(ee.toString());
+						}
+					}
+					
+				    });
+		   }
+		  }// end hosted by edge
+		  System.out.println("JBondItem:finish");
+	}
+	private String getNodeKeyFromClipboard(){
+		try{
+		String[] sa=console.clipboard.getContent();
+		if(sa==null||sa.length<1)
+			return null;
+		Properties clipLocator;
+		String entityKey$;
+		for(String s:sa){
+			clipLocator=Locator.toProperties(s);
+			entityKey$=clipLocator.getProperty(EntityHandler.ENTITY_KEY);
+			if(entityKey$!=null)
+				return entityKey$;
+		}
+		}catch(Exception e){
+			Logger.getLogger(getClass().getName()).severe(e.toString());
+		}
+		return null;
+}
+	public static boolean isCommitted(JMainConsole console,String locator$){
+		try{
+		System.out.println("JBondsItem:isCommitted:BEGIN");
+		Properties locator=Locator.toProperties(locator$);
+		String entihome$=locator.getProperty(Entigrator.ENTIHOME);
+		String entityKey$=locator.getProperty(EntityHandler.ENTITY_KEY);
+		String bondKey$=locator.getProperty(JBondsPanel.BOND_KEY);
+		System.out.println("JBondsItem:isCommitted:bond key="+bondKey$);
+		Entigrator entigrator=console.getEntigrator(entihome$);
+		Sack edge=entigrator.getEntity(entityKey$);
+		Core bond=edge.getElementItem("bond", bondKey$);
+		Sack outNode=entigrator.getEntity(bond.type);
+		Sack inNode=entigrator.getEntity(bond.value);
+		Core outBond=outNode.getElementItem("bond", bondKey$);
+		if(outBond==null)
+			return false;
+		Core inBond=inNode.getElementItem("bond", bondKey$);
+		if(inBond==null)
+			  return false;
+		if(!outBond.type.equals(inBond.type))
+			return false;
+		if(!outBond.value.equals(inBond.value))
+			return false;
+            
+		/*
+		if("out".equals(outEdge.type)){
+			if(entityKey$.equals(outEdge.value)){
+				Core inEdge=inNode.getElementItem("bond", bondKey$);
+				if("in".equals(inEdge.type))
+					if(entityKey$.equals(inEdge.value))
+						return true;
+			}
+		
+		}
+		*/
+		return true;
+	}catch(Exception e){
+		Logger.getLogger(JBondItem.class.getName()).severe(e.toString());
+	
+	}
+		return false;
+}
+	private boolean canBeCommitted(){
+		try{
+		Properties locator=Locator.toProperties(JBondItem.this.locator$);
+		String entihome$=locator.getProperty(Entigrator.ENTIHOME);
+		String entityKey$=locator.getProperty(EntityHandler.ENTITY_KEY);
+		String bondKey$=locator.getProperty(JBondsPanel.BOND_KEY);
+		Entigrator entigrator=console.getEntigrator(entihome$);
+		Sack edge=entigrator.getEntity(entityKey$);
+		Core bond=edge.getElementItem("bond", bondKey$);
+		if(bond!=null&&bond.type!=null&&bond.value!=null&&!bond.type.equals(bond.value))
+			return true;
+	  	}catch(Exception e){
+		Logger.getLogger(getClass().getName()).severe(e.toString());
+	
+	}
+		return false;
+}
+	private boolean canSetNode(){
+		try{
+		String[] sa=console.clipboard.getContent();
+		if(sa==null)
+			return false;
+		Properties locator;
+		for(String s:sa){
+			locator=Locator.toProperties(s);
+			if(locator.getProperty(EntityHandler.ENTITY_KEY)!=null)
+					return true;
+		}
+	  	}catch(Exception e){
+		Logger.getLogger(getClass().getName()).severe(e.toString());
+	
+	}
+		return false;
+}
+	private boolean isHostedByEdge(){
+		try{
+			Properties locator=Locator.toProperties(JBondItem.this.locator$);
+			String entihome$=locator.getProperty(Entigrator.ENTIHOME);
+			String entityKey$=locator.getProperty(EntityHandler.ENTITY_KEY);
+			Entigrator entigrator=console.getEntigrator(entihome$);
+			Sack host=entigrator.getEntity(entityKey$);
+			if(host.getProperty("edge")!=null)
+					return true;
+			}catch(Exception e){
+			Logger.getLogger(getClass().getName()).severe(e.toString());
+		}
+			return false;
+	}
+	private boolean isHostedByNode(){
+		try{
+			Properties locator=Locator.toProperties(JBondItem.this.locator$);
+			String entihome$=locator.getProperty(Entigrator.ENTIHOME);
+			String entityKey$=locator.getProperty(EntityHandler.ENTITY_KEY);
+			Entigrator entigrator=console.getEntigrator(entihome$);
+			Sack host=entigrator.getEntity(entityKey$);
+			if(host.getProperty("node")!=null)
+					return true;
+			}catch(Exception e){
+			Logger.getLogger(getClass().getName()).severe(e.toString());
+		}
+			return false;
+	}
+}

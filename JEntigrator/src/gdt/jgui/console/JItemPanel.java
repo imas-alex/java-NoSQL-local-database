@@ -181,6 +181,9 @@ public class JItemPanel extends JPanel {
 			locator$=Locator.append(locator$,Locator.LOCATOR_CHECKED , Locator.LOCATOR_FALSE);
 	return locator$;
 }
+public void setLocator(String locator$){
+	this.locator$=locator$;
+}
 	/**
 	 * Get item's title.
 	 * @return the item title.
@@ -226,6 +229,23 @@ public void resetIcon(){
    	  title.repaint();
    	  title.revalidate();
      }
+}
+@Override
+public boolean equals(Object v) {
+   try{
+	if(super.equals(v))
+    	return true;
+	if (v instanceof JItemPanel){
+          if( locator$.equals(((JItemPanel)v).locator$))
+        	  return true;
+      }
+   }catch(Exception e){
+	   LOGGER.severe(e.toString());
+   }
+   return false;
+}
+public void setPopupMenu(JPopupMenu popup){
+	this.popup=popup;
 }
 class MousePopupListener extends MouseAdapter {
   boolean isPopup=false;

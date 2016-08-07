@@ -1,5 +1,7 @@
 package gdt.data.entity;
 
+import java.io.File;
+import java.util.ArrayList;
 import java.util.Properties;
 import java.util.logging.Logger;
 
@@ -8,6 +10,8 @@ import gdt.data.grain.Core;
 import gdt.data.grain.Locator;
 import gdt.data.grain.Sack;
 import gdt.data.store.Entigrator;
+import gdt.data.store.FileExpert;
+import gdt.jgui.entity.JReferenceEntry;
 
 public class EdgeHandler extends FieldsHandler{
 	private Logger LOGGER=Logger.getLogger(EdgeHandler.class.getName());
@@ -72,5 +76,89 @@ public class EdgeHandler extends FieldsHandler{
 @Override
 public String getClassName() {
 	return  EdgeHandler.class.getName();
+}
+@Override
+public void completeMigration(Entigrator entigrator) {
+    System.out.println("EdgeHandler.completeMigration:entity key="+entityKey$);
+	try{
+    String[] sa=entigrator.indx_listEntitiesAtPropertyName("node");
+    System.out.println("EdgeHandler.completeMigration:1");
+    Sack edge=entigrator.getEntityAtKey(entityKey$);
+    if(sa==null){
+    	edge.removeElement("bond");
+    	edge.removeElement("detail");
+    	entigrator.save(edge);
+    	return;
+    }
+    
+    ArrayList <Core>cl=new ArrayList<Core>();
+    Core[] ca=edge.elementGet("bond");
+    //check valid bonds
+    boolean valid;
+    for(Core c:ca){
+    	valid=false;
+        for(String s:sa)
+        	if(s.equals(c.type)){
+        		valid=true;
+        		break;
+        	}
+        if(!valid)
+        	continue;
+        for(String s:sa)
+        	if(s.equals(c.value)){
+        		cl.add(c);
+        		break;
+        	}
+        	
+    }
+    System.out.println("EdgeHandler.completeMigration:1");
+    ca=cl.toArray(new Core[0]);
+    edge.elementReplace("bond", ca);
+    Core[] da=edge.elementGet("detail");
+    cl.clear();
+    for(Core d:da)
+       for( Core c:ca)
+    	  if(d.type.equals(c.name))
+    		  cl.add(d);
+    da=cl.toArray(new Core[0]);
+    edge.elementReplace("detail", da);
+    entigrator.save(edge);
+    String originEntihome$=edge.getAttributeAt(JReferenceEntry.ORIGIN_ENTIHOME);
+    File sourceDetail;
+    File targetDetail;
+    Sack pastedEntity;
+    entihome$=entigrator.getEntihome();
+    System.out.println("EdgeHandler:completeMigration:entihome="+entihome$);
+    String icon$;
+    File sourceIcon;
+    File targetIcon;
+    for(Core d:da){
+     try{
+    	sourceDetail=new File(originEntihome$+"/"+Entigrator.ENTITY_BASE+"/data/"+d.value);
+	    if(!sourceDetail.exists()||sourceDetail.length()<10)
+	    	continue;
+    	targetDetail=new File(entihome$+"/"+Entigrator.ENTITY_BASE+"/data/"+d.value);
+	   System.out.println("EdgeHandler:completeMigration: copy source="+sourceDetail.getPath()+" target="+targetDetail.getPath());
+	   if(!targetDetail.exists())
+	    	targetDetail.createNewFile();
+	    FileExpert.copyFile(sourceDetail,targetDetail);
+	  
+	    pastedEntity=Sack.parseXML(targetDetail.getPath());
+	   
+	    icon$=pastedEntity.getAttributeAt("icon");
+	    sourceIcon= new File(originEntihome$+"/"+Entigrator.ICONS+"/"+icon$);
+	    System.out.println("EdgeHandler:completeMigration: copy source icon="+sourceIcon.getPath());
+	    targetIcon=new File(entihome$+"/"+Entigrator.ICONS+"/"+icon$);
+	    if(!targetIcon.exists())
+	    	targetIcon.createNewFile();
+	    FileExpert.copyFile(sourceIcon,targetIcon);
+	    entigrator.ent_reindex(pastedEntity);
+     }catch(Exception ee){
+    	 System.out.println("EdgeHandler:completeMigration: "+ee.toString()); 
+     }
+    }
+	}catch(Exception e){
+		Logger.getLogger(EdgeHandler.class.getName()).severe(e.toString());
+	}
 }
 }

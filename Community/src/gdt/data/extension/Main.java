@@ -24,6 +24,7 @@ import java.net.URLClassLoader;
 import java.net.URLDecoder;
 import java.util.logging.Logger;
 
+import gdt.data.entity.facet.ExtensionHandler;
 import gdt.data.entity.facet.ExtensionMain;
 import gdt.data.grain.Core;
 import gdt.data.grain.Sack;
@@ -62,9 +63,11 @@ public class Main implements ExtensionMain{
             	   target.createNewFile();
                FileExpert.copyFile(jar, target);
           //     System.out.println("CommunityMain:main:url="+Main.class.getProtectionDomain().getCodeSource().getLocation().toString());
-               URL[] urls = { Main.class.getProtectionDomain().getCodeSource().getLocation() };
-               URLClassLoader classloader = URLClassLoader.newInstance(urls);
-               InputStream is = classloader.getResourceAsStream("res/community.tar");
+               InputStream is = ExtensionHandler.getResourceStream(entigrator, EXTENSION_KEY,"community.tar" );
+               
+              // URL[] urls = { Main.class.getProtectionDomain().getCodeSource().getLocation() };
+              // URLClassLoader classloader = URLClassLoader.newInstance(urls);
+              // InputStream is = classloader.getResourceAsStream("res/community.tar");
                target=new File(folder$+"/community.tar");
                if(is!=null){
             	  if(!target.exists())

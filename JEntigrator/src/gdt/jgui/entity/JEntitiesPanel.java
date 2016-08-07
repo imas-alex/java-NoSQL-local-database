@@ -30,6 +30,7 @@ import javax.swing.event.MenuListener;
 import org.apache.commons.codec.binary.Base64;
 import gdt.data.entity.BaseHandler;
 import gdt.data.entity.EntityHandler;
+import gdt.data.grain.Core;
 import gdt.data.grain.Locator;
 import gdt.data.grain.Sack;
 import gdt.data.grain.Support;
@@ -47,6 +48,9 @@ import gdt.jgui.console.JMainConsole;
 
 public class JEntitiesPanel extends JItemsListPanel{
 	private static final long serialVersionUID = 1L;
+	
+	
+	public static final String SELECTED="selected";
 	private Logger LOGGER=Logger.getLogger(JEntitiesPanel.class.getName());
 	protected String entihome$;
 	protected String list$;
@@ -61,6 +65,7 @@ public class JEntitiesPanel extends JItemsListPanel{
 	protected String requesterResponseLocator$;
 	protected String containerKey$;
 	protected String componentKey$;
+	
  //   protected JMenuItem[] mia;
 /**
  * The default constructor.
@@ -275,12 +280,14 @@ public class JEntitiesPanel extends JItemsListPanel{
 		 Properties locator=new Properties();
 		    locator.setProperty(Locator.LOCATOR_TYPE, JContext.CONTEXT_TYPE);
 		    locator.setProperty(JContext.CONTEXT_TYPE,getType());
+		    locator.setProperty(JItemsListPanel.POSITION,String.valueOf(getPosition()));
 		    if(entihome$!=null)
 		       locator.setProperty(Entigrator.ENTIHOME,entihome$);
 		    if(list$!=null)
 			       locator.setProperty(EntityHandler.ENTITY_LIST,list$);
 		    if(entityKey$!=null)
 			       locator.setProperty(EntityHandler.ENTITY_KEY,entityKey$);
+		    locator.setProperty(JItemsListPanel.POSITION,String.valueOf(getPosition()));
 		    String icon$=Support.readHandlerIcon(null,JEntitiesPanel.class, "entities.png");
 		    if(containerKey$!=null){
 			       locator.setProperty(EntityHandler.ENTITY_CONTAINER,containerKey$);
@@ -290,6 +297,7 @@ public class JEntitiesPanel extends JItemsListPanel{
 			       locator.setProperty(EntityHandler.ENTITY_COMPONENT,componentKey$);
 			       icon$=Support.readHandlerIcon(null,JEntitiesPanel.class, "box.png");
 		    }
+		    
     	    locator.setProperty(Locator.LOCATOR_TITLE, getTitle());
 		    if(icon$!=null)
 		    	locator.setProperty(Locator.LOCATOR_ICON,icon$);
@@ -308,6 +316,7 @@ public class JEntitiesPanel extends JItemsListPanel{
 	@Override
 	public JContext instantiate(JMainConsole console, String locator$) {
 		try{
+			 System.out.println("JEntitiesPanel:instantiate:BEGIN");
 			 this.console=console;
 			 this.locator$=locator$;
 			 Properties locator=Locator.toProperties(locator$);
@@ -316,8 +325,17 @@ public class JEntitiesPanel extends JItemsListPanel{
 			 entihome$=locator.getProperty(Entigrator.ENTIHOME);
         	 containerKey$=locator.getProperty(EntityHandler.ENTITY_CONTAINER);
         	 componentKey$=locator.getProperty(EntityHandler.ENTITY_COMPONENT);
+        	 
 			 JItemPanel[] ipl= listEntitiesAtLabelList( console,locator$);
         	 putItems(ipl);
+        	 try{
+        		 pos=Integer.parseInt(locator.getProperty(POSITION));
+        		 System.out.println("JEntitiesPanel:instantiate:pos="+pos);
+        		 select(pos);
+        	 }catch(Exception e){
+        		 LOGGER.info(e.toString());
+        	 }
+        	
         	return this;
         }catch(Exception e){
         
@@ -366,6 +384,7 @@ public String getTitle() {
 			   ArrayList<JItemPanel>ipl=new ArrayList<JItemPanel>();
 			   JItemPanel itemPanel;
 			   String entityLocator$;
+			   int i=0;
 		   for(String aLa:la){
 			   try{
 			   entityLocator$=EntityHandler.getEntityLocator(entigrator, aLa);
@@ -375,6 +394,7 @@ public String getTitle() {
 			   em.instantiate(console, entityLocator$);
 			   String emLocator$=em.getLocator();
 			   emLocator$=Locator.append(emLocator$,Locator.LOCATOR_CHECKABLE, Locator.LOCATOR_TRUE);
+			   emLocator$=Locator.append(emLocator$,POSITION, String.valueOf(i++));
 			   itemPanel=new JItemPanel(console,emLocator$);
 			   ipl.add(itemPanel);
 			   }catch(Exception ee){
@@ -394,7 +414,8 @@ public String getTitle() {
 	 */
 	@Override
 	public void close() {
-		// TODO Auto-generated method stub
+		console.getTrack().pop();
+	      console.getTrack().push(getLocator());
 	}
 	/**
 	 * Get the context subtitle.
@@ -473,4 +494,6 @@ public String getTitle() {
 			LOGGER.severe(e.toString());
 			}
 	}
+	
+	
 }

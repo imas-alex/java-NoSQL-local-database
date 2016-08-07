@@ -1,0 +1,199 @@
+package gdt.jgui.entity.graph;
+
+import javax.swing.JPanel;
+
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.Insets;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.util.Properties;
+
+import javax.swing.BoxLayout;
+import javax.swing.JComboBox;
+import javax.swing.JLabel;
+import javax.swing.JMenu;
+import javax.swing.JTextArea;
+
+import gdt.data.entity.BaseHandler;
+import gdt.data.entity.EdgeHandler;
+import gdt.data.entity.EntityHandler;
+import gdt.data.entity.facet.ExtensionHandler;
+import gdt.data.grain.Locator;
+import gdt.data.grain.Support;
+import gdt.data.store.Entigrator;
+import gdt.jgui.base.JBasesPanel;
+import gdt.jgui.base.JDesignPanel;
+import gdt.jgui.console.JConsoleHandler;
+import gdt.jgui.console.JContext;
+import gdt.jgui.console.JMainConsole;
+import gdt.jgui.entity.edge.JBondsPanel;
+
+import java.awt.FlowLayout;
+import javax.swing.JButton;
+
+public class JBondsManager extends JPanel implements JContext {
+	private JComboBox<String> outNodeComboBox; 
+	private JComboBox<String> edgeComboBox;
+	private JComboBox<String> inNodeComboBox;
+	private JComboBox<String> detailsComboBox;
+	JMainConsole console;
+	String entihome$;
+	String entityKey$;
+	String outNode$;
+	String edge$;
+	String inNode$;
+	String bondKey$;
+	JPanel selector;
+	public JBondsManager() {
+		setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
+	
+		selector=new JPanel();
+		
+		GridBagLayout gridBagLayout = new GridBagLayout();
+		gridBagLayout.columnWidths = new int[]{100, 0, 0};
+		gridBagLayout.rowHeights = new int[]{0, 0, 0, 0, 0};
+		gridBagLayout.columnWeights = new double[]{0.0, 1.0, Double.MIN_VALUE};
+		gridBagLayout.rowWeights = new double[]{0.0, 0.0, 0.0, 0.0, 1.0};
+		selector.setLayout(gridBagLayout);
+		JLabel lblOut = new JLabel("Out node");
+		
+		GridBagConstraints gbc_lblOut = new GridBagConstraints();
+		gbc_lblOut.insets = new Insets(5, 5, 5, 5);
+		gbc_lblOut.gridx = 0;
+		gbc_lblOut.gridy = 0;
+		gbc_lblOut.anchor=GridBagConstraints.WEST;
+		selector.add(lblOut, gbc_lblOut);
+		
+		outNodeComboBox = new JComboBox<String>();
+		GridBagConstraints gbc_outComboBox = new GridBagConstraints();
+		gbc_outComboBox.fill = GridBagConstraints.HORIZONTAL;
+		gbc_outComboBox.insets = new Insets(5, 0, 5, 5);
+		gbc_outComboBox.gridx = 1;
+		gbc_outComboBox.gridy = 0;
+		gbc_outComboBox.anchor=GridBagConstraints.FIRST_LINE_START;
+		selector.add(outNodeComboBox, gbc_outComboBox);
+		
+		JLabel lblEdge = new JLabel("Edge");
+		GridBagConstraints gbc_lblEdge = new GridBagConstraints();
+		gbc_lblEdge.insets = new Insets(5, 5, 5, 5);
+		gbc_lblEdge.gridx = 0;
+		gbc_lblEdge.gridy = 1;
+		gbc_lblEdge.anchor=GridBagConstraints.FIRST_LINE_START;
+		selector.add(lblEdge, gbc_lblEdge);
+		edgeComboBox = new JComboBox<String>();
+		GridBagConstraints gbc_edgeComboBox = new GridBagConstraints();
+		gbc_edgeComboBox.insets = new Insets(0, 0, 5, 5);
+		gbc_edgeComboBox.fill = GridBagConstraints.HORIZONTAL;
+		gbc_edgeComboBox.gridx = 1;
+		gbc_edgeComboBox.gridy = 1;
+		gbc_edgeComboBox.anchor=GridBagConstraints.FIRST_LINE_START;
+		selector.add(edgeComboBox, gbc_edgeComboBox);
+		
+		JLabel lblIn = new JLabel("In node");
+		GridBagConstraints gbc_lblIn = new GridBagConstraints();
+		gbc_lblIn.insets = new Insets(5, 5, 5, 5);
+		gbc_lblIn.gridx = 0;
+		gbc_lblIn.gridy = 2;
+		gbc_lblIn.anchor=GridBagConstraints.FIRST_LINE_START;
+		selector.add(lblIn, gbc_lblIn);
+
+		inNodeComboBox = new JComboBox<String>();
+		GridBagConstraints gbc_inComboBox = new GridBagConstraints();
+		gbc_inComboBox.insets = new Insets(0, 0, 5, 5);
+		gbc_inComboBox.fill = GridBagConstraints.HORIZONTAL;
+		gbc_inComboBox.gridx = 1;
+		gbc_inComboBox.gridy = 2;
+		gbc_inComboBox.anchor=GridBagConstraints.FIRST_LINE_START;
+		selector.add(inNodeComboBox, gbc_inComboBox);
+	   
+		JLabel lblDetails = new JLabel("Details");
+		GridBagConstraints gbc_details = new GridBagConstraints();
+		gbc_details.insets = new Insets(5, 5, 5, 5);
+		gbc_details.gridx = 0;
+		gbc_details.gridy = 3;
+		gbc_details.anchor=GridBagConstraints.FIRST_LINE_START;
+		selector.add(lblDetails, gbc_details);
+
+		detailsComboBox = new JComboBox<String>();
+		GridBagConstraints gbc_detailsComboBox = new GridBagConstraints();
+		gbc_detailsComboBox.insets = new Insets(0, 0, 5, 5);
+		gbc_detailsComboBox.fill = GridBagConstraints.HORIZONTAL;
+		gbc_detailsComboBox.gridx = 1;
+		gbc_detailsComboBox.gridy = 3;
+		gbc_detailsComboBox.anchor=GridBagConstraints.FIRST_LINE_START;
+		selector.add(detailsComboBox, gbc_detailsComboBox);
+		add(selector);
+	}
+	@Override
+	public JPanel getPanel() {
+		return this;
+	}
+	@Override
+	public JMenu getContextMenu() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	@Override
+	public String getLocator() {
+		Properties locator=new Properties();
+	    locator.setProperty(Locator.LOCATOR_TYPE, JContext.CONTEXT_TYPE);
+	    locator.setProperty(JContext.CONTEXT_TYPE,getType());
+	    locator.setProperty(Locator.LOCATOR_TITLE, "Bonds manager");
+	   
+	   if(entihome$!=null){
+	      locator.setProperty(Entigrator.ENTIHOME,entihome$);
+	      Entigrator entigrator=console.getEntigrator(entihome$);
+	    String icon$=ExtensionHandler.loadIcon(entigrator, EdgeHandler.EXTENSION_KEY, "bonds.png");
+	    		//Support.readHandlerIcon(entigrator,JBasesPanel.class, "design.png");
+	    if(icon$!=null)
+	    	locator.setProperty(Locator.LOCATOR_ICON,icon$);
+	   }
+	    locator.setProperty(BaseHandler.HANDLER_SCOPE,JConsoleHandler.CONSOLE_SCOPE);
+	    locator.setProperty(BaseHandler.HANDLER_CLASS,JBondsManager.class.getName());
+	    String outNode$=(String)outNodeComboBox.getSelectedItem();
+	    if(outNode$!=null)
+	    	locator.setProperty(JBondsPanel.BOND_OUT,outNode$);
+	    String edge$=(String)edgeComboBox.getSelectedItem();
+	    if(edge$!=null)
+	    	locator.setProperty(JBondsPanel.EDGE,edge$);
+	    String inNode$=(String)inNodeComboBox.getSelectedItem();
+	    if(inNode$!=null)
+	    	locator.setProperty(JBondsPanel.BOND_IN,inNode$);
+	    
+	    String containerLabel$=(String)containerComboBox.getSelectedItem();
+	    if(containerLabel$!=null){
+	    	locator.setProperty(CONTAINER_LABEL,containerLabel$);
+	    	String containersList$=getList(containerComboBox);
+	    	locator.setProperty(CONTAINERS_LIST,containersList$);
+	    }
+	    locator.setProperty(MODE,mode$);
+	    return Locator.toString(locator);
+	}
+	@Override
+	public JContext instantiate(JMainConsole console, String locator$) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	@Override
+	public String getTitle() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	@Override
+	public String getSubtitle() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	@Override
+	public String getType() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	@Override
+	public void close() {
+		// TODO Auto-generated method stub
+		
+	}
+
+}

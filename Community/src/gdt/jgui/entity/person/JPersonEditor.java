@@ -24,10 +24,13 @@ import java.util.Stack;
 import java.util.logging.Logger;
 import javax.swing.JMenuItem;
 
+import gdt.data.entity.BankHandler;
 import gdt.data.entity.BaseHandler;
+import gdt.data.entity.EmailHandler;
 import gdt.data.entity.EntityHandler;
 import gdt.data.entity.PersonHandler;
 import gdt.data.entity.PhoneHandler;
+import gdt.data.entity.facet.ExtensionHandler;
 import gdt.data.entity.facet.FieldsHandler;
 import gdt.data.grain.Core;
 import gdt.data.grain.Identity;
@@ -91,11 +94,13 @@ public class JPersonEditor extends JFieldsEditor {
 			}
 			if(entityKey$!=null)
 				locator.setProperty(EntityHandler.ENTITY_KEY,entityKey$);
-			if(entihome$!=null)
+			if(entihome$!=null){
 				locator.setProperty(Entigrator.ENTIHOME,entihome$);
-				 String icon$=Support.readHandlerIcon(getClass(), "person.png");
-			    if(icon$!=null)
-			    	locator.setProperty(Locator.LOCATOR_ICON,icon$);
+			Entigrator entigrator=console.getEntigrator(entihome$);
+		    String icon$=ExtensionHandler.loadIcon(entigrator,PersonHandler.EXTENSION_KEY, "person.png");
+		    if(icon$!=null)
+		    	locator.setProperty(Locator.LOCATOR_ICON,icon$);	
+			}
 			return Locator.toString(locator);
 			}catch(Exception e){
 	        Logger.getLogger(getClass().getName()).severe(e.toString());
@@ -129,7 +134,12 @@ public class JPersonEditor extends JFieldsEditor {
 
 	@Override
 	public String getCategoryIcon() {
-		return Support.readHandlerIcon(getClass(), "person.png");
+		if(entihome$!=null)	{
+			Entigrator entigrator=console.getEntigrator(entihome$);
+		    return ExtensionHandler.loadIcon(entigrator,PersonHandler.EXTENSION_KEY, "person.png");
+		
+	}
+		return null;
 	}
 
 	@Override
@@ -158,8 +168,12 @@ public class JPersonEditor extends JFieldsEditor {
 	    String editorLocator$=textEditor.getLocator();
 	    editorLocator$=Locator.append(editorLocator$, JTextEditor.TEXT, "Person"+Identity.key().substring(0,4));
 	    editorLocator$=Locator.append(editorLocator$,Locator.LOCATOR_TITLE,"Person entity");
-	    String icon$=Support.readHandlerIcon(getClass(), "person.png");
-	    editorLocator$=Locator.append(editorLocator$,Locator.LOCATOR_ICON,icon$);
+	    if(entihome$!=null){
+		Entigrator entigrator=console.getEntigrator(entihome$);
+	    String icon$=ExtensionHandler.loadIcon(entigrator,PersonHandler.EXTENSION_KEY, "person.png");
+	    if(icon$!=null)
+	    	editorLocator$=Locator.append(editorLocator$,Locator.LOCATOR_ICON,icon$);
+	    }
 	    JPersonEditor pe=new JPersonEditor();
 	    String peLocator$=pe.getLocator();
 	    Properties responseLocator=Locator.toProperties(peLocator$);

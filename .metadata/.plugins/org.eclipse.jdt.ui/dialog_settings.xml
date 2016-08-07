@@ -68,7 +68,7 @@
 		<item value="34" key="DIALOG_Y_ORIGIN"/>
 	</section>
 	<section name="BuildPathsPropertyPage">
-		<item value="0" key="pageIndex"/>
+		<item value="1" key="pageIndex"/>
 	</section>
 	<section name="NewPackageWizardPage">
 		<item value="false" key="create_package_info_java"/>
@@ -95,7 +95,9 @@
 		<item value="false" key="JarManifestWizardPage.SAVE_MANIFEST"/>
 		<item value="false" key="JarPackageWizardPage.EXPORT_OUTPUT_FOLDER"/>
 		<list key="JarPackageWizardPage.DESTINATION_NAMES_ID">
+			<item value="/home/imasa/Movies/_Tm142C8Sgti2iAKlDEcEXT2Kj1E/graph.jar"/>
 			<item value="/home/imasa/graph.jar"/>
+			<item value="/home/imasa/entigrator.jar"/>
 		</list>
 	</section>
 	<section name="JavaElementSearchActions">

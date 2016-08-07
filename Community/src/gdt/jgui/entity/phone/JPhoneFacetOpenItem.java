@@ -30,9 +30,11 @@ import javax.swing.tree.DefaultMutableTreeNode;
 import org.apache.commons.codec.binary.Base64;
 
 import gdt.data.entity.BaseHandler;
+import gdt.data.entity.ContactHandler;
 import gdt.data.entity.EntityHandler;
 import gdt.data.entity.FacetHandler;
 import gdt.data.entity.PhoneHandler;
+import gdt.data.entity.facet.ExtensionHandler;
 import gdt.data.grain.Locator;
 import gdt.data.grain.Sack;
 import gdt.data.grain.Support;
@@ -56,23 +58,7 @@ public class JPhoneFacetOpenItem extends JFacetOpenItem implements JRequester{
 	public JPhoneFacetOpenItem(){
 		super();
 	}
-	public JPhoneFacetOpenItem(JMainConsole console, String locator$) {
-		super(console, locator$);
-		Properties locator=Locator.toProperties(locator$);
-		entihome$=locator.getProperty(Entigrator.ENTIHOME);
-		entityKey$=locator.getProperty(EntityHandler.ENTITY_KEY);
-		title$=locator.getProperty(Locator.LOCATOR_TITLE);
-		if(title$==null)
-			title$="Phone";
-		if(icon$==null){
-			icon$=Support.readHandlerIcon(JPhoneFacetOpenItem.class, "phone.png");
-		  byte[] ba=Base64.decodeBase64(icon$);
-      	  ImageIcon icon = new ImageIcon(ba);
-      	  Image image= icon.getImage().getScaledInstance(24, 24, 0);
-      	  icon.setImage(image);
-      	  title.setIcon(icon); 
-		}
-		}
+
 	@Override
 	public JFacetOpenItem instantiate(JMainConsole console,String locator$){
 		try{
@@ -112,11 +98,13 @@ public class JPhoneFacetOpenItem extends JFacetOpenItem implements JRequester{
 		// locator.setProperty(FACET_RENDERER_LOCATOR, facetRenderer$);
 			if(entityKey$!=null)
 			locator.setProperty(EntityHandler.ENTITY_KEY,entityKey$);
-		if(entihome$!=null)
+		if(entihome$!=null){
 			locator.setProperty(Entigrator.ENTIHOME,entihome$);
-		 String icon$=Support.readHandlerIcon(getClass(), "phone.png");
+			Entigrator entigrator=console.getEntigrator(entihome$);
+			String icon$=ExtensionHandler.loadIcon(entigrator, PhoneHandler.EXTENSION_KEY, "phone.png");
 		    if(icon$!=null)
 		    	locator.setProperty(Locator.LOCATOR_ICON,icon$);
+		}
 		locator$=Locator.toString(locator);
 		 return locator$;
 			}catch(Exception e){
@@ -185,7 +173,11 @@ public class JPhoneFacetOpenItem extends JFacetOpenItem implements JRequester{
 	}
 	@Override
 	public String getFacetIcon() {
-		return Support.readHandlerIcon(JPhoneFacetOpenItem.class, "phone.png");
+		if(entihome$!=null){
+			Entigrator entigrator=console.getEntigrator(entihome$);
+			return ExtensionHandler.loadIcon(entigrator,PhoneHandler.EXTENSION_KEY, "phone.png");
+		}
+		return null;
 	}
 	@Override
 	public void removeFacet() {

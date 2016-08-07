@@ -1,0 +1,97 @@
+package gdt.jgui.entity.graph;
+
+import javax.swing.JPanel;
+
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.Insets;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+
+import javax.swing.BoxLayout;
+import javax.swing.JComboBox;
+import javax.swing.JLabel;
+
+public class JBondsManager extends JPanel {
+	private JComboBox<String> outNodeComboBox; 
+	private JComboBox<String> edgeComboBox;
+	private JComboBox<String> inNodeComboBox;
+	public JBondsManager() {
+		GridBagLayout gridBagLayout = new GridBagLayout();
+		gridBagLayout.columnWidths = new int[]{100, 0, 0};
+		gridBagLayout.rowHeights = new int[]{0, 0, 0};
+		gridBagLayout.columnWeights = new double[]{0.0, 1.0, Double.MIN_VALUE};
+		gridBagLayout.rowWeights = new double[]{0.0, 0.0, 0.0};
+		setLayout(gridBagLayout);
+		JLabel lblOut = new JLabel("Out node");
+		lblOut.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+			      //showPropertyPanel();
+			}
+		});
+		GridBagConstraints gbc_lblOut = new GridBagConstraints();
+		gbc_lblOut.insets = new Insets(5, 5, 5, 5);
+		gbc_lblOut.gridx = 0;
+		gbc_lblOut.gridy = 0;
+		gbc_lblOut.anchor=GridBagConstraints.FIRST_LINE_START;
+		add(lblOut, gbc_lblOut);
+		
+		outNodeComboBox = new JComboBox<String>();
+		GridBagConstraints gbc_outComboBox = new GridBagConstraints();
+		gbc_outComboBox.fill = GridBagConstraints.HORIZONTAL;
+		gbc_outComboBox.insets = new Insets(0, 0, 5, 5);
+		gbc_outComboBox.gridx = 1;
+		gbc_outComboBox.gridy = 0;
+		gbc_outComboBox.anchor=GridBagConstraints.FIRST_LINE_START;
+		add(outNodeComboBox, gbc_outComboBox);
+		
+		JLabel lblEdge = new JLabel("Edge");
+		GridBagConstraints gbc_lblEdge = new GridBagConstraints();
+		gbc_lblEdge.insets = new Insets(5, 5, 5, 5);
+		gbc_lblEdge.gridx = 0;
+		gbc_lblEdge.gridy = 1;
+		gbc_lblEdge.anchor=GridBagConstraints.FIRST_LINE_START;
+		lblEdge.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+			   //showValuePanel();
+			}
+		});
+		add(lblEdge, gbc_lblEdge);
+		edgeComboBox = new JComboBox<String>();
+		GridBagConstraints gbc_edgeComboBox = new GridBagConstraints();
+		gbc_edgeComboBox.insets = new Insets(0, 0, 5, 5);
+		gbc_edgeComboBox.fill = GridBagConstraints.HORIZONTAL;
+		gbc_edgeComboBox.gridx = 1;
+		gbc_edgeComboBox.gridy = 1;
+		gbc_edgeComboBox.anchor=GridBagConstraints.FIRST_LINE_START;
+		add(edgeComboBox, gbc_edgeComboBox);
+		
+		JLabel lblIn = new JLabel("In node");
+		lblIn.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+	//		   showEntityPanel();
+			}
+		});
+		GridBagConstraints gbc_lblIn = new GridBagConstraints();
+		gbc_lblIn.insets = new Insets(5, 5, 5, 5);
+		gbc_lblIn.gridx = 0;
+		gbc_lblIn.gridy = 2;
+		gbc_lblIn.anchor=GridBagConstraints.FIRST_LINE_START;
+		add(lblIn, gbc_lblIn);
+
+		inNodeComboBox = new JComboBox<String>();
+		GridBagConstraints gbc_inComboBox = new GridBagConstraints();
+		gbc_inComboBox.insets = new Insets(0, 0, 5, 5);
+		gbc_inComboBox.fill = GridBagConstraints.HORIZONTAL;
+		gbc_inComboBox.gridx = 1;
+		gbc_inComboBox.gridy = 2;
+		gbc_inComboBox.anchor=GridBagConstraints.FIRST_LINE_START;
+		add(inNodeComboBox, gbc_inComboBox);
+	
+		
+	}
+
+}

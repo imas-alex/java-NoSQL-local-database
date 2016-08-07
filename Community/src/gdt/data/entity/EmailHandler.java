@@ -100,4 +100,9 @@ public void adaptRename(Entigrator arg0) {
 public String getClassName() {
 	return EmailHandler.class.getName();
 }
+@Override
+public void completeMigration(Entigrator entigrator) {
+	// TODO Auto-generated method stub
+	
+}
 }

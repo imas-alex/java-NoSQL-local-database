@@ -113,8 +113,7 @@ public class JIndexFacetOpenItem extends JFacetOpenItem implements JRequester{
  */
 	@Override
 	public String getFacetRenderer() {
-		// TODO Auto-generated method stub
-		return null;
+		return  JIndexPanel.class.getName();
 	}
 	/**
 	 * No action. 

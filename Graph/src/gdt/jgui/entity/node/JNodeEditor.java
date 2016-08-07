@@ -30,6 +30,7 @@ import gdt.data.entity.NodeHandler;
 import gdt.data.entity.BaseHandler;
 import gdt.data.entity.EdgeHandler;
 import gdt.data.entity.EntityHandler;
+import gdt.data.entity.FacetHandler;
 import gdt.data.entity.GraphHandler;
 import gdt.data.entity.facet.ExtensionHandler;
 import gdt.data.entity.facet.FieldsHandler;
@@ -150,11 +151,17 @@ public class JNodeEditor extends JFieldsEditor {
 	public void reindex(JMainConsole console, Entigrator entigrator, Sack entity) {
 		 try{
 			// System.out.println("JPhoneEditor:reindex:0:entity="+entity.getProperty("label"));
-		    	String fhandler$=NodeHandler.class.getName();
+			Object fh= ExtensionHandler.loadHandlerInstance(entigrator,"_Tm142C8Sgti2iAKlDEcEXT2Kj1E","gdt.data.entity.NodeHandler");	
+			System.out.println("JNodeEditor:reindex="+fh.getClass().getName()); 
+			String fhandler$="gdt.data.entity.NodeHandler";
+			 
+					 //NodeHandler.class.getName();
 		    	if(entity.getElementItem("fhandler", fhandler$)!=null){
 					//System.out.println("JPhoneEditor:reindex:1:entity="+entity.getProperty("label"));
-		    		entity.putElementItem("jfacet", new Core(JNodeFacetAddItem.class.getName(),fhandler$,JNodeFacetOpenItem.class.getName()));
-					entity.putElementItem("fhandler", new Core(null,fhandler$,NodeHandler.EXTENSION_KEY));
+		    		entity.putElementItem("jfacet",new Core("gdt.jgui.entity.node.JNodeFacetAddItem",fhandler$,"gdt.jgui.entity.node.JNodeFacetAddItem")); 
+		    				//new Core(JNodeFacetAddItem.class.getName(),fhandler$,JNodeFacetOpenItem.class.getName()));
+					entity.putElementItem("fhandler", new Core(null,fhandler$,"_Tm142C8Sgti2iAKlDEcEXT2Kj1E"));
+							//fhandler$,NodeHandler.EXTENSION_KEY));
 					entigrator.save(entity);
 				}
 		    }catch(Exception e){
@@ -168,14 +175,18 @@ public class JNodeEditor extends JFieldsEditor {
 	    String editorLocator$=textEditor.getLocator();
 	    editorLocator$=Locator.append(editorLocator$, JTextEditor.TEXT, "Node"+Identity.key().substring(0,4));
 	    editorLocator$=Locator.append(editorLocator$,Locator.LOCATOR_TITLE,"Node entity");
-	    String icon$=Support.readHandlerIcon(getClass(), "node.png");
-	    editorLocator$=Locator.append(editorLocator$,Locator.LOCATOR_ICON,icon$);
 	    JNodeEditor fe=new JNodeEditor();
 	    String feLocator$=fe.getLocator();
 	    Properties responseLocator=Locator.toProperties(feLocator$);
 	    entihome$=Locator.getProperty(locator$,Entigrator.ENTIHOME );
-	    if(entihome$!=null)
+	    if(entihome$!=null){
 	      responseLocator.setProperty(Entigrator.ENTIHOME,entihome$);
+	      Entigrator entigrator=console.getEntigrator(entihome$);
+	      String icon$=ExtensionHandler.loadIcon(entigrator,NodeHandler.EXTENSION_KEY, "node.png");
+	    		  //Support.readHandlerIcon(getClass(), "node.png");
+		    editorLocator$=Locator.append(editorLocator$,Locator.LOCATOR_ICON,icon$);
+		    
+	    }
 	    else
 	    	System.out.println("JNodeEditor:newEntity:entihome is null");	
 	   responseLocator.setProperty(BaseHandler.HANDLER_CLASS,JNodeEditor.class.getName());

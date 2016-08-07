@@ -1,0 +1,3 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<session version="1.0">&#x0A;<refactoring comment="Delete resource &apos;gs-core&apos;" deleteContents="false" description="Delete resource &apos;gs-core&apos;" element1="/gs-core" flags="7" id="org.eclipse.ltk.core.refactoring.delete.resources" resources="1" stamp="1464286261671"/>&#x0A;<refactoring comment="Delete 6 resources" deleteContents="false" description="Delete 6 resources" element1="/jgrapht" element2="/jgrapht-core" element3="/jgrapht-demo" element4="/jgrapht-dist" element5="/jgrapht-ext" element6="/jgrapht-touchgraph" flags="7" id="org.eclipse.ltk.core.refactoring.delete.resources" resources="6" stamp="1464451458036"/>
+</session>

@@ -240,7 +240,7 @@ public class Support {
  	*/
     public static String readHandlerIcon(Entigrator entigrator,Class<?> handler,String iconResource$) {
  		try {
- 			System.out.println("Support:readHandlerIcon:handler="+handler.getName()+" icon="+iconResource$);
+ 		//	System.out.println("Support:readHandlerIcon:handler="+handler.getName()+" icon="+iconResource$);
  			//InputStream is=handler.getResourceAsStream(icon$);
  			InputStream is= getClassResource(handler,iconResource$);
  			if(is!=null){

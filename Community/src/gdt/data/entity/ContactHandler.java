@@ -108,4 +108,9 @@ public final static String CONTACT="contact";
 public String getClassName() {
 	return ContactHandler.class.getName();
 }
+@Override
+public void completeMigration(Entigrator entigrator) {
+	// TODO Auto-generated method stub
+	
+}
 }

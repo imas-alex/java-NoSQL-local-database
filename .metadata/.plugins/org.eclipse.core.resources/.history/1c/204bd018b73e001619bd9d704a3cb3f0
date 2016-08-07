@@ -1,0 +1,548 @@
+package gdt.jgui.entity.bonddetail;
+
+
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Hashtable;
+import java.util.Properties;
+import java.util.logging.Logger;
+
+import javax.swing.JComponent;
+import javax.swing.JMenu;
+import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
+import javax.swing.event.MenuEvent;
+import javax.swing.event.MenuListener;
+
+import org.apache.commons.codec.binary.Base64;
+
+import gdt.data.entity.BaseHandler;
+import gdt.data.entity.BondDetailHandler;
+import gdt.data.entity.EntityHandler;
+
+import gdt.data.entity.facet.ExtensionHandler;
+import gdt.data.grain.Core;
+import gdt.data.grain.Identity;
+import gdt.data.grain.Locator;
+import gdt.data.grain.Sack;
+
+import gdt.data.store.Entigrator;
+
+import gdt.jgui.console.JConsoleHandler;
+import gdt.jgui.console.JContext;
+import gdt.jgui.console.JFacetRenderer;
+import gdt.jgui.console.JItemPanel;
+import gdt.jgui.console.JItemsListPanel;
+import gdt.jgui.console.JMainConsole;
+import gdt.jgui.console.JItemsListPanel.ItemPanelComparator;
+import gdt.jgui.entity.JEntitiesPanel;
+import gdt.jgui.entity.JEntityFacetPanel;
+import gdt.jgui.entity.JReferenceEntry;
+import gdt.jgui.entity.edge.JBondsPanel;
+
+
+public class JBondDetailPanel extends JEntitiesPanel {
+	private static final long serialVersionUID = 1L;
+	private Logger LOGGER=Logger.getLogger(JBondDetailPanel.class.getName());
+/*
+	private static final String HOST_TYPE="host type";
+	private static final String HOST_TYPE_EDGE="host type edge";
+	private static final String HOST_TYPE_NODE="host type node";
+	private static final String HOST_TYPE_DETAIL="host type detail";
+	*/
+	protected String entihome$;
+	protected String entityKey$;
+	protected String bondKey$;
+	protected String edgeKey$;
+	protected String hostType$;
+	protected JMenuItem addItem;
+	protected String requesterResponseLocator$;
+	Hashtable<String,JItemPanel> items;
+	protected JMenu menu1;
+	@Override
+	public String getLocator() {
+		 Properties locator=new Properties();
+		    locator.setProperty(Locator.LOCATOR_TYPE, JContext.CONTEXT_TYPE);
+		    locator.setProperty(JContext.CONTEXT_TYPE,getType());
+		    if(entihome$!=null&&console!=null){
+		       locator.setProperty(Entigrator.ENTIHOME,entihome$);
+		       Entigrator entigrator=console.getEntigrator(entihome$);
+		       String icon$=ExtensionHandler.loadIcon(entigrator, BondDetailHandler.EXTENSION_KEY, "detail.png");
+		       if(icon$!=null)
+			    	locator.setProperty(Locator.LOCATOR_ICON,icon$);
+		        	   
+		    }
+		    if(entityKey$!=null)
+			       locator.setProperty(EntityHandler.ENTITY_KEY,entityKey$);
+		   locator.setProperty(Locator.LOCATOR_TITLE, getTitle());
+		   
+		    locator.setProperty(BaseHandler.HANDLER_SCOPE,JConsoleHandler.CONSOLE_SCOPE);
+		    locator.setProperty(BaseHandler.HANDLER_CLASS,JBondDetailPanel.class.getName());
+		    locator.setProperty(BaseHandler.HANDLER_LOCATION,BondDetailHandler.EXTENSION_KEY);
+		    if(bondKey$!=null)
+			       locator.setProperty(JBondsPanel.BOND_KEY,bondKey$);
+		//    if(hostType$!=null)
+		//	       locator.setProperty(HOST_TYPE,hostType$);
+		    return Locator.toString(locator);
+	}
+
+	@Override
+	public String getTitle() {
+	    return  "Bond details";
+	}
+
+	@Override
+	public String getSubtitle() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public String getType() {
+		return "bond details";
+	}
+
+	@Override
+	public void close() {
+		
+	}
+	@Override
+	public JContext instantiate(JMainConsole console, String locator$) {
+		try{
+			System.out.println("JBondDetailPanel:instantiate:locator="+locator$);
+			this.console=console;
+			 this.locator$=locator$;
+			 Properties locator=Locator.toProperties(locator$);
+			 entityKey$=locator.getProperty(EntityHandler.ENTITY_KEY);
+			 entihome$=locator.getProperty(Entigrator.ENTIHOME);
+			 bondKey$=locator.getProperty(JBondsPanel.BOND_KEY);
+			 edgeKey$=locator.getProperty(JBondsPanel.EDGE_KEY);
+			 Entigrator entigrator=console.getEntigrator(entihome$);
+			 Sack edge=null;
+			 if(edgeKey$!=null)
+				 edge =entigrator.getEntityAtKey(edgeKey$);
+			 else{
+				 Sack host= entigrator.getEntityAtKey(entityKey$);
+				 if("edge".equals(host.getProperty("entity")))
+					 edge=host;
+			 }
+			 if(edge==null)
+				 return this;
+			 Core[] ca=edge.elementGet("detail");
+			 if(ca==null)
+				 return this;
+			JBondsPanel.saveSelection( console, entihome$, edgeKey$, bondKey$);		 
+					// entigrator.getEntityAtKey(entityKey$);
+             ArrayList<String>sl=new ArrayList<String>();
+			for(Core c:ca)
+               if(bondKey$.equals(c.type))
+            	   sl.add(entigrator.indx_getLabel(c.value));
+            Collections.sort(sl);
+            String list$=Locator.toString(sl.toArray(new String[0]));
+            locator$=Locator.append(locator$, EntityHandler.ENTITY_LIST, list$);
+			super.instantiate(console, locator$);
+            JItemPanel[] ipa=getItems();
+            String ip$;
+            for(JItemPanel ip:ipa){
+            	ip$=ip.getLocator();
+            	ip$=Locator.append(ip$, JBondsPanel.EDGE_KEY, edgeKey$);
+            	ip$=Locator.append(ip$, JBondsPanel.BOND_KEY, bondKey$);
+            	ip.setLocator(ip$);
+            }
+			/*
+			JEntityFacetPanel fp=new JEntityFacetPanel();
+				 String fpLocator$=fp.getLocator();
+				 JItemPanel itemPanel;
+				 String icon$;
+				
+				 for(Core c:ca){
+					 if(!bondKey$.equals(c.type))
+						 continue;
+					 fpLocator$=Locator.append(fpLocator$, Entigrator.ENTIHOME, entihome$);
+					 fpLocator$=Locator.append(fpLocator$,EntityHandler.ENTITY_KEY,c.value);
+					 fpLocator$=Locator.append(fpLocator$,Locator.LOCATOR_TITLE,entigrator.indx_getLabel(c.value));
+					 fpLocator$=Locator.append(fpLocator$,Locator.LOCATOR_CHECKABLE,Locator.LOCATOR_TRUE);
+					 fpLocator$=Locator.append(fpLocator$,JBondsPanel.BOND_KEY,c.type);
+					 fpLocator$=Locator.append(fpLocator$,JBondsPanel.EDGE_KEY,entityKey$);
+					 fpLocator$=Locator.append(fpLocator$,JBondsPanel.BOND_DETAIL_ENTRY_KEY,c.name);
+					 icon$=entigrator.getEntityIcon(c.value);
+					// System.out.println("JBondDetailPanel:paste:icon="+icon$);
+					 if(icon$!=null)
+						 fpLocator$=Locator.append(fpLocator$,Locator.LOCATOR_ICON,entigrator.readIconFromIcons(icon$));
+					 itemPanel=new JItemPanel(console,fpLocator$);
+					 ipl.add(itemPanel); 
+				 }
+			 }
+		//	 System.out.println("AllCategoriesPanel:instantiate:END MAKE CATEGORY PANELS");
+				System.out.println("JBondDetailPanel:instantiate:size="+ipl.size());
+			 Collections.sort(ipl,new ItemPanelComparator()); 
+			putItems(ipl.toArray(new JItemPanel[0]));
+			*/
+	   }catch(Exception e){
+			Logger.getLogger(getClass().getName()).info(e.toString());
+		}	 
+			return this;
+       
+       
+        }
+		@Override
+		public JMenu getContextMenu() {
+		/*	
+			menu=super.getContextMenu();
+			mia=null;
+			 int cnt=menu.getItemCount();
+			 if(cnt>0){
+				 mia=new JMenuItem[cnt];
+				for(int i=0;i<cnt;i++) 
+				 mia[i]=menu.getItem(i);
+			 }
+			*/ 
+			menu1 =new JMenu("Context"); 
+			menu1.addMenuListener(new MenuListener(){
+				@Override
+				public void menuSelected(MenuEvent e) {
+					System.out.println("JBondDetailPanel:getConextMenu:BEGIN");
+					menu1.removeAll();
+			/*
+					if(mia!=null)
+						 for(JMenuItem mi:mia)
+						try{
+				  			 if(mi!=null) 
+				  			 menu1.add(mi);
+				  			}catch(Exception ee){
+				  				 System.out.println("JBondDetailPanel:getConextMenu:"+ee.toString());
+				  			}
+				    
+				*/
+					JMenuItem	selectItem = new JMenuItem("Select all");
+					   selectItem.addActionListener(new ActionListener() {
+							@Override
+							public void actionPerformed(ActionEvent e) {
+						      JItemPanel[] ipa=getItems();
+						      if(ipa!=null){
+						    	  for(JItemPanel ip:ipa)
+						    		  ip.setChecked(true);
+						      }
+							}
+						} );
+						menu1.add(selectItem);
+						JMenuItem unselectItem = new JMenuItem("Unselect all");
+						   unselectItem.addActionListener(new ActionListener() {
+								@Override
+								public void actionPerformed(ActionEvent e) {
+							      JItemPanel[] ipa=getItems();
+							      if(ipa!=null){
+							    	  for(JItemPanel ip:ipa)
+							    		  ip.setChecked(false);
+							      }
+								}
+							} );
+				menu1.addSeparator();
+				JMenuItem doneItem = new JMenuItem("Done");
+					doneItem.addActionListener(new ActionListener(){
+						@Override
+						public void actionPerformed(ActionEvent e) {
+							if(requesterResponseLocator$!=null){
+								try{
+								   byte[] ba=Base64.decodeBase64(requesterResponseLocator$);
+								   String responseLocator$=new String(ba,"UTF-8");
+								   JConsoleHandler.execute(console, responseLocator$);
+									}catch(Exception ee){
+										LOGGER.severe(ee.toString());
+									}
+							}else
+							  console.back();
+							
+						}
+						
+					});
+				menu1.add(doneItem);
+				menu1.addSeparator();
+				addItem = new JMenuItem("Add");
+				addItem.addActionListener(new ActionListener() {
+					@Override
+					public void actionPerformed(ActionEvent e) {
+						try{
+							Entigrator entigrator=console.getEntigrator(entihome$);
+							
+							JContext adp=(JContext)ExtensionHandler.loadHandlerInstance(entigrator,BondDetailHandler.EXTENSION_KEY ,"gdt.jgui.entity.bonddetail.JAddDetailPanel" );
+							String adpLocator$=adp.getLocator();
+							adpLocator$=Locator.append(adpLocator$, Entigrator.ENTIHOME, entihome$);
+							adpLocator$=Locator.append(adpLocator$, EntityHandler.ENTITY_KEY, entityKey$);
+							JConsoleHandler.execute(console, adpLocator$);
+							
+						}catch(Exception ee){
+							LOGGER.severe(ee.toString());
+						}
+					}
+				} );
+				menu1.add(addItem);
+			   if(hasToPaste()){
+				   JMenuItem pasteItem = new JMenuItem("Paste");
+					pasteItem.addActionListener(new ActionListener() {
+						@Override
+						public void actionPerformed(ActionEvent e) {
+							paste();
+							
+						}
+					} );
+					menu1.add(pasteItem);
+			   }
+			   if(hasSelectedItems()){
+				   JMenuItem deleteItem = new JMenuItem("Delete");
+					deleteItem.addActionListener(new ActionListener() {
+						@Override
+						public void actionPerformed(ActionEvent e) {
+							int response = JOptionPane.showConfirmDialog(console.getContentPanel(), "Delete ?", "Confirm",
+							        JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
+						   if (response == JOptionPane.YES_OPTION){ 
+								
+							delete();
+							JBondDetailPanel bdp=new JBondDetailPanel();
+							String bdpLocator$=bdp.getLocator();
+							bdpLocator$=Locator.append(bdpLocator$, Entigrator.ENTIHOME,entihome$);
+							bdpLocator$=Locator.append(bdpLocator$, EntityHandler.ENTITY_KEY,entityKey$);
+							bdpLocator$=Locator.append(bdpLocator$, JBondsPanel.BOND_KEY,bondKey$);
+							JConsoleHandler.execute(console, bdpLocator$);
+						   }
+						}
+					} );
+					menu1.add(deleteItem);
+			   }
+			  
+		   
+				}
+				@Override
+				public void menuDeselected(MenuEvent e) {
+				}
+				@Override
+				public void menuCanceled(MenuEvent e) {
+				}	
+		});
+			return menu1;	
+		}
+/*
+	@Override
+	public String addIconToLocator(String locator$) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public String getFacetHandler() {
+		
+		return BondDetailHandler.class.getName();
+	}
+
+	@Override
+	public String getEntityType() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public String getCategoryIcon() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public String getCategoryTitle() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void adaptClone(JMainConsole console, String locator$) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void adaptRename(JMainConsole console, String locator$) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void collectReferences(Entigrator entigrator, String entiyKey$, ArrayList<JReferenceEntry> sl) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void reindex(JMainConsole console, Entigrator entigrator, Sack entity) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public String newEntity(JMainConsole console, String locator$) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	*/
+	private boolean isDetailAlreadyAttached(String detailKey$){
+		try{
+			Entigrator entigrator=console.getEntigrator(entihome$);
+			Sack edge=entigrator.getEntityAtKey(entityKey$);
+			Core[] ca=edge.elementGet("detail");
+			if(ca!=null)
+				for(Core c:ca)
+					if(bondKey$.equals(c.type)&&detailKey$.equals(c.value))
+						return true;
+		}catch(Exception e){
+			LOGGER.severe(e.toString());	
+		}
+		return false;
+	}
+	private void paste(){
+		try{
+			System.out.println("JBondDetailPanel:paste:BEGIN");
+			String[] sa=console.clipboard.getContent();
+			if(sa==null){
+				System.out.println("JBondDetailPanel:paste:empty clipboard");
+				return;
+			}
+			System.out.println("JBondDetailPanel:paste:sa="+sa.length);
+			Entigrator entigrator=console.getEntigrator(entihome$);
+			for(String s:sa){
+			   s=Locator.append(s, JBondsPanel.EDGE_KEY, edgeKey$);	
+			   s=Locator.append(s, JBondsPanel.BOND_KEY, bondKey$);
+			   BondDetailHandler.addDetail(entigrator, s);
+			}
+			/*
+			Entigrator entigrator=console.getEntigrator(entihome$);
+			Sack edge=entigrator.getEntityAtKey(entityKey$);
+			if(!edge.existsElement("detail"))
+				edge.createElement("detail");
+			
+			Sack detail;
+			String detailEntryKey$;
+			Properties locator;
+			String detailKey$;
+			Core bond=edge.getElementItem("bond", bondKey$);
+			Core detailEntry;
+			System.out.println("JBondDetailPanel:paste:1");
+			for(String s:sa){
+				locator=Locator.toProperties(s);
+				detailKey$=locator.getProperty(EntityHandler.ENTITY_KEY);
+				if(isDetailAlreadyAttached(detailKey$))
+					continue;
+				detail=entigrator.getEntityAtKey(detailKey$);
+				if(detail==null){
+					System.out.println("JBondDetailPanel:paste:cannot find detail="+detailKey$);	
+					continue;
+				}
+				System.out.println("JBondDetailPanel:paste:detail="+detail.getProperty("label"));
+				detailEntryKey$=Identity.key();
+				detailEntry=new Core(bondKey$,detailEntryKey$,detailKey$);
+				edge.putElementItem("detail", detailEntry);
+				if(!detail.existsElement("bond"))
+						detail.createElement("bond");
+				detail.putElementItem("bond", bond);
+				if(!detail.existsElement("edge"))
+					detail.createElement("edge");
+			     detail.putElementItem("edge", new Core(null,bondKey$,edgeKey$));
+				detail.putElementItem("fhandler", new Core(null,BondDetailHandler.class.getName(),BondDetailHandler.EXTENSION_KEY));
+				detail.putElementItem("jfacet", new Core(null,BondDetailHandler.class.getName(),JBondDetailFacetOpenItem.class.getName()));
+			    entigrator.save(detail);
+			}
+			entigrator.save(edge);
+			System.out.println("JBondDetailPanel:paste:2");
+			*/
+			JBondDetailPanel dp=new JBondDetailPanel();
+					//(JContext)ExtensionHandler.loadHandlerInstance(entigrator,BondDetailHandler.EXTENSION_KEY ,"gdt.jgui.entity.bonddetail.JAddDetailPanel" );
+			String adpLocator$=dp.getLocator();
+			adpLocator$=Locator.append(adpLocator$, Entigrator.ENTIHOME, entihome$);
+			adpLocator$=Locator.append(adpLocator$, EntityHandler.ENTITY_KEY, entityKey$);
+			adpLocator$=Locator.append(adpLocator$,JBondsPanel.BOND_KEY , bondKey$);
+			adpLocator$=Locator.append(adpLocator$,JBondsPanel.EDGE_KEY , edgeKey$);
+			JConsoleHandler.execute(console, adpLocator$);
+			
+		}catch(Exception ee){
+			LOGGER.severe(ee.toString());
+		}
+	}
+	private  boolean hasToPaste(){
+		try{
+		String[] sa=console.clipboard.getContent();
+		if(sa==null||sa.length<1)
+			return false;
+		Properties clipLocator;
+		
+		for(String s:sa){
+			System.out.println("JBondDetailPanel:hasToPaste:s="+s);
+			clipLocator=Locator.toProperties(s);
+			if(clipLocator.getProperty(EntityHandler.ENTITY_KEY)!=null)
+				return true;
+		}
+		}catch(Exception e){
+			Logger.getLogger(getClass().getName()).severe(e.toString());
+		}
+		return false;
+	}
+	private  void  delete(){
+		try{
+		String[]sa=listSelectedItems();
+		if(sa==null||sa.length<1)
+			return ;
+		Entigrator entigrator=console.getEntigrator(entihome$);
+		for(String s:sa){
+			BondDetailHandler.deleteDetail(entigrator, s);
+		}
+	}catch(Exception e){
+		Logger.getLogger(getClass().getName()).severe(e.toString());	
+		}
+	
+	}
+	/*
+	private  void  delete(){
+		try{
+		String[]sa=listSelectedItems();
+		if(sa==null||sa.length<1)
+			return ;
+		Properties locator;
+		String detailKey$;
+		//String bondKey$;
+		String detailEntryKey$;
+		String edgeKey$;
+		Sack detail;
+		Sack edge;
+		Entigrator entigrator=console.getEntigrator(entihome$);
+		for(String s:sa){
+			System.out.println("JBondDetailPanel:delete:bond locator="+s);
+			try{
+			locator=Locator.toProperties(s);
+			detailKey$=locator.getProperty(EntityHandler.ENTITY_KEY);
+			//bondKey$=locator.getProperty(JBondsPanel.BOND_KEY);
+			edgeKey$=locator.getProperty(JBondsPanel.EDGE_KEY);
+			detailEntryKey$=locator.getProperty(JBondsPanel.BOND_DETAIL_ENTRY_KEY);
+			detail=entigrator.getEntityAtKey(detailKey$);
+			edge=entigrator.getEntityAtKey(edgeKey$);
+			if(detail!=null){
+			   detail.removeElementItem("bond", detailEntryKey$);
+			   String[] ba=detail.elementList("bond");
+			   if(ba==null||ba.length<1){
+				   detail.removeElementItem("fhandler", BondDetailHandler.class.getName());
+				   detail.removeElementItem("jfacet", BondDetailHandler.class.getName());
+			   }
+			   
+			}
+			edge.removeElementItem("detail", detailEntryKey$);
+			entigrator.save(detail);
+			entigrator.save(edge);
+			}catch(Exception ee){
+				Logger.getLogger(getClass().getName()).info(ee.toString());
+			}
+		}
+		
+		}catch(Exception e){
+			Logger.getLogger(getClass().getName()).severe(e.toString());
+		}
+		
+	}
+	*/
+}

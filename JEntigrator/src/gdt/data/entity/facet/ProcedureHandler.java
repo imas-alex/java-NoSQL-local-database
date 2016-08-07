@@ -126,6 +126,11 @@ public class ProcedureHandler extends FacetHandler {
 	public void adaptRename(Entigrator entigrator) {
 		adaptLabel(entigrator);
 	}
+	@Override
+	public void completeMigration(Entigrator entigrator) {
+		// TODO Auto-generated method stub
+		
+	}
 	 
 
 }

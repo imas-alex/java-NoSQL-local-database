@@ -81,6 +81,16 @@ public abstract class FacetHandler {
       *  @param locator$ the argument 
       * @return the locator string of the facet handler.
       */	 
+     /**
+      * Complete migration after paste the entity from another database   
+      * 
+      */	
+     public abstract void completeMigration(Entigrator entigrator);
+     /**
+      * Instantiate the facet handler.  
+      *  @param locator$ the argument 
+      * @return the locator string of the facet handler.
+      */	 
      public  String instantiate(String locator$){
     		try{
     		//	System.out.println("FacetHandler:instantiate:locator="+locator$);

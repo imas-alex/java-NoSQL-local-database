@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<session version="1.0">
+<refactoring accessors="true" comment="Delete element from project &apos;JEntigrator&apos;&#x0A;- Original project: &apos;JEntigrator&apos;&#x0A;- Original element: &apos;gdt.jgui.base.Autocomplete.java&apos;" description="Delete element" element1="/src&lt;gdt.jgui.base{Autocomplete.java" elements="1" flags="589830" id="org.eclipse.jdt.ui.delete" resources="0" stamp="1467020538918" subPackages="false" version="1.0"/>
+</session>

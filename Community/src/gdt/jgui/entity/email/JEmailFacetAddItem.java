@@ -19,6 +19,8 @@ package gdt.jgui.entity.email;
 import java.util.Properties;
 import java.util.logging.Logger;
 
+import gdt.data.entity.BankHandler;
+
 //import org.apache.commons.codec.binary.Base64;
 
 
@@ -27,6 +29,7 @@ import gdt.data.entity.BaseHandler;
 import gdt.data.entity.EmailHandler;
 import gdt.data.entity.EntityHandler;
 import gdt.data.entity.FacetHandler;
+import gdt.data.entity.facet.ExtensionHandler;
 import gdt.data.grain.Core;
 import gdt.data.grain.Identity;
 import gdt.data.grain.Locator;
@@ -41,6 +44,7 @@ import gdt.jgui.console.JMainConsole;
 import gdt.jgui.console.JRequester;
 import gdt.jgui.entity.JEntitiesPanel;
 import gdt.jgui.entity.JEntityFacetPanel;
+import gdt.jgui.entity.contact.JContactFacetOpenItem;
 import gdt.jgui.tool.JTextEditor;
 public class JEmailFacetAddItem extends JFacetAddItem{
 
@@ -65,11 +69,13 @@ public String getLocator(){
 	locator.setProperty(JFacetOpenItem.FACET_HANDLER_CLASS,EmailHandler.class.getName());
 	if(entityKey$!=null)
 		locator.setProperty(EntityHandler.ENTITY_KEY,entityKey$);
-	if(entihome$!=null)
+	if(entihome$!=null){
 		locator.setProperty(Entigrator.ENTIHOME,entihome$);
-	 icon$=Support.readHandlerIcon(JEmailFacetAddItem.class, "email.png");
+		Entigrator entigrator=console.getEntigrator(entihome$);
+		String icon$=ExtensionHandler.loadIcon(entigrator,EmailHandler.EXTENSION_KEY, "email.png");
 	if(icon$!=null)
 	    	locator.setProperty(Locator.LOCATOR_ICON,icon$);
+	}
 	 locator$=Locator.toString(locator);
 	locator.setProperty(Locator.LOCATOR_CHECKABLE,Locator.LOCATOR_TRUE);
 	 return Locator.toString(locator);
@@ -146,7 +152,7 @@ public void addComponent(JMainConsole console, String locator$) {
 //	    editorLocator$=Locator.append(editorLocator$,Locator.LOCATOR_DATA,Locator.compressText(locator$));
 	    editorLocator$=Locator.append(editorLocator$,Locator.LOCATOR_TITLE,"Component label");
 	    editorLocator$=Locator.append(editorLocator$,JTextEditor.TEXT_TITLE,"Add email component");
-	    String icon$=Support.readHandlerIcon(JEntitiesPanel.class, "edit.png");
+	    String icon$=Support.readHandlerIcon(null,JEntitiesPanel.class, "edit.png");
 	    editorLocator$=Locator.append(editorLocator$,Locator.LOCATOR_ICON,icon$);
 	    String responseLocator$=getLocator();
 	    responseLocator$=Locator.append(responseLocator$, BaseHandler.HANDLER_METHOD, "response");
@@ -203,6 +209,22 @@ public String markAppliedUncheckable(JMainConsole console, String locator$) {
 	}	
 	this.locator$=locator$;
 	return locator$;
+}
+
+@Override
+public String getIconResource() {
+	
+	return "email.png";
+}
+
+@Override
+public String getFacetOpenClass() {
+	return JEmailFacetOpenItem.class.getName();
+}
+
+@Override
+public String getFacetAddClass() {
+	return JEmailFacetAddItem.class.getName();
 }
 }
 

@@ -1,0 +1,84 @@
+package gdt.jgui.entity.graph;
+
+import java.util.Properties;
+import java.util.logging.Logger;
+
+import gdt.data.entity.BaseHandler;
+import gdt.data.entity.EntityHandler;
+import gdt.data.entity.GraphHandler;
+import gdt.data.entity.facet.ExtensionHandler;
+import gdt.data.grain.Locator;
+import gdt.data.store.Entigrator;
+import gdt.jgui.console.JConsoleHandler;
+import gdt.jgui.console.JContext;
+import gdt.jgui.console.JItemsListPanel;
+import gdt.jgui.console.JMainConsole;
+import gdt.jgui.console.JRequester;
+
+public class JGraphViews extends JItemsListPanel implements JRequester{
+	private static final long serialVersionUID = 1L;
+	private String entihome$;
+    private String entityKey$;
+   
+	@Override
+	public String getLocator() {
+		try{
+			Properties locator=new Properties();
+			locator.setProperty(BaseHandler.HANDLER_CLASS,JGraphViews.class.getName());
+			locator.setProperty(BaseHandler.HANDLER_SCOPE,JConsoleHandler.CONSOLE_SCOPE);
+			 locator.setProperty( JContext.CONTEXT_TYPE,getType());
+			locator.setProperty(Locator.LOCATOR_TITLE,getTitle());
+			locator.setProperty(BaseHandler.HANDLER_LOCATION,GraphHandler.EXTENSION_KEY);
+			if(entityKey$!=null)
+				locator.setProperty(EntityHandler.ENTITY_KEY,entityKey$);
+			if(entihome$!=null){
+				locator.setProperty(Entigrator.ENTIHOME,entihome$);
+			Entigrator entigrator=console.getEntigrator(entihome$);
+			String icon$= ExtensionHandler.loadIcon(entigrator, GraphHandler.EXTENSION_KEY,"views.png");
+			    if(icon$!=null)
+			    	locator.setProperty(Locator.LOCATOR_ICON,icon$);
+			}
+			return Locator.toString(locator);
+			}catch(Exception e){
+	        Logger.getLogger(getClass().getName()).severe(e.toString());
+	        return null;
+			}
+	}
+	@Override
+	public JContext instantiate(JMainConsole console, String locator$) {
+	try{
+			
+		}catch(Exception e){
+			Logger.getLogger(getClass().getName()).severe(e.toString());
+		}
+		return this;
+	}
+	@Override
+	public String getTitle() {
+		return "Graph views";
+	}
+
+	@Override
+	public String getSubtitle() {
+
+		return entihome$;
+	}
+
+	@Override
+	public String getType() {
+		
+		return "graph views";
+	}
+
+	@Override
+	public void close() {
+		// TODO Auto-generated method stub
+		
+	}
+	@Override
+	public void response(JMainConsole console, String locator$) {
+		// TODO Auto-generated method stub
+		
+	}
+
+}

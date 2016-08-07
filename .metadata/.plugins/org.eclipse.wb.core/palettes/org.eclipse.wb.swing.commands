@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<commands>
+	<moveEntry
+		id="org.eclipse.wb.swing.layouts net.miginfocom.swing.MigLayout"
+		category="org.eclipse.wb.swing.BoxLayout"/>
+	<moveEntry
+		id="org.eclipse.wb.swing.components javax.swing.JTextArea"
+		category="org.eclipse.wb.swing.components"
+		nextEntry="org.eclipse.wb.swing.components javax.swing.JSeparator"/>
+</commands>

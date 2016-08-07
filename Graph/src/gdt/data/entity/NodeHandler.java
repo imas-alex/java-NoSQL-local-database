@@ -73,4 +73,9 @@ public class NodeHandler extends FieldsHandler{
 public String getClassName() {
 	return  NodeHandler.class.getName();
 }
+@Override
+public void completeMigration(Entigrator entigrator) {
+    System.out.println("NodeHandler:completeMigration");
+	
+}
 }

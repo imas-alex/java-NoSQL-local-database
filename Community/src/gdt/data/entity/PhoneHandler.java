@@ -101,4 +101,9 @@ public void adaptRename(Entigrator arg0) {
 public String getClassName() {
 	return PhoneHandler.class.getName();
 }
+@Override
+public void completeMigration(Entigrator entigrator) {
+	// TODO Auto-generated method stub
+	
+}
 }

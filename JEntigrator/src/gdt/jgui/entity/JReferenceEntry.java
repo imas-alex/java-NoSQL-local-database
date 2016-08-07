@@ -38,6 +38,7 @@ public class JReferenceEntry extends Core{
 	private static final String LOCATOR_TYPE_REFERENCE="locator type reference";
 	private static final String FACET_CLASS_NAME="facet class name";
 	private static final String BREAK_PROCEEDING="break proceeding";
+	public static final String ORIGIN_ENTIHOME="origin_entihome";
     public JReferenceEntry(Entigrator entigrator,String entityKey$,String facetClassName$){
  	   type=entigrator.getEntihome();
  	   name=entityKey$;

@@ -22,8 +22,10 @@ import java.util.Stack;
 import java.util.logging.Logger;
 
 import gdt.data.entity.BaseHandler;
+import gdt.data.entity.EmailHandler;
 import gdt.data.entity.EntityHandler;
 import gdt.data.entity.PhoneHandler;
+import gdt.data.entity.facet.ExtensionHandler;
 import gdt.data.grain.Core;
 import gdt.data.grain.Identity;
 import gdt.data.grain.Locator;
@@ -115,7 +117,12 @@ String entihome$;
 
 	@Override
 	public String getCategoryIcon() {
-		return Support.readHandlerIcon(getClass(), "phone.png");
+		if(entihome$!=null)	{
+			Entigrator entigrator=console.getEntigrator(entihome$);
+		    return ExtensionHandler.loadIcon(entigrator,PhoneHandler.EXTENSION_KEY, "phone.png");
+		
+	}
+		return null;
 	}
 
 	@Override

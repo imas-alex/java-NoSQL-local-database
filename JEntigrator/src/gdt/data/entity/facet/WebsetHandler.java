@@ -111,5 +111,10 @@ public class WebsetHandler extends FacetHandler{
 		adaptLabel(entigrator);
 		
 	}
+	@Override
+	public void completeMigration(Entigrator entigrator) {
+		// TODO Auto-generated method stub
+		
+	}
 
 }

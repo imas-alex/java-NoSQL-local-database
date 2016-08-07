@@ -1,0 +1,17 @@
+1.The subject.
+
+The subject of this project is a program aiming to reflect evolving objects from the real world in program objects. An evolving object can change its content, structure and behaviour during the life cycle.
+
+2.The concept.
+
+The object specification comprises state and behaviour. In the object-orinted paradigm the state is defined as a set of named attributes and the behaviour as a set of methods. Objects change during their lifetimes. Non-evolving objects only change their content (the values of attributes), evolving objects can also change the number and type of attributes and object's methods. Content management is a standard task that can be accomplished by an end user, the application usually provides the convenient interface to do it. The structure and methods changes are much more complicated challenges. These changes are arised during the life span of the object and may be unknown in the design time. The evolution (migration) demands changes in the application code and the database schema that must be done under the responsibility application developers and database designers. The compositional data model lets delegate the evolution to the end user without any coding.
+
+The compositional data model is based on the assumption that the real data object can be represented as a composition of more elementary components called facets. A facet is defined as a portion of data and associated with it behaviour. For example, the phone facet includes the phone number (data) and the call (behaviour). The most fundamental fact is that the set of facets is essentially smaller and stabler than the set of data objects. The second important fact is that the data object structure can be built or modified in the same fashion as the content – by assigning data to the object without changing of the application code. The application analyse the content of the data object at the runtime  and recognises all applied facets. The data object can be considered as a facet container and the data object design means to add/remove facets to it. The application developer must provide the permanent part of the application: a pool of facets and the interface to manage universal data objects – facet data containers. The end user takes over the design and maintenance of data objects, again, without any coding. 
+
+The composition data model has the ability to absorb data objects of the special extension type. The extension contains the library file and descriptors of facets belonging to this extension. It is enough to import the extension data object in the database in order to add new facets in the facet pool. The application loads the extension library and makes new facets available to the end user. In this way the application can be adapted to the specific user area. The application code stay intact. Both end users and developers benefit from this architecture. An end user can evolve data objects without assistance of developers. A facet developer must provide only a facet code without intervention into the application code.
+
+3.The implementation.
+
+The production environment includes the application jar file and one or more databases. The database is actually the file directory containing data objects and indexes. The persistent form of a data object is an XML file. Each data object has unique identifier and label within the database. The end user interacts with the application via GUI. The main application window built as a frame for contexts. A context is a panel containing 
+
+

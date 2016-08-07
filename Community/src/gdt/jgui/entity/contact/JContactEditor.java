@@ -33,9 +33,12 @@ import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 
+import gdt.data.entity.AddressHandler;
+import gdt.data.entity.BankHandler;
 import gdt.data.entity.BaseHandler;
 import gdt.data.entity.ContactHandler;
 import gdt.data.entity.EntityHandler;
+import gdt.data.entity.facet.ExtensionHandler;
 import gdt.data.grain.Core;
 import gdt.data.grain.Identity;
 import gdt.data.grain.Locator;
@@ -288,13 +291,15 @@ public class JContactEditor extends JPanel implements JContext,JFacetRenderer,JR
 	    locator.setProperty(Locator.LOCATOR_TYPE, JContext.CONTEXT_TYPE);
 	    locator.setProperty(JContext.CONTEXT_TYPE,getType());
 	    locator.setProperty(Locator.LOCATOR_TITLE, "Contact");
-	   if(entihome$!=null)
+	   if(entihome$!=null){
 	      locator.setProperty(Entigrator.ENTIHOME,entihome$);
+			Entigrator entigrator=console.getEntigrator(entihome$);
+		String icon$=ExtensionHandler.loadIcon(entigrator,ContactHandler.EXTENSION_KEY, "contact.png");
+		if(icon$!=null)
+		    	locator.setProperty(Locator.LOCATOR_ICON,icon$);
+	   }
 	   if(entityKey$!=null)
 		      locator.setProperty(EntityHandler.ENTITY_KEY,entityKey$);
-	    String icon$=Support.readHandlerIcon(JContactEditor.class, "contact.png");
-	    if(icon$!=null)
-	    	locator.setProperty(Locator.LOCATOR_ICON,icon$);
 	    locator.setProperty(BaseHandler.HANDLER_SCOPE,JConsoleHandler.CONSOLE_SCOPE);
 	    locator.setProperty(BaseHandler.HANDLER_CLASS,JContactEditor.class.getName());
 	    String title$=title.getText();
@@ -358,7 +363,11 @@ public class JContactEditor extends JPanel implements JContext,JFacetRenderer,JR
 	}
 	@Override
 	public String getCategoryIcon() {
-		return Support.readHandlerIcon(JContactEditor.class, "contact.png");
+		if(entihome$!=null){
+			Entigrator entigrator=console.getEntigrator(entihome$);
+			return ExtensionHandler.loadIcon(entigrator,ContactHandler.EXTENSION_KEY, "contact.png");
+		}
+		return null;
 	}
 
 	@Override

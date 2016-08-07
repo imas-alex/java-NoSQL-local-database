@@ -24,9 +24,11 @@ import java.util.logging.Logger;
 
 
 import gdt.data.entity.BaseHandler;
+import gdt.data.entity.ContactHandler;
 import gdt.data.entity.EntityHandler;
 import gdt.data.entity.FacetHandler;
 import gdt.data.entity.PhoneHandler;
+import gdt.data.entity.facet.ExtensionHandler;
 import gdt.data.grain.Core;
 import gdt.data.grain.Identity;
 import gdt.data.grain.Locator;
@@ -41,6 +43,7 @@ import gdt.jgui.console.JMainConsole;
 import gdt.jgui.console.JRequester;
 import gdt.jgui.entity.JEntitiesPanel;
 import gdt.jgui.entity.JEntityFacetPanel;
+import gdt.jgui.entity.contact.JContactFacetOpenItem;
 import gdt.jgui.tool.JTextEditor;
 public class JPhoneFacetAddItem extends JFacetAddItem{
 
@@ -65,11 +68,12 @@ public String getLocator(){
 	locator.setProperty(JFacetOpenItem.FACET_HANDLER_CLASS,PhoneHandler.class.getName());
 	if(entityKey$!=null)
 		locator.setProperty(EntityHandler.ENTITY_KEY,entityKey$);
-	if(entihome$!=null)
+	if(entihome$!=null){
 		locator.setProperty(Entigrator.ENTIHOME,entihome$);
-	 icon$=Support.readHandlerIcon(JPhoneFacetAddItem.class, "phone.png");
-	if(icon$!=null)
+		Entigrator entigrator=console.getEntigrator(entihome$);
+	 icon$=ExtensionHandler.loadIcon(entigrator, PhoneHandler.EXTENSION_KEY, "phone.png");
 	    	locator.setProperty(Locator.LOCATOR_ICON,icon$);
+	}
 	 locator$=Locator.toString(locator);
 	locator.setProperty(Locator.LOCATOR_CHECKABLE,Locator.LOCATOR_TRUE);
 	 return Locator.toString(locator);
@@ -147,7 +151,7 @@ public void addComponent(JMainConsole console, String locator$) {
 	   // editorLocator$=Locator.append(editorLocator$,Locator.LOCATOR_DATA,Locator.compressText(locator$));
 	    editorLocator$=Locator.append(editorLocator$,Locator.LOCATOR_TITLE,"Component label");
 	    editorLocator$=Locator.append(editorLocator$,JTextEditor.TEXT_TITLE,"Add phone component");
-	    String icon$=Support.readHandlerIcon(JEntitiesPanel.class, "edit.png");
+	    String icon$=Support.readHandlerIcon(null,JEntitiesPanel.class, "edit.png");
 	    editorLocator$=Locator.append(editorLocator$,Locator.LOCATOR_ICON,icon$);
 	    String responseLocator$=getLocator();
 	    responseLocator$=Locator.append(responseLocator$, BaseHandler.HANDLER_METHOD, "response");
@@ -204,6 +208,22 @@ public String markAppliedUncheckable(JMainConsole console, String locator$) {
 	}	
 	this.locator$=locator$;
 	return locator$;
+}
+
+@Override
+public String getIconResource() {
+	// TODO Auto-generated method stub
+	return "phone.png";
+}
+
+@Override
+public String getFacetOpenClass() {
+	return JPhoneFacetOpenItem.class.getName();
+}
+
+@Override
+public String getFacetAddClass() {
+	return JPhoneFacetAddItem.class.getName();
 }
 }
 

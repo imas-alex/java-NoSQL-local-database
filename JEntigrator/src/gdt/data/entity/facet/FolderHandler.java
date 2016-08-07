@@ -121,5 +121,10 @@ private void adaptLabel(Entigrator entigrator){
 	public String getClassName() {
 		return getClass().getName();
 	}
+	@Override
+	public void completeMigration(Entigrator entigrator) {
+		// TODO Auto-generated method stub
+		
+	}
 
 }

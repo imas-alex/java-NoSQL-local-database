@@ -1,0 +1,1261 @@
+package gdt.jgui.entity.graph;
+
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Container;
+import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.FontMetrics;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.GridLayout;
+import java.awt.Image;
+import java.awt.Paint;
+import java.awt.Point;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseMotionListener;
+import java.awt.geom.Point2D;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Properties;
+import java.util.Stack;
+import java.util.Timer;
+import java.util.TimerTask;
+import java.util.logging.Logger;
+
+import javax.imageio.ImageIO;
+import javax.swing.BorderFactory;
+import javax.swing.BoxLayout;
+import javax.swing.Icon;
+import javax.swing.ImageIcon;
+import javax.swing.JButton;
+import javax.swing.JCheckBox;
+import javax.swing.JComboBox;
+import javax.swing.JFileChooser;
+import javax.swing.JMenu;
+import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JPopupMenu;
+import javax.swing.JRootPane;
+import javax.swing.event.MenuEvent;
+import javax.swing.event.MenuListener;
+import javax.swing.event.PopupMenuEvent;
+import javax.swing.event.PopupMenuListener;
+import java.awt.geom.Point2D;
+
+import org.apache.commons.codec.binary.Base64;
+import org.apache.commons.collections15.Transformer;
+import org.apache.commons.collections15.functors.ConstantTransformer;
+
+import edu.uci.ics.jung.algorithms.layout.AbstractLayout;
+import edu.uci.ics.jung.algorithms.layout.FRLayout;
+import edu.uci.ics.jung.algorithms.layout.FRLayout2;
+import edu.uci.ics.jung.algorithms.layout.GraphElementAccessor;
+import edu.uci.ics.jung.algorithms.layout.Layout;
+import edu.uci.ics.jung.algorithms.layout.SpringLayout;
+import edu.uci.ics.jung.algorithms.layout.util.RandomLocationTransformer;
+import edu.uci.ics.jung.algorithms.layout.util.Relaxer;
+import edu.uci.ics.jung.graph.DirectedSparseGraph;
+import edu.uci.ics.jung.graph.DirectedSparseMultigraph;
+import edu.uci.ics.jung.graph.Graph;
+import edu.uci.ics.jung.graph.ObservableGraph;
+import edu.uci.ics.jung.graph.event.GraphEvent;
+import edu.uci.ics.jung.graph.event.GraphEvent.Edge;
+import edu.uci.ics.jung.graph.event.GraphEvent.Vertex;
+import edu.uci.ics.jung.graph.event.GraphEventListener;
+import edu.uci.ics.jung.graph.util.EdgeType;
+import edu.uci.ics.jung.graph.util.Graphs;
+import edu.uci.ics.jung.samples.VertexImageShaperDemo;
+import edu.uci.ics.jung.samples.VertexImageShaperDemo.DemoVertexIconShapeTransformer;
+import edu.uci.ics.jung.samples.VertexImageShaperDemo.DemoVertexIconTransformer;
+import edu.uci.ics.jung.samples.VertexImageShaperDemo.PickWithIconListener;
+import edu.uci.ics.jung.samples.VertexImageShaperDemo.VertexStringerImpl;
+import edu.uci.ics.jung.visualization.GraphZoomScrollPane;
+import edu.uci.ics.jung.visualization.LayeredIcon;
+import edu.uci.ics.jung.visualization.RenderContext;
+import edu.uci.ics.jung.visualization.VisualizationImageServer;
+import edu.uci.ics.jung.visualization.VisualizationViewer;
+import edu.uci.ics.jung.visualization.annotations.AnnotatingGraphMousePlugin;
+import edu.uci.ics.jung.visualization.annotations.AnnotatingModalGraphMouse;
+import edu.uci.ics.jung.visualization.control.CrossoverScalingControl;
+import edu.uci.ics.jung.visualization.control.DefaultModalGraphMouse;
+import edu.uci.ics.jung.visualization.control.ScalingControl;
+import edu.uci.ics.jung.visualization.decorators.EdgeShape;
+import edu.uci.ics.jung.visualization.decorators.EllipseVertexShapeTransformer;
+import edu.uci.ics.jung.visualization.decorators.PickableEdgePaintTransformer;
+import edu.uci.ics.jung.visualization.decorators.PickableVertexPaintTransformer;
+import edu.uci.ics.jung.visualization.decorators.ToStringLabeller;
+import edu.uci.ics.jung.visualization.layout.ObservableCachingLayout;
+import edu.uci.ics.jung.visualization.picking.PickedState;
+import edu.uci.ics.jung.visualization.renderers.DefaultEdgeLabelRenderer;
+import edu.uci.ics.jung.visualization.renderers.DefaultVertexLabelRenderer;
+import edu.uci.ics.jung.visualization.renderers.Renderer;
+import gdt.data.entity.BaseHandler;
+import gdt.data.entity.BondDetailHandler;
+import gdt.data.entity.EdgeHandler;
+import gdt.data.entity.EntityHandler;
+import gdt.data.entity.GraphHandler;
+import gdt.data.entity.facet.ExtensionHandler;
+import gdt.data.entity.facet.FieldsHandler;
+import gdt.data.grain.Core;
+import gdt.data.grain.Identity;
+import gdt.data.grain.Locator;
+import gdt.data.grain.Sack;
+import gdt.data.grain.Support;
+import gdt.data.store.Entigrator;
+import gdt.jgui.console.JConsoleHandler;
+import gdt.jgui.console.JContext;
+import gdt.jgui.console.JFacetOpenItem;
+import gdt.jgui.console.JFacetRenderer;
+import gdt.jgui.console.JMainConsole;
+import gdt.jgui.console.JRequester;
+import gdt.jgui.entity.JEntitiesPanel;
+import gdt.jgui.entity.JEntityFacetPanel;
+import gdt.jgui.entity.JEntityPrimaryMenu;
+import gdt.jgui.entity.JReferenceEntry;
+import gdt.jgui.entity.edge.JBondItem;
+import gdt.jgui.entity.edge.JBondsPanel;
+import gdt.jgui.tool.AutocompleteJComboBox;
+import gdt.jgui.tool.JTextEditor;
+
+
+public class JGraphRenderer extends JPanel implements JContext , JRequester
+, MouseMotionListener, JFacetRenderer{
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	private Logger LOGGER=Logger.getLogger(getClass().getName());
+	private static final String ACTION_CREATE_GRAPH="action create graph";
+	private JMainConsole console;
+	private String entihome$;
+    private String entityKey$;
+    private String entityLabel$;
+    private Sack graphEntity;
+   private String locator$;
+   int v=-1;
+   int b=-1;
+  
+    String requesterResponseLocator$;
+    AutocompleteJComboBox searchBox ;
+    
+    /////
+  
+	//private Graph<Number,Number> g = null;
+
+private VisualizationViewer<Number,Number> vv = null;
+
+private AbstractLayout<Number,Number> layout = null;
+
+    Timer timer;
+    DirectedSparseGraph<Number, Number> graph;
+
+    /**
+     * the visual component and renderer for the graph
+     */
+    //VisualizationViewer<Number, Number> vv;
+    
+    boolean done;
+
+    protected JButton switchLayout;
+
+//    public static final LengthFunction<Number> UNITLENGTHFUNCTION = new SpringLayout.UnitLengthFunction<Number>(
+//            100);
+    public static final int EDGE_LENGTH = 100;
+    Integer v_prev = null;
+
+    /////
+    public JGraphRenderer()
+  	{
+  	    super();
+  	    setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
+  	    
+  	}
+  
+	@Override
+	public void response(JMainConsole console, String locator$) {
+		System.out.println("JGraphrenderer:response:"+Locator.remove(locator$,Locator.LOCATOR_ICON ));
+		try{
+			Properties locator=Locator.toProperties(locator$);
+			String action$=locator.getProperty(JRequester.REQUESTER_ACTION);
+			entihome$=locator.getProperty(Entigrator.ENTIHOME);
+			Entigrator entigrator=console.getEntigrator(entihome$);
+			String text$=locator.getProperty(JTextEditor.TEXT);
+
+			if(ACTION_CREATE_GRAPH.equals(action$)){
+				Sack newEntity=entigrator.ent_new("graph", text$);
+				newEntity.createElement("field");
+				newEntity.putElementItem("field", new Core(null,"name","value"));
+				newEntity.createElement("fhandler");
+				newEntity.putElementItem("fhandler", new Core(null,GraphHandler.class.getName(),GraphHandler.EXTENSION_KEY));
+				newEntity.putElementItem("fhandler", new Core(null,FieldsHandler.class.getName(),null));
+				newEntity.createElement("jfacet");
+				newEntity.putElementItem("jfacet", new Core("gdt.jgui.entity.graph.JGraphFacetAddItem",EdgeHandler.class.getName(),"gdt.jgui.entity.graph.JGraphFacetOpenItem"));
+				newEntity.putAttribute(new Core (null,"icon","graph.png"));
+				entigrator.save(newEntity);
+				entigrator.ent_assignProperty(newEntity, "fields", text$);
+				entigrator.ent_assignProperty(newEntity, "graph", text$);
+				String icons$=entihome$+"/"+Entigrator.ICONS;
+				Support.addHandlerIcon(JGraphRenderer.class, "graph.png", icons$);
+				newEntity=entigrator.ent_reindex(newEntity);
+				JEntityFacetPanel efp=new JEntityFacetPanel(); 
+				String efpLocator$=efp.getLocator();
+				efpLocator$=Locator.append(efpLocator$,Locator.LOCATOR_TITLE,newEntity.getProperty("label"));
+				efpLocator$=Locator.append(efpLocator$, Entigrator.ENTIHOME, entihome$);
+				efpLocator$=Locator.append(efpLocator$, EntityHandler.ENTITY_KEY, newEntity.getKey());
+				efpLocator$=Locator.append(efpLocator$, EntityHandler.ENTITY_LABEL, newEntity.getProperty("label"));
+				JEntityPrimaryMenu.reindexEntity(console, efpLocator$);
+				Stack<String> s=console.getTrack();
+				s.pop();
+				console.setTrack(s);
+				JConsoleHandler.execute(console, efpLocator$);
+				return;
+			}
+			}catch(Exception e){
+			Logger.getLogger(getClass().getName()).severe(e.toString());
+		}
+		
+		
+	}
+
+	
+
+	
+	
+	
+	
+	@Override
+	public JPanel getPanel() {
+		return this;
+	}
+
+	@Override
+	public JMenu getContextMenu() {
+		final JMenu	menu=new JMenu("Context");
+		   menu.setName("Context");
+		   menu.addMenuListener(new MenuListener(){
+				@Override
+				public void menuSelected(MenuEvent e) {
+					menu.removeAll();
+					//mxGraphComponent graphComponent = new mxGraphComponent(graph);
+					JMenuItem edgesItem = new JMenuItem("Edges");
+					 edgesItem.addActionListener(new ActionListener() {
+						@Override
+						public void actionPerformed(ActionEvent e) {
+							try{
+						
+								JGraphEdgesPanel ep=new JGraphEdgesPanel();
+								String ep$=ep.getLocator();
+								ep$=Locator.append(ep$, Entigrator.ENTIHOME, entihome$);
+								ep$=Locator.append(ep$, EntityHandler.ENTITY_KEY, entityKey$);
+								ep$=Locator.append(ep$, EntityHandler.ENTITY_LABEL, entityLabel$);
+								Entigrator entigrator=console.getEntigrator(entihome$);
+								String icon$=ExtensionHandler.loadIcon(entigrator, EdgeHandler.EXTENSION_KEY, "edge.png");
+								ep$=Locator.append(ep$,Locator.LOCATOR_ICON,icon$);
+								JConsoleHandler.execute(console, ep$);
+							}catch(Exception ee){
+								 Logger.getLogger(JGraphRenderer.class.getName()).info(ee.toString());
+							}
+							   }
+					});
+					menu.add(edgesItem);
+					 JMenuItem  nodesItem = new JMenuItem("Nodes");
+					   nodesItem.addActionListener(new ActionListener() {
+							@Override
+							public void actionPerformed(ActionEvent e) {
+								JGraphNodes gn=new JGraphNodes();
+								String gnLocator$= gn.getLocator();
+								gnLocator$=Locator.append(gnLocator$, Entigrator.ENTIHOME, entihome$);
+								gnLocator$=Locator.append(gnLocator$, EntityHandler.ENTITY_KEY, entityKey$);
+								JConsoleHandler.execute(console, gnLocator$);
+							}
+						} );
+						menu.add(nodesItem);
+						JMenuItem  entityItem = new JMenuItem("Entity");
+						   entityItem.addActionListener(new ActionListener() {
+								@Override
+								public void actionPerformed(ActionEvent e) {
+									JEntityFacetPanel fp=new JEntityFacetPanel();
+									String fp$=fp.getLocator();
+									fp$=Locator.append(fp$, Entigrator.ENTIHOME, entihome$);
+									fp$=Locator.append(fp$, EntityHandler.ENTITY_KEY, entityKey$);
+									fp$=Locator.append(fp$, EntityHandler.ENTITY_LABEL, "Entity");
+									JConsoleHandler.execute(console,fp$);
+								}
+							} );
+							menu.add(entityItem);
+						menu.addSeparator();	
+						JMenuItem  resetItem = new JMenuItem("Reset");
+						   resetItem.addActionListener(new ActionListener() {
+								@Override
+								public void actionPerformed(ActionEvent e) {
+									reset();
+								}
+							} );
+						   menu.add(resetItem);
+						  if(GraphHandler.undoCan(console, locator$)){
+							  JMenuItem  undoItem = new JMenuItem("Undo");
+							   undoItem.addActionListener(new ActionListener() {
+									@Override
+									public void actionPerformed(ActionEvent e) {
+										GraphHandler.undoPop(console, locator$);
+										 init2();
+											revalidate();
+											repaint();
+									}
+								} );
+							   menu.add(undoItem);
+						  } 
+						  
+							  JMenuItem  viewsItem = new JMenuItem("Views");
+							   viewsItem.addActionListener(new ActionListener() {
+									@Override
+									public void actionPerformed(ActionEvent e) {
+									//	GraphHandler.undoPop(console, locator$);
+									  showViews();
+									}
+								} );
+							   menu.add(viewsItem);
+						   
+						  menu.addSeparator();	
+							JMenuItem  recentItem = new JMenuItem("Put as recent");
+							   recentItem.addActionListener(new ActionListener() {
+									@Override
+									public void actionPerformed(ActionEvent e) {
+										console.getRecents().put(getTitle(), getLocator());
+									}
+								} );
+							   menu.add(recentItem);
+							   menu.addSeparator();	
+							   JMenuItem  unmarkItem = new JMenuItem("Unmark all");
+							   unmarkItem.addActionListener(new ActionListener() {
+									@Override
+									public void actionPerformed(ActionEvent e) {
+									unmarkAll();
+									}
+								} );
+							   menu.add(unmarkItem);
+							 
+					if(hasSelectedNode()){
+						menu.addSeparator();
+						JMenuItem  markItem = new JMenuItem("Mark");
+						   markItem.addActionListener(new ActionListener() {
+								@Override
+								public void actionPerformed(ActionEvent e) {
+								markSelectedNode();
+								}
+							} );
+						   menu.add(markItem);
+						   JMenuItem  pickItem = new JMenuItem("Pick out");
+						   pickItem.addActionListener(new ActionListener() {
+								@Override
+								public void actionPerformed(ActionEvent e) {
+									markSelectedNode();
+									pickOut();
+								}
+							} );
+						   menu.add(pickItem);
+						   JMenuItem  expandItem = new JMenuItem("Expand");
+						   expandItem.addActionListener(new ActionListener() {
+								@Override
+								public void actionPerformed(ActionEvent e) {
+									markSelectedNode();
+									expand();
+								}
+							} );
+						   menu.add(expandItem);
+					}
+				    menu.addSeparator();
+				    JMenuItem  saveItem = new JMenuItem("Save");
+					   saveItem.addActionListener(new ActionListener() {
+							@Override
+							public void actionPerformed(ActionEvent e) {
+								saveAsPicture();
+							}
+						} );
+					   menu.add(saveItem);		   
+				}
+
+				@Override
+				public void menuDeselected(MenuEvent e) {
+					// TODO Auto-generated method stub
+					
+				}
+
+				@Override
+				public void menuCanceled(MenuEvent e) {
+					// TODO Auto-generated method stub
+					
+				}
+		   });
+		  
+			return menu;
+	}
+
+	@Override
+	public String getLocator() {
+		try{
+			Properties locator=new Properties();
+			locator.setProperty(BaseHandler.HANDLER_CLASS,JGraphRenderer.class.getName());
+			locator.setProperty(BaseHandler.HANDLER_SCOPE,JConsoleHandler.CONSOLE_SCOPE);
+			 locator.setProperty( JContext.CONTEXT_TYPE,getType());
+			locator.setProperty(Locator.LOCATOR_TITLE,getTitle());
+			if(entityLabel$!=null){
+				locator.setProperty(EntityHandler.ENTITY_LABEL,entityLabel$);
+			}
+			if(entityKey$!=null)
+				locator.setProperty(EntityHandler.ENTITY_KEY,entityKey$);
+			if(entihome$!=null){
+				locator.setProperty(Entigrator.ENTIHOME,entihome$);
+				if(entihome$!=null){
+					locator.setProperty(Entigrator.ENTIHOME,entihome$);
+					Entigrator entigrator=console.getEntigrator(entihome$);
+				String icon$=ExtensionHandler.loadIcon(entigrator, GraphHandler.EXTENSION_KEY,"map.png");
+				if(icon$!=null)
+				    	locator.setProperty(Locator.LOCATOR_ICON,icon$);
+				}
+			}
+			if(entityLabel$!=null)
+				locator.setProperty(EntityHandler.ENTITY_LABEL,entityLabel$);
+			return Locator.toString(locator);
+			}catch(Exception e){
+	        Logger.getLogger(getClass().getName()).severe(e.toString());
+	        return null;
+			}
+	}
+
+	@Override
+	public JContext instantiate(JMainConsole console, String locator$) {
+		try{
+				System.out.println("JGraphRenderer:instantiate:locator="+locator$);
+				this.console=console;
+				this.locator$=locator$;
+				if(console==null)
+					System.out.println("JGraphRenderer:instantiate:consoleis null");
+				Properties locator=Locator.toProperties(locator$);
+				entihome$=locator.getProperty(Entigrator.ENTIHOME);
+				entityKey$=locator.getProperty(EntityHandler.ENTITY_KEY);
+				String action$=locator.getProperty(JRequester.REQUESTER_ACTION);
+				Entigrator entigrator=console.getEntigrator(entihome$);
+				requesterResponseLocator$=locator.getProperty(JRequester.REQUESTER_RESPONSE_LOCATOR);
+	            graphEntity=entigrator.getEntityAtKey(entityKey$);
+	            entityLabel$=graphEntity.getProperty("label");
+	            String viewComponentKey$=locator.getProperty(JGraphViews.VIEW_COMPONENT_KEY);
+	            String viewKey$=locator.getProperty(JGraphViews.VIEW_KEY);
+	   		    locator=new Properties();
+   	   		 locator.setProperty(Locator.LOCATOR_TITLE, "Graph");
+   	  	locator.setProperty(Entigrator.ENTIHOME,entihome$);
+   	  	String icon$=ExtensionHandler.loadIcon(entigrator, GraphHandler.EXTENSION_KEY,"graph.png");
+   	  	if(icon$!=null)
+	    	locator.setProperty(Locator.LOCATOR_ICON,icon$);
+   	 System.out.println("JGraphRenderer:instantiate:action="+action$);
+   	  	if(JGraphViews.ACTION_SHOW_VIEW.equals(action$)){
+   	  	System.out.println("JGraphRenderer:instantiate:show view");
+   	  	     try{
+   	  	    	 Sack viewComponent=entigrator.getEntityAtKey(viewComponentKey$);
+   	  	     
+   	  	     Core[]ca=viewComponent.elementGet(viewKey$);
+   	  	     if(graphEntity.existsElement("node.select"))
+   	  	    graphEntity.createElement("node.select");
+   	  	graphEntity.elementReplace("node.select", ca);
+   	  	entigrator.save(graphEntity);
+   	  	     }catch(Exception ee){
+   	  	    	 Logger.getLogger(JGraphRenderer.class.getName()).info(ee.toString()); 
+   	  	     }
+   	  	}
+   	  	displayGraph();
+		}catch(Exception e){
+		        Logger.getLogger(getClass().getName()).severe(e.toString());
+			}
+		System.out.println("JGraphRenderer:instantiate:finish");
+			return this;
+			
+	}
+
+	@Override
+	public String getTitle() {
+		return "Map";
+	}
+
+	@Override
+	public String getSubtitle() {
+		return entityLabel$;
+	}
+
+	@Override
+	public String getType() {
+		return "graph";
+	}
+
+	@Override
+	public void close() {
+		// TODO Auto-generated method stub
+		
+	}
+	@Override
+	public void mouseDragged(MouseEvent e) {
+		System.out.println("JGraphRenderer: mouseDragged:BEGIN");
+		
+	}
+	@Override
+	public void mouseMoved(MouseEvent e) {
+		System.out.println("JGraphRenderer: mouseMoved:BEGIN");
+		
+	}
+	
+private void rebuild(){
+	try{
+		Entigrator entigrator=console.getEntigrator(entihome$);
+		Sack graph=entigrator.getEntityAtKey(entityKey$);
+		Core[] ca=graph.elementGet("node");
+		graph.removeElement("bond");
+		graph.createElement("bond");
+		graph.removeElement("edge.entity");
+		graph.createElement("edge.entity");
+		Sack node;
+		if(ca==null)
+			return;
+		Core[]ba;
+		for(Core c:ca){
+			node=entigrator.getEntityAtKey(c.name);
+			if(node==null)
+				continue;
+			ba=node.elementGet("bond");
+			if(ba!=null)
+				for( Core b:ba){
+					if(graph.getElementItem("bond", b.name)!=null)
+						continue;
+					graph.putElementItem("bond", b);
+					graph.putElementItem("edge.entity", node.getElementItem("edge", b.name));
+					
+				}
+			
+		}
+	entigrator.save(graph);	
+		
+	}catch(Exception e){
+		Logger.getLogger(JGraphRenderer.class.getName()).severe(e.toString());
+	}
+}
+private void displayGraph(){
+	try{
+		init2();
+		revalidate();
+		repaint();
+    
+	}catch(Exception e){
+		LOGGER.severe(e.toString());
+	}
+}
+
+private void reset(){
+	try{
+		 Entigrator entigrator=console.getEntigrator(entihome$);
+		 Sack graphEntity=entigrator.getEntityAtKey(entityKey$);
+		 graphEntity.removeElement("node.select");
+		 GraphHandler.undoReset(console, locator$);
+		 entigrator.save(graphEntity);
+		 init2();
+			revalidate();
+			repaint();
+	}catch(Exception e){
+		LOGGER.severe(e.toString());
+	}
+}
+private void pickOut(int v){
+	try{
+		Entigrator entigrator=console.getEntigrator(entihome$);
+		 Sack graphEntity=entigrator.getEntityAtKey(entityKey$);
+		 String node$=graphEntity.getElementItemAtValue("vertex", String.valueOf(v));
+		 if(graphEntity.existsElement("node.select"))
+			 graphEntity.clearElement("node.select");
+			 
+		 entigrator.save(graphEntity);
+		 expand(v);
+	}catch(Exception e){
+		LOGGER.severe(e.toString());
+	}
+}
+private void pickOut(){
+	Collection <Number>vc=graph.getVertices();
+	final PickedState<Number> pickedState = vv.getPickedVertexState();
+	for( Number n:vc){
+		 if (pickedState.isPicked(n))
+		    pickOut( n.intValue());
+	}
+}
+private void expand(){
+	Collection <Number>vc=graph.getVertices();
+	final PickedState<Number> pickedState = vv.getPickedVertexState();
+	for( Number n:vc){
+		 if (pickedState.isPicked(n))
+		    expand( n.intValue());
+	}
+}
+private void expand(int v){
+	System.out.println("JGraphRenderer:expand:v="+v);
+	try{
+		GraphHandler.undoPush(console, locator$); 
+		 Entigrator entigrator=console.getEntigrator(entihome$);
+		 Sack graphEntity=entigrator.getEntityAtKey(entityKey$);
+		 String node$=graphEntity.getElementItemAtValue("vertex", String.valueOf(v));
+		 if(!graphEntity.existsElement("node.select"))
+			 graphEntity.createElement("node.select");
+		 graphEntity.putElementItem("node.select", new Core(null,node$,null));
+		 Core[] ca=graphEntity.elementGet("bond");
+				    ArrayList<String>nbl=new ArrayList<String>();
+						for(Core c:ca){
+							if(c.value.equals(node$))
+								if(!nbl.contains(c.type))
+									nbl.add(c.type);
+							if(c.type.equals(node$))
+								if(!nbl.contains(c.value))
+										nbl.add(c.value);
+						}
+		           	for(String nb:nbl)
+		           		graphEntity.putElementItem("node.select", new Core(null,nb,null));
+	
+		 entigrator.save(graphEntity);
+		 init2();
+			revalidate();
+			repaint();
+	}catch(Exception e){
+		LOGGER.severe(e.toString());
+	}
+}
+private void entity(int v){
+	try{
+		 
+		Entigrator entigrator=console.getEntigrator(entihome$);
+		Sack graphEntity=entigrator.getEntityAtKey(entityKey$);
+		Core[]ca=graphEntity.elementGet("vertex");
+		String v$=String.valueOf(v);
+		for(Core c:ca)
+			if(v$.equals(c.value)){
+				JEntityFacetPanel fp=new JEntityFacetPanel();
+				String fp$=fp.getLocator();
+				fp$=Locator.append(fp$, Entigrator.ENTIHOME, entihome$);
+				fp$=Locator.append(fp$, EntityHandler.ENTITY_KEY, c.name);
+				JConsoleHandler.execute(console, fp$);
+			}
+	}catch(Exception e){
+		LOGGER.severe(e.toString());
+	}
+}
+public void init2(){
+	removeAll();
+	 graph = new DirectedSparseGraph<Number,Number>();
+	// final ObservableCachingLayout<Number, Number> layout =(ObservableCachingLayout< Number,Number>)vv.getGraphLayout();
+		
+	 Entigrator entigrator=console.getEntigrator(entihome$);
+	 Sack graphEntity=entigrator.getEntityAtKey(entityKey$);
+	 if(graphEntity.existsElement("vertex"))
+		 graphEntity.removeElement("vertex");
+	 graphEntity.clearElement("vertex");
+	 if(graphEntity.existsElement("edge"))
+		 graphEntity.removeElement("edge");
+	 graphEntity.clearElement("edge");
+	 String[] sa= graphEntity.elementListNoSorted("node.select");
+	 if(sa==null)
+			sa= graphEntity.elementListNoSorted("node");
+	 
+	 for (int i = 0; i <sa.length; i++) {
+		 graphEntity.putElementItem("vertex", new Core(null,sa[i],String.valueOf(i)));
+         graph.addVertex(i);
+     }
+	 
+	 Core[] va=graphEntity.elementGet("vertex");
+	 int v1;
+	 int v2;
+	 Core[] ba=graphEntity.elementGet("bond");
+	 Map<Number,String> map = new HashMap<Number,String>();
+	 Map<Number,Icon> iconMap = new HashMap<Number,Icon>();
+	 String icon$;
+	 byte[] bar;
+	 ImageIcon icon;
+	 for (int i = 0; i <va.length; i++) {
+		 v1=Integer.parseInt(va[i].value);
+		 map.put(i, graphEntity.getElementItemAt("node", va[i].name));
+		 icon$=entigrator.readIconFromIcons(graphEntity.getElementItem("node",va[i].name).type);
+			if(icon$!=null){
+				bar=Base64.decodeBase64(icon$);
+	      	  icon = new ImageIcon(bar);
+	      	  Image image= icon.getImage().getScaledInstance(24, 24, 0);
+	      	  icon.setImage(image);
+              iconMap.put(i, icon);
+		 for(int j=0;j<ba.length;j++){
+			if(va[i].name.equals(ba[j].type)){
+				graphEntity.putElementItem("edge", new Core(null,ba[j].name,String.valueOf(j)));
+				try{
+				v2=Integer.parseInt(graphEntity.getElementItemAt("vertex", ba[j].value));
+				 graph.addEdge(j++, v1, v2, EdgeType.DIRECTED);
+				}catch(Exception e){
+					
+				}
+			}
+		 		}
+		 
+		} 
+	 }
+	 //remove stand alone vertices
+	
+	 Collection <Number>vc=graph.getVertices();
+	 String nodeKey$;
+	 ArrayList <Number>nl=new ArrayList<Number>();
+		for( Number n:vc)
+			if(graph.getOutEdges(n).size()<1 && graph.getInEdges(n).size()<1){
+				nodeKey$=graphEntity.getElementItemAtValue("vertex", String.valueOf(n));
+			//	System.out.println("JGraphRenderer:init:stand alone="+n);
+				graphEntity.removeElementItem("vertex", nodeKey$);
+				graphEntity.removeElementItem("node.select", nodeKey$);
+				nl.add(n);
+			}
+    entigrator.save(graphEntity);
+    for(Number n:nl)
+    	graph.removeVertex(n);
+     
+    FRLayout<Number, Number> layout = new FRLayout<Number, Number>(graph);
+    layout.setMaxIterations(100);
+    layout.setInitializer(new RandomLocationTransformer<Number>(new Dimension(400,400), 0));
+    vv =  new VisualizationViewer<Number, Number>(layout, new Dimension(400,400));
+    Transformer<Number,Paint> vpf = 
+            new PickableVertexPaintTransformer<Number>(vv.getPickedVertexState(), Color.white, Color.yellow);
+        vv.getRenderContext().setVertexFillPaintTransformer(vpf);
+        vv.getRenderContext().setEdgeDrawPaintTransformer(new PickableEdgePaintTransformer<Number>(vv.getPickedEdgeState(), Color.black, Color.cyan));
+
+        vv.setBackground(Color.white);
+        final Transformer<Number,String> vertexStringerImpl = 
+                new VertexStringerImpl<Number,String>(map);
+            vv.getRenderContext().setVertexLabelTransformer(vertexStringerImpl);
+            vv.getRenderContext().setVertexLabelRenderer(new DefaultVertexLabelRenderer(Color.cyan));
+            vv.getRenderContext().setEdgeLabelRenderer(new DefaultEdgeLabelRenderer(Color.cyan));
+            final DemoVertexIconShapeTransformer<Number> vertexIconShapeTransformer =
+                    new DemoVertexIconShapeTransformer<Number>(new EllipseVertexShapeTransformer<Number>());
+                
+                final DemoVertexIconTransformer<Number> vertexIconTransformer =
+                	new DemoVertexIconTransformer<Number>();
+                
+                vertexIconShapeTransformer.setIconMap(iconMap);
+                vertexIconTransformer.setIconMap(iconMap);
+                
+                vv.getRenderContext().setVertexShapeTransformer(vertexIconShapeTransformer);
+                vv.getRenderContext().setVertexIconTransformer(vertexIconTransformer);
+                 PickedState<Number> ps = vv.getPickedVertexState();
+                ps.addItemListener(new PickWithIconListener<Number>(vertexIconTransformer));
+      
+                vv.setVertexToolTipTransformer(new ToStringLabeller<Number>());
+        		
+              
+                final GraphZoomScrollPane panel = new GraphZoomScrollPane(vv);
+                add(panel);
+                
+                final DefaultModalGraphMouse<Number,Number> graphMouse = new DefaultModalGraphMouse<Number,Number>();
+                vv.setGraphMouse(graphMouse);
+                vv.addKeyListener(graphMouse.getModeKeyListener());
+                vv.addMouseListener(new MousePopupListener());
+                layoutVertices(); 
+                final ScalingControl scaler = new CrossoverScalingControl();
+
+                JButton plus = new JButton("+");
+                plus.addActionListener(new ActionListener() {
+                    public void actionPerformed(ActionEvent e) {
+                        scaler.scale(vv, 1.1f, vv.getCenter());
+                    }
+                });
+                JButton minus = new JButton("-");
+                minus.addActionListener(new ActionListener() {
+                    public void actionPerformed(ActionEvent e) {
+                        scaler.scale(vv, 1/1.1f, vv.getCenter());
+                    }
+                });
+
+                JComboBox modeBox = graphMouse.getModeComboBox();
+                JPanel modePanel = new JPanel();
+                modePanel.setBorder(BorderFactory.createTitledBorder("Mouse Mode"));
+                modePanel.add(modeBox);
+                
+                JPanel scaleGrid = new JPanel(new GridLayout(1,0));
+                scaleGrid.setBorder(BorderFactory.createTitledBorder("Zoom"));
+       
+                JPanel controls = new JPanel();
+                controls.setLayout(new BoxLayout(controls, BoxLayout.X_AXIS));
+                scaleGrid.add(plus);
+                scaleGrid.add(minus);
+                controls.add(scaleGrid);
+           
+                controls.add(modePanel);
+                String[] la=null;
+                //
+                String[] na =graphEntity.elementListNoSorted("node.select");
+                if(na==null)
+                	na=graphEntity.elementListNoSorted("node");
+                if(na!=null){
+                	ArrayList<String>sl=new ArrayList<String>();
+                	String label$;
+                for	(String n:na){
+                	label$=entigrator.indx_getLabel(n);
+                	if(label$!=null)
+                		sl.add(label$);
+                }
+                Collections.sort(sl);
+                
+                 la=sl.toArray(new String[0]);
+                
+                }
+                //
+                //System.out.println("JGraphRenderer:init:la="+la.length);
+               searchBox = new AutocompleteJComboBox(la);
+                JPanel searchPanel = new JPanel();
+                searchPanel.setBorder(BorderFactory.createTitledBorder("Search"));
+                searchPanel.add(searchBox);
+                //if(la.length>0)
+                //	searchBox.setSelectedIndex(0);
+                controls.add(searchPanel);
+                add(controls, BorderLayout.SOUTH);
+                
+}
+private boolean hasSelectedNode(){
+	try{
+	Entigrator entigrator=console.getEntigrator(entihome$);
+	Sack graphEntity=entigrator.getEntityAtKey(entityKey$);
+	String label$=(String)searchBox.getSelectedItem();
+	String nodeKey$=entigrator.indx_keyAtLabel(label$);
+	if(graphEntity.getElementItem("vertex", nodeKey$)!=null)
+		return true;
+	}catch(Exception e){
+	}
+	return false;
+}
+private void markSelectedNode(){
+	try{
+	Entigrator entigrator=console.getEntigrator(entihome$);
+	Sack graphEntity=entigrator.getEntityAtKey(entityKey$);
+	String label$=(String)searchBox.getSelectedItem();
+	String nodeKey$=entigrator.indx_keyAtLabel(label$);
+	String vertexNumber$=graphEntity.getElementItemAt("vertex", nodeKey$);
+	vv.getPickedVertexState().pick(Integer.valueOf(vertexNumber$), true);
+	}catch(Exception e){
+	}
+	
+}
+private void layoutVertices(){
+	try{
+		System.out.println("JGraphRenderer:showViews:BEGIN");
+		Entigrator entigrator=console.getEntigrator(entihome$);
+		Sack graphEntity=entigrator.getEntityAtKey(entityKey$);
+		Core [] ca=graphEntity.elementGet("vertex");
+		if(ca==null)
+			return;
+		int vertexId;
+		final ObservableCachingLayout<Number, Number> layout =(ObservableCachingLayout< Number,Number>)vv.getGraphLayout();
+	    Core [] nsa=graphEntity.elementGet("node.select");	
+		Collection <Number>vc=graph.getVertices();
+        Point2D	p;	
+        Core nodePointer;
+        String nodeKey$;
+        int nodeX;
+        int nodeY;
+		for(Core c:ca){
+			vertexId=Integer.parseInt(c.value);
+			
+			for( Number n:vc)
+				if(vertexId==n.intValue())
+			    {
+				   	nodeKey$=graphEntity.getElementItemAtValue("vertex",String.valueOf(vertexId) );
+				   	nodePointer=graphEntity.getElementItem("node.select",nodeKey$);
+				   	nodeX=Integer.parseInt(nodePointer.type);
+				   	nodeY=Integer.parseInt(nodePointer.value);
+				    layout.setLocation(n, new  Point(nodeX,nodeY));
+			   
+			    }
+		}
+      
+	}catch(Exception e){
+		Logger.getLogger(JGraphRenderer.class.getName()).severe(e.toString());
+	}
+}
+private void showViews(){
+	try{
+		System.out.println("JGraphRenderer:showViews:BEGIN");
+		Entigrator entigrator=console.getEntigrator(entihome$);
+		Sack graphEntity=entigrator.getEntityAtKey(entityKey$);
+		Core [] ca=graphEntity.elementGet("vertex");
+		if(ca==null)
+			return;
+		int vertexId;
+		final ObservableCachingLayout<Number, Number> layout =(ObservableCachingLayout< Number,Number>)vv.getGraphLayout();
+		
+		Collection <Number>vc=graph.getVertices();
+       Point2D	p;	
+		for(Core c:ca){
+			vertexId=Integer.parseInt(c.value);
+			for( Number n:vc)
+				if(vertexId==n.intValue())
+			    {
+					
+					p=layout.transform(n);
+					graphEntity.putElementItem("node.select", new Core(String.valueOf((int)p.getX()),c.name,String.valueOf((int)p.getY())));
+			//	System.out.println("JGraphRenderer:showViews:n="+n.toString()+ " key="+c.name+" point="+ layout.transform(n) );
+			   
+			    }
+		}
+      entigrator.save(graphEntity);
+      JGraphViews gvs=new JGraphViews();
+	    String gvs$=gvs.getLocator();
+	    gvs$=Locator.append(gvs$, Entigrator.ENTIHOME, entihome$);
+	    gvs$=Locator.append(gvs$, EntityHandler.ENTITY_KEY, entityKey$);
+	    gvs$=Locator.append(gvs$,JRequester.REQUESTER_ACTION,JGraphViews.ACTION_SAVE_VIEW );
+	    JConsoleHandler.execute(console, gvs$);
+	}catch(Exception e){
+		Logger.getLogger(JGraphRenderer.class.getName()).severe(e.toString());
+	}
+	
+}
+private void save(){
+	try{
+		System.out.println("JGraphRenderer:save:BEGIN");
+		Entigrator entigrator=console.getEntigrator(entihome$);
+		Sack graphEntity=entigrator.getEntityAtKey(entityKey$);
+		Core [] ca=graphEntity.elementGet("vertex");
+		System.out.println("JGraphRenderer:save:1");
+		if(ca==null)
+			return;
+		int vertexId;
+		final ObservableCachingLayout<Number, Number> layout =(ObservableCachingLayout< Number,Number>)vv.getGraphLayout();
+		
+		Collection <Number>vc=graph.getVertices();
+       Point2D	p;	
+		for(Core c:ca){
+			vertexId=Integer.parseInt(c.value);
+			for( Number n:vc)
+				if(vertexId==n.intValue())
+			    {
+					
+					p=layout.transform(n);
+					graphEntity.putElementItem("node.select", new Core(String.valueOf((int)p.getX()),c.name,String.valueOf((int)p.getY())));
+				System.out.println("JGraphRenderer:save:n="+n.toString()+ " key="+c.name+" point="+ layout.transform(n) );
+			   
+			    }
+		}
+      entigrator.save(graphEntity);
+      JGraphViews gvs=new JGraphViews();
+	    String gvs$=gvs.getLocator();
+	    gvs$=Locator.append(gvs$, Entigrator.ENTIHOME, entihome$);
+	    gvs$=Locator.append(gvs$, EntityHandler.ENTITY_KEY, entityKey$);
+	    gvs$=Locator.append(gvs$,JRequester.REQUESTER_ACTION,JGraphViews.ACTION_SAVE_VIEW );
+	    JConsoleHandler.execute(console, gvs$);
+	}catch(Exception e){
+		Logger.getLogger(JGraphRenderer.class.getName()).severe(e.toString());
+	}
+	
+}
+private void unmarkAll(){
+	Collection <Number>vc=graph.getVertices();
+	for( Number n:vc)
+		vv.getPickedVertexState().pick(n, false);
+	
+}
+private void openEdge(int b){
+	try{
+		System.out.println("JGraphRenderer:openEdge:b="+b);
+		Entigrator entigrator=console.getEntigrator(entihome$);
+		Sack graphEntity=entigrator.getEntityAtKey(entityKey$);
+		String bondKey$=graphEntity.getElementItemAtValue("edge", String.valueOf(b));
+		String edgeKey$=graphEntity.getElementItemAt("edge.entity", bondKey$);
+		JEntityFacetPanel fp=new JEntityFacetPanel();
+		String fp$=fp.getLocator();
+		fp$=Locator.append(fp$, Entigrator.ENTIHOME, entihome$);
+		fp$=Locator.append(fp$, EntityHandler.ENTITY_KEY, edgeKey$);
+		JConsoleHandler.execute(console,fp$); 
+	}catch(Exception e){
+		Logger.getLogger(JGraphRenderer.class.getName()).severe(e.toString());
+	}
+	
+}
+private void displayDetails(int b){
+	try{
+		System.out.println("JGraphRenderer:displayDetails:b="+b);
+		Entigrator entigrator=console.getEntigrator(entihome$);
+		Sack graphEntity=entigrator.getEntityAtKey(entityKey$);
+		String bondKey$=graphEntity.getElementItemAtValue("edge", String.valueOf(b));
+		String edgeKey$=graphEntity.getElementItemAt("edge.entity", bondKey$);
+		Sack edge=entigrator.getEntityAtKey(edgeKey$);
+		Core[] ca=edge.elementGet("detail");
+		if(ca==null)
+			return;
+		ArrayList<String>sl=new ArrayList<String>();
+		for(Core c:ca){
+		     if(bondKey$.equals(c.type))
+		    	 sl.add(entigrator.indx_getLabel(c.value));
+		}
+		 Collections.sort(sl);	   
+		  String entitiesList$=Locator.toString(sl.toArray(new String[0]));
+		   JEntitiesPanel jep=new JEntitiesPanel();
+		   String jepLocator$=jep.getLocator();
+		   jepLocator$=Locator.append(jepLocator$, Entigrator.ENTIHOME, entihome$);
+		   jepLocator$=Locator.append(jepLocator$,EntityHandler.ENTITY_LIST,entitiesList$);
+		   jepLocator$=Locator.append(jepLocator$,EntityHandler.ENTITY_KEY,entityKey$);
+		   JConsoleHandler.execute(console, jepLocator$);
+		
+	}catch(Exception e){
+		Logger.getLogger(JGraphRenderer.class.getName()).severe(e.toString());
+	}
+	
+}
+private void saveAsPicture(){
+	try{
+		String fileName$=System.getProperty("graph.png");
+		JFileChooser chooser = new JFileChooser(); 
+	    chooser.setCurrentDirectory(new java.io.File(System.getProperty("user.home")));
+	    chooser.setDialogTitle(fileName$);
+	    chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+	    chooser.setAcceptAllFileFilterUsed(false);
+	    if (chooser.showSaveDialog(this) == JFileChooser.APPROVE_OPTION) {
+	    	String folder$=chooser.getSelectedFile().getPath();
+	    			//+"/"+fileName$;	
+	    	String file$ =(String)JOptionPane.showInputDialog("File");
+	    			/*
+	    			(String)JOptionPane.showInputDialog(
+                    console,
+                    "File name",
+                    "Customized Dialog",
+                    JOptionPane.PLAIN_MESSAGE,
+                    null,
+                    null
+                    );
+                    */
+
+
+if ((file$ != null) && (file$.length() > 0)) {
+    	int width = vv.getWidth();
+        int height = vv.getHeight();
+        BufferedImage bi = new BufferedImage(width, height,
+                BufferedImage.TYPE_INT_RGB);
+        Graphics2D graphics =bi.createGraphics();
+        vv.paint(graphics);
+        graphics.dispose();
+		File outputfile = new File(folder$+"/"+file$+".png");
+		if(!outputfile.exists())
+			outputfile.createNewFile();
+		ImageIO.write(bi, "png", outputfile);
+	    }
+	    }
+	}catch(Exception e){
+		Logger.getLogger(JGraphRenderer.class.getName()).severe(e.toString());
+	}
+}
+class MousePopupListener extends MouseAdapter {
+	  boolean isPopup=false;
+		public void mousePressed(MouseEvent e) {
+			//System.out.println("EntityStructurePanel:MousePopupListener:mouse pressed");
+			if (e.isPopupTrigger())
+				isPopup=true;
+			else
+				isPopup=false;
+				System.out.println("JGraphRenderer:MousePopupListener:isPopup="+isPopup);
+		}
+
+	    public void mouseClicked(MouseEvent e) {
+	    	if(!isPopup)
+	    		return;
+	    	final VisualizationViewer vv =
+	                (VisualizationViewer)e.getSource();
+	            final Layout layout = vv.getGraphLayout();
+	            final Graph graph = layout.getGraph();
+	            final Point2D p = e.getPoint();
+	            v=-1;
+	            b=-1;
+	            final Point2D ivp = p;
+	            GraphElementAccessor pickSupport = vv.getPickSupport();
+	            if(pickSupport != null) {
+	                
+	                Object vertex = pickSupport.getVertex(layout, ivp.getX(), ivp.getY());
+	                Object edge = pickSupport.getEdge(layout, ivp.getX(), ivp.getY());
+	                if(vertex!=null){
+	                	System.out.println("JGraphRenderer:MousePopupListener:vertex="+vertex);
+	                	v=((Integer)vertex).intValue();
+	                }
+	                if(edge!=null){
+	                	System.out.println("JGraphRenderer:MousePopupListener:edge="+edge);
+	                	b=((Integer)edge).intValue();	
+	                }
+	                
+	               
+	                JPopupMenu popup = new JPopupMenu();
+	        		popup.addPopupMenuListener(new PopupMenuListener(){
+	        			@Override
+	        			public void popupMenuWillBecomeVisible(PopupMenuEvent e) {
+	        				if(v>-1){
+	        				JMenuItem pickOutItem=new JMenuItem("Pick out");
+	        				   popup.add(pickOutItem);
+	        				   pickOutItem.setHorizontalTextPosition(JMenuItem.RIGHT);
+	        				   pickOutItem.addActionListener(new ActionListener() {
+	        						@Override
+	        						public void actionPerformed(ActionEvent e) {
+	        							try{
+	        								pickOut(v);
+	        							}catch(Exception ee){
+	        								Logger.getLogger(getClass().getName()).info(ee.toString());
+	        							}
+	        						}
+	        					    });
+	        				   JMenuItem expandItem=new JMenuItem("Expand");
+	        				   popup.add(expandItem);
+	        				   expandItem.setHorizontalTextPosition(JMenuItem.RIGHT);
+	        				   expandItem.addActionListener(new ActionListener() {
+	        						@Override
+	        						public void actionPerformed(ActionEvent e) {
+	        							try{
+	        								expand(v);
+	        							}catch(Exception ee){
+	        								Logger.getLogger(getClass().getName()).info(ee.toString());
+	        							}
+	        						}
+	        					    });
+	        				   JMenuItem entityItem=new JMenuItem("Entity");
+	        				   popup.add(entityItem);
+	        				   entityItem.setHorizontalTextPosition(JMenuItem.RIGHT);
+	        				   entityItem.addActionListener(new ActionListener() {
+	        						@Override
+	        						public void actionPerformed(ActionEvent e) {
+	        							try{
+	        								entity(v);
+	        							}catch(Exception ee){
+	        								Logger.getLogger(getClass().getName()).info(ee.toString());
+	        							}
+	        						}
+	        					    });
+	        				}
+	        				if(b>-1){
+	        					JMenuItem edgeItem=new JMenuItem("Edge");
+		        				   popup.add(edgeItem);
+		        				   edgeItem.setHorizontalTextPosition(JMenuItem.RIGHT);
+		        				   edgeItem.addActionListener(new ActionListener() {
+		        						@Override
+		        						public void actionPerformed(ActionEvent e) {
+		        							try{
+		        						       openEdge(b);
+		        							}catch(Exception ee){
+		        								Logger.getLogger(getClass().getName()).info(ee.toString());
+		        							}
+		        						}
+		        					    });
+		        				   JMenuItem detailsItem=new JMenuItem("Details");
+		        				   popup.add(detailsItem);
+		        				   detailsItem.setHorizontalTextPosition(JMenuItem.RIGHT);
+		        				   detailsItem.addActionListener(new ActionListener() {
+		        						@Override
+		        						public void actionPerformed(ActionEvent e) {
+		        							try{
+		        						       displayDetails(b);
+		        							}catch(Exception ee){
+		        								Logger.getLogger(getClass().getName()).info(ee.toString());
+		        							}
+		        						}
+		        					    });
+		        					
+	        				}
+	        			}
+	        			
+	        			
+	        			@Override
+	        			public void popupMenuWillBecomeInvisible(PopupMenuEvent e) {
+	        				// TODO Auto-generated method stub
+	        				
+	        			}
+	        			@Override
+	        			public void popupMenuCanceled(PopupMenuEvent e) {
+	        				// TODO Auto-generated method stub
+	        				
+	        			}
+	        		});
+	        		popup.show(JGraphRenderer.this,(int)p.getX(),(int)p.getY());
+	            }
+	    	
+	    }
+	    public void mouseReleased(MouseEvent e) {
+	    	
+	    	if(!isPopup)
+		    	if (e.isPopupTrigger()) 
+			    	  isPopup=true;
+		    	
+	    		System.out.println("JGraphRenderer:MousePopupListener:is Popup");
+	    	}
+	   }
+@Override
+public String addIconToLocator(String locator$) {
+	// TODO Auto-generated method stub
+	return locator$;
+}
+
+@Override
+public String getFacetHandler() {
+	return GraphHandler.class.getName();
+}
+
+@Override
+public String getEntityType() {
+	return "graph";
+}
+
+@Override
+public String getCategoryIcon() {
+	try{
+		Entigrator entigrator=console.getEntigrator(entihome$);
+	return ExtensionHandler.loadIcon(entigrator, EdgeHandler.EXTENSION_KEY,"map.png");
+	}catch(Exception e){
+		 Logger.getLogger(getClass().getName()).severe(e.toString());
+		 return null;
+	}
+}
+
+@Override
+public String getCategoryTitle() {
+	return "Graphs";
+}
+
+@Override
+public void adaptClone(JMainConsole console, String locator$) {
+
+	
+}
+
+@Override
+public void adaptRename(JMainConsole console, String locator$) {
+	// TODO Auto-generated method stub
+	
+}
+
+@Override
+public void collectReferences(Entigrator entigrator, String entiyKey$, ArrayList<JReferenceEntry> sl) {
+	// TODO Auto-generated method stub
+	
+}
+
+@Override
+public void reindex(JMainConsole console, Entigrator entigrator, Sack entity) {
+	// TODO Auto-generated method stub
+	
+}
+
+@Override
+public String newEntity(JMainConsole console, String locator$) {
+	// TODO Auto-generated method stub
+	return null;
+}
+   
+
+}
+
+

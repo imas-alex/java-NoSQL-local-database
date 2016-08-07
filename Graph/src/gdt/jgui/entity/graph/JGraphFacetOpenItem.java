@@ -19,16 +19,16 @@ package gdt.jgui.entity.graph;
 import java.util.Properties;
 import java.util.logging.Logger;
 import javax.swing.JPopupMenu;
+import javax.swing.tree.DefaultMutableTreeNode;
+
 import gdt.data.entity.BaseHandler;
-import gdt.data.entity.EdgeHandler;
 import gdt.data.entity.EntityHandler;
 import gdt.data.entity.FacetHandler;
 import gdt.data.entity.GraphHandler;
-import gdt.data.entity.NodeHandler;
 import gdt.data.entity.facet.ExtensionHandler;
 import gdt.data.grain.Locator;
 
-import gdt.data.grain.Support;
+
 import gdt.data.store.Entigrator;
 import gdt.jgui.console.JConsoleHandler;
 import gdt.jgui.console.JContext;
@@ -113,6 +113,14 @@ public void openFacet(JMainConsole console,String locator$) {
 		responseLocator$=Locator.toString(responseLocator);
 		String requesterResponseLocator$=Locator.compressText(responseLocator$);
 
+		JGraphViewSelector viewSelector =new JGraphViewSelector();
+		String vsLocator$=viewSelector.getLocator();
+		vsLocator$=Locator.append(vsLocator$, Entigrator.ENTIHOME, entihome$);
+		vsLocator$=Locator.append(vsLocator$, EntityHandler.ENTITY_KEY, entityKey$);
+		vsLocator$=Locator.append(vsLocator$, JRequester.REQUESTER_RESPONSE_LOCATOR, requesterResponseLocator$);
+		vsLocator$=Locator.append(vsLocator$, BaseHandler.HANDLER_METHOD,"instantiate");
+		JConsoleHandler.execute(console, vsLocator$);
+/*
 		JGraphRenderer graphRenderer =new JGraphRenderer();
 		String grLocator$=graphRenderer.getLocator();
 		grLocator$=Locator.append(grLocator$, Entigrator.ENTIHOME, entihome$);
@@ -120,13 +128,23 @@ public void openFacet(JMainConsole console,String locator$) {
 		grLocator$=Locator.append(grLocator$, JRequester.REQUESTER_RESPONSE_LOCATOR, requesterResponseLocator$);
 		grLocator$=Locator.append(grLocator$, BaseHandler.HANDLER_METHOD,"instantiate");
 		JConsoleHandler.execute(console, grLocator$);
+		*/
+/*		
+		JBondsPanel bp=new JBondsPanel();
+		String bpLocator$=bp.getLocator();
+		bpLocator$=Locator.append(bpLocator$, Entigrator.ENTIHOME, entihome$);
+		bpLocator$=Locator.append(bpLocator$, EntityHandler.ENTITY_KEY, entityKey$);
+		bpLocator$=Locator.append(bpLocator$, JRequester.REQUESTER_RESPONSE_LOCATOR, requesterResponseLocator$);
+		bpLocator$=Locator.append(bpLocator$, BaseHandler.HANDLER_METHOD,"instantiate");
+		JConsoleHandler.execute(console, bpLocator$);
+	*/	
 	}catch(Exception e){
 		Logger.getLogger(getClass().getName()).severe(e.toString());
 	}
 }
 @Override
 public String getFacetRenderer() {
-	return JGraphRenderer.class.getName();
+	return JGraphViewSelector.class.getName();
 }
 @Override
 public FacetHandler getFacetHandler() {
@@ -136,6 +154,7 @@ public FacetHandler getFacetHandler() {
 public JPopupMenu getPopupMenu(final String digestLocator$) {
 	//System.out.println("JFieldsFacetOpenItem:edit:digest locator="+Locator.remove(digestLocator$, Locator.LOCATOR_ICON));
 	return super.getPopupMenu(digestLocator$);
+	//return null;
 
 }
 @Override
@@ -143,5 +162,11 @@ public void response(JMainConsole console, String locator$) {
 //	System.out.println("JAddressFacetOpenItem:responce:locator="+locator$);
 	super.response(console,locator$);
 
+}
+
+@Override
+public DefaultMutableTreeNode[] getDigest() {
+	// TODO Auto-generated method stub
+	return null;
 }
 }

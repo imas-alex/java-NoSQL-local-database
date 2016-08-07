@@ -38,9 +38,11 @@ import java.util.Properties;
 import java.util.Stack;
 import java.util.logging.Logger;
 
+import gdt.data.entity.AddressHandler;
 import gdt.data.entity.BankHandler;
 import gdt.data.entity.BaseHandler;
 import gdt.data.entity.EntityHandler;
+import gdt.data.entity.facet.ExtensionHandler;
 import gdt.data.entity.facet.FieldsHandler;
 import gdt.data.grain.Core;
 import gdt.data.grain.Identity;
@@ -76,11 +78,13 @@ public class JBankEditor extends JFieldsEditor {
 			}
 			if(entityKey$!=null)
 				locator.setProperty(EntityHandler.ENTITY_KEY,entityKey$);
-			if(entihome$!=null)
+			if(entihome$!=null){
 				locator.setProperty(Entigrator.ENTIHOME,entihome$);
-				 String icon$=Support.readHandlerIcon(JBankEditor.class, "bank.png");
-			    if(icon$!=null)
-			    	locator.setProperty(Locator.LOCATOR_ICON,icon$);
+			Entigrator entigrator=console.getEntigrator(entihome$);
+		    String icon$=ExtensionHandler.loadIcon(entigrator,BankHandler.EXTENSION_KEY, "bank.png");
+		    if(icon$!=null)
+		    	locator.setProperty(Locator.LOCATOR_ICON,icon$);	
+			}
 			return Locator.toString(locator);
 			}catch(Exception e){
 	        Logger.getLogger(getClass().getName()).severe(e.toString());
@@ -111,9 +115,14 @@ public class JBankEditor extends JFieldsEditor {
 
 	@Override
 	public String getCategoryIcon() {
-		return Support.readHandlerIcon(JBankEditor.class, "bank.png");
+		String icon$=null;
+		if(entihome$!=null)	{
+			Entigrator entigrator=console.getEntigrator(entihome$);
+		    icon$=ExtensionHandler.loadIcon(entigrator,AddressHandler.EXTENSION_KEY, "bank.png");
+		
 	}
-
+		return icon$;
+	}
 	@Override
 	public String getCategoryTitle() {
 		return "Banks";
@@ -139,14 +148,18 @@ public class JBankEditor extends JFieldsEditor {
 	    String editorLocator$=textEditor.getLocator();
 	    editorLocator$=Locator.append(editorLocator$, JTextEditor.TEXT, "Bank"+Identity.key().substring(0,4));
 	    editorLocator$=Locator.append(editorLocator$,Locator.LOCATOR_TITLE,"Bank entity");
-	    String icon$=Support.readHandlerIcon(getClass(), "bank.png");
-	    editorLocator$=Locator.append(editorLocator$,Locator.LOCATOR_ICON,icon$);
 	    JBankEditor fe=new JBankEditor();
 	    String feLocator$=fe.getLocator();
 	    Properties responseLocator=Locator.toProperties(feLocator$);
 	    entihome$=Locator.getProperty(locator$,Entigrator.ENTIHOME );
-	    if(entihome$!=null)
+	    if(entihome$!=null){
 	      responseLocator.setProperty(Entigrator.ENTIHOME,entihome$);
+	  		Entigrator entigrator=console.getEntigrator(entihome$);
+	  		// String icon$=Support.readHandlerIcon(null,JAddressEditor.class, "address.png");
+	  	 String icon$=ExtensionHandler.loadIcon(entigrator,AddressHandler.EXTENSION_KEY, "bank.png");
+	  	if(icon$!=null)
+	  		 editorLocator$=Locator.append(editorLocator$,Locator.LOCATOR_ICON,icon$);
+	    }
 	   responseLocator.setProperty(BaseHandler.HANDLER_CLASS,JBankEditor.class.getName());
 		responseLocator.setProperty(BaseHandler.HANDLER_METHOD,"response");
 		responseLocator.setProperty(BaseHandler.HANDLER_SCOPE,JConsoleHandler.CONSOLE_SCOPE);

@@ -81,6 +81,7 @@ public class JCategoryPanel extends JItemsListPanel {
 		Properties locator=new Properties();
 	    locator.setProperty(Locator.LOCATOR_TYPE, JContext.CONTEXT_TYPE);
 	    locator.setProperty(JContext.CONTEXT_TYPE,getType());
+	    locator.setProperty(JItemsListPanel.POSITION,String.valueOf(getPosition()));
 	    if(entihome$!=null)
 	    	locator.setProperty(Entigrator.ENTIHOME,entihome$);
 	    if(renderer$!=null)
@@ -96,7 +97,8 @@ public class JCategoryPanel extends JItemsListPanel {
 	   
 	    locator.setProperty(BaseHandler.HANDLER_SCOPE,JConsoleHandler.CONSOLE_SCOPE);
 	    locator.setProperty(BaseHandler.HANDLER_CLASS,getClass().getName());
-		return Locator.toString(locator);
+		System.out.println("JCategoryPanel:getLocator:locator="+locator$);
+	    return Locator.toString(locator);
 	}
 	/**
 	 * Create the context.
@@ -106,27 +108,48 @@ public class JCategoryPanel extends JItemsListPanel {
 	 */	
 	@Override
 	public JContext instantiate(JMainConsole console, String locator$) {
-	//	System.out.println("JCategory:instantiate:locator="+Locator.remove(locator$,Locator.LOCATOR_ICON));
+	   	
 		try{
 		this.console=console;
+		boolean debug=false;
 //		System.out.println("CategoryPanel:instantiate:locator="+locator$);
+		System.out.println("JCategory:instantiate:locator="+Locator.remove(locator$,Locator.LOCATOR_ICON));
 		Properties locator=Locator.toProperties(locator$);
 		entihome$=locator.getProperty(Entigrator.ENTIHOME);
 		Entigrator entigrator=console.getEntigrator(entihome$);	
 		renderer$=locator.getProperty(RENDERER);
-	//	System.out.println("JCategoryPanel:instantiate:renderer="+renderer$);
+		if("gdt.jgui.entity.graph.JGraphViewSelector".equals(renderer$))
+		   System.out.println("JCategoryPanel:instantiate:renderer="+renderer$);
 		JFacetRenderer facetRenderer=(JFacetRenderer)JConsoleHandler.getHandlerInstance(entigrator, renderer$);
+		if(facetRenderer==null){
+			 System.out.println("JCategoryPanel:instantiate:ERROR:cannot load renderer="+renderer$);
+			
+		}
+		if("gdt.jgui.entity.graph.JGraphViewSelector".equals(renderer$))
+			   System.out.println("JCategoryPanel:instantiate:got renderer="+facetRenderer.getClass().getName());
 		String frLocator$=facetRenderer.getLocator();
+		if("gdt.jgui.entity.graph.JGraphViewSelector".equals(renderer$))
+			System.out.println("JCategoryPanel:instantiate:renderer locator="+frLocator$);
 		frLocator$=Locator.append(frLocator$, Entigrator.ENTIHOME, entihome$);
 		facetRenderer.instantiate(console,frLocator$ );
+		
 		entityType$=facetRenderer.getEntityType();
     	categoryIcon$=facetRenderer.getCategoryIcon();
 		categoryTitle$=facetRenderer.getCategoryTitle();
+		if("gdt.jgui.entity.graph.JGraphViewSelector".equals(renderer$))
+			System.out.println("JCategoryPanel:instantiate:entity type="+entityType$+" category="+categoryTitle$);
 		this.locator$=getLocator();
 
 		JItemPanel[] ipa=listCategoryMembers(console, this.locator$);
 	
 		putItems(ipa);
+		try{
+   		 pos=Integer.parseInt(locator.getProperty(POSITION));
+   		 System.out.println("JCategoryPanel:instantiate:pos="+pos);
+   		 select(pos);
+			}catch(Exception e){
+					Logger.getLogger(getClass().getName()).info(e.toString());
+			}
 		}catch(Exception e){
 		Logger.getLogger(getClass().getName()).info(e.toString());
 		}
@@ -354,6 +377,8 @@ public class JCategoryPanel extends JItemsListPanel {
 	 */	
 	@Override
 	public void close() {
+	   	  console.getTrack().pop();
+	      console.getTrack().push(getLocator());
 	}
 	private void putItem(String key$,JItemPanel item){
 		if(items==null)

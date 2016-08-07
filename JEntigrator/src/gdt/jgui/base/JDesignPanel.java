@@ -127,8 +127,8 @@ public class JDesignPanel extends JPanel implements JContext{
 		gbc_lblProperty.gridy = 0;
 		gbc_lblProperty.anchor=GridBagConstraints.FIRST_LINE_START;
 		add(lblProperty, gbc_lblProperty);
-		
 		propertyComboBox = new JComboBox<String>();
+
 		GridBagConstraints gbc_propertyComboBox = new GridBagConstraints();
 		gbc_propertyComboBox.fill = GridBagConstraints.HORIZONTAL;
 		gbc_propertyComboBox.insets = new Insets(0, 0, 5, 5);

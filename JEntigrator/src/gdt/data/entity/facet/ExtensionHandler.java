@@ -39,6 +39,7 @@ import gdt.data.entity.FacetHandler;
 import gdt.data.grain.Locator;
 import gdt.data.grain.Sack;
 import gdt.data.store.Entigrator;
+import gdt.data.store.FileExpert;
 /**
 * Contains methods to process an extension entity.
 * @author  Alexander Imas
@@ -87,10 +88,14 @@ private Logger LOGGER=Logger.getLogger(ExtensionHandler.class.getName());
 			ArrayList<FacetHandler>fl=new ArrayList<FacetHandler>();
 		FacetHandler[] fha;	
 		for(String aSa:sa){
+			try{
 			fha=listExtensionHandlers( entigrator,aSa);
 			if(fha!=null)
 				for(FacetHandler fh:fha)
 					fl.add(fh);
+			}catch(Exception ee){
+				System.out.println("ExtesionHandler:listExtensionHandlers:extension="+aSa+" error:"+ee.toString());
+			}
 		}
 		return fl.toArray(new FacetHandler[0]);
 		}catch(Exception e){
@@ -109,14 +114,19 @@ private Logger LOGGER=Logger.getLogger(ExtensionHandler.class.getName());
 	public static Object loadHandlerInstance(Entigrator entigrator,String extension$,String handlerClass$){
 		try{
 		System.out.println("ExtensionHandler:loadHandlerInstance:extension="+extension$+" handler="+handlerClass$);
-			Object obj=null;
-			Sack extension=entigrator.getEntityAtKey(extension$);
+		
+		
+		Object obj=null;
+		Class<?>cls=entigrator.getClass(handlerClass$);
+		if(cls==null){
+			System.out.println("ExtensionHandler:loadHandlerInstance:1");
+		Sack extension=entigrator.getEntityAtKey(extension$);
 			String lib$=extension.getElementItemAt("field", "lib");
 			String jar$="jar:file:" +entigrator.getEntihome()+"/"+extension$+"/"+lib$+"!/";
 			ArrayList <URL> urll=new ArrayList<URL>();
 			urll.add(new URL(jar$));
-			//URL[] urls = { new URL(jar$) };
-			String[]sa=extension.elementListNoSorted("classpath");
+			
+			String[]sa=extension.elementListNoSorted("external");
 			if(sa!=null){
 				File file; 
 				for(String s:sa){
@@ -127,26 +137,23 @@ private Logger LOGGER=Logger.getLogger(ExtensionHandler.class.getName());
 			}
 			URL[] urls=urll.toArray(new URL[0]);
 			URLClassLoader cl = URLClassLoader.newInstance(urls);
-			Class<?>cls=entigrator.getClass(handlerClass$);
-			if(cls==null){
+			
+		//	Class<?>cls=entigrator.getClass(handlerClass$);
+			
 					cls=cl.loadClass(handlerClass$);
 					
-			        if(cls==null)
+			        if(cls==null){
 			        	System.out.println("ExtensionHandler:loadHandlerInstance:cannot load class ="+handlerClass$);
-			        	else{
-			        		System.out.println("ExtensionHandler:loadHandlerInstance:found class ="+handlerClass$);
+			            return null;	
+			        }else{
+			        	//	System.out.println("ExtensionHandler:loadHandlerInstance:found class ="+handlerClass$);
 			        		entigrator.putClass(handlerClass$, cls);
 			        	}
 			        
 			}
-			//else
-			//	System.out.println("ExtensionHandler:loadHandlerInstance:found in cache");
-			//ClassLoader cll = Thread.currentThread().getContextClassLoader();
 			
-	//		System.out.println("ExtensionHandler:loadHandlerInstance:cls="+cls.getName());
-			//Thread.currentThread().setContextClassLoader(cl);
 			try{
-				System.out.println("ExtensionHandler:loadHandlerInstance:1");	
+				
 				Constructor[] ctors = cls.getDeclaredConstructors();
 				System.out.println("ExtensionHandler:loadHandlerInstance:ctors="+ctors.length);
 				Constructor ctor = null;
@@ -157,14 +164,13 @@ private Logger LOGGER=Logger.getLogger(ExtensionHandler.class.getName());
 				}
 				ctor.setAccessible(true);
 		 	    obj = ctor.newInstance();
-				//obj=cls.newInstance();
-			System.out.println("ExtensionHandler:loadHandlerInstance:2");	
+				
 			}catch(java.lang.NoClassDefFoundError ee){
 				System.out.println("ExtensionHandler:loadHandlerInstance:"+ee.toString());
 				return null;
 			}
-			if(obj!=null)
-		      System.out.println("ExtensionHandler:loadHandlerInstance:obj="+obj.toString());
+			//if(obj!=null)
+		      System.out.println("ExtensionHandler:loadHandlerInstance:obj="+obj.getClass().getName());
 		    return obj;
 		}catch(Exception e){
 			Logger.getLogger(ExtensionHandler.class.getName()).severe(e.toString());
@@ -175,11 +181,13 @@ private Logger LOGGER=Logger.getLogger(ExtensionHandler.class.getName());
 	
 	private static FacetHandler[] listExtensionHandlers( Entigrator entigrator,String extension$){
 		try{
-		Sack extension=entigrator.getEntityAtKey(extension$);
+			System.out.println("ExtesionHandler:listExtensionHandlers:extension="+extension$);
+			Sack extension=entigrator.getEntityAtKey(extension$);
 		String lib$=extension.getElementItemAt("field", "lib");
 		String[] sa=extension.elementList("content.fhandler");
 		if(sa==null)
 			return null;
+		
 		ArrayList<FacetHandler>fl=new ArrayList<FacetHandler>();
 		FacetHandler fh;
 		Class<?> cls;
@@ -271,6 +279,65 @@ private Logger LOGGER=Logger.getLogger(ExtensionHandler.class.getName());
 			      }
 			    }
 			return null;
+		}catch(Exception e){
+			Logger.getLogger(ExtensionHandler.class.getName()).severe(e.toString());
+			return null;
+		}
+		
+	}
+	public static InputStream getResourceStream(String jar$,String resource$){
+		try{
+	//		System.out.println("ExtensionHandler:loadIcon:jar="+jar$);
+			  ZipFile zf = new ZipFile(jar$);
+			    Enumeration<? extends ZipEntry> entries = zf.entries();
+			    ZipEntry ze;
+			    String[] sa;
+			    while (entries.hasMoreElements()) {
+			      try{
+			    	ze = entries.nextElement();
+			      sa=ze.getName().split("/");
+			 //     System.out.println("ExtensionHandler:loadIcon:zip entry="+sa[sa.length-1]);
+			      if(resource$.equals(sa[sa.length-1])){
+			    	  InputStream is=zf.getInputStream(ze);
+			    	  if(is!=null)
+			    		  return is;
+	
+			      }
+			      }catch(Exception e){
+			    	  
+			      }
+			    }
+			return null;
+		}catch(Exception e){
+			Logger.getLogger(ExtensionHandler.class.getName()).severe(e.toString());
+			return null;
+		}
+		
+	}
+	public static String[] listResourcesByType(String jar$,String type$){
+		try{
+			
+
+            ArrayList<String>sl=new ArrayList<String>();		
+			  ZipFile zf = new ZipFile(jar$);
+			    Enumeration<? extends ZipEntry> entries = zf.entries();
+			    ZipEntry ze;
+			    String[] sa;
+			    String resource$;
+			    while (entries.hasMoreElements()) {
+			      try{
+			    	ze = entries.nextElement();
+			      sa=ze.getName().split("/");
+			      resource$=sa[sa.length-1];
+			 //     System.out.println("ExtensionHandler:loadIcon:zip entry="+sa[sa.length-1]);
+			      if(type$.equals(FileExpert.getExtension(resource$))){
+	                       sl.add(resource$);
+			      }
+			      }catch(Exception e){
+			    	  
+			      }
+			    }
+			return sl.toArray(new String[0]);
 		}catch(Exception e){
 			Logger.getLogger(ExtensionHandler.class.getName()).severe(e.toString());
 			return null;
@@ -429,4 +496,9 @@ private Logger LOGGER=Logger.getLogger(ExtensionHandler.class.getName());
 	return null;
 	}
 	//
+	@Override
+	public void completeMigration(Entigrator entigrator) {
+		// TODO Auto-generated method stub
+		
+	}
 }

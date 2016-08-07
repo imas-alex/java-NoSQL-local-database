@@ -21,9 +21,11 @@ import java.util.Properties;
 import java.util.logging.Logger;
 import javax.swing.JPopupMenu;
 import gdt.data.entity.BaseHandler;
+import gdt.data.entity.ContactHandler;
 import gdt.data.entity.EntityHandler;
 import gdt.data.entity.FacetHandler;
 import gdt.data.entity.PersonHandler;
+import gdt.data.entity.facet.ExtensionHandler;
 import gdt.data.grain.Locator;
 import gdt.data.grain.Support;
 import gdt.data.store.Entigrator;
@@ -54,14 +56,15 @@ public String getLocator(){
 	locator.setProperty(FACET_HANDLER_CLASS,PersonHandler.class.getName());
 	if(entityKey$!=null)
 		locator.setProperty(EntityHandler.ENTITY_KEY,entityKey$);
-	if(entihome$!=null)
+	if(entihome$!=null){
 		locator.setProperty(Entigrator.ENTIHOME,entihome$);
-	 String icon$=Support.readHandlerIcon(JPersonEditor.class, "person.png");
+		locator.setProperty(Locator.LOCATOR_CHECKABLE,Locator.LOCATOR_TRUE);
+	Entigrator entigrator=console.getEntigrator(entihome$);
+    String icon$=ExtensionHandler.loadIcon(entigrator,PersonHandler.EXTENSION_KEY, "person.png");
     if(icon$!=null)
     	locator.setProperty(Locator.LOCATOR_ICON,icon$);
-    if(entihome$!=null){   
- 	locator.setProperty(Locator.LOCATOR_CHECKABLE,Locator.LOCATOR_TRUE);
-	    }
+	}
+    
 	return Locator.toString(locator);
 }
 
@@ -76,7 +79,11 @@ public String getFacetName() {
 }
 @Override
 public String getFacetIcon() {
-	return Support.readHandlerIcon(JPersonFacetOpenItem.class, "person.png");
+	if(entihome$!=null){
+		Entigrator entigrator=console.getEntigrator(entihome$);
+		return ExtensionHandler.loadIcon(entigrator,PersonHandler.EXTENSION_KEY, "person.png");
+	}
+	return null;
 }
 @Override
 public void removeFacet() {
