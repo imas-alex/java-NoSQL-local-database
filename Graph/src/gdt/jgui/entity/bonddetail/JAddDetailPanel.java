@@ -1,7 +1,7 @@
 package gdt.jgui.entity.bonddetail;
 /*
  * Copyright 2016 Alexander Imas
- * This file is part of JEntigrator.
+ * This file is extension of JEntigrator.
 
     JEntigrator is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -25,7 +25,6 @@ import java.util.Properties;
 import java.util.logging.Logger;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
-import javax.swing.JOptionPane;
 import javax.swing.event.MenuEvent;
 import javax.swing.event.MenuListener;
 import org.apache.commons.codec.binary.Base64;
@@ -39,9 +38,7 @@ import gdt.data.entity.NodeHandler;
 import gdt.data.entity.facet.ExtensionHandler;
 import gdt.data.grain.Locator;
 import gdt.data.grain.Sack;
-import gdt.data.grain.Support;
 import gdt.data.store.Entigrator;
-import gdt.jgui.base.JCategoryPanel;
 import gdt.jgui.console.JConsoleHandler;
 import gdt.jgui.console.JContext;
 import gdt.jgui.console.JFacetOpenItem;
@@ -50,9 +47,10 @@ import gdt.jgui.console.JItemPanel;
 import gdt.jgui.console.JItemsListPanel;
 import gdt.jgui.console.JMainConsole;
 import gdt.jgui.console.JRequester;
-import gdt.jgui.console.JItemsListPanel.ItemPanelComparator;
+
 /**
- * Displays the list of entities.
+ * Displays the list of bond details.
+ * Provides menu to manage bond details.
  * @author imasa
  *
  */
@@ -171,10 +169,10 @@ public class JAddDetailPanel extends JItemsListPanel implements JRequester{
 		    return Locator.toString(locator);
 	}
 /**
- * Create the entities panel.
+ * Create the context
  * @param console the main console.
  * @param locator$ the locator string.
- * @return an instance of the entities panel.
+ * @return an instance of the JAddDetailPanel.
  */
 	@Override
 	public JContext instantiate(JMainConsole console, String locator$) {
@@ -266,18 +264,7 @@ public class JAddDetailPanel extends JItemsListPanel implements JRequester{
  */
 public String getTitle() {
 		String title$= "Add detail";
-		/*
-		if(locator$!=null)
-		try{
-		Properties locator=Locator.toProperties(locator$);
-		if(locator.getProperty(EntityHandler.ENTITY_CONTAINER)!=null)
-			title$= "Components list";
-		if(locator.getProperty(EntityHandler.ENTITY_COMPONENT)!=null)
-			title$= "Containers list";
-		}catch(Exception e){
-			LOGGER.info(e.toString());
-		}
-		*/
+	
 		return title$;
 	}
 	/**
@@ -310,12 +297,16 @@ public String getTitle() {
 			}
 		return subtitle$;
 	}
-	
+	/**
+	 * Response on call from the other context.
+	 *	@param console main console
+	 *  @param locator$ action's locator 
+	 */
 
 		@Override
 		public void response(JMainConsole console, String locator$) {
-		System.out.println("JAddDetailPanel:response.BEGIN");
-		System.out.println("JAddDetailPanel:response:locator="+locator$);	
+//	System.out.println("JAddDetailPanel:response.BEGIN");
+//		System.out.println("JAddDetailPanel:response:locator="+locator$);	
 		try{
 			Properties locator=Locator.toProperties(locator$);
 			String entihome$=locator.getProperty(Entigrator.ENTIHOME);
@@ -327,7 +318,7 @@ public String getTitle() {
 			fr.instantiate(console, frLocator$);
 			String detail$=fr.newEntity(console, frLocator$);
 			Sack detail=entigrator.getEntity(detail$);
-			System.out.println("JAddDetailPanel:response:detail="+detail.getProperty("label"));
+	//		System.out.println("JAddDetailPanel:response:detail="+detail.getProperty("label"));
 		}catch(Exception e){
 			Logger.getLogger(JAddDetailPanel.class.getName()).severe(e.toString());
 		}

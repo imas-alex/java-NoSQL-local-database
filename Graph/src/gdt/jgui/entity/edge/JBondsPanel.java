@@ -60,36 +60,68 @@ import javax.swing.event.MenuListener;
 
 import org.apache.commons.codec.binary.Base64;
 
-
-//import org.apache.commons.codec.binary.Base64;
 /**
- * This class represents a list of web links assigned to the entity.
+ * This class displays a list of bonds.
  * @author imasa
  *
  */
 public class JBondsPanel extends JItemsListPanel implements JContext,JFacetRenderer,JRequester{
 	private static final long serialVersionUID = 1L;
 	/**
-	 * The tag of a web link key.
+	 * The tag of the bond key.
 	 */
 	public static final String BOND_KEY="bond key" ;
 	/**
-	 * The tag of a web link name.
+	 * The  tag of the edge key.
 	 */
 	public static final String EDGE_KEY="edge key" ;
+	/**
+	 * The  'edge' tag .
+	 */
 	public static final String EDGE="edge" ;
+	/**
+	 * The  'edge detail' tag .
+	 */
 	public static final String EDGE_DETAIL="edge detail" ;
+	/**
+	 * The  tag of the input node key of the bond.
+	 */
 	public static final String BOND_IN_NODE_KEY="bond in node key" ;
+	/**
+	 * The  tag of the output node key of the bond.
+	 */
 	public static final String BOND_OUT_NODE_KEY="bond out node key " ;
+	/**
+	 * The  'new entity' action  tag .
+	 */
+	
 	public static final String ACTION_NEW_ENTITY="action new entity";
+	/**
+	 * The  tag of the output node key .
+	 */
 	public static final String BOND_OUT="out" ;
+	/**
+	 * The  tag of the input node key .
+	 */
 	public static final String BOND_IN="in" ;
+	/**
+	 * The  tag of the bond detail entry key .
+	 */
 	public static final String BOND_DETAIL_ENTRY_KEY="bond detail entry key";
+	/**
+	 * The  'select mode' tag.
+	 */
 	public static final String SELECT_MODE="select node";
+	/**
+	 * The  'select mode out' tag.
+	 */
 	public static final String SELECT_MODE_OUT="select node out";
+	/**
+	 * The  'select mode in' tag.
+	 */
 	public static final String SELECT_MODE_IN="select node in";
 	/**
-	 * Indicates the locator type as a web link.
+	 * Indicates the locator type as a bond locator.
 	 */
 	public static final String LOCATOR_TYPE_BOND="locator type bond";
 	
@@ -370,7 +402,7 @@ menu.addMenuListener(new MenuListener(){
 				  if(sa==null)
 					  return;
 				for(String s:sa){
-					System.out.println("JBondsPanel:delete:s="+s);
+				//	System.out.println("JBondsPanel:delete:s="+s);
 					if(isGraphEntity())
 						removeBondEntry(s);
 					else if(isEdgeEntity())
@@ -585,22 +617,22 @@ return menu;
 		return "bonds";
 	}
 	/**
-	 * No action.
+	 * Close the context.
 	 */
 	@Override
 	public void close() {
-		   System.out.println("JBondsPanel:close:position="+getPosition());
+		 //  System.out.println("JBondsPanel:close:position="+getPosition());
 		      console.getTrack().pop();
 		      console.getTrack().push(getLocator());
 	}
 	/**
-	 * Open URL in the system browser. 
+	 * Response on the call from another context
 	 * @param console the main console
 	 * @param locator$ the locator string
 	 */
 	@Override
 	public void response(JMainConsole console, String locator$) {
-		System.out.println("JEdgeEditor:response:"+Locator.remove(locator$,Locator.LOCATOR_ICON ));
+	//	System.out.println("JEdgeEditor:response:"+Locator.remove(locator$,Locator.LOCATOR_ICON ));
 		try{
 			Properties locator=Locator.toProperties(locator$);
 			String action$=locator.getProperty(JRequester.REQUESTER_ACTION);
@@ -642,6 +674,12 @@ return menu;
 		}
 		
 	}
+	/**
+	 * Add edge icon to the locator.
+	 * @param locator$ the locator string.
+	 * @return the locator string.
+	 * 
+	 */
 	@Override
 	public String addIconToLocator(String locator$) {
 		//String icon$=Support.readHandlerIcon(JBondsPanel.class, "edge.png");
@@ -655,25 +693,46 @@ return menu;
 		}
 	    	return locator$;
 	}
+	/**
+	 * Get facet handler class name.
+	 * @return the facet handler class name.
+	 */
 	@Override
 	public String getFacetHandler() {
 		return EdgeHandler.class.getName();
 	}
+	/**
+	 * Get the type of the entity for the facet.
+	 * @return the entity type.
+	 */
 	@Override
 	public String getEntityType() {
 		return "edge";
 	}
+	/**
+	 * Get facet icon as a Base64 string. 
+	 * @return the icon string.
+	 */
 	@Override
 	public String getCategoryIcon() {
 		Entigrator entigrator=console.getEntigrator(entihome$);
 		return ExtensionHandler.loadIcon(entigrator,EdgeHandler.EXTENSION_KEY,"edge.png"); 
 	}
-	
+	/**
+	 * Get category title for entities having the facet type.
+	 * @return the category title.
+	 */
+
 	
 	@Override
 	public String getCategoryTitle() {
 		return "Edges";
 	}
+	/**
+	 * Adapt cloned entity.
+	 * @param console the main console.
+	 * @param locator$ the locator string.
+	 */
 	@Override
 	public void adaptClone(JMainConsole console, String locator$) {
 		 try{
@@ -689,6 +748,12 @@ return menu;
 		    }
 		
 	}
+	/**
+	 * Adapt renamed entity.
+	 * @param console the main console.
+	 * @param locator$ the locator string.
+	 */
+
 	@Override
 	public void adaptRename(JMainConsole console, String locator$) {
 		try{
@@ -704,11 +769,20 @@ return menu;
 	    } 
 		
 	}
+	/**
+	 * No action.
+	 */
 	@Override
 	public void collectReferences(Entigrator entigrator, String entiyKey$, ArrayList<JReferenceEntry> sl) {
 		// TODO Auto-generated method stub
 		
 	}
+	/**
+	 * Rebuild entity's facet related parameters.
+	 * @param console the main console
+	 * @param entigrator the entigrator.
+	 * @param entity the entity.
+	 */
 	@Override
 	public void reindex(JMainConsole console, Entigrator entigrator, Sack entity) {
 		 try{
@@ -725,16 +799,18 @@ return menu;
 			    }
 		
 	}
+	/**
+	 * Create a new entity of the facet type.
+	 * @param console the main console.
+	 * @param locator$ the locator string.
+	 * @return the new entity key.
+	 */	
 	@Override
 	public String newEntity(JMainConsole console, String locator$) {
 		JTextEditor textEditor=new JTextEditor();
 	    String editorLocator$=textEditor.getLocator();
 	    editorLocator$=Locator.append(editorLocator$, JTextEditor.TEXT, "Edge"+Identity.key().substring(0,4));
 	    editorLocator$=Locator.append(editorLocator$,Locator.LOCATOR_TITLE,"Edge entity");
-	    
-	    //String icon$=Support.readHandlerIcon(getClass(), "edge.png");
-	   
-	   // JEdgeEditor fe=new JEdgeEditor();
 	    JBondsPanel bp=new JBondsPanel();
 	    String bpLocator$=bp.getLocator();
 	    Properties responseLocator=Locator.toProperties(bpLocator$);
@@ -746,8 +822,6 @@ return menu;
 	      if(icon$!=null)
 	      editorLocator$=Locator.append(editorLocator$,Locator.LOCATOR_ICON,icon$);
 	    }
-	    //else
-	    //	System.out.println("JNodeEditor:newEntity:entihome is null");	
 	   responseLocator.setProperty(BaseHandler.HANDLER_CLASS,JBondsPanel.class.getName());
 		responseLocator.setProperty(BaseHandler.HANDLER_METHOD,"response");
 		responseLocator.setProperty(BaseHandler.HANDLER_SCOPE,JConsoleHandler.CONSOLE_SCOPE);
@@ -760,6 +834,7 @@ return menu;
 		JConsoleHandler.execute(console,editorLocator$); 
 		return editorLocator$;
 	}
+/*
 private String getNodeToSet(){
 		try{
 		String[] sa=console.clipboard.getContent();
@@ -782,6 +857,12 @@ private String getNodeToSet(){
 		}
 		return null;
 }
+*/
+/**
+ * Remove the bond 
+ * @param console the main console.
+ * @param locator$ the locator string.
+ */	
 public static void removeBond(JMainConsole console,String locator$){
 	try{
 		Properties locator=Locator.toProperties(locator$);
@@ -807,6 +888,7 @@ public static void removeBond(JMainConsole console,String locator$){
 		Logger.getLogger(JBondsPanel.class.getName()).severe(e.toString());
 	}
 }
+/*
 public  void removeDetail(){
 	try{
 	
@@ -819,7 +901,9 @@ public  void removeDetail(){
 		Logger.getLogger(JBondsPanel.class.getName()).severe(e.toString());
 	}
 }
-public void removeBondEntry(String locator$){
+*/
+
+private void removeBondEntry(String locator$){
 	try{
 		Properties locator=Locator.toProperties(locator$);
 		String bondKey$=locator.getProperty(BOND_KEY);
@@ -847,6 +931,8 @@ public void removeBondDetail(String locator$){
 	}
 }
 */
+
+/*
 private boolean isNodeEntity(){
      try{
     	 Entigrator entigrator=console.getEntigrator(entihome$);
@@ -858,6 +944,7 @@ private boolean isNodeEntity(){
      }
      return false;
 }
+*/
 private boolean isDetailEntity(){
     try{
    	 Entigrator entigrator=console.getEntigrator(entihome$);
@@ -891,11 +978,13 @@ private boolean isGraphEntity(){
     }
     return false;
 }
+/*
 private boolean isBondDetailEntity(){
 	 if(BondDetailHandler.class.getName().equals(facetHandlerClass$))
    			 return true;
     return false;
 }
+*/
 private boolean hasBondsToPaste(){
 	try{
 		String [] sa=console.clipboard.getContent();
@@ -949,7 +1038,8 @@ private void pasteBonds(){
 	    }
 	   
 }
-public static void saveSelection(JMainConsole console, String entihome$, String edgeKey$,String bondKey$){
+/*
+private static void saveSelection(JMainConsole console, String entihome$, String edgeKey$,String bondKey$){
 	try{
 	if(bondKey$==null)
 		return;
@@ -963,8 +1053,8 @@ public static void saveSelection(JMainConsole console, String entihome$, String 
 		System.out.println("JBondsPanel:saveSelectedBond:"+e.toString());
 	}
 }
-
-public static class InNodeComparator implements Comparator<JItemPanel>{
+*/
+private static class InNodeComparator implements Comparator<JItemPanel>{
     
     public Entigrator entigrator;
     @Override

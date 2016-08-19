@@ -1,7 +1,7 @@
 package gdt.data.extension;
 /*
  * Copyright 2016 Alexander Imas
- * This file is part of JEntigrator.
+ * This file is extension of JEntigrator.
 
     JEntigrator is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -30,11 +30,22 @@ import gdt.data.entity.facet.ExtensionMain;
 import gdt.data.grain.Core;
 import gdt.data.grain.Sack;
 import gdt.data.store.*;
+/**
+* Extension installer.
+* @author  Alexander Imas
+* @version 1.0
+* @since   2016-08-08
+*/
 public class Main implements ExtensionMain{
 	 public static final String EXTENSION_KEY="_Tm142C8Sgti2iAKlDEcEXT2Kj1E";
 	 private static final String EXTENSION_LABEL="graph";
 	 private static final String EXTENSION_JAR="graph.jar";
-	public void main(String[] args) {
+	 /**
+		 * Install extension  
+		 *  @param args contains the path of the database to install the extension.
+		
+		 */			
+	 public void main(String[] args) {
       
 		final String[] sa=args;
         if(sa!=null)
@@ -44,7 +55,7 @@ public class Main implements ExtensionMain{
            	//System.out.println("Community:main");
             	  
                String entihome$=sa[0];
-               System.out.println("Graph:main.entihome="+entihome$);
+   //            System.out.println("Graph:main.entihome="+entihome$);
                Entigrator entigrator=new Entigrator(new String[]{entihome$});
            //    System.out.println(entigrator.getEntihome());
                Sack extension= makeExtension(entigrator);
@@ -88,25 +99,7 @@ public class Main implements ExtensionMain{
                }
                }	   
                entigrator.save(extension);
-              /*
-               InputStream is=ExtensionHandler.getResourceStream(entigrator,EXTENSION_KEY, "jgraphx.jar");
-               if(is!=null){
-                  System.out.println("Main:main:input stream found");
-                
-                target=new File(folder$+"/jgraphx.jar");
-            	  if(!target.exists())
-                	   target.createNewFile();
-               int readBytes;
-               byte[] buffer = new byte[4096];
-              FileOutputStream os = new FileOutputStream(target);
-               while ((readBytes = is.read(buffer)) > 0) {
-                   os.write(buffer, 0, readBytes);
-                os.close();
-               is.close();
-               }
-               }else
-              	  System.out.println("Main:main:cannot get input stream resource=jgraphx.jar");
-             */
+            
                 }catch(Exception e ){
             	  Logger.getLogger(Main.class.getName()).severe(e.toString());
               }

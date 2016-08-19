@@ -1,5 +1,21 @@
 package gdt.jgui.entity.bonddetail;
+/*
+ * Copyright 2016 Alexander Imas
+ * This file is extension of JEntigrator.
 
+    JEntigrator is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    JEntigrator is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with JEntigrator.  If not, see <http://www.gnu.org/licenses/>.
+ */
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -8,8 +24,6 @@ import java.util.Collections;
 import java.util.Hashtable;
 import java.util.Properties;
 import java.util.logging.Logger;
-
-import javax.swing.JComponent;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
@@ -24,7 +38,6 @@ import gdt.data.entity.EntityHandler;
 
 import gdt.data.entity.facet.ExtensionHandler;
 import gdt.data.grain.Core;
-import gdt.data.grain.Identity;
 import gdt.data.grain.Locator;
 import gdt.data.grain.Sack;
 
@@ -32,26 +45,19 @@ import gdt.data.store.Entigrator;
 
 import gdt.jgui.console.JConsoleHandler;
 import gdt.jgui.console.JContext;
-import gdt.jgui.console.JFacetRenderer;
 import gdt.jgui.console.JItemPanel;
-import gdt.jgui.console.JItemsListPanel;
 import gdt.jgui.console.JMainConsole;
-import gdt.jgui.console.JItemsListPanel.ItemPanelComparator;
 import gdt.jgui.entity.JEntitiesPanel;
-import gdt.jgui.entity.JEntityFacetPanel;
-import gdt.jgui.entity.JReferenceEntry;
 import gdt.jgui.entity.edge.JBondsPanel;
 
-
+/**
+ * This context displays a list of details for the selected edge. 
+ * @author imasa
+ */
 public class JBondDetailPanel extends JEntitiesPanel {
 	private static final long serialVersionUID = 1L;
 	private Logger LOGGER=Logger.getLogger(JBondDetailPanel.class.getName());
-/*
-	private static final String HOST_TYPE="host type";
-	private static final String HOST_TYPE_EDGE="host type edge";
-	private static final String HOST_TYPE_NODE="host type node";
-	private static final String HOST_TYPE_DETAIL="host type detail";
-	*/
+
 	protected String entihome$;
 	protected String entityKey$;
 	protected String bondKey$;
@@ -62,6 +68,10 @@ public class JBondDetailPanel extends JEntitiesPanel {
 	protected String requesterResponseLocator$;
 	Hashtable<String,JItemPanel> items;
 	protected JMenu menu1;
+	/**
+	 * Get the context locator.
+	 * @return the context locator.
+	 */		
 	@Override
 	public String getLocator() {
 		 Properties locator=new Properties();
@@ -88,27 +98,45 @@ public class JBondDetailPanel extends JEntitiesPanel {
 		//	       locator.setProperty(HOST_TYPE,hostType$);
 		    return Locator.toString(locator);
 	}
-
+	 /**
+     * Get title of the handler.  
+     * @return the title of the handler..
+     */	
 	@Override
 	public String getTitle() {
 	    return  "Bond details";
 	}
-
+	 /**
+     * Get subtitle of the handler.  
+     * @return the subtitle of the handler..
+     */	
 	@Override
 	public String getSubtitle() {
 		
 		return subtitle$;
 	}
-
+	 /**
+     * Get type of the  handler.  
+     * @return the type of the handler..
+     */	
 	@Override
 	public String getType() {
 		return "bond details";
 	}
-
+	 /**
+     * Close context. No operation.  
+     * 
+     */	
 	@Override
 	public void close() {
 		
 	}
+	/**
+	 * Create a new facet renderer.
+	 * @param console the main console.
+	 * @param locator$ the locator string.
+	 * @return the fields editor.
+	 */
 	@Override
 	public JContext instantiate(JMainConsole console, String locator$) {
 		try{
@@ -165,14 +193,18 @@ public class JBondDetailPanel extends JEntitiesPanel {
        
        
         }
-		@Override
+	/**
+	 * Get the context menu.
+	 * @return the context menu.
+	 */
+	@Override
 		public JMenu getContextMenu() {
 		
 			menu1 =new JMenu("Context"); 
 			menu1.addMenuListener(new MenuListener(){
 				@Override
 				public void menuSelected(MenuEvent e) {
-					System.out.println("JBondDetailPanel:getConextMenu:BEGIN");
+				//	System.out.println("JBondDetailPanel:getConextMenu:BEGIN");
 					menu1.removeAll();
 					JMenuItem	selectItem = new JMenuItem("Select all");
 					   selectItem.addActionListener(new ActionListener() {
@@ -281,31 +313,16 @@ public class JBondDetailPanel extends JEntitiesPanel {
 		});
 			return menu1;	
 		}
-/*
-	private boolean isDetailAlreadyAttached(String detailKey$){
-		try{
-			Entigrator entigrator=console.getEntigrator(entihome$);
-			Sack edge=entigrator.getEntityAtKey(entityKey$);
-			Core[] ca=edge.elementGet("detail");
-			if(ca!=null)
-				for(Core c:ca)
-					if(bondKey$.equals(c.type)&&detailKey$.equals(c.value))
-						return true;
-		}catch(Exception e){
-			LOGGER.severe(e.toString());	
-		}
-		return false;
-	}
-	*/
+
 	private void paste(){
 		try{
-			System.out.println("JBondDetailPanel:paste:BEGIN");
+		//	System.out.println("JBondDetailPanel:paste:BEGIN");
 			String[] sa=console.clipboard.getContent();
 			if(sa==null){
 				System.out.println("JBondDetailPanel:paste:empty clipboard");
 				return;
 			}
-			System.out.println("JBondDetailPanel:paste:sa="+sa.length);
+		//	System.out.println("JBondDetailPanel:paste:sa="+sa.length);
 			Entigrator entigrator=console.getEntigrator(entihome$);
 			for(String s:sa){
 			   s=Locator.append(s, JBondsPanel.EDGE_KEY, edgeKey$);	
@@ -332,7 +349,7 @@ public class JBondDetailPanel extends JEntitiesPanel {
 		Properties clipLocator;
 		
 		for(String s:sa){
-			System.out.println("JBondDetailPanel:hasToPaste:s="+s);
+			//System.out.println("JBondDetailPanel:hasToPaste:s="+s);
 			clipLocator=Locator.toProperties(s);
 			if(clipLocator.getProperty(EntityHandler.ENTITY_KEY)!=null)
 				return true;

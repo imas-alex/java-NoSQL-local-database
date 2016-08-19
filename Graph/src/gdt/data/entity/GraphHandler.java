@@ -1,5 +1,21 @@
 package gdt.data.entity;
+/*
+ * Copyright 2016 Alexander Imas
+ * This file is extension of JEntigrator.
 
+    JEntigrator is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    JEntigrator is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with JEntigrator.  If not, see <http://www.gnu.org/licenses/>.
+ */
 import java.util.Properties;
 import java.util.logging.Logger;
 
@@ -10,7 +26,12 @@ import gdt.data.grain.Locator;
 import gdt.data.grain.Sack;
 import gdt.data.store.Entigrator;
 import gdt.jgui.console.JMainConsole;
-
+/**
+* Contains methods to process the graph entity .
+* @author  Alexander Imas
+* @version 1.0
+* @since   2016-08-08
+*/
 public class GraphHandler extends FieldsHandler{
 	private Logger LOGGER=Logger.getLogger(GraphHandler.class.getName());
 	public static final String EXTENSION_KEY="_Tm142C8Sgti2iAKlDEcEXT2Kj1E";	
@@ -20,9 +41,18 @@ public class GraphHandler extends FieldsHandler{
 	String entihome$;
 	String entityKey$;
 	public final static String GRAPH="graph";
+	/**
+	 * Default constructor
+	 */
 	public GraphHandler(){
 		super();
 	}
+	/**
+	 * Check if the handler is applied to the entity  
+	 *  @param entigrator entigrator instance
+	 *  @param locator$ entity's locator 
+	 * @return true if applied false otherwise.
+	 */		
 	@Override
 	public boolean isApplied(Entigrator entigrator, String locator$) {
 		try{
@@ -48,9 +78,17 @@ public class GraphHandler extends FieldsHandler{
 		return false;
 		}
 	}
+	 /**
+     * Get title of the handler.  
+     * @return the title of the handler..
+     */	
 	public String getTitle() {
 		return "Graph";
 	}
+	 /**
+     * Get type of the  handler.  
+     * @return the type of the handler..
+     */	
 	public String getType() {
 		return "graph";
 	}
@@ -62,22 +100,39 @@ public class GraphHandler extends FieldsHandler{
 		    	
 		    }
 	}
+	/**
+	 * Adapt the label of the clone.  
+	 * *  @param entigrator entigrator instance
+	 */	
 	@Override
 	public void adaptClone(Entigrator entigrator) {
 	   adaptLabel(entigrator);
 		
 	}
-
+	/**
+	 * Adapt the label after renaming  
+	 * *  @param entigrator entigrator instance
+	 */	
 	@Override
 	public void adaptRename(Entigrator entigrator) {
 		adaptLabel(entigrator);
 	}
 
+	/**
+     * Get class name of the handler.  
+     * @return the class name of the handler..
+     */	
 
 @Override
 public String getClassName() {
 	return  GraphHandler.class.getName();
 }
+/**
+ * Get the undo  entity of the graph.  
+ *  @param console main console
+ *  @param locator$ action's locator 
+ * @return the undo entity.
+ */		
 public static Sack undoGet(JMainConsole console,String locator$){
 	 try{
 		Properties locator=Locator.toProperties(locator$);
@@ -100,6 +155,12 @@ public static Sack undoGet(JMainConsole console,String locator$){
 	    }
 	return null;
 }
+/**
+ * check, if the undo  entity of the graph exists.  
+ *  @param console main console
+ *  @param locator$ action's locator 
+ * @return true if the undo exists, false otherwise
+ */	
 public static boolean undoExists(JMainConsole console,String locator$){
 	 try{
 		Properties locator=Locator.toProperties(locator$);
@@ -121,6 +182,12 @@ public static boolean undoExists(JMainConsole console,String locator$){
 	    }
 	return false;
 }
+/**
+ * check, if the undo  is possible  
+ *  @param console main console
+ *  @param locator$ action's locator 
+ * @return true if undo possible, false otherwise
+ */	
 public static boolean undoCan(JMainConsole console,String locator$){
 	 try{
 		if(!undoExists(console,locator$)){
@@ -137,6 +204,11 @@ public static boolean undoCan(JMainConsole console,String locator$){
 	    }
 	return false;
 }
+/**
+ * Clear all undo history  
+ *  @param console main console
+ *  @param locator$ action's locator 
+*/	
 public static void undoReset(JMainConsole console,String locator$){
 	 try{
 		if(!undoExists(console,locator$)){
@@ -149,13 +221,16 @@ public static void undoReset(JMainConsole console,String locator$){
 		String entihome$=locator.getProperty(Entigrator.ENTIHOME);
 		Entigrator entigrator=console.getEntigrator(entihome$);
 		entigrator.save(undo);
-		
-		
 	    }catch(Exception e){
 	    	Logger.getLogger(GraphHandler.class.getName()).severe(e.toString());
 	    }
 	
 }
+/**
+ * Save current graph state in the undo stack  
+ *  @param console main console
+ *  @param locator$ action's locator 
+*/	
 public static void undoPush(JMainConsole console,String locator$){
 	 try{
 		Properties locator=Locator.toProperties(locator$);
@@ -183,6 +258,11 @@ public static void undoPush(JMainConsole console,String locator$){
 	    }
 	
 }
+/**
+ * Restore graph state from the undo stack  
+ *  @param console main console
+ *  @param locator$ action's locator 
+*/	
 public static void undoPop(JMainConsole console,String locator$){
 	 try{
 		if(!undoExists(console,locator$))
@@ -195,7 +275,6 @@ public static void undoPop(JMainConsole console,String locator$){
 		Sack undo=undoGet(console,locator$);
 		
 		Core[] ca=undo.elementGet("undo");
-		System.out.println("GraphHandler:undo pop:2");
 		String undoName$="";
 		int undoName;
 		int undoMax=0;
@@ -222,6 +301,12 @@ public static void undoPop(JMainConsole console,String locator$){
 	    }
 	
 }
+/**
+ * Get the views  entity of the graph.  
+ *  @param console main console
+ *  @param locator$ action's locator 
+ * @return the views entity.
+ */		
 public static Sack viewsGet(JMainConsole console,String locator$){
 	 try{
 		Properties locator=Locator.toProperties(locator$);
@@ -244,6 +329,12 @@ public static Sack viewsGet(JMainConsole console,String locator$){
 	    }
 	return null;
 }
+/**
+ * Save current graph state in the view entity.
+ *  @param console main console
+ *  @param locator$ action's locator 
+ *   @return the key of the view entity. 
+*/	
 public static String viewsPutView(JMainConsole console,String locator$){
 	 try{
 		Properties locator=Locator.toProperties(locator$);
@@ -272,9 +363,12 @@ public static String viewsPutView(JMainConsole console,String locator$){
 	    }
 	return null;
 }
+/**
+ * No operation
+ */
 @Override
 public void completeMigration(Entigrator entigrator) {
-    System.out.println("GraphHandler:completeMigration");
+   // System.out.println("GraphHandler:completeMigration");
 	
 }
 }

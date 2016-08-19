@@ -1,7 +1,7 @@
 package gdt.jgui.entity.bonddetail;
 /*
  * Copyright 2016 Alexander Imas
- * This file is part of JEntigrator.
+ * This file is extension of JEntigrator.
 
     JEntigrator is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -38,14 +38,26 @@ import gdt.jgui.console.JRequester;
 import gdt.jgui.entity.JEntityFacetPanel;
 import gdt.jgui.entity.edge.JBondsPanel;
 import gdt.jgui.entity.fields.JFieldsFacetOpenItem;
-
+/**
+ * This class represents the bond detail facet item in the list
+ * of  entity's facets.
+ * @author imasa
+ *
+ */
 
 public class JBondDetailFacetOpenItem extends JFieldsFacetOpenItem {
 	private static final long serialVersionUID = 1L;
+	 /**
+     * The default constructor.
+     * 
+     */
 	public JBondDetailFacetOpenItem(){
 		super();
 	}
-	
+	/**
+	 * Get the context locator.
+	 * @return the context locator.
+	 */	
 @Override
 public String getLocator(){
 	Properties locator=new Properties();
@@ -71,15 +83,26 @@ public String getLocator(){
     
 	return Locator.toString(locator);
 }
+/**
+ * Check if the facet can be removed from the entity.
+ * @return false.
+ */
 @Override
 public boolean isRemovable() {
 	return false;
 	}
-
+/**
+ * Get the facet name.
+ * @return the facet name.
+ */
 @Override
 public String getFacetName() {
 	return "Bonds";
 }
+/**
+ * Get the facet icon as a Base64 string.
+ * @return the facet icon string.
+ */
 @Override
 public String getFacetIcon() {
 	if(console!=null){
@@ -88,20 +111,25 @@ public String getFacetIcon() {
 	}
 	return null;
 }
+/**
+ * Remove the facet from the entity.
+ */
 @Override
 public void removeFacet() {
 	
 }
+/**
+ * Display the facet console.
+ * @param console the main console.
+ * @param locator$ the locator string.
+ */
 @Override
 public void openFacet(JMainConsole console,String locator$) {
 	try{
-		System.out.println("JBondDetailFacetOpenItem:openFacet:locator="+locator$);
+	//	System.out.println("JBondDetailFacetOpenItem:openFacet:locator="+locator$);
 		Properties locator=Locator.toProperties(locator$);
 		String entihome$=locator.getProperty(Entigrator.ENTIHOME);
 		String entityKey$=locator.getProperty(EntityHandler.ENTITY_KEY);
-	//	String responseLocator$=getLocator();
-	//	Properties responseLocator=Locator.toProperties(responseLocator$);
-		
 		JBondsPanel bondsPanel=new JBondsPanel();
 		String bpLocator$=bondsPanel.getLocator();
 		bpLocator$=Locator.append(bpLocator$, Entigrator.ENTIHOME, entihome$);
@@ -113,14 +141,27 @@ public void openFacet(JMainConsole console,String locator$) {
 		Logger.getLogger(getClass().getName()).severe(e.toString());
 	}
 }
+/**
+ * Get the class name of the facet renderer. 
+ * @return the JFieldsEditor class name .
+ */
 @Override
 public String getFacetRenderer() {
 	return JBondsPanel.class.getName();
 }
+/**
+ * Get the facet handler instance.
+ * @return the facet handler instance.	
+ */
 @Override
 public FacetHandler getFacetHandler() {
 	return new EdgeHandler();
 }
+/**
+ * Get the popup menu for the child node of the facet node 
+ * in the digest view.
+ * @return the popup menu.	
+ */
 @Override
 public JPopupMenu getPopupMenu(final String digestLocator$) {
 	//System.out.println("JFieldsFacetOpenItem:edit:digest locator="+Locator.remove(digestLocator$, Locator.LOCATOR_ICON));
@@ -128,6 +169,11 @@ public JPopupMenu getPopupMenu(final String digestLocator$) {
 	return menu;
 
 }
+/**
+ * Response on call from the other context.
+ *	@param console main console
+ *  @param locator$ action's locator 
+ */
 @Override
 public void response(JMainConsole console, String locator$) {
 //	System.out.println("JAddressFacetOpenItem:responce:locator="+locator$);

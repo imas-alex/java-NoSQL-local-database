@@ -1,5 +1,21 @@
 package gdt.data.entity;
+/*
+ * Copyright 2016 Alexander Imas
+ * This file is extension of JEntigrator.
 
+    JEntigrator is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    JEntigrator is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with JEntigrator.  If not, see <http://www.gnu.org/licenses/>.
+ */
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Properties;
@@ -12,16 +28,30 @@ import gdt.data.grain.Sack;
 import gdt.data.store.Entigrator;
 import gdt.data.store.FileExpert;
 import gdt.jgui.entity.JReferenceEntry;
-
+/**
+* Contains methods to process an edge entity .
+* @author  Alexander Imas
+* @version 1.0
+* @since   2016-08-08
+*/
 public class EdgeHandler extends FieldsHandler{
 	private Logger LOGGER=Logger.getLogger(EdgeHandler.class.getName());
 	public static final String EXTENSION_KEY="_Tm142C8Sgti2iAKlDEcEXT2Kj1E";
 	String entihome$;
 	String entityKey$;
 	public final static String EDGE="edge";
+	/**
+	 * Default constructor
+	 */
 	public EdgeHandler(){
 		super();
 	}
+	/**
+	 * Check if the handler is applied to the entity  
+	 *  @param entigrator entigrator instance
+	 *  @param locator$ entity's locator 
+	 * @return true if applied false otherwise.
+	 */		
 	@Override
 	public boolean isApplied(Entigrator entigrator, String locator$) {
 		try{
@@ -47,12 +77,21 @@ public class EdgeHandler extends FieldsHandler{
 		return false;
 		}
 	}
+	 /**
+     * Get title of the handler.  
+     * @return the title of the handler..
+     */	
 	public String getTitle() {
 		return "Edge";
 	}
+	 /**
+     * Get type of the  handler.  
+     * @return the type of the handler..
+     */	
 	public String getType() {
 		return "edge";
 	}
+	
 	private void adaptLabel(Entigrator entigrator){
 		 try{
 				Sack entity=entigrator.getEntityAtKey(entityKey$);
@@ -61,28 +100,41 @@ public class EdgeHandler extends FieldsHandler{
 		    	
 		    }
 	}
+	/**
+	 * Adapt the label of the clone.  
+	 * *  @param entigrator entigrator instance
+	 */	
 	@Override
 	public void adaptClone(Entigrator entigrator) {
 	   adaptLabel(entigrator);
 		
 	}
-
+	/**
+	 * Adapt the label after renaming  
+	 * *  @param entigrator entigrator instance
+	 */	
 	@Override
 	public void adaptRename(Entigrator entigrator) {
 		adaptLabel(entigrator);
 	}
-
+	/**
+     * Get class name of the handler.  
+     * @return the class name of the handler..
+     */	
 
 @Override
 public String getClassName() {
 	return  EdgeHandler.class.getName();
 }
+/**
+ * Complete migration after transfer 
+ * *  @param entigrator entigrator instance
+ */	
 @Override
 public void completeMigration(Entigrator entigrator) {
-    System.out.println("EdgeHandler.completeMigration:entity key="+entityKey$);
+ //   System.out.println("EdgeHandler.completeMigration:entity key="+entityKey$);
 	try{
     String[] sa=entigrator.indx_listEntitiesAtPropertyName("node");
-    System.out.println("EdgeHandler.completeMigration:1");
     Sack edge=entigrator.getEntityAtKey(entityKey$);
     if(sa==null){
     	edge.removeElement("bond");
@@ -111,7 +163,6 @@ public void completeMigration(Entigrator entigrator) {
         	}
         	
     }
-    System.out.println("EdgeHandler.completeMigration:1");
     ca=cl.toArray(new Core[0]);
     edge.elementReplace("bond", ca);
     Core[] da=edge.elementGet("detail");
@@ -128,7 +179,6 @@ public void completeMigration(Entigrator entigrator) {
     File targetDetail;
     Sack pastedEntity;
     entihome$=entigrator.getEntihome();
-    System.out.println("EdgeHandler:completeMigration:entihome="+entihome$);
     String icon$;
     File sourceIcon;
     File targetIcon;
@@ -138,7 +188,6 @@ public void completeMigration(Entigrator entigrator) {
 	    if(!sourceDetail.exists()||sourceDetail.length()<10)
 	    	continue;
     	targetDetail=new File(entihome$+"/"+Entigrator.ENTITY_BASE+"/data/"+d.value);
-	   System.out.println("EdgeHandler:completeMigration: copy source="+sourceDetail.getPath()+" target="+targetDetail.getPath());
 	   if(!targetDetail.exists())
 	    	targetDetail.createNewFile();
 	    FileExpert.copyFile(sourceDetail,targetDetail);
@@ -147,7 +196,6 @@ public void completeMigration(Entigrator entigrator) {
 	   
 	    icon$=pastedEntity.getAttributeAt("icon");
 	    sourceIcon= new File(originEntihome$+"/"+Entigrator.ICONS+"/"+icon$);
-	    System.out.println("EdgeHandler:completeMigration: copy source icon="+sourceIcon.getPath());
 	    targetIcon=new File(entihome$+"/"+Entigrator.ICONS+"/"+icon$);
 	    if(!targetIcon.exists())
 	    	targetIcon.createNewFile();

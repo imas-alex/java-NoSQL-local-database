@@ -1,7 +1,7 @@
 package gdt.data.entity;
 /*
  * Copyright 2016 Alexander Imas
- * This file is part of JEntigrator.
+ * This file is extension of JEntigrator.
 
     JEntigrator is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -28,10 +28,10 @@ import gdt.data.grain.Sack;
 import gdt.data.store.Entigrator;
 import gdt.jgui.entity.edge.JBondsPanel;
 /**
-* Contains methods to process a fields entity.
+* Contains methods to process a bond details.
 * @author  Alexander Imas
 * @version 1.0
-* @since   2016-03-11
+* @since   2016-08-08
 */
 public class BondDetailHandler extends FacetHandler{
 private Logger LOGGER=Logger.getLogger(BondDetailHandler.class.getName());
@@ -41,7 +41,7 @@ public final static String BOND_DETAIL="bond detail";
 		
 	}
 	/**
-	 * Check if the fields handler is applied to the entity  
+	 * Check if the bond detail handler is applied to the entity  
 	 *  @param entigrator entigrator instance
 	 *  @param locator$ entity's locator 
 	 * @return true if applied false otherwise.
@@ -65,24 +65,24 @@ public final static String BOND_DETAIL="bond detail";
 	
 	}
 	 /**
-     * Get title of the fields handler.  
-     * @return the title of the fields handler..
+     * Get title of the handler.  
+     * @return the title of the handler..
      */	
 	@Override
 	public String getTitle() {
 		return "Bond detail";
 	}
 	 /**
-     * Get type of the fields handler.  
-     * @return the type of the fields handler..
+     * Get type of the  handler.  
+     * @return the type of the handler..
      */	
 	@Override
 	public String getType() {
 		return "bond.detail";
 	}
 	 /**
-     * Get class name of the fields handler.  
-     * @return the class name of the fields handler..
+     * Get class name of the handler.  
+     * @return the class name of the handler..
      */	
 	@Override
 	public String getClassName() {
@@ -104,9 +104,15 @@ public void adaptClone(Entigrator entigrator) {
 public void adaptRename(Entigrator entigrator) {
 
 }
+/**
+ * Delete the bond detail  
+ *  @param entigrator entigrator instance
+ *  @param locator$ action's locator 
+ * 
+ */	
 public static void deleteDetail(Entigrator entigrator, String locator$){
 	try{
-	System.out.println("BondDetailHandler:deleteDetail:locator="+locator$);	
+//	System.out.println("BondDetailHandler:deleteDetail:locator="+locator$);	
 	Properties locator=Locator.toProperties(locator$);
 	String detailKey$=locator.getProperty(EntityHandler.ENTITY_KEY);
 	Sack detail=entigrator.getEntityAtKey(detailKey$);
@@ -135,10 +141,14 @@ public static void deleteDetail(Entigrator entigrator, String locator$){
 	}catch(Exception e){
 		Logger.getLogger(BondDetailHandler.class.getName()).severe(e.toString());
 	}
-	
-	
-	
 }
+/**
+ * Check if the bond detail already attached to the entity  
+ *  @param edge the edge entity
+ *  @param bondKey$ bond's key
+ *  @param detilKey$ detail's key 
+ * @return true if already attached false otherwise.
+ */	
 private static boolean isDetailAlreadyAttached(Sack edge,String bondKey$,String detailKey$){
 	try{
 		
@@ -152,6 +162,11 @@ private static boolean isDetailAlreadyAttached(Sack edge,String bondKey$,String 
 	}
 	return false;
 }
+/**
+ * Add detail   
+ *  @param entigrator the entigrator
+ *  @param locator$ action's locator 
+ */	
 public static void addDetail(Entigrator entigrator, String locator$){
 	try{
 	System.out.println("BondDetailHandler:addDetail:locator="+locator$);	
@@ -183,6 +198,9 @@ public static void addDetail(Entigrator entigrator, String locator$){
 	
 	
 }
+/**
+No operation here
+ */	
 @Override
 public void completeMigration(Entigrator entigrator) {
 	// TODO Auto-generated method stub

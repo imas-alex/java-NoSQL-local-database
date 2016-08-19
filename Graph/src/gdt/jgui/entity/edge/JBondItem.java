@@ -48,7 +48,7 @@ import gdt.jgui.entity.JEntityFacetPanel;
 import gdt.jgui.entity.node.JNodeFacetAddItem;
 import gdt.jgui.entity.node.JNodeFacetOpenItem;
 /**
- *This class represents a 
+ *This class represents a bond item in the list.
  * @author imasa
  *
  */
@@ -64,12 +64,12 @@ public class JBondItem extends JItemPanel{
 	public JBondItem(final JMainConsole console,final String locator$){
 		super(console,locator$);
 		isCommitted=isCommitted(console,locator$);
-		System.out.println("JBondItem:is committed="+isCommitted);
+//		System.out.println("JBondItem:is committed="+isCommitted);
 		Properties locator=Locator.toProperties(JBondItem.this.locator$);
 		String entihome$=locator.getProperty(Entigrator.ENTIHOME);
-		String edgeKey$=locator.getProperty(JBondsPanel.EDGE_KEY);
+	//	String edgeKey$=locator.getProperty(JBondsPanel.EDGE_KEY);
 		String bondKey$=locator.getProperty(JBondsPanel.BOND_KEY);
-		System.out.println("JBondItem:bond key"+bondKey$);
+	//	System.out.println("JBondItem:bond key"+bondKey$);
 		Entigrator entigrator=console.getEntigrator(entihome$);
 		if(isCommitted){
 		   icon$= ExtensionHandler.loadIcon(entigrator,EdgeHandler.EXTENSION_KEY,"bond.png");
@@ -84,9 +84,9 @@ public class JBondItem extends JItemPanel{
 
 			@Override
 			public void popupMenuWillBecomeVisible(PopupMenuEvent e) {
-				System.out.println("JBondsItem:popup will become visible");
+			//	System.out.println("JBondsItem:popup will become visible");
 				pos= JBondItem.this.getBounds().y;
-				System.out.println("JBondsItem:position="+ JBondItem.this.getBounds().y);
+			//	System.out.println("JBondsItem:position="+ JBondItem.this.getBounds().y);
 				popup.removeAll();
 				isCommitted=isCommitted(console,locator$);
 				Properties locator=Locator.toProperties(JBondItem.this.locator$);
@@ -99,7 +99,7 @@ public class JBondItem extends JItemPanel{
 					}
 					
 					resetIcon();
-				System.out.println("JBondsItem:popup will become visible:is commited="+isCommitted);
+				// System.out.println("JBondsItem:popup will become visible:is commited="+isCommitted);
 			
 		JMenuItem openOutItem=new JMenuItem("Open out node");
 		   popup.add(openOutItem);
@@ -108,7 +108,7 @@ public class JBondItem extends JItemPanel{
 				@Override
 				public void actionPerformed(ActionEvent e) {
 					try{
-						System.out.println("JBondsItem:popup.locator="+locator$);
+					//	System.out.println("JBondsItem:popup.locator="+locator$);
 						Properties locator=Locator.toProperties(JBondItem.this.locator$);
 						String entihome$=locator.getProperty(Entigrator.ENTIHOME);
 						String entityKey$=locator.getProperty(EntityHandler.ENTITY_KEY);
@@ -207,9 +207,7 @@ public class JBondItem extends JItemPanel{
 						String entihome$=locator.getProperty(Entigrator.ENTIHOME);
 						String entityKey$=locator.getProperty(EntityHandler.ENTITY_KEY);
 						String bondKey$=locator.getProperty(JBondsPanel.BOND_KEY);
-					//    String nodeKey$=getNodeKeyFromClipboard();
 					    Entigrator entigrator=console.getEntigrator(entihome$);
-						//String nodelabel$=entigrator.indx_getLabel(nodeKey$);
 						Sack host=entigrator.getEntityAtKey(entityKey$);
 						Core bond=host.getElementItem("bond", bondKey$);
 						Sack outNode=entigrator.getEntityAtKey(bond.type);
@@ -254,7 +252,6 @@ public class JBondItem extends JItemPanel{
 					String bondKey$=locator.getProperty(JBondsPanel.BOND_KEY);
 				    String nodeKey$=getNodeKeyFromClipboard();
 				    Entigrator entigrator=console.getEntigrator(entihome$);
-					//String nodelabel$=entigrator.indx_getLabel(nodeKey$);
 					Sack edge=entigrator.getEntityAtKey(entityKey$);
 					Core bond=edge.getElementItem("bond", bondKey$);
 					if (bond==null)
@@ -263,14 +260,12 @@ public class JBondItem extends JItemPanel{
 						bond.type=nodeKey$;
 					edge.putElementItem("bond",bond );
 					entigrator.save(edge);
-					System.out.println("JBondItem:set out node:1");
 					JBondsPanel bp=new JBondsPanel();
 					String bpLocator$=bp.getLocator();
 					bpLocator$=Locator.append(bpLocator$,Entigrator.ENTIHOME, entihome$);
 					bpLocator$=Locator.append(bpLocator$,EntityHandler.ENTITY_KEY, entityKey$);
 					bpLocator$=Locator.append(bpLocator$,JItemsListPanel.POSITION, String.valueOf(pos));
 					JConsoleHandler.execute(console,bpLocator$ );
-					System.out.println("JBondItem:set out node:2");
 					}catch(Exception ee){
 						Logger.getLogger(getClass().getName()).info(ee.toString());
 					}
@@ -291,7 +286,6 @@ public class JBondItem extends JItemPanel{
 					String bondKey$=locator.getProperty(JBondsPanel.BOND_KEY);
 				    String nodeKey$=getNodeKeyFromClipboard();
 				    Entigrator entigrator=console.getEntigrator(entihome$);
-					//String nodelabel$=entigrator.indx_getLabel(nodeKey$);
 					Sack edge=entigrator.getEntityAtKey(entityKey$);
 					Core bond=edge.getElementItem("bond", bondKey$);
 					if (bond==null)
@@ -369,14 +363,12 @@ public class JBondItem extends JItemPanel{
 						entigrator.save(inNode);
 						entigrator.ent_assignProperty(outNode, "node",outNode.getProperty("label"));
 						entigrator.ent_assignProperty(inNode, "node",inNode.getProperty("label"));
-						System.out.println("JBondItem:commit:1");
 						JBondsPanel bp=new JBondsPanel();
 						String bpLocator$=bp.getLocator();
 						bpLocator$=Locator.append(bpLocator$,Entigrator.ENTIHOME, entihome$);
 						bpLocator$=Locator.append(bpLocator$,EntityHandler.ENTITY_KEY, entityKey$);
 						bpLocator$=Locator.append(bpLocator$,JItemsListPanel.POSITION, String.valueOf(pos));
 						JConsoleHandler.execute(console,bpLocator$ );
-						System.out.println("JBondItem:commit:2");
 						}catch(Exception ee){
 							Logger.getLogger(getClass().getName()).info(ee.toString());
 						}
@@ -385,7 +377,7 @@ public class JBondItem extends JItemPanel{
 				    });
 		   }
 		  }// end hosted by edge
-		  System.out.println("JBondItem:finish");
+//		  System.out.println("JBondItem:finish");
 	
 			
 			}
@@ -419,6 +411,11 @@ public class JBondItem extends JItemPanel{
 		}
 		return null;
 }
+	/**
+	 * Detect if the bond is committed.
+	 * @param console the main console.
+	 * @param locator$ the locator string.
+	 */
 	public static boolean isCommitted(JMainConsole console,String locator$){
 		try{
 		Properties locator=Locator.toProperties(locator$);
@@ -535,18 +532,5 @@ public class JBondItem extends JItemPanel{
 		}
 			return false;
 	}
-	private boolean isHostedByBondDetail(){
-		try{
-			Properties locator=Locator.toProperties(JBondItem.this.locator$);
-			String entihome$=locator.getProperty(Entigrator.ENTIHOME);
-			String entityKey$=locator.getProperty(EntityHandler.ENTITY_KEY);
-			Entigrator entigrator=console.getEntigrator(entihome$);
-			Sack host=entigrator.getEntityAtKey(entityKey$);
-			if(host.getElementItem("fhandler", BondDetailHandler.class.getName())!=null)
-					return true;
-			}catch(Exception e){
-			Logger.getLogger(getClass().getName()).severe(e.toString());
-		}
-			return false;
-	}
+
 }
