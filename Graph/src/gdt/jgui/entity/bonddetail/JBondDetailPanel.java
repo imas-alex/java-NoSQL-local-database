@@ -159,13 +159,13 @@ public class JBondDetailPanel extends JEntitiesPanel {
 			 }
 			 if(edge==null)
 				 return this;
-			 
+			    
 			 Core[] ca=edge.elementGet("detail");
 			 if(ca==null)
 				 return this;
 			Core bond=edge.getElementItem("bond", bondKey$);
 			subtitle$=entigrator.indx_getLabel(bond.type)+" --("+edge.getProperty("label")+")-> "+entigrator.indx_getLabel(bond.value);
-			JBondsPanel.saveSelection( console, entihome$, edgeKey$, bondKey$);		 
+			saveSelection( console, entihome$, edgeKey$, bondKey$);		 
 					// entigrator.getEntityAtKey(entityKey$);
              ArrayList<String>sl=new ArrayList<String>();
 			for(Core c:ca)
@@ -373,5 +373,18 @@ public class JBondDetailPanel extends JEntitiesPanel {
 		}
 	
 	}
-
+	private static void saveSelection(JMainConsole console, String entihome$, String edgeKey$,String bondKey$){
+		try{
+		if(bondKey$==null)
+			return;
+		Entigrator entigrator=console.getEntigrator(entihome$);	
+		Sack edge=entigrator.getEntityAtKey(edgeKey$);
+		if(!edge.existsElement("parameter"))
+			edge.createElement("parameter");
+		edge.putElementItem("parameter", new Core(null,JBondsPanel.BOND_KEY,bondKey$));
+		entigrator.save(edge);
+		}catch(Exception e){
+			System.out.println("JBondsPanel:saveSelectedBond:"+e.toString());
+		}
+	}
 }
