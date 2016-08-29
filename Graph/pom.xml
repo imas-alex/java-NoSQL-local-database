@@ -3,7 +3,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>com.github.imas-alex</groupId>
   <artifactId>Graph</artifactId>
-  <version>0.0.6-SNAPSHOT</version>
+  <version>0.0.8-SNAPSHOT</version>
   <name>Graph</name>
   <description>Graph extension for JEntigrator</description>
   <url>https://github.com/imas-alex/java-NoSQL-local-database</url>
