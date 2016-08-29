@@ -2,7 +2,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>com.github.imas-alex</groupId>
   <artifactId>Community</artifactId>
-  <version>0.0.3-SNAPSHOT</version>
+  <version>0.0.2-SNAPSHOT</version>
    <name>Community</name>
   <description>The community extension for the entigrator application</description>
   <url>https://github.com/imas-alex/java-NoSQL-local-database</url>
