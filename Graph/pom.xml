@@ -3,7 +3,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>com.github.imas-alex</groupId>
   <artifactId>Graph</artifactId>
-  <version>0.0.4-SNAPSHOT</version>
+  <version>0.0.6-SNAPSHOT</version>
   <name>Graph</name>
   <description>Graph extension for JEntigrator</description>
   <url>https://github.com/imas-alex/java-NoSQL-local-database</url>
@@ -57,24 +57,8 @@
     </pluginRepository>
   </pluginRepositories>
   <build>
-    <sourceDirectory>/home/imasa/github/Graph/src</sourceDirectory>
-    <scriptSourceDirectory>/home/imasa/github/Graph/src/main/scripts</scriptSourceDirectory>
-    <testSourceDirectory>/home/imasa/github/Graph/src/test/java</testSourceDirectory>
-    <outputDirectory>/home/imasa/github/Graph/target/classes</outputDirectory>
-    <testOutputDirectory>/home/imasa/github/Graph/target/test-classes</testOutputDirectory>
-    <resources>
-      <resource>
-        <directory>/home/imasa/github/Graph/src</directory>
-        <excludes>
-          <exclude>**/*.java</exclude>
-        </excludes>
-      </resource>
-    </resources>
-    <testResources>
-      <testResource>
-        <directory>/home/imasa/github/Graph/src/test/resources</directory>
-      </testResource>
-    </testResources>
+   
+   
     <pluginManagement>
       <plugins>
       <plugin>
@@ -91,6 +75,7 @@
         </execution>
       </executions>
     </plugin>
+    
      <plugin>
       <groupId>org.apache.maven.plugins</groupId>
       <artifactId>maven-source-plugin</artifactId>
@@ -269,53 +254,7 @@
           </execution>
         </executions>
       </plugin>
-      <plugin>
-        <artifactId>maven-site-plugin</artifactId>
-        <version>3.3</version>
-        <executions>
-          <execution>
-            <id>default-site</id>
-            <phase>site</phase>
-            <goals>
-              <goal>site</goal>
-            </goals>
-            <configuration>
-              <outputDirectory>/home/imasa/github/Graph/target/site</outputDirectory>
-              <reportPlugins>
-                <reportPlugin>
-                  <groupId>org.apache.maven.plugins</groupId>
-                  <artifactId>maven-project-info-reports-plugin</artifactId>
-                </reportPlugin>
-              </reportPlugins>
-            </configuration>
-          </execution>
-          <execution>
-            <id>default-deploy</id>
-            <phase>site-deploy</phase>
-            <goals>
-              <goal>deploy</goal>
-            </goals>
-            <configuration>
-              <outputDirectory>/home/imasa/github/Graph/target/site</outputDirectory>
-              <reportPlugins>
-                <reportPlugin>
-                  <groupId>org.apache.maven.plugins</groupId>
-                  <artifactId>maven-project-info-reports-plugin</artifactId>
-                </reportPlugin>
-              </reportPlugins>
-            </configuration>
-          </execution>
-        </executions>
-        <configuration>
-          <outputDirectory>/home/imasa/github/Graph/target/site</outputDirectory>
-          <reportPlugins>
-            <reportPlugin>
-              <groupId>org.apache.maven.plugins</groupId>
-              <artifactId>maven-project-info-reports-plugin</artifactId>
-            </reportPlugin>
-          </reportPlugins>
-        </configuration>
-      </plugin>
+     
       <plugin>
   <groupId>org.sonatype.plugins</groupId>
   <artifactId>nexus-staging-maven-plugin</artifactId>
@@ -432,9 +371,7 @@
     <version>3.2.6</version>
 </dependency>
   </dependencies>
-  <reporting>
-    <outputDirectory>/home/imasa/github/Graph/target/site</outputDirectory>
-  </reporting>
+  
   <distributionManagement>
   <!-- Repository for snapshots -->
   <snapshotRepository>
