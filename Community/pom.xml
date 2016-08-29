@@ -2,7 +2,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>com.github.imas-alex</groupId>
   <artifactId>Community</artifactId>
-  <version>0.0.5-SNAPSHOT</version>
+  <version>0.0.6-SNAPSHOT</version>
    <name>Community</name>
   <description>The community extension for the entigrator application</description>
   <url>https://github.com/imas-alex/java-NoSQL-local-database</url>
@@ -22,7 +22,7 @@
 		<url>https://github.com/imas-alex/Community</url>
 		<connection>scm:git:git://github.com/imas-alex.git</connection>
 		<developerConnection>scm:git:git@github.com:imas-alex/java-NoSQL-local-database.git</developerConnection>
-	  <tag>Community-0.0.2</tag>
+	  <tag>Community-0.0.5</tag>
   </scm>
 	<developers>
 		<developer>
@@ -71,6 +71,18 @@
       </executions>
     </plugin>
     <plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-jar-plugin</artifactId>
+				<configuration>
+					<archive>
+						<manifest>
+							<addDefaultImplementationEntries>true</addDefaultImplementationEntries>
+							<addDefaultSpecificationEntries>true</addDefaultSpecificationEntries>
+						</manifest>
+					</archive>
+				</configuration>
+</plugin>
+    <plugin>
       <groupId>org.apache.maven.plugins</groupId>
       <artifactId>maven-source-plugin</artifactId>
       <version>2.2.1</version>
@@ -93,18 +105,8 @@
       </plugin>
         <plugin>
     <groupId>org.apache.maven.plugins</groupId>
-    <artifactId>maven-jar-plugin</artifactId>
-       <configuration>
-      <archive>
-        <manifest>
-           <addClasspath>true</addClasspath>
-               <classpathPrefix>lib/</classpathPrefix>
-              <mainClass>gdt.jgui.console.JMainConsole</mainClass>
-        </manifest>
-      </archive>
-    </configuration>
-  </plugin>
-   <plugin>
+    
+   
       <artifactId>maven-assembly-plugin</artifactId>
       <version>2.3</version>
       <configuration>
@@ -132,11 +134,7 @@
      <autoReleaseAfterClose>false</autoReleaseAfterClose>
   </configuration>
 </plugin>
-      <plugin>
-      	<groupId>com.github.imas-alex</groupId>
-      	<artifactId>Community</artifactId>
-      	<version>0.0.5-SNAPSHOT</version>
-      </plugin>
+     
     </plugins>
   
   </build>
