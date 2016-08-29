@@ -148,7 +148,7 @@ public class JGraphRenderer extends JPanel implements JContext , JRequester
    private String locator$;
    int v=-1;
    int b=-1;
-  
+  private JPopupMenu popup;
     String requesterResponseLocator$;
     AutocompleteJComboBox searchBox ;
     
@@ -1147,7 +1147,7 @@ class MousePopupListener extends MouseAdapter {
 	                }
 	                
 	               
-	                JPopupMenu popup = new JPopupMenu();
+	                popup = new JPopupMenu();
 	        		popup.addPopupMenuListener(new PopupMenuListener(){
 	        			@Override
 	        			public void popupMenuWillBecomeVisible(PopupMenuEvent e) {
