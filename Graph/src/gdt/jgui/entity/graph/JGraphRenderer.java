@@ -106,6 +106,7 @@ import gdt.data.entity.BondDetailHandler;
 import gdt.data.entity.EdgeHandler;
 import gdt.data.entity.EntityHandler;
 import gdt.data.entity.GraphHandler;
+import gdt.data.entity.NodeHandler;
 import gdt.data.entity.facet.ExtensionHandler;
 import gdt.data.entity.facet.FieldsHandler;
 import gdt.data.grain.Core;
@@ -148,11 +149,10 @@ public class JGraphRenderer extends JPanel implements JContext , JRequester
    private String locator$;
    int v=-1;
    int b=-1;
-  
+  private JPopupMenu popup;
     String requesterResponseLocator$;
     AutocompleteJComboBox searchBox ;
-    
-    /////
+ 
   
 	//private Graph<Number,Number> g = null;
 
@@ -527,6 +527,7 @@ private AbstractLayout<Number,Number> layout = null;
 		
 	}
 	
+/*
 private void rebuild(){
 	try{
 		Entigrator entigrator=console.getEntigrator(entihome$);
@@ -561,8 +562,10 @@ private void rebuild(){
 		Logger.getLogger(JGraphRenderer.class.getName()).severe(e.toString());
 	}
 }
+*/
 private void displayGraph(){
 	try{
+		System.out.println("JGraphRenderer:displayGraph:BEGIN");
 		init2();
 		revalidate();
 		repaint();
@@ -609,11 +612,17 @@ private void pickOut(){
 	}
 }
 private void expand(){
-	Collection <Number>vc=graph.getVertices();
+	
+	try{
+		Collection <Number>vc=graph.getVertices();
+		System.out.println("JGraphRenderer:expand:vc="+vc.size());
 	final PickedState<Number> pickedState = vv.getPickedVertexState();
 	for( Number n:vc){
 		 if (pickedState.isPicked(n))
 		    expand( n.intValue());
+	}
+	}catch(Exception e){
+		LOGGER.severe(e.toString());	
 	}
 }
 private void expand(int v){
@@ -636,10 +645,58 @@ private void expand(int v){
 								if(!nbl.contains(c.value))
 										nbl.add(c.value);
 						}
-		           	for(String nb:nbl)
+		  Core nodeCore;
+		  Sack node;
+		  String icon$;
+		  String label$;
+		  boolean rebuild=false;
+		  for(String nb:nbl){
 		           		graphEntity.putElementItem("node.select", new Core(null,nb,null));
-	
+		           	    nodeCore= graphEntity.getElementItem("node", nb);
+		           	    if(nodeCore==null){
+		           	    	label$=entigrator.indx_getLabel(nb);
+		           	    	icon$=entigrator.indx_getIcon(nb);
+		           	    	if(label$!=null&&icon$!=null){
+		           	    		graphEntity.putElementItem("node", new Core(icon$,nb,label$));
+		           	    		rebuild=true;
+		           	    	}
+		           	    }
+		           	} 
 		 entigrator.save(graphEntity);
+		 if(rebuild)
+			// rebuild();
+		 NodeHandler.rebuild(entigrator, entityKey$);
+		 init2();
+			revalidate();
+			repaint();
+	}catch(Exception e){
+		LOGGER.severe(e.toString());
+	}
+}
+private void hideItem(int v){
+	System.out.println("JGraphRenderer:hide:v="+v);
+	try{
+		GraphHandler.undoPush(console, locator$); 
+		 Entigrator entigrator=console.getEntigrator(entihome$);
+		 Sack graphEntity=entigrator.getEntityAtKey(entityKey$);
+		 String node$=graphEntity.getElementItemAtValue("vertex", String.valueOf(v));
+		 Core[] na=graphEntity.elementGet("node");
+		 if(!graphEntity.existsElement("node.select")){
+			 graphEntity.createElement("node.select");
+			 na=graphEntity.elementGet("node");
+		 }else{
+			 na=graphEntity.elementGet("node.select");
+			 graphEntity.clearElement("node.select");
+		 }
+		 ArrayList<String>nbl=new ArrayList<String>();
+		 for(Core n:na){
+			 if(!node$.equals(n.name))
+				 graphEntity.putElementItem("node.select", new Core(null,n.name,null));
+		 }
+		 entigrator.save(graphEntity);
+		// if(rebuild)
+			// rebuild();
+		// NodeHandler.rebuild(entigrator, entityKey$);
 		 init2();
 			revalidate();
 			repaint();
@@ -667,6 +724,7 @@ private void entity(int v){
 	}
 }
 public void init2(){
+	System.out.println("JGraphRenderer:init2:BEGIN");
 	removeAll();
 	 graph = new DirectedSparseGraph<Number,Number>();
 	// final ObservableCachingLayout<Number, Number> layout =(ObservableCachingLayout< Number,Number>)vv.getGraphLayout();
@@ -675,23 +733,28 @@ public void init2(){
 	 Sack graphEntity=entigrator.getEntityAtKey(entityKey$);
 	 if(graphEntity.existsElement("vertex"))
 		 graphEntity.removeElement("vertex");
-	 graphEntity.clearElement("vertex");
+	 graphEntity.createElement("vertex");
 	 if(graphEntity.existsElement("edge"))
 		 graphEntity.removeElement("edge");
-	 graphEntity.clearElement("edge");
+	 graphEntity.createElement("edge");
 	 String[] sa= graphEntity.elementListNoSorted("node.select");
 	 if(sa==null)
 			sa= graphEntity.elementListNoSorted("node");
-	 
+	 System.out.println("JGraphRenderer:init2:sa="+sa.length);
 	 for (int i = 0; i <sa.length; i++) {
 		 graphEntity.putElementItem("vertex", new Core(null,sa[i],String.valueOf(i)));
          graph.addVertex(i);
      }
-	 
+	 entigrator.save(graphEntity);
 	 Core[] va=graphEntity.elementGet("vertex");
 	 int v1;
 	 int v2;
-	 Core[] ba=graphEntity.elementGet("bond");
+	 Core[] ba=graphEntity.elementGet("bond.select");
+	 boolean removeStandAloneNodes=true;
+	 if(ba==null){
+	    ba=graphEntity.elementGet("bond");
+	    removeStandAloneNodes=false;
+	 }
 	 Map<Number,String> map = new HashMap<Number,String>();
 	 Map<Number,Icon> iconMap = new HashMap<Number,Icon>();
 	 String icon$;
@@ -707,6 +770,8 @@ public void init2(){
 	      	  Image image= icon.getImage().getScaledInstance(24, 24, 0);
 	      	  icon.setImage(image);
               iconMap.put(i, icon);
+			}
+        if(ba!=null)     
 		 for(int j=0;j<ba.length;j++){
 			if(va[i].name.equals(ba[j].type)){
 				//graphEntity.putElementItem("edge", new Core(null,ba[j].name,String.valueOf(j)));
@@ -718,13 +783,13 @@ public void init2(){
 				}catch(Exception e){
 					
 				}
-			}
-		 		}
+				}
+		 	}
 		 
 		} 
-	 }
+	 
 	 //remove stand alone vertices
-	
+	if(removeStandAloneNodes){
 	 Collection <Number>vc=graph.getVertices();
 	 String nodeKey$;
 	 ArrayList <Number>nl=new ArrayList<Number>();
@@ -739,7 +804,7 @@ public void init2(){
     entigrator.save(graphEntity);
     for(Number n:nl)
     	graph.removeVertex(n);
-     
+     }
     FRLayout<Number, Number> layout = new FRLayout<Number, Number>(graph);
     layout.setMaxIterations(100);
     layout.setInitializer(new RandomLocationTransformer<Number>(new Dimension(400,400), 0));
@@ -866,7 +931,7 @@ private void markSelectedNode(){
 }
 private void layoutVertices(){
 	try{
-		System.out.println("JGraphRenderer:showViews:BEGIN");
+		System.out.println("JGraphRenderer:layoutVertices:BEGIN");
 		Entigrator entigrator=console.getEntigrator(entihome$);
 		Sack graphEntity=entigrator.getEntityAtKey(entityKey$);
 		Core [] ca=graphEntity.elementGet("vertex");
@@ -1147,7 +1212,7 @@ class MousePopupListener extends MouseAdapter {
 	                }
 	                
 	               
-	                JPopupMenu popup = new JPopupMenu();
+	                popup = new JPopupMenu();
 	        		popup.addPopupMenuListener(new PopupMenuListener(){
 	        			@Override
 	        			public void popupMenuWillBecomeVisible(PopupMenuEvent e) {
@@ -1186,6 +1251,20 @@ class MousePopupListener extends MouseAdapter {
 	        						public void actionPerformed(ActionEvent e) {
 	        							try{
 	        								entity(v);
+	        							}catch(Exception ee){
+	        								Logger.getLogger(getClass().getName()).info(ee.toString());
+	        							}
+	        						}
+	        					    });
+	        				   JMenuItem hideItem=new JMenuItem("Hide");
+	        				   popup.add(hideItem);
+	        				   hideItem.setHorizontalTextPosition(JMenuItem.RIGHT);
+	        				   hideItem.addActionListener(new ActionListener() {
+	        						@Override
+	        						public void actionPerformed(ActionEvent e) {
+	        							try{
+	        								hideItem(v);
+	        								//entity(v);
 	        							}catch(Exception ee){
 	        								Logger.getLogger(getClass().getName()).info(ee.toString());
 	        							}
