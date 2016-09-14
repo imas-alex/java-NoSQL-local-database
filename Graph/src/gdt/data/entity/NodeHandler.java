@@ -1,4 +1,5 @@
 package gdt.data.entity;
+import java.util.ArrayList;
 /*
  * Copyright 2016 Alexander Imas
  * This file is extension of JEntigrator.
@@ -24,6 +25,7 @@ import gdt.data.grain.Core;
 import gdt.data.grain.Locator;
 import gdt.data.grain.Sack;
 import gdt.data.store.Entigrator;
+import gdt.jgui.entity.graph.JGraphRenderer;
 /**
 * Contains methods to process the node facet .
 * @author  Alexander Imas
@@ -128,5 +130,79 @@ public String getClassName() {
 public void completeMigration(Entigrator entigrator) {
     //System.out.println("NodeHandler:completeMigration");
 	
+}
+public static String[] expandCascade(Entigrator  entigrator, String [] na){
+	try{
+		ArrayList<String>sl=new ArrayList<String>();
+		if(na!=null)
+			for(String n:na) 
+		       appendList(entigrator,n,sl);
+		return sl.toArray(new String[0]);
+	}catch(Exception e){
+		Logger.getLogger(NodeHandler.class.getName()).severe(e.toString());
+	}
+return null;	
+}
+private static void appendList(Entigrator entigrator,String node$, ArrayList<String> sl){
+	//System.out.println("NodeHandler:appendList:node="+node$);
+	if(sl.contains(node$))
+		return;
+	sl.add(node$);
+	Sack node=entigrator.getEntityAtKey(node$);
+	Core[] ca=node.elementGet("bond");
+	if(ca!=null)
+		for(Core c:ca){
+			if(c.type!=null)
+				//if(!sl.contains(c.type))
+					appendList(entigrator,c.type,sl);
+					//sl.add(c.type);
+			if(c.value!=null)
+				//if(!sl.contains(c.value))
+					//sl.add(c.value);
+					appendList(entigrator,c.value,sl);
+		}
+	
+	}
+public static void rebuild(Entigrator entigrator,String graphKey$){
+	try{
+		Sack graph=entigrator.getEntityAtKey(graphKey$);
+		Core[] ca=graph.elementGet("node");
+		graph.removeElement("bond");
+		graph.createElement("bond");
+		graph.removeElement("edge.entity");
+		graph.createElement("edge.entity");
+		graph.removeElement("edge");
+		graph.createElement("edge");
+		graph.removeElement("node.select");
+		graph.removeElement("vertex");
+		graph.removeElement("bond.select");
+		Sack node;
+		if(ca==null)
+			return;
+		Core[]ba;
+		Core edge;
+		for(Core c:ca){
+			node=entigrator.getEntityAtKey(c.name);
+			if(node==null)
+				continue;
+			ba=node.elementGet("bond");
+			
+			if(ba!=null)
+				for( Core b:ba){
+					if(graph.getElementItem("bond", b.name)!=null)
+						continue;
+					
+					edge=node.getElementItem("edge", b.name);
+					graph.putElementItem("bond", b);
+					//graph.putElementItem("edge", new Core(null,b.name,edge.name));
+					graph.putElementItem("edge.entity",new Core(null,edge.name,edge.value));
+				}
+			
+		}
+	entigrator.save(graph);	
+	//rebuild(entigrator,graphKey$);  	
+	}catch(Exception e){
+		Logger.getLogger(NodeHandler.class.getName()).severe(e.toString());
+	}
 }
 }

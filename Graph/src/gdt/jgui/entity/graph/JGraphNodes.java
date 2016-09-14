@@ -19,6 +19,7 @@ import gdt.data.entity.BaseHandler;
 
 import gdt.data.entity.EntityHandler;
 import gdt.data.entity.GraphHandler;
+import gdt.data.entity.NodeHandler;
 import gdt.data.entity.facet.ExtensionHandler;
 import gdt.data.grain.Core;
 import gdt.data.grain.Identity;
@@ -74,7 +75,10 @@ public class JGraphNodes extends JEntitiesPanel{
 				 entihome$=locator.getProperty(Entigrator.ENTIHOME);
 				 Entigrator  entigrator=console.getEntigrator(entihome$);
 				 Sack graph=entigrator.getEntityAtKey(entityKey$);
+				// System.out.println("JGraphNodes:instantiate:GRAPH");
+				// graph.print();
 				 String[] sa=graph.elementList("node");
+				 
 				 if(sa!=null){
 					list$=Locator.toString(sa);
 					locator$=Locator.append(locator$,EntityHandler.ENTITY_LIST ,list$);
@@ -141,14 +145,20 @@ public class JGraphNodes extends JEntitiesPanel{
 		  	 deleteItem.addActionListener(new ActionListener() {
 		  		@Override
 		  		public void actionPerformed(ActionEvent e) {
-		  			 
+		  			/* 
+		  			String[] sa=JGraphNodes.this.listSelectedItems();
+	  				  if(sa==null)
+	  					  return;
+	  					  */
 		  			int response = JOptionPane.showConfirmDialog(console.getContentPanel(), "Delete ?", "Confirm",
 		  				        JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
 		  			   if (response == JOptionPane.YES_OPTION) {
-		  				  String[] sa=JGraphNodes.this.listSelectedItems();
-		  				  if(sa==null)
-		  					  return;
-		  			
+		  				  deleteNodes();
+		  				JGraphNodes gn=new JGraphNodes();
+		  				String gnLocator$=gn.getLocator();
+		  				gnLocator$=Locator.append(gnLocator$,Entigrator.ENTIHOME, entihome$);
+		  				gnLocator$=Locator.append(gnLocator$,EntityHandler.ENTITY_KEY, entityKey$);
+		  				JConsoleHandler.execute(console, gnLocator$);
 		  			   }
 		  			   }
 		  	});
@@ -156,12 +166,25 @@ public class JGraphNodes extends JEntitiesPanel{
 		  	 }
 		  
 		  //	System.out.println("JGraphNode:getContextMenu:add 'All nodes'"); 
-		  	JMenuItem allNodesItem = new JMenuItem("Insert all nodes");
+		  	//JMenuItem allNodesItem = new JMenuItem("Insert all nodes");
+		  	JMenuItem allNodesItem = new JMenuItem("Expand cascade");
 		  	allNodesItem.addActionListener(new ActionListener() {
 		  		@Override
 		  		public void actionPerformed(ActionEvent e) {
 		  			try{
+		  				expandCascade();
+		  				JGraphNodes gn=new JGraphNodes();
+		  				String gnLocator$=gn.getLocator();
+		  				gnLocator$=Locator.append(gnLocator$,Entigrator.ENTIHOME, entihome$);
+		  				gnLocator$=Locator.append(gnLocator$,EntityHandler.ENTITY_KEY, entityKey$);
+		  				JConsoleHandler.execute(console, gnLocator$);
+		  				
+		  				
+		  				//JConsoleHandler.execute(console, getLocator());
+		  				/*
 		  				Entigrator entigrator=console.getEntigrator(entihome$);
+		  				
+		  				
 		  				String []sa= entigrator.indx_listEntitiesAtPropertyName("node");
 		  				if(sa!=null){
 		  					ArrayList <String> la=new ArrayList<String>();
@@ -180,7 +203,9 @@ public class JGraphNodes extends JEntitiesPanel{
 		  					locator$=Locator.append(locator$, Entigrator.ENTIHOME, entihome$);
 		  					locator$=Locator.append(locator$, EntityHandler.ENTITY_LIST, list$);
 		  					JConsoleHandler.execute(console, locator$);
+		  					
 		  				}
+		  				*/
 		  			}catch(Exception ee){
 		  				System.out.println("JGraphNode:getConextMenu:all nodes:"+ee.toString());
 		  			}
@@ -241,13 +266,13 @@ public class JGraphNodes extends JEntitiesPanel{
 			String[] sa=console.clipboard.getContent();
 			if(sa==null)
 				return false;
-			System.out.println("JGraphNode:hasNodesToPaste:sa="+sa.length);
+			//System.out.println("JGraphNode:hasNodesToPaste:sa="+sa.length);
 			Properties locator;
 			Sack node;
 			Entigrator entigrator=console.getEntigrator(entihome$);
 			for(String s:sa){
 				try{
-					System.out.println("JGraphNode:hasNodesToPaste:node locator="+s);
+				//	System.out.println("JGraphNode:hasNodesToPaste:node locator="+s);
 			    locator=Locator.toProperties(s);
 			    node=entigrator.getEntityAtKey(locator.getProperty(EntityHandler.ENTITY_KEY));
 			    if(node.getProperty("node")!=null)
@@ -291,27 +316,26 @@ public class JGraphNodes extends JEntitiesPanel{
 	}
   public  JItemPanel[] listNodes(){
 		try{
-			//System.out.println("JGraphNode:listNodes:entity key=" + entityKey$); 
+			System.out.println("JGraphNode:listNodes:BEGIN"); 
 			Entigrator entigrator=console.getEntigrator(entihome$);
 			Sack graph=entigrator.getEntityAtKey(entityKey$);
-			   ArrayList<JItemPanel>ipl=new ArrayList<JItemPanel>();
+			//graph.print();
+			ArrayList<JItemPanel>ipl=new ArrayList<JItemPanel>();
 			   JItemPanel itemPanel;
-			   String entityLocator$;
 			   Core[] ca=graph.elementGet("node");
 			   String nodeIcon$;
+			   JEntityFacetPanel em=new JEntityFacetPanel();
+			   String emLocator$=em.getLocator();
 		   for(Core c:ca){
 			   try{
 			//	   System.out.println("JGraphNode:listNodes:node key="+c.name);   
-			   entityLocator$=EntityHandler.getEntityLocatorAtKey(entigrator, c.name);
-			   entityLocator$=Locator.append(entityLocator$,Entigrator.ENTIHOME , entihome$);
-			   entityLocator$=Locator.append(entityLocator$,Locator.LOCATOR_CHECKABLE , Locator.LOCATOR_TRUE);
-			   JEntityFacetPanel em=new JEntityFacetPanel();
-			   em.instantiate(console, entityLocator$);
-			   String emLocator$=em.getLocator();
+			
 			   emLocator$=Locator.append(emLocator$,Locator.LOCATOR_CHECKABLE, Locator.LOCATOR_TRUE);
 			   if(graph.getElementItem("node.select", c.name)!=null)
 				   emLocator$=Locator.append(emLocator$,Locator.LOCATOR_CHECKED, Locator.LOCATOR_TRUE);
 			   emLocator$=Locator.append(emLocator$,Locator.LOCATOR_TITLE,c.value);
+			   emLocator$=Locator.append(emLocator$,Entigrator.ENTIHOME , entihome$);
+			   emLocator$=Locator.append(emLocator$,EntityHandler.ENTITY_KEY ,c.name);
 			   nodeIcon$=entigrator.readIconFromIcons(c.type);
 			   if(nodeIcon$!=null)
 				   emLocator$=Locator.append(emLocator$,Locator.LOCATOR_ICON,nodeIcon$);
@@ -354,7 +378,36 @@ public class JGraphNodes extends JEntitiesPanel{
  	  }
  	  super.close();
  	}
- private void  selectNeighbours(){
+  private void expandCascade(){
+	  try{
+	    	Entigrator entigrator=console.getEntigrator(entihome$);
+			Sack graph=entigrator.getEntityAtKey(entityKey$);
+			String[]  sa=graph.elementListNoSorted("node");
+			String []na=NodeHandler.expandCascade(entigrator, sa);
+			String nodeIcon$;
+			String nodeLabel$;
+			if(na!=null)
+				for(String n:na){
+					//System.out.println("JGraphNodes:expandCascade:try node="+n);
+					try{
+				    nodeLabel$=entigrator.indx_getLabel(n);
+				    nodeIcon$=entigrator.getEntityIcon(n);
+		                graph.putElementItem("node", new Core(nodeIcon$,n,nodeLabel$));
+					}catch(Exception ee){
+						System.out.println("JGraphNodes:expandCascade:"+ee.toString());
+					}
+				}
+			 entigrator.save(graph);
+			 
+			 NodeHandler.rebuild(entigrator, entityKey$);
+			 graph=removeStandAloneNodes();
+			// graph.print();
+			 
+			  }catch(Exception e){
+		  Logger.getLogger(JGraphNodes.class.getName()).severe(e.toString());
+	  }
+  }
+  private void  selectNeighbours(){
 	 try{
 	 	  
 	    	Entigrator entigrator=console.getEntigrator(entihome$);
@@ -395,5 +448,102 @@ public class JGraphNodes extends JEntitiesPanel{
 	  }catch(Exception e){
 		  Logger.getLogger(JGraphNodes.class.getName()).severe(e.toString());
 	  }
+  }
+  private boolean nodeIsSelected(Sack graph,String nodeKey$){
+	  try{
+		  if(nodeKey$==null)
+			  return false;
+		  Core[] ca=graph.elementGet("node.select");
+		  for(Core c:ca)
+			  if(c.name.equals(nodeKey$))
+			  return true;
+	  }catch(Exception e){
+		  Logger.getLogger(JGraphNodes.class.getName()).severe(e.toString());
+	  }
+	  return false; 
+  }
+  private boolean nodeIsConnected(Sack graph,String nodeKey$){
+	  try{
+		  if(nodeKey$==null)
+			  return false;
+		  if(!nodeIsSelected(graph,nodeKey$))
+			  return false;
+          Core[] ba=graph.elementGet("bond");
+          for(Core b:ba){
+        	  if(nodeKey$.equals(b.type))
+        	    if(nodeIsSelected(graph,b.value))
+        		  return true;
+          	if(nodeKey$.equals(b.value))
+          		if(nodeIsSelected(graph,b.type))
+      		  return true;
+          }
+	  }catch(Exception e){
+		  Logger.getLogger(JGraphNodes.class.getName()).severe(e.toString());
+	  }
+	  return false;
+  }
+  private Sack removeStandAloneNodes(){
+	  try{
+			//System.out.println("JGraphNode:listNodes:entity key=" + entityKey$); 
+			Entigrator entigrator=console.getEntigrator(entihome$);
+			Sack graph=entigrator.getEntityAtKey(entityKey$);
+			Core[] ca=graph.elementGet("node.select");
+			if(ca==null)
+				return graph;
+			ArrayList<String>sl=new ArrayList<String>();
+			for( Core c:ca){
+				if(nodeIsConnected(graph,c.name)){
+					//System.out.println("JGraphNode:removeStandAloneNodes:connected node="+c.name);
+						continue;
+				}
+				sl.add(c.name);
+				//System.out.println("JGraphNode:removeStandAloneNodes:remove node="+c.name);
+				}
+	      for(String s:sl){
+	    	  graph.removeElementItem("node.select", s);
+	    	  graph.removeElementItem("vertex", s);
+	    	  //System.out.println("JGraphNode:removeStandAloneNodes:remove node="+s);
+	      }
+	      
+	      entigrator.save(graph);
+	      return graph;
+	  }catch(Exception e){
+		  Logger.getLogger(JGraphNodes.class.getName()).severe(e.toString());
+		  return  null;
+	  }	
+			
+  }
+  private void deleteNodes(){
+	  try{
+		  String[] sa=JGraphNodes.this.listSelectedItems();
+		
+		  if(sa==null)
+				  return;
+		//  System.out.println("JGraphNodes:deleteNodes:sa="+sa.length);
+			Entigrator entigrator=console.getEntigrator(entihome$);
+			Sack graph=entigrator.getEntityAtKey(entityKey$);
+			Sack node;
+			Core[] ba;
+			String nodeKey$;
+			for(String s:sa){
+				
+				nodeKey$=Locator.getProperty(s, EntityHandler.ENTITY_KEY);
+			//	System.out.println("JGraphNodes:deleteNodes:node="+nodeKey$);
+				node=entigrator.getEntityAtKey(nodeKey$);
+				if(node!=null){
+					ba=node.elementGet("bond");
+					if(ba!=null)
+						for(Core b:ba)
+							graph.removeElementItem("bond", b.name);
+				}
+				graph.removeElementItem("node", nodeKey$);
+			}
+			entigrator.save(graph);
+			NodeHandler.rebuild(entigrator, entityKey$);
+			//graph.print();
+	  }catch(Exception e){
+		  Logger.getLogger(JGraphNodes.class.getName()).severe(e.toString());
+		  return  ;
+	  }	
   }
 }

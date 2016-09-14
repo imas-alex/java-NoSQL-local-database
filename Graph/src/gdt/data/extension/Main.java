@@ -83,7 +83,7 @@ public class Main implements ExtensionMain{
                   InputStream is;
                   extension.createElement("external");
                for(String s:sa){
-            	   System.out.println("Graph:main:sa["+(i++)+"]="+s);
+            	//  System.out.println("Graph:main:sa["+(i++)+"]="+s);
             	   extension.putElementItem("external", new Core(null,s,null));
             	   target=new File(folder$+"/"+s);
             	   is=ExtensionHandler.getResourceStream(jar$, s);

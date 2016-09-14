@@ -142,7 +142,7 @@ public class JGraphViews extends JItemsListPanel implements JRequester{
 		}
 		return this;
 	}
-	private void addPopup( JItemPanel ip){
+	private void addPopup(final JItemPanel ip){
 		JPopupMenu popup = new JPopupMenu();
 		JMenuItem renameItem=new JMenuItem("Rename");
 		   popup.add(renameItem);
@@ -151,7 +151,7 @@ public class JGraphViews extends JItemsListPanel implements JRequester{
 				@Override
 				public void actionPerformed(ActionEvent e) {
 					try{
-					System.out.println("JGraphView:makePopup:locator="+ip.getLocator());	
+				//	System.out.println("JGraphView:makePopup:locator="+ip.getLocator());	
 				
 					Properties locator=Locator.toProperties(ip.getLocator());
 					String title$=locator.getProperty(Locator.LOCATOR_TITLE);
