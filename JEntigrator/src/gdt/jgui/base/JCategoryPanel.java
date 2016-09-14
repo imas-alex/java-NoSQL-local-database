@@ -97,7 +97,7 @@ public class JCategoryPanel extends JItemsListPanel {
 	   
 	    locator.setProperty(BaseHandler.HANDLER_SCOPE,JConsoleHandler.CONSOLE_SCOPE);
 	    locator.setProperty(BaseHandler.HANDLER_CLASS,getClass().getName());
-		System.out.println("JCategoryPanel:getLocator:locator="+locator$);
+		//System.out.println("JCategoryPanel:getLocator:locator="+locator$);
 	    return Locator.toString(locator);
 	}
 	/**

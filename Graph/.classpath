@@ -6,36 +6,35 @@
 			<attribute name="maven.pomderived" value="true"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.8">
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.7">
 		<attributes>
 			<attribute name="maven.pomderived" value="true"/>
 		</attributes>
 	</classpathentry>
 	<classpathentry combineaccessrules="false" kind="src" path="/JEntigrator"/>
-	<classpathentry kind="lib" path="libs/commons-codec-1.10.jar"/>
-	<classpathentry kind="lib" path="libs/commons-compress-1.10.jar"/>
-	<classpathentry kind="lib" path="/home/imasa/git/github/Graph2/libs/jung-visualization-2.0.1.jar"/>
-	<classpathentry kind="lib" path="libs/collections-generic-4.01.jar"/>
-	<classpathentry kind="lib" path="libs/colt-1.2.0.jar"/>
-	<classpathentry kind="lib" path="libs/concurrent-1.3.4.jar"/>
-	<classpathentry kind="lib" path="libs/j3d-core-1.3.1.jar"/>
-	<classpathentry kind="lib" path="libs/jung-3d-2.0.1.jar"/>
-	<classpathentry kind="lib" path="libs/jung-3d-demos-2.0.1.jar"/>
-	<classpathentry kind="lib" path="libs/jung-algorithms-2.0.1.jar"/>
-	<classpathentry kind="lib" path="libs/jung-api-2.0.1.jar"/>
-	<classpathentry kind="lib" path="libs/jung-graph-impl-2.0.1.jar"/>
-	<classpathentry kind="lib" path="libs/jung-io-2.0.1.jar"/>
-	<classpathentry kind="lib" path="libs/jung-jai-2.0.1.jar"/>
-	<classpathentry kind="lib" path="libs/jung-jai-samples-2.0.1.jar"/>
-	<classpathentry kind="lib" path="libs/jung-samples-2.0.1.jar"/>
-	<classpathentry kind="lib" path="libs/jung-visualization-2.0.1.jar"/>
-	<classpathentry kind="lib" path="libs/stax-api-1.0.1.jar"/>
-	<classpathentry kind="lib" path="libs/vecmath-1.3.1.jar"/>
-	<classpathentry kind="lib" path="libs/wstx-asl-3.2.6.jar"/>
 	<classpathentry kind="con" path="org.eclipse.m2e.MAVEN2_CLASSPATH_CONTAINER">
 		<attributes>
 			<attribute name="maven.pomderived" value="true"/>
 		</attributes>
 	</classpathentry>
+	<classpathentry kind="lib" path="/home/imasa/libs/graph/libs/collections-generic-4.01.jar"/>
+	<classpathentry kind="lib" path="/home/imasa/libs/graph/libs/colt-1.2.0.jar"/>
+	<classpathentry kind="lib" path="/home/imasa/libs/graph/libs/commons-codec-1.10.jar"/>
+	<classpathentry kind="lib" path="/home/imasa/libs/graph/libs/commons-compress-1.10.jar"/>
+	<classpathentry kind="lib" path="/home/imasa/libs/graph/libs/concurrent-1.3.4.jar"/>
+	<classpathentry kind="lib" path="/home/imasa/libs/graph/libs/j3d-core-1.3.1.jar"/>
+	<classpathentry kind="lib" path="/home/imasa/libs/graph/libs/jung-3d-2.0.1.jar"/>
+	<classpathentry kind="lib" path="/home/imasa/libs/graph/libs/jung-3d-demos-2.0.1.jar"/>
+	<classpathentry kind="lib" path="/home/imasa/libs/graph/libs/jung-algorithms-2.0.1.jar"/>
+	<classpathentry kind="lib" path="/home/imasa/libs/graph/libs/jung-api-2.0.1.jar"/>
+	<classpathentry kind="lib" path="/home/imasa/libs/graph/libs/jung-graph-impl-2.0.1.jar"/>
+	<classpathentry kind="lib" path="/home/imasa/libs/graph/libs/jung-io-2.0.1.jar"/>
+	<classpathentry kind="lib" path="/home/imasa/libs/graph/libs/jung-jai-2.0.1.jar"/>
+	<classpathentry kind="lib" path="/home/imasa/libs/graph/libs/jung-jai-samples-2.0.1.jar"/>
+	<classpathentry kind="lib" path="/home/imasa/libs/graph/libs/jung-samples-2.0.1.jar"/>
+	<classpathentry kind="lib" path="/home/imasa/libs/graph/libs/jung-visualization-2.0.1.jar"/>
+	<classpathentry kind="lib" path="/home/imasa/libs/graph/libs/stax-api-1.0.1.jar"/>
+	<classpathentry kind="lib" path="/home/imasa/libs/graph/libs/vecmath-1.3.1.jar"/>
+	<classpathentry kind="lib" path="/home/imasa/libs/graph/libs/wstx-asl-3.2.6.jar"/>
 	<classpathentry kind="output" path="target/classes"/>
 </classpath>
