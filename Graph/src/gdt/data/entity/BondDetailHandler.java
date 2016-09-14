@@ -169,7 +169,7 @@ private static boolean isDetailAlreadyAttached(Sack edge,String bondKey$,String 
  */	
 public static void addDetail(Entigrator entigrator, String locator$){
 	try{
-	System.out.println("BondDetailHandler:addDetail:locator="+locator$);	
+	//System.out.println("BondDetailHandler:addDetail:locator="+locator$);	
 	Properties locator=Locator.toProperties(locator$);
 	String detailKey$=locator.getProperty(EntityHandler.ENTITY_KEY);
 	String edgeKey$=locator.getProperty(JBondsPanel.EDGE_KEY);
