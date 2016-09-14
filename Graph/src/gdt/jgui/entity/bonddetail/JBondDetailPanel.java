@@ -140,7 +140,7 @@ public class JBondDetailPanel extends JEntitiesPanel {
 	@Override
 	public JContext instantiate(JMainConsole console, String locator$) {
 		try{
-			System.out.println("JBondDetailPanel:instantiate:locator="+locator$);
+			//System.out.println("JBondDetailPanel:instantiate:locator="+locator$);
 			this.console=console;
 			 this.locator$=locator$;
 			 Properties locator=Locator.toProperties(locator$);

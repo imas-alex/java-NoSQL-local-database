@@ -143,7 +143,9 @@ public class JGraphViewSelector extends  JItemsListPanel implements   JFacetRend
 						   rebuildItem.addActionListener(new ActionListener() {
 								@Override
 								public void actionPerformed(ActionEvent e) {
-									rebuild();
+									//rebuild();
+									Entigrator entigrator=console.getEntigrator(entihome$);
+									NodeHandler.rebuild(entigrator, entityKey$);
 								}
 							} );
 						   menu.add(rebuildItem);
@@ -459,6 +461,7 @@ public void response(JMainConsole console, String locator$) {
 	
 	
 }
+/*
 private void rebuild(){
 	try{
 		Entigrator entigrator=console.getEntigrator(entihome$);
@@ -493,4 +496,5 @@ private void rebuild(){
 		Logger.getLogger(JGraphRenderer.class.getName()).severe(e.toString());
 	}
 }
+*/
 }

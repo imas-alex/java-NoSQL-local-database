@@ -197,8 +197,7 @@ public JMenu getContextMenu() {
 	});
 	return menu1;
 	}
-
-private void filter(){
+private void filter1(){
 	try{
 		String[] sa=listSelectedItems();
 		if(sa==null)
@@ -207,34 +206,67 @@ private void filter(){
 		String edgeKey$;
 		ArrayList<String>el=new ArrayList<String>();
 		for(String s:sa){
-			System.out.println("JGraphEdgesPanel:filter:s="+s);
+			
 			locator=Locator.toProperties(s);
 			edgeKey$=locator.getProperty(EntityHandler.ENTITY_KEY);
 			el.add(edgeKey$);
+			//System.out.println("JGraphEdgesPanel:filter:edge key="+edgeKey$);
+		}
+	}catch(Exception e){
+		Logger.getLogger(JGraphEdgesPanel.class.getName()).severe(e.toString());
+	}
+}
+private void filter(){
+	try{
+		String[] sa=listSelectedItems();
+		if(sa==null)
+			return;
+		Properties locator;
+		String edgeEntity$;
+		ArrayList<String>el=new ArrayList<String>();
+		for(String s:sa){
+			locator=Locator.toProperties(s);
+			edgeEntity$=locator.getProperty(EntityHandler.ENTITY_KEY);
+			el.add(edgeEntity$);
+			//System.out.println("JGraphEdgesPanel:filter:edge entity="+edgeEntity$);
 		}
 		Entigrator entigrator=console.getEntigrator(entihome$);
 		Sack graphEntity=entigrator.getEntityAtKey(entityKey$);
+		graphEntity.removeElement("bond.select");
+		graphEntity.createElement("bond.select");
 		Core[] ca=graphEntity.elementGet("edge.entity");
 		ArrayList<String>bl=new ArrayList<String>();
 		for(Core c:ca ){
 			if(el.contains(c.value)){
-				System.out.println("JGraphEdgesPanel:filter:bond="+c.name);
+				//System.out.println("JGraphEdgesPanel:filter:bond key="+c.name);
 				bl.add(c.name);
+				graphEntity.putElementItem("bond.select", graphEntity.getElementItem("bond", c.name));
+				
 			}
 		}
 		ArrayList <String>nl=new ArrayList<String>();
 		ca=graphEntity.elementGet("bond");
 		for(Core c:ca ){
-			if(bl.contains(c.name)){
 			if(!nl.contains(c.type))
 				nl.add(c.type);
 			if(!nl.contains(c.value))
 				nl.add(c.value);
-			}
 		}
-		System.out.println("JGraphEdgesPanel:filter:nl="+nl.size());
+		//System.out.println("JGraphEdgesPanel:filter:nl="+nl.size());
 		GraphHandler.undoPush(console, getLocator());
 		sa=graphEntity.elementListNoSorted("node.select");
+		if(sa==null){
+			graphEntity.createElement("node.select");
+			sa=graphEntity.elementListNoSorted("node");
+		}else
+			graphEntity.clearElement("node.select");
+		for(String s:sa){
+			if(nl.contains(s)){
+				graphEntity.putElementItem("node.select", new Core(null,s,null));
+				//System.out.println("JGraphEdgesPanel:filter:node key="+s);
+			}
+		}
+		/*
 		if(sa==null){
 			graphEntity.createElement("node.select");
 			for(String n:nl)
@@ -245,7 +277,9 @@ private void filter(){
 				if(nl.contains(s))
 					graphEntity.putElementItem("node.select", new Core(null,s,null));
 			}
+			
 		}
+		*/
 		entigrator.save(graphEntity);
 		JGraphRenderer gr=new JGraphRenderer();
 		String gr$=gr.getLocator();

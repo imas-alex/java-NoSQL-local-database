@@ -62,25 +62,7 @@ public class JNodeEditor extends JFieldsEditor {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				System.out.println("JNodeEditor:add edge:");
-			/*
-				String displayAddress$=compose();
-				JTextEditor te=new JTextEditor();
-				String teLocator$=te.getLocator();
-				teLocator$=Locator.append(teLocator$, Entigrator.ENTIHOME, entihome$);
-				teLocator$=Locator.append(teLocator$, EntityHandler.ENTITY_KEY, entityKey$);
-				teLocator$=Locator.append(teLocator$,JTextEditor.TEXT,displayAddress$);
-				teLocator$=Locator.append(teLocator$,JTextEditor.TEXT_TITLE,"Display address");
-				teLocator$=Locator.append(teLocator$,JTextEditor.SUBTITLE,entityLabel$);
-				
-				String responseLocator$=getLocator();
-				responseLocator$=Locator.append(responseLocator$, BaseHandler.HANDLER_METHOD, "response");
-				responseLocator$=Locator.append(responseLocator$, BaseHandler.HANDLER_CLASS, JAddressEditor.class.getName());
-				responseLocator$=Locator.append(responseLocator$, BaseHandler.HANDLER_SCOPE, JConsoleHandler.CONSOLE_SCOPE);
-				responseLocator$=Locator.append(responseLocator$, BaseHandler.HANDLER_LOCATION,JAddressFacetAddItem.EXTENSION_KEY );
-				responseLocator$=Locator.append(responseLocator$,JRequester.REQUESTER_ACTION,ACTION_SET_DISPLAY_ADDRESS);
-				teLocator$=Locator.append(teLocator$,JRequester.REQUESTER_RESPONSE_LOCATOR,Locator.compressText(responseLocator$));
-                JConsoleHandler.execute(console, teLocator$);
-				*/
+		
 			}
 		} );
 		postMenu[0]=itemEdge;
@@ -152,7 +134,7 @@ public class JNodeEditor extends JFieldsEditor {
 		 try{
 			// System.out.println("JPhoneEditor:reindex:0:entity="+entity.getProperty("label"));
 			Object fh= ExtensionHandler.loadHandlerInstance(entigrator,"_Tm142C8Sgti2iAKlDEcEXT2Kj1E","gdt.data.entity.NodeHandler");	
-			System.out.println("JNodeEditor:reindex="+fh.getClass().getName()); 
+			//System.out.println("JNodeEditor:reindex="+fh.getClass().getName()); 
 			String fhandler$="gdt.data.entity.NodeHandler";
 			 
 					 //NodeHandler.class.getName();
@@ -170,7 +152,7 @@ public class JNodeEditor extends JFieldsEditor {
 	}
 	@Override
 	public String newEntity(JMainConsole console, String locator$) {
-		System.out.println("JNodeEditor:newEntity:BEGIN");
+		//System.out.println("JNodeEditor:newEntity:BEGIN");
 		JTextEditor textEditor=new JTextEditor();
 	    String editorLocator$=textEditor.getLocator();
 	    editorLocator$=Locator.append(editorLocator$, JTextEditor.TEXT, "Node"+Identity.key().substring(0,4));
@@ -204,7 +186,7 @@ public class JNodeEditor extends JFieldsEditor {
 
 	@Override
 	public void response(JMainConsole console, String locator$) {
-		System.out.println("JNodeEditor:response:"+Locator.remove(locator$,Locator.LOCATOR_ICON ));
+		//System.out.println("JNodeEditor:response:"+Locator.remove(locator$,Locator.LOCATOR_ICON ));
 		try{
 			Properties locator=Locator.toProperties(locator$);
 			String action$=locator.getProperty(JRequester.REQUESTER_ACTION);
@@ -279,7 +261,7 @@ public class JNodeEditor extends JFieldsEditor {
 	@Override
 	public JFacetRenderer instantiate(JMainConsole console, String locator$) {
 		try{
-		System.out.println("JNodeEditor.instantiate:begin");
+		//System.out.println("JNodeEditor.instantiate:begin");
 			this.console=console;
 			Properties locator=Locator.toProperties(locator$);
 			entihome$=locator.getProperty(Entigrator.ENTIHOME);
