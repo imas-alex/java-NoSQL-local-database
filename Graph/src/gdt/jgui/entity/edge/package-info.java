@@ -1,4 +1,4 @@
-/** ***
+/**
  *Contains classes for  manipulation on edges. 
  * @author  Alexander Imas
  * @version 1.0

@@ -25,7 +25,7 @@ import gdt.data.grain.Core;
 import gdt.data.grain.Locator;
 import gdt.data.grain.Sack;
 import gdt.data.store.Entigrator;
-import gdt.jgui.entity.graph.JGraphRenderer;
+
 /**
 * Contains methods to process the node facet .
 * @author  Alexander Imas
