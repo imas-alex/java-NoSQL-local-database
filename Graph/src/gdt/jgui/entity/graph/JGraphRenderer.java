@@ -2,11 +2,7 @@ package gdt.jgui.entity.graph;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.Container;
 import java.awt.Dimension;
-import java.awt.Font;
-import java.awt.FontMetrics;
-import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.GridLayout;
 import java.awt.Image;
@@ -14,8 +10,6 @@ import java.awt.Paint;
 import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionListener;
@@ -30,7 +24,6 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.Stack;
 import java.util.Timer;
-import java.util.TimerTask;
 import java.util.logging.Logger;
 
 import javax.imageio.ImageIO;
@@ -39,7 +32,6 @@ import javax.swing.BoxLayout;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
-import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JFileChooser;
 import javax.swing.JMenu;
@@ -47,51 +39,29 @@ import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
-import javax.swing.JRootPane;
 import javax.swing.event.MenuEvent;
 import javax.swing.event.MenuListener;
 import javax.swing.event.PopupMenuEvent;
 import javax.swing.event.PopupMenuListener;
-import java.awt.geom.Point2D;
-
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.collections15.Transformer;
-import org.apache.commons.collections15.functors.ConstantTransformer;
-
 import edu.uci.ics.jung.algorithms.layout.AbstractLayout;
 import edu.uci.ics.jung.algorithms.layout.FRLayout;
-import edu.uci.ics.jung.algorithms.layout.FRLayout2;
 import edu.uci.ics.jung.algorithms.layout.GraphElementAccessor;
 import edu.uci.ics.jung.algorithms.layout.Layout;
-import edu.uci.ics.jung.algorithms.layout.SpringLayout;
 import edu.uci.ics.jung.algorithms.layout.util.RandomLocationTransformer;
-import edu.uci.ics.jung.algorithms.layout.util.Relaxer;
 import edu.uci.ics.jung.graph.DirectedSparseGraph;
-import edu.uci.ics.jung.graph.DirectedSparseMultigraph;
 import edu.uci.ics.jung.graph.Graph;
-import edu.uci.ics.jung.graph.ObservableGraph;
-import edu.uci.ics.jung.graph.event.GraphEvent;
-import edu.uci.ics.jung.graph.event.GraphEvent.Edge;
-import edu.uci.ics.jung.graph.event.GraphEvent.Vertex;
-import edu.uci.ics.jung.graph.event.GraphEventListener;
 import edu.uci.ics.jung.graph.util.EdgeType;
-import edu.uci.ics.jung.graph.util.Graphs;
-import edu.uci.ics.jung.samples.VertexImageShaperDemo;
 import edu.uci.ics.jung.samples.VertexImageShaperDemo.DemoVertexIconShapeTransformer;
 import edu.uci.ics.jung.samples.VertexImageShaperDemo.DemoVertexIconTransformer;
 import edu.uci.ics.jung.samples.VertexImageShaperDemo.PickWithIconListener;
 import edu.uci.ics.jung.samples.VertexImageShaperDemo.VertexStringerImpl;
 import edu.uci.ics.jung.visualization.GraphZoomScrollPane;
-import edu.uci.ics.jung.visualization.LayeredIcon;
-import edu.uci.ics.jung.visualization.RenderContext;
-import edu.uci.ics.jung.visualization.VisualizationImageServer;
 import edu.uci.ics.jung.visualization.VisualizationViewer;
-import edu.uci.ics.jung.visualization.annotations.AnnotatingGraphMousePlugin;
-import edu.uci.ics.jung.visualization.annotations.AnnotatingModalGraphMouse;
 import edu.uci.ics.jung.visualization.control.CrossoverScalingControl;
 import edu.uci.ics.jung.visualization.control.DefaultModalGraphMouse;
 import edu.uci.ics.jung.visualization.control.ScalingControl;
-import edu.uci.ics.jung.visualization.decorators.EdgeShape;
 import edu.uci.ics.jung.visualization.decorators.EllipseVertexShapeTransformer;
 import edu.uci.ics.jung.visualization.decorators.PickableEdgePaintTransformer;
 import edu.uci.ics.jung.visualization.decorators.PickableVertexPaintTransformer;
@@ -100,9 +70,7 @@ import edu.uci.ics.jung.visualization.layout.ObservableCachingLayout;
 import edu.uci.ics.jung.visualization.picking.PickedState;
 import edu.uci.ics.jung.visualization.renderers.DefaultEdgeLabelRenderer;
 import edu.uci.ics.jung.visualization.renderers.DefaultVertexLabelRenderer;
-import edu.uci.ics.jung.visualization.renderers.Renderer;
 import gdt.data.entity.BaseHandler;
-import gdt.data.entity.BondDetailHandler;
 import gdt.data.entity.EdgeHandler;
 import gdt.data.entity.EntityHandler;
 import gdt.data.entity.GraphHandler;
@@ -110,25 +78,17 @@ import gdt.data.entity.NodeHandler;
 import gdt.data.entity.facet.ExtensionHandler;
 import gdt.data.entity.facet.FieldsHandler;
 import gdt.data.grain.Core;
-import gdt.data.grain.Identity;
 import gdt.data.grain.Locator;
 import gdt.data.grain.Sack;
 import gdt.data.grain.Support;
 import gdt.data.store.Entigrator;
 import gdt.jgui.console.JConsoleHandler;
 import gdt.jgui.console.JContext;
-import gdt.jgui.console.JFacetOpenItem;
-import gdt.jgui.console.JFacetRenderer;
 import gdt.jgui.console.JMainConsole;
 import gdt.jgui.console.JRequester;
 import gdt.jgui.entity.JEntitiesPanel;
 import gdt.jgui.entity.JEntityFacetPanel;
 import gdt.jgui.entity.JEntityPrimaryMenu;
-import gdt.jgui.entity.JReferenceEntry;
-import gdt.jgui.entity.edge.JBondItem;
-import gdt.jgui.entity.edge.JBondsPanel;
-import gdt.jgui.entity.fields.JFieldsFacetAddItem;
-import gdt.jgui.entity.fields.JFieldsFacetOpenItem;
 import gdt.jgui.tool.AutocompleteJComboBox;
 import gdt.jgui.tool.JTextEditor;
 
@@ -152,32 +112,19 @@ public class JGraphRenderer extends JPanel implements JContext , JRequester
   private JPopupMenu popup;
     String requesterResponseLocator$;
     AutocompleteJComboBox searchBox ;
- 
-  
-	//private Graph<Number,Number> g = null;
-
 private VisualizationViewer<Number,Number> vv = null;
 
 private AbstractLayout<Number,Number> layout = null;
 
     Timer timer;
     DirectedSparseGraph<Number, Number> graph;
-
-    /**
-     * the visual component and renderer for the graph
-     */
-    //VisualizationViewer<Number, Number> vv;
     
     boolean done;
 
     protected JButton switchLayout;
 
-//    public static final LengthFunction<Number> UNITLENGTHFUNCTION = new SpringLayout.UnitLengthFunction<Number>(
-//            100);
     public static final int EDGE_LENGTH = 100;
     Integer v_prev = null;
-
-    /////
     public JGraphRenderer()
   	{
   	    super();
@@ -187,7 +134,7 @@ private AbstractLayout<Number,Number> layout = null;
   
 	@Override
 	public void response(JMainConsole console, String locator$) {
-		System.out.println("JGraphrenderer:response:"+Locator.remove(locator$,Locator.LOCATOR_ICON ));
+//		System.out.println("JGraphrenderer:response:"+Locator.remove(locator$,Locator.LOCATOR_ICON ));
 		try{
 			Properties locator=Locator.toProperties(locator$);
 			String action$=locator.getProperty(JRequester.REQUESTER_ACTION);
@@ -227,16 +174,7 @@ private AbstractLayout<Number,Number> layout = null;
 			}catch(Exception e){
 			Logger.getLogger(getClass().getName()).severe(e.toString());
 		}
-		
-		
 	}
-
-	
-
-	
-	
-	
-	
 	@Override
 	public JPanel getPanel() {
 		return this;
@@ -527,45 +465,9 @@ private AbstractLayout<Number,Number> layout = null;
 		
 	}
 	
-/*
-private void rebuild(){
-	try{
-		Entigrator entigrator=console.getEntigrator(entihome$);
-		Sack graph=entigrator.getEntityAtKey(entityKey$);
-		Core[] ca=graph.elementGet("node");
-		graph.removeElement("bond");
-		graph.createElement("bond");
-		graph.removeElement("edge.entity");
-		graph.createElement("edge.entity");
-		Sack node;
-		if(ca==null)
-			return;
-		Core[]ba;
-		for(Core c:ca){
-			node=entigrator.getEntityAtKey(c.name);
-			if(node==null)
-				continue;
-			ba=node.elementGet("bond");
-			if(ba!=null)
-				for( Core b:ba){
-					if(graph.getElementItem("bond", b.name)!=null)
-						continue;
-					graph.putElementItem("bond", b);
-					graph.putElementItem("edge.entity", node.getElementItem("edge", b.name));
-					
-				}
-			
-		}
-	entigrator.save(graph);	
-		
-	}catch(Exception e){
-		Logger.getLogger(JGraphRenderer.class.getName()).severe(e.toString());
-	}
-}
-*/
 private void displayGraph(){
 	try{
-		System.out.println("JGraphRenderer:displayGraph:BEGIN");
+		//System.out.println("JGraphRenderer:displayGraph:BEGIN");
 		init2();
 		revalidate();
 		repaint();
