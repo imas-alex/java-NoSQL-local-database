@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<session version="1.0">
+<refactoring comment="Rename local variable &apos;node&apos; in &apos;gdt.jgui.entity.graph.JGraphRenderer.expand(...)&apos; to &apos;nodeCore&apos;&#x0A;- Original project: &apos;Graph&apos;&#x0A;- Original element: &apos;gdt.jgui.entity.graph.JGraphRenderer.expand(int).node&apos;&#x0A;- Renamed element: &apos;node&apos;&#x0A;- Update references to refactored element" description="Rename local variable &apos;node&apos;" id="org.eclipse.jdt.ui.rename.local.variable" input="/src&lt;gdt.jgui.entity.graph{JGraphRenderer.java[JGraphRenderer~expand~I@node!22394!22403!22399!22402!QCore;!0!false" name="nodeCore" references="true" stamp="1472590841789" version="1.0"/>
+</session>

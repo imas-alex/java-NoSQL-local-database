@@ -25940,3 +25940,61 @@ Caused by: java.net.SocketException: Connection reset
 2016-09-14 18:33:28,138 [Worker-1] INFO  o.e.m.c.i.embedder.EclipseLogger - Copying 0 resource
 2016-09-14 18:33:28,139 [Worker-1] WARN  o.e.m.c.i.embedder.EclipseLogger - Using platform encoding (UTF-8 actually) to copy filtered resources, i.e. build is platform dependent!
 2016-09-14 18:33:28,140 [Worker-1] INFO  o.e.m.c.i.embedder.EclipseLogger - skip non existing resourceDirectory /home/imasa/github/Community/src/test/resources
+2016-09-15 11:28:09,652 [Worker-1] INFO  c.g.t.t.d.PublishedGradleVersions - Gradle version information cache is up-to-date. Trying to read.
+2016-09-15 11:28:16,252 [Worker-4] INFO  o.e.m.c.i.l.LifecycleMappingFactory - Using org.eclipse.m2e.jdt.JarLifecycleMapping lifecycle mapping for MavenProject: com.github.imas-alex:Community:0.0.5 @ /home/imasa/github/Community/pom.xml.
+2016-09-15 11:28:16,279 [Worker-6] INFO  o.e.m.c.i.l.LifecycleMappingFactory - Using org.eclipse.m2e.jdt.JarLifecycleMapping lifecycle mapping for MavenProject: com.github.imas-alex:JEntigrator:0.0.4-SNAPSHOT @ /home/imasa/github/JEntigrator/pom.xml.
+2016-09-15 11:28:16,850 [Worker-6] WARN  o.e.m.c.i.embedder.EclipseLogger - Using platform encoding (UTF-8 actually) to copy filtered resources, i.e. build is platform dependent!
+2016-09-15 11:28:16,877 [Worker-6] INFO  o.e.m.c.i.embedder.EclipseLogger - Copying 58 resources
+2016-09-15 11:28:16,924 [Worker-6] WARN  o.e.m.c.i.embedder.EclipseLogger - Using platform encoding (UTF-8 actually) to copy filtered resources, i.e. build is platform dependent!
+2016-09-15 11:28:16,925 [Worker-6] INFO  o.e.m.c.i.embedder.EclipseLogger - skip non existing resourceDirectory /home/imasa/github/JEntigrator/src/test/resources
+2016-09-15 11:28:17,460 [Worker-11] INFO  o.e.m.c.i.l.LifecycleMappingFactory - Using org.eclipse.m2e.jdt.JarLifecycleMapping lifecycle mapping for MavenProject: com.github.imas-alex:Community:0.0.5 @ /home/imasa/github/Community/pom.xml.
+2016-09-15 11:28:17,521 [Worker-11] INFO  o.e.m.c.i.l.LifecycleMappingFactory - Using org.eclipse.m2e.jdt.JarLifecycleMapping lifecycle mapping for MavenProject: com.github.imas-alex:Graph:0.0.51-SNAPSHOT @ /home/imasa/github/Graph/pom.xml.
+2016-09-15 11:28:17,593 [Worker-6] INFO  o.e.m.c.i.l.LifecycleMappingFactory - Using org.eclipse.m2e.jdt.JarLifecycleMapping lifecycle mapping for MavenProject: com.github.imas-alex:Graph:0.0.51-SNAPSHOT @ /home/imasa/github/Graph/pom.xml.
+2016-09-15 11:28:17,892 [Worker-6] WARN  o.e.m.c.i.embedder.EclipseLogger - Using platform encoding (UTF-8 actually) to copy filtered resources, i.e. build is platform dependent!
+2016-09-15 11:28:17,894 [Worker-6] INFO  o.e.m.c.i.embedder.EclipseLogger - Copying 10 resources
+2016-09-15 11:28:17,909 [Worker-6] WARN  o.e.m.c.i.embedder.EclipseLogger - Using platform encoding (UTF-8 actually) to copy filtered resources, i.e. build is platform dependent!
+2016-09-15 11:28:17,910 [Worker-6] INFO  o.e.m.c.i.embedder.EclipseLogger - skip non existing resourceDirectory /home/imasa/github/Graph/src/test/resources
+2016-09-15 11:28:18,249 [Worker-6] INFO  o.e.m.c.i.l.LifecycleMappingFactory - Using org.eclipse.m2e.jdt.JarLifecycleMapping lifecycle mapping for MavenProject: com.github.imas-alex:Community:0.0.5 @ /home/imasa/github/Community/pom.xml.
+2016-09-15 11:28:18,279 [Worker-6] WARN  o.e.m.c.i.embedder.EclipseLogger - Using platform encoding (UTF-8 actually) to copy filtered resources, i.e. build is platform dependent!
+2016-09-15 11:28:18,280 [Worker-6] INFO  o.e.m.c.i.embedder.EclipseLogger - Copying 7 resources
+2016-09-15 11:28:18,290 [Worker-6] WARN  o.e.m.c.i.embedder.EclipseLogger - Using platform encoding (UTF-8 actually) to copy filtered resources, i.e. build is platform dependent!
+2016-09-15 11:28:18,291 [Worker-6] INFO  o.e.m.c.i.embedder.EclipseLogger - skip non existing resourceDirectory /home/imasa/github/Community/src/test/resources
+2016-09-15 11:28:18,847 [Worker-10] INFO  o.e.m.c.i.l.LifecycleMappingFactory - Using org.eclipse.m2e.jdt.JarLifecycleMapping lifecycle mapping for MavenProject: com.github.imas-alex:Community:0.0.5 @ /home/imasa/github/Community/pom.xml.
+2016-09-15 11:28:18,873 [Worker-10] INFO  o.e.m.c.i.l.LifecycleMappingFactory - Using org.eclipse.m2e.jdt.JarLifecycleMapping lifecycle mapping for MavenProject: com.github.imas-alex:Graph:0.0.51-SNAPSHOT @ /home/imasa/github/Graph/pom.xml.
+2016-09-15 11:28:18,956 [Worker-10] INFO  o.e.m.c.i.l.LifecycleMappingFactory - Using org.eclipse.m2e.jdt.JarLifecycleMapping lifecycle mapping for MavenProject: com.github.imas-alex:JEntigrator:0.0.4-SNAPSHOT @ /home/imasa/github/JEntigrator/pom.xml.
+2016-09-15 11:28:19,640 [Worker-6] WARN  o.e.m.c.i.embedder.EclipseLogger - Using platform encoding (UTF-8 actually) to copy filtered resources, i.e. build is platform dependent!
+2016-09-15 11:28:19,642 [Worker-6] INFO  o.e.m.c.i.embedder.EclipseLogger - Copying 0 resource
+2016-09-15 11:28:19,646 [Worker-6] WARN  o.e.m.c.i.embedder.EclipseLogger - Using platform encoding (UTF-8 actually) to copy filtered resources, i.e. build is platform dependent!
+2016-09-15 11:28:19,649 [Worker-6] INFO  o.e.m.c.i.embedder.EclipseLogger - skip non existing resourceDirectory /home/imasa/github/JEntigrator/src/test/resources
+2016-09-15 11:28:19,719 [Worker-6] WARN  o.e.m.c.i.embedder.EclipseLogger - Using platform encoding (UTF-8 actually) to copy filtered resources, i.e. build is platform dependent!
+2016-09-15 11:28:19,720 [Worker-6] INFO  o.e.m.c.i.embedder.EclipseLogger - Copying 0 resource
+2016-09-15 11:28:19,721 [Worker-6] WARN  o.e.m.c.i.embedder.EclipseLogger - Using platform encoding (UTF-8 actually) to copy filtered resources, i.e. build is platform dependent!
+2016-09-15 11:28:19,722 [Worker-6] INFO  o.e.m.c.i.embedder.EclipseLogger - skip non existing resourceDirectory /home/imasa/github/Graph/src/test/resources
+2016-09-15 11:28:19,770 [Worker-6] WARN  o.e.m.c.i.embedder.EclipseLogger - Using platform encoding (UTF-8 actually) to copy filtered resources, i.e. build is platform dependent!
+2016-09-15 11:28:19,771 [Worker-6] INFO  o.e.m.c.i.embedder.EclipseLogger - Copying 0 resource
+2016-09-15 11:28:19,773 [Worker-6] WARN  o.e.m.c.i.embedder.EclipseLogger - Using platform encoding (UTF-8 actually) to copy filtered resources, i.e. build is platform dependent!
+2016-09-15 11:28:19,774 [Worker-6] INFO  o.e.m.c.i.embedder.EclipseLogger - skip non existing resourceDirectory /home/imasa/github/Community/src/test/resources
+2016-09-15 11:30:53,168 [Worker-7] WARN  o.e.m.c.i.embedder.EclipseLogger - Using platform encoding (UTF-8 actually) to copy filtered resources, i.e. build is platform dependent!
+2016-09-15 11:30:53,174 [Worker-7] INFO  o.e.m.c.i.embedder.EclipseLogger - Copying 10 resources
+2016-09-15 11:30:53,189 [Worker-7] WARN  o.e.m.c.i.embedder.EclipseLogger - Using platform encoding (UTF-8 actually) to copy filtered resources, i.e. build is platform dependent!
+2016-09-15 11:30:53,189 [Worker-7] INFO  o.e.m.c.i.embedder.EclipseLogger - skip non existing resourceDirectory /home/imasa/github/Graph/src/test/resources
+2016-09-15 11:58:08,945 [Worker-3] WARN  o.e.m.c.i.embedder.EclipseLogger - Using platform encoding (UTF-8 actually) to copy filtered resources, i.e. build is platform dependent!
+2016-09-15 11:58:08,946 [Worker-3] INFO  o.e.m.c.i.embedder.EclipseLogger - Copying 10 resources
+2016-09-15 11:58:08,948 [Worker-3] WARN  o.e.m.c.i.embedder.EclipseLogger - Using platform encoding (UTF-8 actually) to copy filtered resources, i.e. build is platform dependent!
+2016-09-15 11:58:08,950 [Worker-3] INFO  o.e.m.c.i.embedder.EclipseLogger - skip non existing resourceDirectory /home/imasa/github/Graph/src/test/resources
+2016-09-15 11:59:14,386 [Worker-30] WARN  o.e.m.c.i.embedder.EclipseLogger - Using platform encoding (UTF-8 actually) to copy filtered resources, i.e. build is platform dependent!
+2016-09-15 11:59:14,387 [Worker-30] INFO  o.e.m.c.i.embedder.EclipseLogger - Copying 10 resources
+2016-09-15 11:59:14,389 [Worker-30] WARN  o.e.m.c.i.embedder.EclipseLogger - Using platform encoding (UTF-8 actually) to copy filtered resources, i.e. build is platform dependent!
+2016-09-15 11:59:14,390 [Worker-30] INFO  o.e.m.c.i.embedder.EclipseLogger - skip non existing resourceDirectory /home/imasa/github/Graph/src/test/resources
+2016-09-15 11:59:40,627 [Worker-30] WARN  o.e.m.c.i.embedder.EclipseLogger - Using platform encoding (UTF-8 actually) to copy filtered resources, i.e. build is platform dependent!
+2016-09-15 11:59:40,628 [Worker-30] INFO  o.e.m.c.i.embedder.EclipseLogger - Copying 10 resources
+2016-09-15 11:59:40,630 [Worker-30] WARN  o.e.m.c.i.embedder.EclipseLogger - Using platform encoding (UTF-8 actually) to copy filtered resources, i.e. build is platform dependent!
+2016-09-15 11:59:40,630 [Worker-30] INFO  o.e.m.c.i.embedder.EclipseLogger - skip non existing resourceDirectory /home/imasa/github/Graph/src/test/resources
+2016-09-15 12:00:04,650 [Worker-3] WARN  o.e.m.c.i.embedder.EclipseLogger - Using platform encoding (UTF-8 actually) to copy filtered resources, i.e. build is platform dependent!
+2016-09-15 12:00:04,652 [Worker-3] INFO  o.e.m.c.i.embedder.EclipseLogger - Copying 10 resources
+2016-09-15 12:00:04,655 [Worker-3] WARN  o.e.m.c.i.embedder.EclipseLogger - Using platform encoding (UTF-8 actually) to copy filtered resources, i.e. build is platform dependent!
+2016-09-15 12:00:04,656 [Worker-3] INFO  o.e.m.c.i.embedder.EclipseLogger - skip non existing resourceDirectory /home/imasa/github/Graph/src/test/resources
+2016-09-15 12:00:27,952 [Worker-23] WARN  o.e.m.c.i.embedder.EclipseLogger - Using platform encoding (UTF-8 actually) to copy filtered resources, i.e. build is platform dependent!
+2016-09-15 12:00:27,954 [Worker-23] INFO  o.e.m.c.i.embedder.EclipseLogger - Copying 10 resources
+2016-09-15 12:00:27,960 [Worker-23] WARN  o.e.m.c.i.embedder.EclipseLogger - Using platform encoding (UTF-8 actually) to copy filtered resources, i.e. build is platform dependent!
+2016-09-15 12:00:27,963 [Worker-23] INFO  o.e.m.c.i.embedder.EclipseLogger - skip non existing resourceDirectory /home/imasa/github/Graph/src/test/resources

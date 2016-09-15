@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<session version="1.0">
+<refactoring comment="Copy element &apos;package-info.java&apos; to &apos;Graph/src/gdt.data.entity&apos;&#x0A;- Original project: &apos;JEntigrator&apos;&#x0A;- Destination element: &apos;Graph/src/gdt.data.entity&apos;&#x0A;- Original element: &apos;gdt.data.entity.package-info.java&apos;" description="Copy compilation unit" destination="=Graph/src&lt;gdt.data.entity" element1="/src&lt;gdt.data.entity{package-info.java" files="0" flags="589830" folders="0" id="org.eclipse.jdt.ui.copy" policy="org.eclipse.jdt.ui.copyResources" stamp="1470676027439" units="1" version="1.0"/>
+</session>
