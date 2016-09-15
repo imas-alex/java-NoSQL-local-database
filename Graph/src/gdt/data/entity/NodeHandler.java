@@ -26,6 +26,7 @@ import gdt.data.grain.Locator;
 import gdt.data.grain.Sack;
 import gdt.data.store.Entigrator;
 
+
 /**
 * Contains methods to process the node facet .
 * @author  Alexander Imas
@@ -200,8 +201,7 @@ public static void rebuild(Entigrator entigrator,String graphKey$){
 			
 		}
 	entigrator.save(graph);	
-	//rebuild(entigrator,graphKey$);  	
-	}catch(Exception e){
+		}catch(Exception e){
 		Logger.getLogger(NodeHandler.class.getName()).severe(e.toString());
 	}
 }
