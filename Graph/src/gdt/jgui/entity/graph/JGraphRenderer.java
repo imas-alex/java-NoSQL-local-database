@@ -1183,7 +1183,7 @@ class MousePopupListener extends MouseAdapter {
 				isPopup=true;
 			else
 				isPopup=false;
-				System.out.println("JGraphRenderer:MousePopupListener:isPopup="+isPopup);
+				//System.out.println("JGraphRenderer:MousePopupListener:isPopup="+isPopup);
 		}
 
 	    public void mouseClicked(MouseEvent e) {
@@ -1203,11 +1203,11 @@ class MousePopupListener extends MouseAdapter {
 	                Object vertex = pickSupport.getVertex(layout, ivp.getX(), ivp.getY());
 	                Object edge = pickSupport.getEdge(layout, ivp.getX(), ivp.getY());
 	                if(vertex!=null){
-	                	System.out.println("JGraphRenderer:MousePopupListener:vertex="+vertex);
+	                	//System.out.println("JGraphRenderer:MousePopupListener:vertex="+vertex);
 	                	v=((Integer)vertex).intValue();
 	                }
 	                if(edge!=null){
-	                	System.out.println("JGraphRenderer:MousePopupListener:edge="+edge);
+	                	//System.out.println("JGraphRenderer:MousePopupListener:edge="+edge);
 	                	b=((Integer)edge).intValue();	
 	                }
 	                
@@ -1324,7 +1324,7 @@ class MousePopupListener extends MouseAdapter {
 		    	if (e.isPopupTrigger()) 
 			    	  isPopup=true;
 		    	
-	    		System.out.println("JGraphRenderer:MousePopupListener:is Popup");
+	    		//System.out.println("JGraphRenderer:MousePopupListener:is Popup");
 	    	}
 	   }
 
