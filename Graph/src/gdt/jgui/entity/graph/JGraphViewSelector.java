@@ -1,4 +1,21 @@
 package gdt.jgui.entity.graph;
+/*
+ * Copyright 2016 Alexander Imas
+ * This file is extension of JEntigrator.
+
+    JEntigrator is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    JEntigrator is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with JEntigrator.  If not, see <http://www.gnu.org/licenses/>.
+ */
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
@@ -12,12 +29,10 @@ import javax.swing.event.MenuEvent;
 import javax.swing.event.MenuListener;
 
 import gdt.data.entity.BaseHandler;
-import gdt.data.entity.BondDetailHandler;
 import gdt.data.entity.EdgeHandler;
 import gdt.data.entity.EntityHandler;
 import gdt.data.entity.GraphHandler;
 import gdt.data.entity.NodeHandler;
-import gdt.data.entity.facet.BookmarksHandler;
 import gdt.data.entity.facet.ExtensionHandler;
 import gdt.data.entity.facet.FieldsHandler;
 import gdt.data.grain.Core;
@@ -28,7 +43,6 @@ import gdt.data.grain.Support;
 import gdt.data.store.Entigrator;
 import gdt.jgui.console.JConsoleHandler;
 import gdt.jgui.console.JContext;
-import gdt.jgui.console.JFacetOpenItem;
 import gdt.jgui.console.JFacetRenderer;
 import gdt.jgui.console.JItemPanel;
 import gdt.jgui.console.JItemsListPanel;
@@ -37,14 +51,15 @@ import gdt.jgui.console.JRequester;
 import gdt.jgui.entity.JEntityFacetPanel;
 import gdt.jgui.entity.JEntityPrimaryMenu;
 import gdt.jgui.entity.JReferenceEntry;
-import gdt.jgui.entity.edge.JBondsPanel;
 import gdt.jgui.tool.JTextEditor;
-
+/**
+ * Displays a list of views provided for the graph facet.
+ * @author imasa
+ *
+ */
 
 public class JGraphViewSelector extends  JItemsListPanel implements   JFacetRenderer,JRequester{
-	/**
-	 * 
-	 */
+	
 	private static final long serialVersionUID = 1L;
 	private Logger LOGGER=Logger.getLogger(getClass().getName());
 	private static final String ACTION_CREATE_GRAPH="action create graph";
@@ -52,12 +67,20 @@ public class JGraphViewSelector extends  JItemsListPanel implements   JFacetRend
     String list$;
     String entityKey$;
     String entityLabel$;
+    /**
+     * The default constructor.
+     */
+    
     public JGraphViewSelector() {
         super();
  	}
-	@Override
+    /**
+		 * Get the context locator.
+		 * @return the context locator.
+		 */		
+    @Override
 	public String getLocator() {
-		System.out.println("JGraphViewLocator:getLocator:BEGIN");
+		//System.out.println("JGraphViewLocator:getLocator:BEGIN");
 		Properties locator=new Properties();
 	    locator.setProperty(Locator.LOCATOR_TYPE, JContext.CONTEXT_TYPE);
 	    locator.setProperty(JContext.CONTEXT_TYPE,getType());
@@ -78,14 +101,20 @@ public class JGraphViewSelector extends  JItemsListPanel implements   JFacetRend
 	    locator.setProperty(BaseHandler.HANDLER_CLASS,getClass().getName());
 		
 		locator$=Locator.toString(locator);
-		System.out.println("JGraphViewLocator:getLocator:locator="+locator$);
+		//System.out.println("JGraphViewLocator:getLocator:locator="+locator$);
 	    return locator$ ;
 	}
+    /**
+	 * Create a new facet renderer.
+	 * @param console the main console.
+	 * @param locator$ the locator string.
+	 * @return the fields editor.
+	 */
 	@Override
 	public JContext instantiate(JMainConsole console, String locator$) {
 	    
 		try{
-			System.out.println("JGraphViewSelector:instantiate:locator="+locator$);
+		//	System.out.println("JGraphViewSelector:instantiate:locator="+locator$);
 			 this.console=console;
 			 Properties locator=Locator.toProperties(locator$);
 			 entityKey$=locator.getProperty(EntityHandler.ENTITY_KEY);
@@ -122,6 +151,10 @@ public class JGraphViewSelector extends  JItemsListPanel implements   JFacetRend
         }
         return null;
         }
+	 /**
+		 * Get the context menu.
+		 * @return the context menu.
+		 */
 	@Override
 	public JMenu getContextMenu() {
 		final JMenu	menu=new JMenu("Context");
@@ -167,7 +200,10 @@ public class JGraphViewSelector extends  JItemsListPanel implements   JFacetRend
 			return menu;
 	}
 
-
+	/**
+	 * Get title of the context.  
+	 * @return the title of the context.
+	 */	
 	@Override
 	public String getTitle() {
 		if(entityLabel$!=null)
@@ -175,17 +211,25 @@ public class JGraphViewSelector extends  JItemsListPanel implements   JFacetRend
 		else
 			return "Graph view selector";
 	}
-
+	/**
+	 * Get subtitle of the context.  
+	 * @return the subtitle of the context.
+	 */	
 	@Override
 	public String getSubtitle() {
 		return entihome$;
 	}
-
+	 /**
+     * Get type of the  context.  
+     * @return the type of the context.
+     */	
 	@Override
 	public String getType() {
 		return "Graph view selector";
 	}
-
+/**
+ * No action
+ */
 	@Override
 	public void close() {
 		
@@ -268,18 +312,33 @@ private String getFacetsLocator(){
 	return null;
 }
 @Override
+/**
+ * No action
+ */
 public String addIconToLocator(String locator$) {
 	// TODO Auto-generated method stub
 	return null;
 }
+/**
+ * Get the facet handler instance.
+ * @return the facet handler instance.	
+ */
 @Override
 public String getFacetHandler() {
 	return GraphHandler.class.getName();
 }
+/**
+ * Get the type of the entity.
+ * @return the type of the entity.	
+ */
 @Override
 public String getEntityType() {
 	return "graph";
 }
+/**
+ * Get facet icon as a Base64 string. 
+ * @return the icon string.
+ */
 @Override
 public String getCategoryIcon() {
 	try{
@@ -290,10 +349,20 @@ public String getCategoryIcon() {
 	return null;
 }
 }
+/**
+ * Get category title for entities having the facet type.
+ * @return the category title.
+ */
+
 @Override
 public String getCategoryTitle() {
 	return "Graphs";
 }
+/**
+ * Adapt cloned entity.
+ * @param console the main console.
+ * @param locator$ the locator string.
+ */
 @Override
 public void adaptClone(JMainConsole console, String locator$) {
 	try{
@@ -312,6 +381,12 @@ public void adaptClone(JMainConsole console, String locator$) {
 	
 	
 }
+/**
+ * Adapt renamed entity.
+ * @param console the main console.
+ * @param locator$ the locator string.
+ */
+
 @Override
 public void adaptRename(JMainConsole console, String locator$) {
 	try{
@@ -329,6 +404,13 @@ public void adaptRename(JMainConsole console, String locator$) {
 	}
 	
 }
+/**
+ * Add all facet-relevant related entities within the database 
+ * to the relations list. 
+ * @param entigrator the entigrator.
+ * @param entiyKey$ the key of the origin entity.
+ * @param sl the list of relations.
+ */
 @Override
 public void collectReferences(Entigrator entigrator, String entityKey$, ArrayList<JReferenceEntry> sl) {
 	try{
@@ -356,9 +438,6 @@ public void collectReferences(Entigrator entigrator, String entityKey$, ArrayLis
 				if(!rl.contains(edgeKey$))
 				   rl.add(edgeKey$);
 				edge=entigrator.getEntityAtKey(edgeKey$);
-			//	detailKey$=edge.getElementItemAt("detail", c.name);
-			//	if(detailKey$!=null&&!rl.contains(detailKey$))
-			//		rl.add(detailKey$);
 			}
 			}catch(Exception ee){
 				System.out.println("JGraphViewSelector:collectReferences:"+ee.toString());
@@ -376,6 +455,12 @@ public void collectReferences(Entigrator entigrator, String entityKey$, ArrayLis
 	}
 	
 }
+/**
+ * Rebuild the facet-relevant indexes for the entity.
+ * @param console the main console.
+ * @param entigrator the entigrator.
+ * @param entity the entity.
+ */
 @Override
 public void reindex(JMainConsole console, Entigrator entigrator, Sack entity) {
 	try{	
@@ -390,6 +475,12 @@ public void reindex(JMainConsole console, Entigrator entigrator, Sack entity) {
 	
 	
 }
+/**
+ * Create a new entity having the facet type.
+ * @param console the main console. 
+ * @param locator$ the locator string.
+ * @return the new entity.
+ */
 @Override
 public String newEntity(JMainConsole console, String locator$) {
 	try{
@@ -416,6 +507,11 @@ public String newEntity(JMainConsole console, String locator$) {
 	}
 	return null;
 }
+/**
+ * Response on call from the other context.
+ *	@param console main console
+ *  @param locator$ action's locator 
+ */  	
 @Override
 public void response(JMainConsole console, String locator$) {
 	System.out.println("JGraphrenderer:response:"+Locator.remove(locator$,Locator.LOCATOR_ICON ));
@@ -461,40 +557,5 @@ public void response(JMainConsole console, String locator$) {
 	
 	
 }
-/*
-private void rebuild(){
-	try{
-		Entigrator entigrator=console.getEntigrator(entihome$);
-		Sack graph=entigrator.getEntityAtKey(entityKey$);
-		Core[] ca=graph.elementGet("node");
-		graph.removeElement("bond");
-		graph.createElement("bond");
-		graph.removeElement("edge.entity");
-		graph.createElement("edge.entity");
-		Sack node;
-		if(ca==null)
-			return;
-		Core[]ba;
-		for(Core c:ca){
-			node=entigrator.getEntityAtKey(c.name);
-			if(node==null)
-				continue;
-			ba=node.elementGet("bond");
-			if(ba!=null)
-				for( Core b:ba){
-					if(graph.getElementItem("bond", b.name)!=null)
-						continue;
-					graph.putElementItem("bond", b);
-					graph.putElementItem("edge.entity", node.getElementItem("edge", b.name));
-					
-				}
-			
-		}
-	entigrator.save(graph);	
-		
-	}catch(Exception e){
-		Logger.getLogger(JGraphRenderer.class.getName()).severe(e.toString());
-	}
-}
-*/
+
 }

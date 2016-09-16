@@ -1,5 +1,21 @@
 package gdt.jgui.entity.graph;
+/*
+ * Copyright 2016 Alexander Imas
+ * This file is extension of JEntigrator.
 
+    JEntigrator is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    JEntigrator is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with JEntigrator.  If not, see <http://www.gnu.org/licenses/>.
+ */
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
@@ -91,7 +107,11 @@ import gdt.jgui.entity.JEntityFacetPanel;
 import gdt.jgui.entity.JEntityPrimaryMenu;
 import gdt.jgui.tool.AutocompleteJComboBox;
 import gdt.jgui.tool.JTextEditor;
-
+/**
+ * This context visualize the graph.
+ *  * @author imasa
+ *
+ */
 
 public class JGraphRenderer extends JPanel implements JContext , JRequester
 , MouseMotionListener{
@@ -125,13 +145,20 @@ private AbstractLayout<Number,Number> layout = null;
 
     public static final int EDGE_LENGTH = 100;
     Integer v_prev = null;
+/**
+ * The default constructor
+ */
     public JGraphRenderer()
   	{
   	    super();
   	    setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
   	    
   	}
-  
+    /**
+     * Response on call from the other context.
+     *	@param console main console
+     *  @param locator$ action's locator 
+     */  
 	@Override
 	public void response(JMainConsole console, String locator$) {
 //		System.out.println("JGraphrenderer:response:"+Locator.remove(locator$,Locator.LOCATOR_ICON ));
@@ -175,11 +202,18 @@ private AbstractLayout<Number,Number> layout = null;
 			Logger.getLogger(getClass().getName()).severe(e.toString());
 		}
 	}
+/**
+ * Get the context panel.
+ * @return the context panel.
+ */
 	@Override
 	public JPanel getPanel() {
 		return this;
 	}
-
+	 /**
+		 * Get the context menu.
+		 * @return the context menu.
+		 */
 	@Override
 	public JMenu getContextMenu() {
 		final JMenu	menu=new JMenu("Context");
@@ -353,7 +387,10 @@ private AbstractLayout<Number,Number> layout = null;
 		  
 			return menu;
 	}
-
+	  /**
+		 * Get the context locator.
+		 * @return the context locator.
+		 */	
 	@Override
 	public String getLocator() {
 		try{
@@ -385,15 +422,19 @@ private AbstractLayout<Number,Number> layout = null;
 	        return null;
 			}
 	}
-
+	  /**
+		 * Create a new facet renderer.
+		 * @param console the main console.
+		 * @param locator$ the locator string.
+		 * @return the fields editor.
+		 */
 	@Override
 	public JContext instantiate(JMainConsole console, String locator$) {
 		try{
-				System.out.println("JGraphRenderer:instantiate:locator="+locator$);
+			//	System.out.println("JGraphRenderer:instantiate:locator="+locator$);
 				this.console=console;
 				this.locator$=locator$;
-				if(console==null)
-					System.out.println("JGraphRenderer:instantiate:consoleis null");
+				
 				Properties locator=Locator.toProperties(locator$);
 				entihome$=locator.getProperty(Entigrator.ENTIHOME);
 				entityKey$=locator.getProperty(EntityHandler.ENTITY_KEY);
@@ -410,9 +451,9 @@ private AbstractLayout<Number,Number> layout = null;
    	  	String icon$=ExtensionHandler.loadIcon(entigrator, GraphHandler.EXTENSION_KEY,"graph.png");
    	  	if(icon$!=null)
 	    	locator.setProperty(Locator.LOCATOR_ICON,icon$);
-   	 System.out.println("JGraphRenderer:instantiate:action="+action$);
+   	 //System.out.println("JGraphRenderer:instantiate:action="+action$);
    	  	if(JGraphViews.ACTION_SHOW_VIEW.equals(action$)){
-   	  	System.out.println("JGraphRenderer:instantiate:show view");
+   	  	//System.out.println("JGraphRenderer:instantiate:show view");
    	  	     try{
    	  	    	 Sack viewComponent=entigrator.getEntityAtKey(viewComponentKey$);
    	  	     
@@ -429,26 +470,37 @@ private AbstractLayout<Number,Number> layout = null;
 		}catch(Exception e){
 		        Logger.getLogger(getClass().getName()).severe(e.toString());
 			}
-		System.out.println("JGraphRenderer:instantiate:finish");
+		//System.out.println("JGraphRenderer:instantiate:finish");
 			return this;
 			
 	}
-
+	/**
+	 * Get title of the context.  
+	 * @return the title of the context.
+	 */	
 	@Override
 	public String getTitle() {
 		return "Map";
 	}
-
+	/**
+	 * Get subtitle of the context.  
+	 * @return the subtitle of the context.
+	 */	
 	@Override
 	public String getSubtitle() {
 		return entityLabel$;
 	}
-
+	 /**
+     * Get type of the  context.  
+     * @return the type of the context.
+     */	
 	@Override
 	public String getType() {
 		return "graph";
 	}
-
+/**
+ * No action
+ */
 	@Override
 	public void close() {
 		// TODO Auto-generated method stub
@@ -456,12 +508,12 @@ private AbstractLayout<Number,Number> layout = null;
 	}
 	@Override
 	public void mouseDragged(MouseEvent e) {
-		System.out.println("JGraphRenderer: mouseDragged:BEGIN");
+		//System.out.println("JGraphRenderer: mouseDragged:BEGIN");
 		
 	}
 	@Override
 	public void mouseMoved(MouseEvent e) {
-		System.out.println("JGraphRenderer: mouseMoved:BEGIN");
+		//System.out.println("JGraphRenderer: mouseMoved:BEGIN");
 		
 	}
 	
@@ -495,7 +547,6 @@ private void pickOut(int v){
 	try{
 		Entigrator entigrator=console.getEntigrator(entihome$);
 		 Sack graphEntity=entigrator.getEntityAtKey(entityKey$);
-		 String node$=graphEntity.getElementItemAtValue("vertex", String.valueOf(v));
 		 if(graphEntity.existsElement("node.select"))
 			 graphEntity.clearElement("node.select");
 			 
@@ -517,7 +568,7 @@ private void expand(){
 	
 	try{
 		Collection <Number>vc=graph.getVertices();
-		System.out.println("JGraphRenderer:expand:vc="+vc.size());
+	//	System.out.println("JGraphRenderer:expand:vc="+vc.size());
 	final PickedState<Number> pickedState = vv.getPickedVertexState();
 	for( Number n:vc){
 		 if (pickedState.isPicked(n))
@@ -528,7 +579,7 @@ private void expand(){
 	}
 }
 private void expand(int v){
-	System.out.println("JGraphRenderer:expand:v="+v);
+//	System.out.println("JGraphRenderer:expand:v="+v);
 	try{
 		GraphHandler.undoPush(console, locator$); 
 		 Entigrator entigrator=console.getEntigrator(entihome$);
@@ -548,7 +599,6 @@ private void expand(int v){
 										nbl.add(c.value);
 						}
 		  Core nodeCore;
-		  Sack node;
 		  String icon$;
 		  String label$;
 		  boolean rebuild=false;
@@ -576,7 +626,7 @@ private void expand(int v){
 	}
 }
 private void hideItem(int v){
-	System.out.println("JGraphRenderer:hide:v="+v);
+	//System.out.println("JGraphRenderer:hide:v="+v);
 	try{
 		GraphHandler.undoPush(console, locator$); 
 		 Entigrator entigrator=console.getEntigrator(entihome$);
@@ -590,15 +640,11 @@ private void hideItem(int v){
 			 na=graphEntity.elementGet("node.select");
 			 graphEntity.clearElement("node.select");
 		 }
-		 ArrayList<String>nbl=new ArrayList<String>();
-		 for(Core n:na){
+		for(Core n:na){
 			 if(!node$.equals(n.name))
 				 graphEntity.putElementItem("node.select", new Core(null,n.name,null));
 		 }
 		 entigrator.save(graphEntity);
-		// if(rebuild)
-			// rebuild();
-		// NodeHandler.rebuild(entigrator, entityKey$);
 		 init2();
 			revalidate();
 			repaint();
@@ -625,8 +671,8 @@ private void entity(int v){
 		LOGGER.severe(e.toString());
 	}
 }
-public void init2(){
-	System.out.println("JGraphRenderer:init2:BEGIN");
+private void init2(){
+	//System.out.println("JGraphRenderer:init2:BEGIN");
 	removeAll();
 	 graph = new DirectedSparseGraph<Number,Number>();
 	// final ObservableCachingLayout<Number, Number> layout =(ObservableCachingLayout< Number,Number>)vv.getGraphLayout();
@@ -642,7 +688,7 @@ public void init2(){
 	 String[] sa= graphEntity.elementListNoSorted("node.select");
 	 if(sa==null)
 			sa= graphEntity.elementListNoSorted("node");
-	 System.out.println("JGraphRenderer:init2:sa="+sa.length);
+	 //System.out.println("JGraphRenderer:init2:sa="+sa.length);
 	 for (int i = 0; i <sa.length; i++) {
 		 graphEntity.putElementItem("vertex", new Core(null,sa[i],String.valueOf(i)));
          graph.addVertex(i);
@@ -676,8 +722,7 @@ public void init2(){
         if(ba!=null)     
 		 for(int j=0;j<ba.length;j++){
 			if(va[i].name.equals(ba[j].type)){
-				//graphEntity.putElementItem("edge", new Core(null,ba[j].name,String.valueOf(j)));
-				try{
+			try{
 				v2=Integer.parseInt(graphEntity.getElementItemAt("vertex", ba[j].value));
 				//System.out.println("JGraphRenderer:init2:v1="+v1+" v2="+v2);
 				graphEntity.putElementItem("edge", new Core(String.valueOf(v1)+"+"+String.valueOf(v2),ba[j].name,String.valueOf(j)));
@@ -687,7 +732,6 @@ public void init2(){
 				}
 				}
 		 	}
-		 
 		} 
 	 
 	 //remove stand alone vertices
@@ -801,11 +845,8 @@ public void init2(){
                 JPanel searchPanel = new JPanel();
                 searchPanel.setBorder(BorderFactory.createTitledBorder("Search"));
                 searchPanel.add(searchBox);
-                //if(la.length>0)
-                //	searchBox.setSelectedIndex(0);
                 controls.add(searchPanel);
                 add(controls, BorderLayout.SOUTH);
-                
 }
 private boolean hasSelectedNode(){
 	try{
@@ -833,7 +874,7 @@ private void markSelectedNode(){
 }
 private void layoutVertices(){
 	try{
-		System.out.println("JGraphRenderer:layoutVertices:BEGIN");
+	//System.out.println("JGraphRenderer:layoutVertices:BEGIN");
 		Entigrator entigrator=console.getEntigrator(entihome$);
 		Sack graphEntity=entigrator.getEntityAtKey(entityKey$);
 		Core [] ca=graphEntity.elementGet("vertex");
@@ -841,9 +882,7 @@ private void layoutVertices(){
 			return;
 		int vertexId;
 		final ObservableCachingLayout<Number, Number> layout =(ObservableCachingLayout< Number,Number>)vv.getGraphLayout();
-	    Core [] nsa=graphEntity.elementGet("node.select");	
-		Collection <Number>vc=graph.getVertices();
-        Point2D	p;	
+	   	Collection <Number>vc=graph.getVertices();
         Core nodePointer;
         String nodeKey$;
         int nodeX;
@@ -859,17 +898,15 @@ private void layoutVertices(){
 				   	nodeX=Integer.parseInt(nodePointer.type);
 				   	nodeY=Integer.parseInt(nodePointer.value);
 				    layout.setLocation(n, new  Point(nodeX,nodeY));
-			   
 			    }
 		}
-      
 	}catch(Exception e){
 		Logger.getLogger(JGraphRenderer.class.getName()).severe(e.toString());
 	}
 }
 private void showViews(){
 	try{
-		System.out.println("JGraphRenderer:showViews:BEGIN");
+	//	System.out.println("JGraphRenderer:showViews:BEGIN");
 		Entigrator entigrator=console.getEntigrator(entihome$);
 		Sack graphEntity=entigrator.getEntityAtKey(entityKey$);
 		Core [] ca=graphEntity.elementGet("vertex");
@@ -877,7 +914,6 @@ private void showViews(){
 			return;
 		int vertexId;
 		final ObservableCachingLayout<Number, Number> layout =(ObservableCachingLayout< Number,Number>)vv.getGraphLayout();
-		
 		Collection <Number>vc=graph.getVertices();
        Point2D	p;	
 		for(Core c:ca){
@@ -889,44 +925,6 @@ private void showViews(){
 					p=layout.transform(n);
 					graphEntity.putElementItem("node.select", new Core(String.valueOf((int)p.getX()),c.name,String.valueOf((int)p.getY())));
 			//	System.out.println("JGraphRenderer:showViews:n="+n.toString()+ " key="+c.name+" point="+ layout.transform(n) );
-			   
-			    }
-		}
-      entigrator.save(graphEntity);
-      JGraphViews gvs=new JGraphViews();
-	    String gvs$=gvs.getLocator();
-	    gvs$=Locator.append(gvs$, Entigrator.ENTIHOME, entihome$);
-	    gvs$=Locator.append(gvs$, EntityHandler.ENTITY_KEY, entityKey$);
-	    gvs$=Locator.append(gvs$,JRequester.REQUESTER_ACTION,JGraphViews.ACTION_SAVE_VIEW );
-	    JConsoleHandler.execute(console, gvs$);
-	}catch(Exception e){
-		Logger.getLogger(JGraphRenderer.class.getName()).severe(e.toString());
-	}
-	
-}
-private void save(){
-	try{
-		System.out.println("JGraphRenderer:save:BEGIN");
-		Entigrator entigrator=console.getEntigrator(entihome$);
-		Sack graphEntity=entigrator.getEntityAtKey(entityKey$);
-		Core [] ca=graphEntity.elementGet("vertex");
-		System.out.println("JGraphRenderer:save:1");
-		if(ca==null)
-			return;
-		int vertexId;
-		final ObservableCachingLayout<Number, Number> layout =(ObservableCachingLayout< Number,Number>)vv.getGraphLayout();
-		
-		Collection <Number>vc=graph.getVertices();
-       Point2D	p;	
-		for(Core c:ca){
-			vertexId=Integer.parseInt(c.value);
-			for( Number n:vc)
-				if(vertexId==n.intValue())
-			    {
-					
-					p=layout.transform(n);
-					graphEntity.putElementItem("node.select", new Core(String.valueOf((int)p.getX()),c.name,String.valueOf((int)p.getY())));
-				System.out.println("JGraphRenderer:save:n="+n.toString()+ " key="+c.name+" point="+ layout.transform(n) );
 			   
 			    }
 		}
@@ -1045,21 +1043,8 @@ private void saveAsPicture(){
 	    chooser.setAcceptAllFileFilterUsed(false);
 	    if (chooser.showSaveDialog(this) == JFileChooser.APPROVE_OPTION) {
 	    	String folder$=chooser.getSelectedFile().getPath();
-	    			//+"/"+fileName$;	
 	    	String file$ =(String)JOptionPane.showInputDialog("File");
-	    			/*
-	    			(String)JOptionPane.showInputDialog(
-                    console,
-                    "File name",
-                    "Customized Dialog",
-                    JOptionPane.PLAIN_MESSAGE,
-                    null,
-                    null
-                    );
-                    */
-
-
-if ((file$ != null) && (file$.length() > 0)) {
+	    if ((file$ != null) && (file$.length() > 0)) {
     	int width = vv.getWidth();
         int height = vv.getHeight();
         BufferedImage bi = new BufferedImage(width, height,
@@ -1101,7 +1086,6 @@ class MousePopupListener extends MouseAdapter {
 	            final Point2D ivp = p;
 	            GraphElementAccessor pickSupport = vv.getPickSupport();
 	            if(pickSupport != null) {
-	                
 	                Object vertex = pickSupport.getVertex(layout, ivp.getX(), ivp.getY());
 	                Object edge = pickSupport.getEdge(layout, ivp.getX(), ivp.getY());
 	                if(vertex!=null){
@@ -1112,8 +1096,6 @@ class MousePopupListener extends MouseAdapter {
 	                	//System.out.println("JGraphRenderer:MousePopupListener:edge="+edge);
 	                	b=((Integer)edge).intValue();	
 	                }
-	                
-	               
 	                popup = new JPopupMenu();
 	        		popup.addPopupMenuListener(new PopupMenuListener(){
 	        			@Override
@@ -1203,17 +1185,13 @@ class MousePopupListener extends MouseAdapter {
 		        					
 	        				}
 	        			}
-	        			
-	        			
 	        			@Override
 	        			public void popupMenuWillBecomeInvisible(PopupMenuEvent e) {
 	        				// TODO Auto-generated method stub
-	        				
 	        			}
 	        			@Override
 	        			public void popupMenuCanceled(PopupMenuEvent e) {
 	        				// TODO Auto-generated method stub
-	        				
 	        			}
 	        		});
 	        		popup.show(JGraphRenderer.this,(int)p.getX(),(int)p.getY());
@@ -1225,13 +1203,9 @@ class MousePopupListener extends MouseAdapter {
 	    	if(!isPopup)
 		    	if (e.isPopupTrigger()) 
 			    	  isPopup=true;
-		    	
 	    		//System.out.println("JGraphRenderer:MousePopupListener:is Popup");
 	    	}
 	   }
-
-   
-
 }
 
 

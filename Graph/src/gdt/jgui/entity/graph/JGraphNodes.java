@@ -1,4 +1,21 @@
 package gdt.jgui.entity.graph;
+/* Copyright 2016 Alexander Imas
+* This file is extension of JEntigrator.
+
+   JEntigrator is free software: you can redistribute it and/or modify
+   it under the terms of the GNU General Public License as published by
+   the Free Software Foundation, either version 3 of the License, or
+   (at your option) any later version.
+
+   JEntigrator is distributed in the hope that it will be useful,
+   but WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+   GNU General Public License for more details.
+
+   You should have received a copy of the GNU General Public License
+   along with JEntigrator.  If not, see <http://www.gnu.org/licenses/>.
+*/
+
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -12,9 +29,6 @@ import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.event.MenuEvent;
 import javax.swing.event.MenuListener;
-
-import org.apache.commons.codec.binary.Base64;
-
 import gdt.data.entity.BaseHandler;
 
 import gdt.data.entity.EntityHandler;
@@ -22,7 +36,6 @@ import gdt.data.entity.GraphHandler;
 import gdt.data.entity.NodeHandler;
 import gdt.data.entity.facet.ExtensionHandler;
 import gdt.data.grain.Core;
-import gdt.data.grain.Identity;
 import gdt.data.grain.Locator;
 import gdt.data.grain.Sack;
 import gdt.data.store.Entigrator;
@@ -30,22 +43,26 @@ import gdt.jgui.console.JConsoleHandler;
 import gdt.jgui.console.JContext;
 import gdt.jgui.console.JItemPanel;
 import gdt.jgui.console.JMainConsole;
-import gdt.jgui.console.JItemsListPanel.ItemPanelComparator;
 import gdt.jgui.entity.JEntitiesPanel;
 import gdt.jgui.entity.JEntityFacetPanel;
-import gdt.jgui.entity.JEntityPrimaryMenu;
-import gdt.jgui.entity.edge.JBondsPanel;
-
+/**
+ * This context displays a list of nodes included in the graph. 
+ * @author imasa
+ */
 public class JGraphNodes extends JEntitiesPanel{
 	private Logger LOGGER=Logger.getLogger(JGraphNodes.class.getName());
 	JMenu menu1;
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 1L;
-	  public JGraphNodes (){
+/**
+ * The default constructor
+ */
+	public JGraphNodes (){
 	        super();	
 	    }
+ /**
+ * Get the context locator.
+		 * @return the context locator.
+ */		
 	  @Override
 		public String getLocator() {
 			try{
@@ -64,6 +81,12 @@ public class JGraphNodes extends JEntitiesPanel{
 		        return null;
 				}
 		}
+	  /**
+		 * Create a new facet renderer.
+		 * @param console the main console.
+		 * @param locator$ the locator string.
+		 * @return the fields editor.
+		 */
 	  @Override
 	public JContext instantiate(JMainConsole console, String locator$) {
 		  try{
@@ -104,7 +127,11 @@ public class JGraphNodes extends JEntitiesPanel{
 	  		return "Nodes";
 	  		
 	  	}
-  @Override
+	  /**
+		 * Get the context menu.
+		 * @return the context menu.
+		 */ 
+	  @Override
 	  public JMenu getContextMenu() {
 		  //menu=super.getContextMenu();
 	   menu1=new JMenu("Context");
@@ -314,9 +341,13 @@ public class JGraphNodes extends JEntitiesPanel{
 		}
 		
 	}
+  /**
+		 * List node item panels in the graph.
+		 * @return the array of node item panels.
+		 */ 
   public  JItemPanel[] listNodes(){
 		try{
-			System.out.println("JGraphNode:listNodes:BEGIN"); 
+		//	System.out.println("JGraphNode:listNodes:BEGIN"); 
 			Entigrator entigrator=console.getEntigrator(entihome$);
 			Sack graph=entigrator.getEntityAtKey(entityKey$);
 			//graph.print();
@@ -353,7 +384,9 @@ public class JGraphNodes extends JEntitiesPanel{
           return null;
       }
 	}
- 
+ /**
+  * Complete the closing of the context.
+  */
   @Override
  	public void close() {
  	 // System.out.println("JGraphNode:close:BEGIN");

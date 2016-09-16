@@ -1,4 +1,22 @@
 package gdt.jgui.entity.graph;
+/*
+ * Copyright 2016 Alexander Imas
+ * This file is extension of JEntigrator.
+
+    JEntigrator is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    JEntigrator is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with JEntigrator.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -9,7 +27,6 @@ import java.util.logging.Logger;
 
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
-import javax.swing.JOptionPane;
 import javax.swing.event.MenuEvent;
 import javax.swing.event.MenuListener;
 
@@ -27,27 +44,32 @@ import gdt.jgui.console.JContext;
 import gdt.jgui.console.JItemPanel;
 import gdt.jgui.console.JItemsListPanel;
 import gdt.jgui.console.JMainConsole;
-import gdt.jgui.console.JRequester;
-import gdt.jgui.console.JItemsListPanel.ItemPanelComparator;
 import gdt.jgui.entity.JEntityFacetPanel;
-import gdt.jgui.tool.JTextEditor;
-
+/**
+ * This context displays a list of edges included in the graph. 
+ * @author imasa
+ */
 
 public class JGraphEdgesPanel extends JItemsListPanel{
-	/**
-	 * 
-	 */
+	
 	private static final long serialVersionUID = 1L;
 	private String entihome$;
     private String entityKey$;
     private String entityLabel$;
     JMenu menu1;
+  /**
+   * Default constructor
+   */
     public JGraphEdgesPanel()
    	{
    	    super();
    	    
    	}  
-	@Override
+    /**
+	 * Get the context locator.
+	 * @return the context locator.
+	 */		
+    @Override
 	public String getLocator() {
 		try{
 			Properties locator=new Properties();
@@ -75,7 +97,13 @@ public class JGraphEdgesPanel extends JItemsListPanel{
 			}
 	
 }
-@Override
+    /**
+	 * Create a new facet renderer.
+	 * @param console the main console.
+	 * @param locator$ the locator string.
+	 * @return the fields editor.
+	 */
+    @Override
 public JContext instantiate(JMainConsole console, String locator$) {
 	
 	try{
@@ -127,7 +155,11 @@ public JContext instantiate(JMainConsole console, String locator$) {
 	return null;  
 	  
 } 
-@Override
+    /**
+	 * Get the context menu.
+	 * @return the context menu.
+	 */
+    @Override
 public JMenu getContextMenu() {
 	 menu1=new JMenu("Context");
 	  menu=super.getContextMenu();
@@ -197,25 +229,6 @@ public JMenu getContextMenu() {
 	});
 	return menu1;
 	}
-private void filter1(){
-	try{
-		String[] sa=listSelectedItems();
-		if(sa==null)
-			return;
-		Properties locator;
-		String edgeKey$;
-		ArrayList<String>el=new ArrayList<String>();
-		for(String s:sa){
-			
-			locator=Locator.toProperties(s);
-			edgeKey$=locator.getProperty(EntityHandler.ENTITY_KEY);
-			el.add(edgeKey$);
-			//System.out.println("JGraphEdgesPanel:filter:edge key="+edgeKey$);
-		}
-	}catch(Exception e){
-		Logger.getLogger(JGraphEdgesPanel.class.getName()).severe(e.toString());
-	}
-}
 private void filter(){
 	try{
 		String[] sa=listSelectedItems();
@@ -290,23 +303,35 @@ private void filter(){
 		Logger.getLogger(JGraphEdgesPanel.class.getName()).severe(e.toString());
 	}
 }
-	@Override
+/**
+ * Get title of the context.  
+ * @return the title of the context.
+ */	
+@Override
 	public String getTitle() {
 		return "Edges";
 	}
-
+/**
+ * Get subtitle of the context.  
+ * @return the subtitle of the context.
+ */	
 	@Override
 	public String getSubtitle() {
 		
 		return entityLabel$;
 	}
-
+	 /**
+     * Get type of the  context.  
+     * @return the type of the context.
+     */	
 	@Override
 	public String getType() {
 		
 		return "Graph edges";
 	}
-
+/**
+ * no action
+ */
 	@Override
 	public void close() {
 		// TODO Auto-generated method stub

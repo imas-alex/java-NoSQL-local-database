@@ -1,22 +1,33 @@
 package gdt.jgui.entity.graph;
+/*
+ * Copyright 2016 Alexander Imas
+ * This file is extension of JEntigrator.
 
+    JEntigrator is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    JEntigrator is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with JEntigrator.  If not, see <http://www.gnu.org/licenses/>.
+ */
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Properties;
 import java.util.logging.Logger;
-
-import javax.media.j3d.View;
-import javax.swing.BoxLayout;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPopupMenu;
 import javax.swing.event.MenuEvent;
 import javax.swing.event.MenuListener;
-
 import gdt.data.entity.BaseHandler;
 import gdt.data.entity.EntityHandler;
 import gdt.data.entity.GraphHandler;
@@ -32,17 +43,14 @@ import gdt.jgui.console.JItemPanel;
 import gdt.jgui.console.JItemsListPanel;
 import gdt.jgui.console.JMainConsole;
 import gdt.jgui.console.JRequester;
-import gdt.jgui.console.JItemsListPanel.ItemPanelComparator;
-import gdt.jgui.entity.JEntitiesPanel;
-import gdt.jgui.entity.bookmark.JBookmarksEditor;
 import gdt.jgui.tool.JTextEditor;
-
+	
 public class JGraphViews extends JItemsListPanel implements JRequester{
 	private static final long serialVersionUID = 1L;
 	
 	public static final String ACTION_SAVE_VIEW="action save view";
 	public static final String ACTION_SHOW_VIEW="action show view";
-	public static final String ACTION_RENAME_VIEW="action rename view";
+	private static final String ACTION_RENAME_VIEW="action rename view";
 	public static final String VIEW_COMPONENT_KEY="view component key";
 	public static final String VIEW_KEY="view key";
 	private String entihome$;
@@ -52,11 +60,17 @@ public class JGraphViews extends JItemsListPanel implements JRequester{
     String action$;
     JMenu menu1;
     JPopupMenu popup;
+  /**
+   * The default constructor.
+   */
     public JGraphViews()
   	{
   	    super();
   	}
-
+    /**
+  		 * Get the context locator.
+  		 * @return the context locator.
+  		 */	
 	@Override
 	public String getLocator() {
 		try{
@@ -92,6 +106,12 @@ public class JGraphViews extends JItemsListPanel implements JRequester{
 	        return null;
 			}
 	}
+	  /**
+			 * Create a new facet renderer.
+			 * @param console the main console.
+			 * @param locator$ the locator string.
+			 * @return the fields editor.
+			 */
 	@Override
 	public JContext instantiate(JMainConsole console, String locator$) {
 	try{
@@ -199,7 +219,11 @@ public class JGraphViews extends JItemsListPanel implements JRequester{
 			    });
 		  ip.setPopupMenu(popup);
 	}
-	  @Override
+	 /**
+	 * Get the context menu.
+	 * @return the context menu.
+	 */
+	@Override
 	  public JMenu getContextMenu() {
 		  //menu=super.getContextMenu();
 	   menu1=new JMenu("Context");
@@ -309,30 +333,45 @@ public class JGraphViews extends JItemsListPanel implements JRequester{
 		});
 		return menu1;
 		}
- 
+	/**
+	 * Get title of the context.  
+	 * @return the title of the context.
+	 */	
 	@Override
 	public String getTitle() {
 		return "Graph views";
 	}
-
+	/**
+	 * Get subtitle of the context.  
+	 * @return the subtitle of the context.
+	 */	
 	@Override
 	public String getSubtitle() {
 
 		return entityLabel$;
 	}
-
+	 /**
+     * Get type of the  context.  
+     * @return the type of the context.
+     */	
 	@Override
 	public String getType() {
 		
 		return "graph views";
 	}
-
+/**
+ * No action
+ */
 	@Override
 	public void close() {
 		// TODO Auto-generated method stub
 		
 	}
-	
+	 /**
+     * Response on call from the other context.
+     *	@param console main console
+     *  @param locator$ action's locator 
+     */  	
 	@Override
 	public void response(JMainConsole console, String locator$) {
 	System.out.println("JGraphViews.response:locator="+locator$);

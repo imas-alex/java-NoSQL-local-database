@@ -38,14 +38,26 @@ import gdt.jgui.console.JRequester;
 
 import gdt.jgui.entity.JEntityFacetPanel;
 import gdt.jgui.entity.fields.JFieldsFacetOpenItem;
+/**
+ * This class represents the graph facet item in the list
+ * of  entity's facets.
+ * @author imasa
+ *
+ */
 
 
 public class JGraphFacetOpenItem extends JFieldsFacetOpenItem {
 	private static final long serialVersionUID = 1L;
+/**
+ * Default constructor
+ */
 	public JGraphFacetOpenItem(){
 		super();
 	}
-	
+	/**
+	 * Get the context locator.
+	 * @return the context locator.
+	 */		
 @Override
 public String getLocator(){
 	Properties locator=new Properties();
@@ -71,25 +83,45 @@ public String getLocator(){
 	    }
 	return Locator.toString(locator);
 }
+/**
+ * Check if the facet can be removed from the entity.
+ * @return false.
+ */
 @Override
 public boolean isRemovable() {
 	return false;
 	}
-
+/**
+ * Get the facet name.
+ * @return the facet name.
+ */
 @Override
 public String getFacetName() {
 	return "Graph";
 }
+/**
+ * Get the facet icon as a Base64 string.
+ * @return the facet icon string.
+ */
 @Override
 public String getFacetIcon() {
 	Entigrator entigrator=console.getEntigrator(entihome$);
 	return ExtensionHandler.loadIcon(entigrator,GraphHandler.EXTENSION_KEY,"graph.png"); 
 
 }
+/**
+ * Remove the facet from the entity.
+ * No action.
+ */
 @Override
 public void removeFacet() {
 	
 }
+/**
+ * Display the facet console.
+ * @param console the main console.
+ * @param locator$ the locator string.
+ */
 @Override
 public void openFacet(JMainConsole console,String locator$) {
 	try{
@@ -120,36 +152,32 @@ public void openFacet(JMainConsole console,String locator$) {
 		vsLocator$=Locator.append(vsLocator$, JRequester.REQUESTER_RESPONSE_LOCATOR, requesterResponseLocator$);
 		vsLocator$=Locator.append(vsLocator$, BaseHandler.HANDLER_METHOD,"instantiate");
 		JConsoleHandler.execute(console, vsLocator$);
-/*
-		JGraphRenderer graphRenderer =new JGraphRenderer();
-		String grLocator$=graphRenderer.getLocator();
-		grLocator$=Locator.append(grLocator$, Entigrator.ENTIHOME, entihome$);
-		grLocator$=Locator.append(grLocator$, EntityHandler.ENTITY_KEY, entityKey$);
-		grLocator$=Locator.append(grLocator$, JRequester.REQUESTER_RESPONSE_LOCATOR, requesterResponseLocator$);
-		grLocator$=Locator.append(grLocator$, BaseHandler.HANDLER_METHOD,"instantiate");
-		JConsoleHandler.execute(console, grLocator$);
-		*/
-/*		
-		JBondsPanel bp=new JBondsPanel();
-		String bpLocator$=bp.getLocator();
-		bpLocator$=Locator.append(bpLocator$, Entigrator.ENTIHOME, entihome$);
-		bpLocator$=Locator.append(bpLocator$, EntityHandler.ENTITY_KEY, entityKey$);
-		bpLocator$=Locator.append(bpLocator$, JRequester.REQUESTER_RESPONSE_LOCATOR, requesterResponseLocator$);
-		bpLocator$=Locator.append(bpLocator$, BaseHandler.HANDLER_METHOD,"instantiate");
-		JConsoleHandler.execute(console, bpLocator$);
-	*/	
+
 	}catch(Exception e){
 		Logger.getLogger(getClass().getName()).severe(e.toString());
 	}
 }
+/**
+ * Get the class name of the facet renderer. 
+ * @return the JGraphViewSelector class name .
+ */
 @Override
 public String getFacetRenderer() {
 	return JGraphViewSelector.class.getName();
 }
+/**
+ * Get the facet handler instance.
+ * @return the facet handler instance.	
+ */
 @Override
 public FacetHandler getFacetHandler() {
 	return new GraphHandler();
 }
+/**
+ * Get the popup menu for the child node of the facet node 
+ * in the digest view.
+ * @return the popup menu.	
+ */
 @Override
 public JPopupMenu getPopupMenu(final String digestLocator$) {
 	//System.out.println("JFieldsFacetOpenItem:edit:digest locator="+Locator.remove(digestLocator$, Locator.LOCATOR_ICON));
@@ -157,6 +185,11 @@ public JPopupMenu getPopupMenu(final String digestLocator$) {
 	//return null;
 
 }
+/**
+ * Response on call from the other context.
+ *	@param console main console
+ *  @param locator$ action's locator 
+ */
 @Override
 public void response(JMainConsole console, String locator$) {
 //	System.out.println("JAddressFacetOpenItem:responce:locator="+locator$);
