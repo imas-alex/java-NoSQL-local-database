@@ -113,6 +113,7 @@ public String getFacetIcon() {
 }
 /**
  * Remove the facet from the entity.
+ * No action.
  */
 @Override
 public void removeFacet() {
@@ -143,7 +144,7 @@ public void openFacet(JMainConsole console,String locator$) {
 }
 /**
  * Get the class name of the facet renderer. 
- * @return the JFieldsEditor class name .
+ * @return the JBondsPanel class name .
  */
 @Override
 public String getFacetRenderer() {

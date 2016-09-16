@@ -834,36 +834,13 @@ return menu;
 		JConsoleHandler.execute(console,editorLocator$); 
 		return editorLocator$;
 	}
-/*
-private String getNodeToSet(){
-		try{
-		String[] sa=console.clipboard.getContent();
-		if(sa==null||sa.length<1)
-			return null;
-		Properties clipLocator;
-		String foreignEntihome$;
-		String entityKey$;
-		for(String s:sa){
-			clipLocator=Locator.toProperties(s);
-			foreignEntihome$=clipLocator.getProperty(Entigrator.ENTIHOME);
-			if(foreignEntihome$==null||entihome$.equals(foreignEntihome$))
-				continue;
-			entityKey$=clipLocator.getProperty(EntityHandler.ENTITY_KEY);
-			if(entityKey$!=null)
-				return entityKey$;
-		}
-		}catch(Exception e){
-			Logger.getLogger(getClass().getName()).severe(e.toString());
-		}
-		return null;
-}
-*/
+	
 /**
  * Remove the bond 
  * @param console the main console.
  * @param locator$ the locator string.
  */	
-public static void removeBond(JMainConsole console,String locator$){
+private static void removeBond(JMainConsole console,String locator$){
 	try{
 		Properties locator=Locator.toProperties(locator$);
 		String edgeKey$=locator.getProperty(EntityHandler.ENTITY_KEY);
@@ -915,36 +892,7 @@ private void removeBondEntry(String locator$){
 		Logger.getLogger(JBondsPanel.class.getName()).severe(e.toString());
 	}
 }
-/*
-public void removeBondDetail(String locator$){
-	try{
 
-		Properties locator=Locator.toProperties(locator$);
-		String bondKey$=locator.getProperty(BOND_KEY);
-		Entigrator entigrator=console.getEntigrator(entihome$);
-		Sack graph=entigrator.getEntityAtKey(entityKey$); 
-		graph.removeElementItem("bond", bondKey$);
-		entigrator.save(graph);
-	
-	}catch(Exception e){
-		Logger.getLogger(JBondsPanel.class.getName()).severe(e.toString());
-	}
-}
-*/
-
-/*
-private boolean isNodeEntity(){
-     try{
-    	 Entigrator entigrator=console.getEntigrator(entihome$);
-    	 Sack entity=entigrator.getEntityAtKey(entityKey$);
-    	 if(entity.getProperty("node")!=null)
-    			 return true;
-     }catch(Exception e){
-    	 Logger.getLogger(JBondsPanel.class.getName()).severe(e.toString());
-     }
-     return false;
-}
-*/
 private boolean isDetailEntity(){
     try{
    	 Entigrator entigrator=console.getEntigrator(entihome$);
@@ -978,13 +926,7 @@ private boolean isGraphEntity(){
     }
     return false;
 }
-/*
-private boolean isBondDetailEntity(){
-	 if(BondDetailHandler.class.getName().equals(facetHandlerClass$))
-   			 return true;
-    return false;
-}
-*/
+
 private boolean hasBondsToPaste(){
 	try{
 		String [] sa=console.clipboard.getContent();
@@ -1038,22 +980,7 @@ private void pasteBonds(){
 	    }
 	   
 }
-/*
-private static void saveSelection(JMainConsole console, String entihome$, String edgeKey$,String bondKey$){
-	try{
-	if(bondKey$==null)
-		return;
-	Entigrator entigrator=console.getEntigrator(entihome$);	
-	Sack edge=entigrator.getEntityAtKey(edgeKey$);
-	if(!edge.existsElement("parameter"))
-		edge.createElement("parameter");
-	edge.putElementItem("parameter", new Core(null,BOND_KEY,bondKey$));
-	entigrator.save(edge);
-	}catch(Exception e){
-		System.out.println("JBondsPanel:saveSelectedBond:"+e.toString());
-	}
-}
-*/
+
 private static class InNodeComparator implements Comparator<JItemPanel>{
     
     public Entigrator entigrator;
@@ -1072,7 +999,7 @@ private static class InNodeComparator implements Comparator<JItemPanel>{
     			return 1;	
     		String t1$=entigrator.indx_getLabel(i1$);
     		String t2$=entigrator.indx_getLabel(i2$);
-    		System.out.println("JBondsPanel:InNodeComparator:title 1="+t1$+" 2="+t2$);
+    	//	System.out.println("JBondsPanel:InNodeComparator:title 1="+t1$+" 2="+t2$);
     		return t1$.compareToIgnoreCase(t2$);
     	}catch(Exception e){
     		return 0;
