@@ -65,7 +65,7 @@ public class JConsoleHandler {
 	 */
 		public static String execute(JMainConsole console,String locator$){
         try{
-    System.out.println("ConsoleHandler:execute:locator="+Locator.remove(locator$, Locator.LOCATOR_ICON));	
+  //  System.out.println("ConsoleHandler:execute:locator="+Locator.remove(locator$, Locator.LOCATOR_ICON));	
        	 Properties locator=Locator.toProperties(locator$);
        	 String handlerScope$=locator.getProperty(BaseHandler.HANDLER_SCOPE);
        	String handlerClass$=locator.getProperty(BaseHandler.HANDLER_CLASS);
@@ -97,7 +97,7 @@ public class JConsoleHandler {
     		   
     	   
     	   if (obj instanceof JContext){
-    	    	 System.out.println("ConsoleHandler:execute:context="+handlerClass$);
+    //	    	 System.out.println("ConsoleHandler:execute:context="+handlerClass$);
     	    	// if(console==null)
     	    	//	 System.out.println("ConsoleHandler:execute:consoleis null");
     	    	

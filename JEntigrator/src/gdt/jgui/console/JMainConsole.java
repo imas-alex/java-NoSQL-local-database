@@ -254,7 +254,7 @@ private void clearContextMenu(){
  * @param locator$ the context locator.
  */
 public void putContext(JContext context,String locator$){
-	System.out.println("MainConsole:putContext:BEGIN:context="+context.getClass().getName());
+	//System.out.println("MainConsole:putContext:BEGIN:context="+context.getClass().getName());
 	try{
 	int cnt=frmEntigrator.getContentPane().getComponentCount();
 	if(cnt>0){
@@ -266,7 +266,7 @@ public void putContext(JContext context,String locator$){
 		Logger.getLogger(getClass().getName()).severe(e.toString());
 	}
 	entihome$=Locator.getProperty(locator$, Entigrator.ENTIHOME);
-	System.out.println("MainConsole:putContext:entihome="+entihome$);
+	//System.out.println("MainConsole:putContext:entihome="+entihome$);
 	if(entihome$!=null)
 	    getEntigrator(entihome$);
 	frmEntigrator.getContentPane().removeAll();

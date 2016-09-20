@@ -98,6 +98,7 @@ JMenuItem cutItem;
 JMenuItem pasteItem;
 protected JMenuItem doneItem;
 protected JMenuItem[] postMenu;
+String message$;
 /**
  * The default constructor.
  */
@@ -331,7 +332,7 @@ public JFieldsEditor() {
 	@Override
 	public JFacetRenderer instantiate(JMainConsole console, String locator$) {
 		try{
-			//System.out.println("FieldsEditor.instantiate:begin");
+			System.out.println("FieldsEditor.instantiate:begin");
 			this.console=console;
 			Properties locator=Locator.toProperties(locator$);
 			entihome$=locator.getProperty(Entigrator.ENTIHOME);
@@ -348,6 +349,10 @@ public JFieldsEditor() {
 					);
 			  entigrator=console.getEntigrator(entihome$);
 			  entity=entigrator.getEntityAtKey(entityKey$);
+			  if(!entigrator.lock_set(entity)){
+						//JOptionPane.showMessageDialog(this, entigrator.lock_message(entity));
+				  message$=entigrator.lock_message(entity);
+			  }
 			  entityLabel$=entity.getProperty("label");
 			  Core[] ca=entity.elementGet("field");
 			  if(ca!=null)
@@ -408,7 +413,10 @@ public JFieldsEditor() {
  */
 	@Override
 	public String getTitle() {
+		if(message$==null)
 			return "Fields";
+		else
+			return "Fields"+message$;
 	}
 	/**
 	 * Get the context type.
@@ -423,7 +431,11 @@ public JFieldsEditor() {
  */
 	@Override
 	public void close() {
-			}
+		// entigrator=console.getEntigrator(entihome$);
+		//  entity=entigrator.getEntityAtKey(entityKey$);
+		if(!entigrator.lock_release(entity))
+			JOptionPane.showMessageDialog(this, "The changes will be not saved");
+				}
 	private boolean hasEditingCell(){
 		try{
 			

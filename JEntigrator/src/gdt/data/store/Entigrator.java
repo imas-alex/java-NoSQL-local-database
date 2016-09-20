@@ -21,6 +21,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.InputStream;
+import java.lang.management.ManagementFactory;
 //import java.net.URL;
 import java.util.ArrayList;
 import java.util.Enumeration;
@@ -115,6 +116,9 @@ public class Entigrator {
    @SuppressWarnings("unused")
    private int progress;
    private String entihome$;
+   private static final String LOCK_OWNER="lock.owner";
+   private static final String LOCK_PROCESS="lock.process";
+   private static final String LOCK_TIME="lock.time";
    /**
     * Constructor.
     * 
@@ -237,16 +241,26 @@ public class Entigrator {
             LOGGER.severe(":saveNative:sack is null");
         	return false;
         }
-        //System.out.println("Entigrator:saveNative:"+sack.getKey()+" label="+sack.getProperty("label"));
+       // System.out.println("Entigrator:saveNative:"+sack.getKey()+" label="+sack.getProperty("label"));
+       // System.out.println(ManagementFactory.getRuntimeMXBean().getName());
+       
         String key$=sack.getKey();
         String base$ = sack.getAttributeAt("residence.base");
         String path$ =entihome$; 
         if ("register".equals(base$))
             path$ = path$ + "/" + key$;
-        else
+        else{
+        	if(!lock_ignore(sack))
+        		return false;
             path$ = path$ + "/" + base$ + "/data/" + key$;
+        }
         try {
-           //   System.out.println("Entigrator:save:sack="+sack.getKey()+" path="+path$);
+           String lockTime$=sack.getAttributeAt(LOCK_TIME);
+           if(lockTime$!=null)
+        	   sack.putAttribute(new Core(null,LOCK_TIME,String.valueOf(System.currentTimeMillis())));
+        	
+        	
+        	//   System.out.println("Entigrator:save:sack="+sack.getKey()+" path="+path$);
         	sack.saveXML(path$);
             notifyAll();
             String label$=sack.getProperty("label");
@@ -2633,6 +2647,100 @@ public Class<?> getClass(String key$){
 	if(classesCache==null)
 		return null;
 	return (Class<?>)Support.getValue(key$, classesCache);
+}
+public String lock_message(Sack entity){
+	String process$=entity.getAttributeAt(LOCK_PROCESS);
+	String owner$=entity.getAttributeAt(LOCK_OWNER);
+	//return "Entity '"+entity.getProperty("label")+"' has been locked by '"+owner$+"' process="+process$;
+	return ": locked by "+owner$+":"+process$;
+}
+public boolean lock_release(Sack entity){
+	try{
+		if(!lock_ignore(entity)){
+			System.out.println("Entigrator:lock_release:not ignore");
+			return false ;
+		}
+			entity.removeAttribute(LOCK_OWNER);
+			entity.removeAttribute(LOCK_PROCESS);
+			entity.removeAttribute(LOCK_TIME);
+			saveNative(entity);
+			return true;
+	}catch(Exception e){
+		LOGGER.severe(e.toString());
+		
+	}
+	return false;
+	
+}
+private boolean lock_ignore(Sack entity){
+	try{
+		String key$=entity.getKey();
+        String path$ = entihome$ + "/" + ENTITY_BASE + "/data/" + key$;
+		entity=Sack.parseXML(path$);
+//		entitiesCache.put(entity);
+		String owner$=entity.getAttributeAt(LOCK_OWNER);
+		String process$=entity.getAttributeAt(LOCK_PROCESS);
+		System.out.println("Entigrator:lock_ignore:eowner="+owner$+" cowner="+System.getProperty("user.name"));
+		System.out.println("Entigrator:lock_ignore:eprocess="+process$+" cprocess="+ManagementFactory.getRuntimeMXBean().getName());
+		if(owner$==null||process$==null
+			||
+			(owner$.equals(System.getProperty("user.name"))&&process$.equals(ManagementFactory.getRuntimeMXBean().getName()))
+				){
+			System.out.println("Entigrator:lock_ignore:IGNORE LOCK");	
+		return true;
+		}
+		long timestamp=Long.parseLong(entity.getAttributeAt(LOCK_TIME));
+		long diff=System.currentTimeMillis()-timestamp;
+		System.out.println("Entigrator:lock_ignore:stamp="+timestamp+" current="+System.currentTimeMillis()+" diff="+diff);
+		if(diff>60000){
+			System.out.println("Entigrator:lock_ignore:IGNORE LOCK");	
+			entity.putAttribute(new Core(null,LOCK_OWNER,System.getProperty("user.name")));
+			entity.putAttribute(new Core(null,LOCK_PROCESS,ManagementFactory.getRuntimeMXBean().getName()));
+			entity.putAttribute(new Core(null,LOCK_TIME,String.valueOf(System.currentTimeMillis())));
+			entity.saveXML(path$);
+			return true;
+		}
+		System.out.println("Entigrator:lock_ignore:KEEP LOCK");	
+		return false;
+	}catch(Exception e){
+		LOGGER.severe(e.toString());
+		return true;
+	}
+}
+public boolean lock_set(Sack entity){
+	try{
+		if(!lock_ignore(entity))
+			return false;
+		String owner$=entity.getAttributeAt(LOCK_OWNER);
+		String process$=entity.getAttributeAt(LOCK_PROCESS);
+		if(owner$==null||process$==null){
+			process$=ManagementFactory.getRuntimeMXBean().getName();
+			owner$=System.getProperty("user.name");
+			entity.putAttribute(new Core (null,LOCK_OWNER,owner$));
+			entity.putAttribute(new Core (null,LOCK_PROCESS,process$));
+			entity.putAttribute(new Core (null,LOCK_TIME,String.valueOf(System.currentTimeMillis())));
+			saveNative(entity);
+			return true;
+		}
+		if(owner$.equals(System.getProperty("user.name"))&&process$.equals(ManagementFactory.getRuntimeMXBean().getName())){
+			entity.putAttribute(new Core (null,LOCK_TIME,String.valueOf(System.currentTimeMillis())));
+			return true;
+		}
+		long timestamp=Long.parseLong(entity.getAttributeAt(LOCK_TIME));
+		long diff=System.currentTimeMillis()-timestamp;
+		if(diff>60000){
+			process$=ManagementFactory.getRuntimeMXBean().getName();
+			owner$=System.getProperty("user.name");
+			entity.putAttribute(new Core (null,LOCK_OWNER,owner$));
+			entity.putAttribute(new Core (null,LOCK_PROCESS,process$));
+			entity.putAttribute(new Core (null,LOCK_TIME,String.valueOf(System.currentTimeMillis())));
+			saveNative(entity);
+			return true;
+		}
+	}catch(Exception e){
+		LOGGER.severe(e.toString());
+	}
+	return false;
 }
 } 
         
