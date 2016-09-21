@@ -97,6 +97,8 @@ public class JFolderPanel extends JItemsListPanel implements JFacetRenderer,JReq
 	protected String entityLabel$;
 	protected String requesterResponseLocator$;
 	protected JMenuItem[] mia;
+	String message$;
+	Sack entity;
 /**
  * The default constructor.	
  */
@@ -144,10 +146,15 @@ public class JFolderPanel extends JItemsListPanel implements JFacetRenderer,JReq
 			Properties locator=Locator.toProperties(locator$);
 			entihome$=locator.getProperty(Entigrator.ENTIHOME);
 			entityKey$=locator.getProperty(EntityHandler.ENTITY_KEY);
+			Entigrator entigrator=console.getEntigrator(entihome$);
+			entity=entigrator.getEntityAtKey(entityKey$);
+			  if(!entigrator.lock_set(entity)){
+						//JOptionPane.showMessageDialog(this, entigrator.lock_message(entity));
+				  message$=entigrator.lock_message(entity);
+			  }
 			requesterResponseLocator$=locator.getProperty(JRequester.REQUESTER_RESPONSE_LOCATOR);
 			entityLabel$=locator.getProperty(EntityHandler.ENTITY_LABEL);
 			if(entityLabel$==null){
-			 Entigrator entigrator=console.getEntigrator(entihome$);
 			  entityLabel$=entigrator.indx_getLabel(entityKey$);
 			}
 			File folder=new File(entihome$+"/"+entityKey$);
@@ -197,7 +204,10 @@ public class JFolderPanel extends JItemsListPanel implements JFacetRenderer,JReq
  */
 	@Override
 	public String getTitle() {
-		return "Folder";
+		if(message$==null)
+			return "Folder";
+		else
+			return "Folder"+message$;
 	}
 	/**
 	 * Get context subtitle.
@@ -223,7 +233,10 @@ public class JFolderPanel extends JItemsListPanel implements JFacetRenderer,JReq
  */
 	@Override
 	public void close() {
-		// TODO Auto-generated method stub
+		Entigrator entigrator=console.getEntigrator(entihome$);
+		//Sack entity=entigrator.getEntityAtKey(entityKey$);
+		if(!entigrator.lock_release(entity))
+			JOptionPane.showMessageDialog(this, Entigrator.LOCK_CLOSE_MESSAGE);
 		
 	}
 /**
@@ -356,7 +369,7 @@ public class JFolderPanel extends JItemsListPanel implements JFacetRenderer,JReq
 	    	FileExpert.copyAll(entihome$+"/"+originKey$, entihome$+"/"+cloneKey$);
 	    	FolderHandler folderHandler=new FolderHandler();
 	    	Entigrator entigrator=console.getEntigrator(entihome$);
-	    	Sack entity=entigrator.getEntityAtKey(entityKey$);
+	    	entity=entigrator.getEntityAtKey(entityKey$);
 			String entityLocator$=EntityHandler.getEntityLocator(entigrator, entity);
 			
 	    	folderHandler.instantiate(entityLocator$);
@@ -381,7 +394,7 @@ public class JFolderPanel extends JItemsListPanel implements JFacetRenderer,JReq
 			String entihome$=locator.getProperty(Entigrator.ENTIHOME);
 			String entityKey$=locator.getProperty(EntityHandler.ENTITY_KEY);
 			Entigrator entigrator=console.getEntigrator(entihome$);
-			Sack entity=entigrator.getEntityAtKey(entityKey$);
+			entity=entigrator.getEntityAtKey(entityKey$);
 			String entityLocator$=EntityHandler.getEntityLocator(entigrator, entity);
 			FolderHandler folderHandler=new FolderHandler();
 			folderHandler.instantiate(entityLocator$);

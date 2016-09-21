@@ -73,6 +73,8 @@ public class JBookmarksEditor extends JItemsListPanel implements JFacetRenderer,
 	String locator$;
 	JMenuItem[] mia;
 	int cnt=0;
+	String message$;
+	Sack entity;
 	private static final long serialVersionUID = 1L;
 	/**
 	 * The default constructor.
@@ -134,7 +136,7 @@ public class JBookmarksEditor extends JItemsListPanel implements JFacetRenderer,
 									  return;
 								  String bookmarkKey$;
 								  Entigrator entigrator=console.getEntigrator(entihome$);
-								  Sack entity=entigrator.getEntityAtKey(entityKey$);
+								  entity=entigrator.getEntityAtKey(entityKey$);
 								  for(String aSa:sa){
 									  bookmarkKey$=Locator.getProperty(aSa, BOOKMARK_KEY);
 									  if(bookmarkKey$==null)
@@ -161,6 +163,16 @@ public class JBookmarksEditor extends JItemsListPanel implements JFacetRenderer,
 					} );
 					menu.add(pasteItem);
 				}
+				menu.addSeparator();
+				JMenuItem doneItem = new JMenuItem("Done");
+				doneItem.addActionListener(new ActionListener() {
+					@Override
+					public void actionPerformed(ActionEvent e) {
+						//close();
+						console.back();
+					}
+				} );
+				menu.add(doneItem);
 				}
 				@Override
 				public void menuDeselected(MenuEvent e) {
@@ -171,7 +183,8 @@ public class JBookmarksEditor extends JItemsListPanel implements JFacetRenderer,
 			});
 			 return menu;
 		 }
-private void copy(){
+
+	private void copy(){
 	try{
 		console.clipboard.clear();
 		String[] sa=listSelectedItems();
@@ -196,7 +209,7 @@ private void paste(){
     		return;
     	ArrayList<Core>cl=new ArrayList<Core>();
     	Entigrator entigrator=console.getEntigrator(entihome$);
-    	Sack entity=entigrator.getEntityAtKey(entityKey$);
+    	entity=entigrator.getEntityAtKey(entityKey$);
     	Core[] ca=entity.elementGet("jbookmark");
     	if(ca==null){
     		entity.createElement("jbookmark");
@@ -273,7 +286,11 @@ private void paste(){
 			entityKey$=locator.getProperty(EntityHandler.ENTITY_KEY);
 			Entigrator entigrator=console.getEntigrator(entihome$);
 			requesterResponseLocator$=locator.getProperty(JRequester.REQUESTER_RESPONSE_LOCATOR);
-            Sack entity=entigrator.getEntityAtKey(entityKey$);
+            entity=entigrator.getEntityAtKey(entityKey$);
+            if(!entigrator.lock_set(entity)){
+				//JOptionPane.showMessageDialog(this, entigrator.lock_message(entity));
+		  message$=entigrator.lock_message(entity);
+	  } 
             entityLabel$=entity.getProperty("label");
             Core[] ca=entity.elementGet("jbookmark");
             Core.sortAtType(ca);
@@ -300,7 +317,11 @@ private void paste(){
  */
 	@Override
 	public String getTitle() {
-		return "Bookmarks";
+		if(message$==null)
+			return "Bookmarks";
+		else
+			return "Bookmarks"+message$;
+		//return "Bookmarks";
 	}
 	/**
 	 * Get context subtitle.
@@ -325,7 +346,10 @@ private void paste(){
  */
 	@Override
 	public void close() {
-		// TODO Auto-generated method stub
+		Entigrator entigrator=console.getEntigrator(entihome$);
+        entity=entigrator.getEntityAtKey(entityKey$);
+		if(!entigrator.lock_release(entity))
+			JOptionPane.showMessageDialog(this, "The changes will be not saved");
 	}
 /**
  * Execute the response locator.
@@ -372,7 +396,7 @@ private void paste(){
 			String bookmarkKey$=locator.getProperty(BOOKMARK_KEY);
 			String text$=locator.getProperty(JTextEditor.TEXT);
 			Entigrator entigrator=console.getEntigrator(entihome$);
-			Sack entity=entigrator.getEntityAtKey(entityKey$);
+			entity=entigrator.getEntityAtKey(entityKey$);
 			Core bookmark=entity.getElementItem("jbookmark", bookmarkKey$);
 			//System.out.println("BookmarkEditor:response:bookmark="+bookmarkKey$);
 			if(JBookmarkItem.ACTION_RENAME.equals(action$)){
@@ -546,7 +570,7 @@ private void paste(){
 			String entityLocator$=EntityHandler.getEntityLocatorAtKey(entigrator, entityKey$);
 			if(!bh.isApplied(entigrator, entityLocator$))
 				return ;
-			Sack entity=entigrator.getEntityAtKey(entityKey$);
+			entity=entigrator.getEntityAtKey(entityKey$);
 			Core[] ca=entity.elementGet("jbookmark");
 			if(ca!=null){
 			String referenceKey$;

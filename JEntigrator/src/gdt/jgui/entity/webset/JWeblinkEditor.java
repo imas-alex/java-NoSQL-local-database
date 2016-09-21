@@ -63,6 +63,7 @@ import gdt.jgui.tool.JTextEncrypter;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
 import javax.swing.JPopupMenu;
 import javax.swing.JLabel;
 
@@ -116,6 +117,8 @@ public class JWeblinkEditor extends JPanel implements JFacetRenderer,JRequester,
 	private GridBagConstraints c_8;
 	private GridBagConstraints c_9;
 	JPopupMenu iconMenu;
+	String message$;
+	Sack entity;
 	/**
 	 * The default constructor.
 	 */
@@ -516,16 +519,19 @@ private void save(){
 			System.out.println("WeblinkEditor.instantiate:1");
 			Entigrator entigrator=console.getEntigrator(entihome$);
 			entityLabel$=entigrator.indx_getLabel(entityKey$);
-            Sack webset=entigrator.getEntityAtKey(entityKey$);
-            Core address=webset.getElementItem("web", webLinkKey$);
+            entity=entigrator.getEntityAtKey(entityKey$);
+            if(!entigrator.lock_set(entity))
+				  message$=entigrator.lock_message(entity);
+			  
+            Core address=entity.getElementItem("web", webLinkKey$);
             addressField.setText(address.value);
             nameField.setText(address.type);
-            Core login=webset.getElementItem("web.login", webLinkKey$);
+            Core login=entity.getElementItem("web.login", webLinkKey$);
             if(login!=null){
             loginField.setText(login.type);
 			passwordField.setText(login.value);
             }
-            Core iconCore=webset.getElementItem("web.icon", webLinkKey$);
+            Core iconCore=entity.getElementItem("web.icon", webLinkKey$);
             if(iconCore!=null&&iconCore.value!=null){
             try{	String icon$=iconCore.value;
        		 byte[] ba=Base64.decodeBase64(icon$);
@@ -787,7 +793,11 @@ private void save(){
 	 */	
 @Override
 public String getTitle() {
-	return nameField.getText();
+	if(message$==null)
+		return nameField.getText();
+	else
+		return nameField.getText()+message$;
+	//return nameField.getText();
 }
 /**
  * Get context subtitle.
@@ -810,7 +820,9 @@ public String getType() {
  */
 @Override
 public void close() {
-	// TODO Auto-generated method stub
+	Entigrator entigrator=console.getEntigrator(entihome$);
+	if(!entigrator.lock_release(entity))
+		JOptionPane.showMessageDialog(this, Entigrator.LOCK_CLOSE_MESSAGE);
 }
 /**
  * No action.

@@ -19,6 +19,7 @@ package gdt.jgui.tool;
 import gdt.data.entity.BaseHandler;
 import gdt.data.entity.EntityHandler;
 import gdt.data.grain.Locator;
+import gdt.data.grain.Sack;
 import gdt.data.grain.Support;
 import gdt.data.store.Entigrator;
 import gdt.jgui.console.JConsoleHandler;
@@ -32,7 +33,12 @@ import javax.swing.JLabel;
 import javax.swing.BoxLayout;
 import javax.swing.ImageIcon;
 import javax.swing.JMenu;
+import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
+
 import java.awt.FlowLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.File;
@@ -63,6 +69,8 @@ private final int smallIcon=24;
 private Logger LOGGER=Logger.getLogger(JTextEditor.class.getName());
 JScrollPane scrollPane;
 JPanel panel ;
+String message$;
+Sack entity;
 /**
  * The default constructor.
  */
@@ -92,8 +100,17 @@ public JIconSelector() {
  */
 	@Override
 	public JMenu getContextMenu() {
-		// TODO Auto-generated method stub
-		return null;
+		JMenu menu=new JMenu("Context");
+		JMenuItem doneItem = new JMenuItem("Done");
+		doneItem.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				console.back();
+				
+			}
+		} );
+		menu.add(doneItem);
+		return menu;
 	}
 	/**
 	 * Get the context locator.
@@ -132,10 +149,16 @@ public JIconSelector() {
 			 Properties locator=Locator.toProperties(locator$);
 			 entihome$=locator.getProperty(Entigrator.ENTIHOME);
 			 entityKey$=locator.getProperty(EntityHandler.ENTITY_KEY);
+			 Entigrator entigrator=console.getEntigrator(entihome$);
+			 entity=entigrator.getEntityAtKey(entityKey$);
+			 if(!entigrator.lock_set(entity)){
+				
+			  message$=entigrator.lock_message(entity);
+		  }
 			 entityLabel$=locator.getProperty(EntityHandler.ENTITY_LABEL);
 			 requesterResponseLocator$=locator.getProperty(JRequester.REQUESTER_RESPONSE_LOCATOR);
 //			 System.out.println("IconSelector:instantiate:locator="+locator$);
-			 Entigrator entigrator=console.getEntigrator(entihome$);
+	//		 Entigrator entigrator=console.getEntigrator(entihome$);
 			 String icons$=entigrator.ent_getHome(Entigrator.ICONS);
 			 File icons=new File(icons$);
 			 File[] fa=icons.listFiles();
@@ -181,7 +204,15 @@ public JIconSelector() {
 	 */	
 	@Override
 	public String getTitle() {
-		return "Icon selector";
+		//return "Icon selector";
+		
+			if(message$==null)
+				return "Icon selector";
+			else
+				return "Icon selector"+message$;
+			
+		
+		//return "Icon selector";
 	}
 	/**
 	 * Get context type.
@@ -192,11 +223,14 @@ public JIconSelector() {
 		return "Icon selector";
 	}
 	/**
-	 * No action.
+	 *Close the facet.
 	 */
 	@Override
 	public void close() {
-		// TODO Auto-generated method stub
+		Entigrator entigrator=console.getEntigrator(entihome$);
+		//entity=entigrator.getEntityAtKey(entityKey$);
+		if(!entigrator.lock_release(entity))
+			JOptionPane.showMessageDialog(this, Entigrator.LOCK_CLOSE_MESSAGE);
 	}
 	/**
 	 * Get context subtitle.

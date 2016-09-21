@@ -79,6 +79,8 @@ String entityKey$;
 String entityLabel$;
 JMenuItem[] mia;
 String requesterResponseLocator$;
+String message$;
+Sack entity;
 /**
  * The default constructor.
  */
@@ -128,7 +130,9 @@ public JContext instantiate(JMainConsole console, String locator$) {
 			 Entigrator entigrator=console.getEntigrator(entihome$);
 			 if(entityLabel$==null)
 				 entityLabel$=entigrator.indx_getLabel(entityKey$);
-			 Sack entity=entigrator.getEntityAtKey(entityKey$);
+			  entity=entigrator.getEntityAtKey(entityKey$);
+			  if(!entigrator.lock_set(entity))
+				  message$=entigrator.lock_message(entity);
     		 JItemPanel[] ipa=getItems(console,entity);
         	 putItems(ipa);
         	return this;
@@ -386,8 +390,12 @@ return menu;
  */	
 @Override
 	public String getTitle() {
-		String title$= "Web links";
-		return title$;
+		
+		if(message$==null)
+		return "Web links";
+		else
+			return "Web links"+message$;
+		
 	}
 /**
  * Get context subtitle.
@@ -410,7 +418,9 @@ return menu;
 	 */
 	@Override
 	public void close() {
-		// TODO Auto-generated method stub
+		Entigrator entigrator=console.getEntigrator(entihome$);
+		if(!entigrator.lock_release(entity))
+			JOptionPane.showMessageDialog(this, Entigrator.LOCK_CLOSE_MESSAGE);
 	}
 	/**
 	 * Open URL in the system browser. 

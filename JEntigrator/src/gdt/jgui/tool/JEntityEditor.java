@@ -91,6 +91,8 @@ public class JEntityEditor extends JPanel implements JContext,JRequester{
 	JMenuItem copyItem;
 	JMenuItem cutItem;
 	JMenuItem pasteItem;
+	String message$;
+	Sack entity;
 /**
  * The default consturctor.
  */
@@ -339,6 +341,7 @@ private void sort(String header$){
 		cancelItem.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
+				close();
 				console.back();
 			}
 		} );
@@ -437,6 +440,12 @@ private void sort(String header$){
 			 Properties locator=Locator.toProperties(locator$);
 			 entihome$=locator.getProperty(Entigrator.ENTIHOME);
 			 entityKey$=locator.getProperty(EntityHandler.ENTITY_KEY);
+			 Entigrator entigrator=console.getEntigrator(entihome$);
+			 entity=entigrator.getEntityAtKey(entityKey$);
+			 if(!entigrator.lock_set(entity)){
+					
+			  message$=entigrator.lock_message(entity);
+		  }
 			 entityLabel$=locator.getProperty(EntityHandler.ENTITY_LABEL);
 			 requesterAction$=locator.getProperty(JRequester.REQUESTER_ACTION);
 			 element$=locator.getProperty(ELEMENT);
@@ -447,7 +456,7 @@ private void sort(String header$){
 private void refresh(){
 	try{
 		Entigrator entigrator=console.getEntigrator(entihome$);
-		Sack entity=entigrator.getEntityAtKey(entityKey$);
+		entity=entigrator.getEntityAtKey(entityKey$);
 		showElement(entity,"attributes");
 		String[]sa=entity.elementsList();
 		Support.sortStrings(sa);
@@ -465,8 +474,14 @@ private void refresh(){
  */		
 @Override
 	public String getTitle() {
-		if(entityLabel$!=null)
-			return entityLabel$;
+	
+		if(entityLabel$!=null){
+			if(message$==null)
+				return entityLabel$;
+			else
+				return entityLabel$+message$;
+			
+		}
 		return "Entity editor";
 	}
 /**
@@ -655,7 +670,7 @@ public void response(JMainConsole console, String locator$) {
 		String text$=locator.getProperty(JTextEditor.TEXT);
 		if(ACTION_ADD_ELEMENT.equals(action$)){
 				  Entigrator entigrator=console.getEntigrator(entihome$);
-				  Sack entity=entigrator.getEntityAtKey(entityKey$);
+				  entity=entigrator.getEntityAtKey(entityKey$);
 				  if(entity.existsElement(text$))
 					  return;
 				  entity.createElement(text$);
@@ -673,7 +688,7 @@ public void response(JMainConsole console, String locator$) {
 			String entityKey$=locator.getProperty(EntityHandler.ENTITY_KEY);
 			String element$=locator.getProperty(JTextEditor.TEXT);
 			String oldElement$=locator.getProperty(ELEMENT);
-			Sack entity=entigrator.getEntityAtKey(entityKey$);
+			entity=entigrator.getEntityAtKey(entityKey$);
 			entity.createElement(element$);
 			entity.elementReplace(element$, entity.elementGet(oldElement$));
 			entity.removeElement(oldElement$);
@@ -688,7 +703,7 @@ public void response(JMainConsole console, String locator$) {
 			String entihome$=locator.getProperty(Entigrator.ENTIHOME);
 			Entigrator entigrator=console.getEntigrator(entihome$);
 			String entityKey$=locator.getProperty(EntityHandler.ENTITY_KEY);
-			Sack entity=entigrator.getEntityAtKey(entityKey$);
+			entity=entigrator.getEntityAtKey(entityKey$);
 			//System.out.println("EntityEditor:response:entity="+entity.getProperty("label"));
 			String element$=locator.getProperty(ELEMENT);
 			text$=locator.getProperty(JTextEditor.TEXT);
@@ -751,7 +766,10 @@ public void response(JMainConsole console, String locator$) {
 	 */
 	@Override
 	public void close() {
-		// TODO Auto-generated method stub
+		Entigrator entigrator=console.getEntigrator(entihome$);
+		//entity=entigrator.getEntityAtKey(entityKey$);
+		if(!entigrator.lock_release(entity))
+			JOptionPane.showMessageDialog(this, Entigrator.LOCK_CLOSE_MESSAGE);
 		
 	}
 	/**

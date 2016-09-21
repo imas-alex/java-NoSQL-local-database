@@ -119,6 +119,7 @@ public class Entigrator {
    private static final String LOCK_OWNER="lock.owner";
    private static final String LOCK_PROCESS="lock.process";
    private static final String LOCK_TIME="lock.time";
+   public static final String LOCK_CLOSE_MESSAGE="The changes will be not saved";
    /**
     * Constructor.
     * 
@@ -2657,13 +2658,17 @@ public String lock_message(Sack entity){
 public boolean lock_release(Sack entity){
 	try{
 		if(!lock_ignore(entity)){
-			System.out.println("Entigrator:lock_release:not ignore");
+			System.out.println("Entigrator:lock_release:NOT RELEASED");
 			return false ;
 		}
 			entity.removeAttribute(LOCK_OWNER);
 			entity.removeAttribute(LOCK_PROCESS);
 			entity.removeAttribute(LOCK_TIME);
-			saveNative(entity);
+			//saveNative(entity);
+			String key$=entity.getKey();
+	        String path$ = entihome$ + "/" + ENTITY_BASE + "/data/" + key$;
+	    	entity.saveXML(path$);
+	    	System.out.println("Entigrator:lock_release:RELEASED");
 			return true;
 	}catch(Exception e){
 		LOGGER.severe(e.toString());
@@ -2694,9 +2699,14 @@ private boolean lock_ignore(Sack entity){
 		System.out.println("Entigrator:lock_ignore:stamp="+timestamp+" current="+System.currentTimeMillis()+" diff="+diff);
 		if(diff>60000){
 			System.out.println("Entigrator:lock_ignore:IGNORE LOCK");	
+			/*
 			entity.putAttribute(new Core(null,LOCK_OWNER,System.getProperty("user.name")));
 			entity.putAttribute(new Core(null,LOCK_PROCESS,ManagementFactory.getRuntimeMXBean().getName()));
 			entity.putAttribute(new Core(null,LOCK_TIME,String.valueOf(System.currentTimeMillis())));
+			*/
+			entity.removeAttribute(LOCK_OWNER);
+			entity.removeAttribute(LOCK_PROCESS);
+			entity.removeAttribute(LOCK_TIME);
 			entity.saveXML(path$);
 			return true;
 		}
@@ -2709,6 +2719,7 @@ private boolean lock_ignore(Sack entity){
 }
 public boolean lock_set(Sack entity){
 	try{
+		System.out.println("Entigrator:lock_set.BEGIN");
 		if(!lock_ignore(entity))
 			return false;
 		String owner$=entity.getAttributeAt(LOCK_OWNER);

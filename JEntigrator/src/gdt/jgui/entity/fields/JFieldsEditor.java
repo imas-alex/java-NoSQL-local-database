@@ -271,6 +271,7 @@ public JFieldsEditor() {
 		cancelItem.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
+				close();
 				console.back();
 			}
 		} );
@@ -349,10 +350,9 @@ public JFieldsEditor() {
 					);
 			  entigrator=console.getEntigrator(entihome$);
 			  entity=entigrator.getEntityAtKey(entityKey$);
-			  if(!entigrator.lock_set(entity)){
-						//JOptionPane.showMessageDialog(this, entigrator.lock_message(entity));
+			  if(!entigrator.lock_set(entity))
 				  message$=entigrator.lock_message(entity);
-			  }
+			  
 			  entityLabel$=entity.getProperty("label");
 			  Core[] ca=entity.elementGet("field");
 			  if(ca!=null)
@@ -431,10 +431,9 @@ public JFieldsEditor() {
  */
 	@Override
 	public void close() {
-		// entigrator=console.getEntigrator(entihome$);
-		//  entity=entigrator.getEntityAtKey(entityKey$);
+		
 		if(!entigrator.lock_release(entity))
-			JOptionPane.showMessageDialog(this, "The changes will be not saved");
+			JOptionPane.showMessageDialog(this, Entigrator.LOCK_CLOSE_MESSAGE);
 				}
 	private boolean hasEditingCell(){
 		try{

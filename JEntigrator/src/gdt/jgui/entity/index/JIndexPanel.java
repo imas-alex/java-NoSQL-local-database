@@ -103,7 +103,7 @@ public class JIndexPanel extends JPanel implements JContext , JFacetRenderer,JRe
 	private String entihome$;
     private String entityKey$;
     private String entityLabel$;
-    private Sack index;
+    //private Sack index;
     String requesterResponseLocator$;
     String locator$;
     private DefaultMutableTreeNode selectedNode;
@@ -120,6 +120,8 @@ public class JIndexPanel extends JPanel implements JContext , JFacetRenderer,JRe
 	JPopupMenu popup;
 	int nodeNumber=0;
 	boolean cut=false;
+	String message$;
+	Sack entity;
 /**
  * The default constructor.
  */
@@ -147,12 +149,12 @@ public class JIndexPanel extends JPanel implements JContext , JFacetRenderer,JRe
 				String entityKey$=locator.getProperty(EntityHandler.ENTITY_KEY);
 				String text$=locator.getProperty(JTextEditor.TEXT);
 				Entigrator entigrator=console.getEntigrator(entihome$);  
-				Sack index=entigrator.ent_new("index", text$);
-				   index=entigrator.ent_assignProperty(index, "index", index.getProperty("label"));
-				   index.putAttribute(new Core(null,"icon","index.png"));
-				   entigrator.save(index);
+				entity=entigrator.ent_new("index", text$);
+				   entity=entigrator.ent_assignProperty(entity, "index", entity.getProperty("label"));
+				   entity.putAttribute(new Core(null,"icon","index.png"));
+				   entigrator.save(entity);
 				   entigrator.saveHandlerIcon(JEntitiesPanel.class, "index.png");
-				   entityKey$=index.getKey();
+				   entityKey$=entity.getKey();
 				   JIndexPanel ip=new JIndexPanel();
 				   String ipLocator$=ip.getLocator();
 				   ipLocator$=Locator.append(ipLocator$, Entigrator.ENTIHOME, entihome$);
@@ -170,7 +172,7 @@ public class JIndexPanel extends JPanel implements JContext , JFacetRenderer,JRe
 				String entityKey$=locator.getProperty(EntityHandler.ENTITY_KEY);
 				String text$=locator.getProperty(JTextEditor.TEXT);
 				Entigrator entigrator=console.getEntigrator(entihome$);  
-				Sack index=entigrator.getEntityAtKey(entityKey$);
+				entity=entigrator.getEntityAtKey(entityKey$);
 				String encodedSelection$ =locator.getProperty(SELECTION);
 				byte[] ba=Base64.decodeBase64(encodedSelection$);
 			    String selection$=new String(ba,"UTF-8");
@@ -180,8 +182,8 @@ public class JIndexPanel extends JPanel implements JContext , JFacetRenderer,JRe
 			    String parentKey$=locator.getProperty(NODE_KEY);
 			  //  System.out.println("IndexPanel:response:create group:parent key="+parentKey$);
 			   if(NODE_TYPE_GROUP.equals(nodeType$)){
-			    	if(!index.existsElement("index.jlocator"))
-			    		index.createElement("index.jlocator");
+			    	if(!entity.existsElement("index.jlocator"))
+			    		entity.createElement("index.jlocator");
 			    	String groupKey$=Identity.key();
 			    	Properties groupLocator=new Properties();
 			    	groupLocator.setProperty(Locator.LOCATOR_TITLE, text$);
@@ -192,9 +194,9 @@ public class JIndexPanel extends JPanel implements JContext , JFacetRenderer,JRe
 			    	groupLocator.setProperty(INDEX_KEY,entityKey$);
 			    	String groupLocator$=Locator.toString(groupLocator);
 			    	
-			    	index.putElementItem("index.jlocator", new Core(null,groupKey$,groupLocator$));
-			    	index.putElementItem("index.selection", new Core(null,"selection",groupKey$));
-			    	entigrator.save(index);
+			    	entity.putElementItem("index.jlocator", new Core(null,groupKey$,groupLocator$));
+			    	entity.putElementItem("index.selection", new Core(null,"selection",groupKey$));
+			    	entigrator.save(entity);
 			    	JConsoleHandler.execute(console, getLocator());
 			    }
 			}
@@ -203,7 +205,7 @@ public class JIndexPanel extends JPanel implements JContext , JFacetRenderer,JRe
 				String entityKey$=locator.getProperty(EntityHandler.ENTITY_KEY);
 				String text$=locator.getProperty(JTextEditor.TEXT);
 				Entigrator entigrator=console.getEntigrator(entihome$);  
-				Sack index=entigrator.getEntityAtKey(entityKey$);
+				entity=entigrator.getEntityAtKey(entityKey$);
 				String encodedSelection$ =locator.getProperty(SELECTION);
 				byte[] ba=Base64.decodeBase64(encodedSelection$);
 			    String selection$=new String(ba,"UTF-8");
@@ -211,10 +213,10 @@ public class JIndexPanel extends JPanel implements JContext , JFacetRenderer,JRe
 			    locator=Locator.toProperties(selection$);
 			    String nodeKey$=locator.getProperty(NODE_KEY);
 			    locator.setProperty(Locator.LOCATOR_TITLE, text$);
-			    Core core=index.getElementItem("index.jlocator", nodeKey$);
+			    Core core=entity.getElementItem("index.jlocator", nodeKey$);
 			    core.value=Locator.toString(locator);
-			    index.putElementItem("index.jlocator",core );
-			    entigrator.save(index);
+			    entity.putElementItem("index.jlocator",core );
+			    entigrator.save(entity);
 			    JConsoleHandler.execute(console, getLocator());
 			    return;
 			}
@@ -223,23 +225,23 @@ public class JIndexPanel extends JPanel implements JContext , JFacetRenderer,JRe
 				String entityKey$=locator.getProperty(EntityHandler.ENTITY_KEY);
 				String text$=locator.getProperty(JTextEditor.TEXT);
 				Entigrator entigrator=console.getEntigrator(entihome$);  
-				Sack index=entigrator.getEntityAtKey(entityKey$);
+				entity=entigrator.getEntityAtKey(entityKey$);
 				String encodedSelection$ =locator.getProperty(SELECTION);
 				byte[] ba=Base64.decodeBase64(encodedSelection$);
 			    String selection$=new String(ba,"UTF-8");
 			    locator=Locator.toProperties(selection$);
 			    String nodeKey$=locator.getProperty(NODE_KEY);
-			    if(!index.existsElement("index.title"))
-			        index.createElement("index.title");
+			    if(!entity.existsElement("index.title"))
+			        entity.createElement("index.title");
 			    
-			    Core core=index.getElementItem("index.title", nodeKey$);
+			    Core core=entity.getElementItem("index.title", nodeKey$);
 			    if(core==null)
 			    	core=new Core(null,nodeKey$,text$);
 			    else
 			    	core.value=text$;
 			    
-			    index.putElementItem("index.title",core );
-			    entigrator.save(index);
+			    entity.putElementItem("index.title",core );
+			    entigrator.save(entity);
 			    JConsoleHandler.execute(console, getLocator());
 			    return;
 			}
@@ -247,7 +249,7 @@ public class JIndexPanel extends JPanel implements JContext , JFacetRenderer,JRe
 			if(ACTION_SET_ICON_GROUP.equals(action$)){
 				String icon$=locator.getProperty(JIconSelector.ICON);
 				Entigrator entigrator=console.getEntigrator(entihome$);  
-				index=entigrator.getEntityAtKey(entityKey$);
+				entity=entigrator.getEntityAtKey(entityKey$);
 				String encodedSelection$ =locator.getProperty(SELECTION);
 				byte[] ba=Base64.decodeBase64(encodedSelection$);
 			    String selection$=new String(ba,"UTF-8");
@@ -255,31 +257,31 @@ public class JIndexPanel extends JPanel implements JContext , JFacetRenderer,JRe
 			    locator=Locator.toProperties(selection$);
 			    String nodeKey$=locator.getProperty(NODE_KEY);
                 locator.setProperty(Locator.LOCATOR_ICON, entigrator.readIconFromIcons(icon$));
-			    Core core=index.getElementItem("index.jlocator", nodeKey$);
+			    Core core=entity.getElementItem("index.jlocator", nodeKey$);
 			    core.value=Locator.toString(locator);
-			    index.putElementItem("index.jlocator",core );
-			    entigrator.save(index);
+			    entity.putElementItem("index.jlocator",core );
+			    entigrator.save(entity);
 			    JConsoleHandler.execute(console, getLocator());
 			    return;
 			}
 			if(ACTION_SET_ICON_REFERENCE.equals(action$)){
 				String icon$=locator.getProperty(JIconSelector.ICON);
 				Entigrator entigrator=console.getEntigrator(entihome$);  
-				index=entigrator.getEntityAtKey(entityKey$);
+				entity=entigrator.getEntityAtKey(entityKey$);
 				String encodedSelection$ =locator.getProperty(SELECTION);
 				byte[] ba=Base64.decodeBase64(encodedSelection$);
 			    String selection$=new String(ba,"UTF-8");
 			    locator=Locator.toProperties(selection$);
 			    String nodeKey$=locator.getProperty(NODE_KEY);
-			    if(!index.existsElement("index.title"))
-			    	index.createElement("index.title");
-  			    Core core=index.getElementItem("index.title", nodeKey$);
+			    if(!entity.existsElement("index.title"))
+			    	entity.createElement("index.title");
+  			    Core core=entity.getElementItem("index.title", nodeKey$);
 			    if(core!=null)
 			       core.type=entigrator.readIconFromIcons(icon$);
 			    else
 			       core=new Core(entigrator.readIconFromIcons(icon$),nodeKey$,null);	
-			    index.putElementItem("index.title",core );
-			    entigrator.save(index);
+			    entity.putElementItem("index.title",core );
+			    entigrator.save(entity);
 			    JConsoleHandler.execute(console, getLocator());
 			    return;
 			}
@@ -323,8 +325,12 @@ public class JIndexPanel extends JPanel implements JContext , JFacetRenderer,JRe
 							}
 						} );
 						menu.add(collapseItem);
-			final TreePath[] tpa=tree.getSelectionPaths();
-			if(tpa!=null&&tpa.length>0){
+			
+						final TreePath[] tpa=tree.getSelectionPaths();
+						if(hasSelectedItems())
+			//if(tpa!=null&&tpa.length>0)
+			{
+				//hasSelectedItems();
 				   menu.addSeparator();
 				  JMenuItem copyItem = new JMenuItem("Copy");
 				   copyItem.addActionListener(new ActionListener() {
@@ -334,11 +340,14 @@ public class JIndexPanel extends JPanel implements JContext , JFacetRenderer,JRe
 						   console.clipboard.clear();
 					       DefaultMutableTreeNode node;
 					       String locator$;
+					       String[] la;
 					       for(TreePath tp:tpa){
 					    	   node=(DefaultMutableTreeNode)tp.getLastPathComponent();
 					    	   locator$=(String)node.getUserObject();
+					    	   la=console.clipboard.getContent();
 					    	   if(locator$!=null)
-					    		   console.clipboard.putString(locator$);
+					    		   if(!contains(locator$,la))
+					    		     console.clipboard.putString(locator$);
 					       }
 						}
 					} );
@@ -375,11 +384,11 @@ public class JIndexPanel extends JPanel implements JContext , JFacetRenderer,JRe
 								    	   node=(DefaultMutableTreeNode)tp.getLastPathComponent();
 								    	   locator$=(String)node.getUserObject();
 								    	   nodeKey$=Locator.getProperty(locator$, NODE_KEY);
-								    	   index.removeElementItem("index.title", nodeKey$);
-								    	   index.removeElementItem("index.jlocator", nodeKey$);
+								    	   entity.removeElementItem("index.title", nodeKey$);
+								    	   entity.removeElementItem("index.jlocator", nodeKey$);
 								       }
 								    Entigrator entigrator=console.getEntigrator(entihome$);
-								    entigrator.save(index);
+								    entigrator.save(entity);
 								    JConsoleHandler.execute(console, getLocator());
 								     }catch(Exception ee){
 								    	 LOGGER.info(ee.toString());
@@ -389,6 +398,16 @@ public class JIndexPanel extends JPanel implements JContext , JFacetRenderer,JRe
 							} );
 							menu.add(deleteItem);		
 			}
+			 menu.addSeparator();
+			   JMenuItem doneItem = new JMenuItem("Done");
+				doneItem.addActionListener(new ActionListener() {
+					@Override
+					public void actionPerformed(ActionEvent e) {
+						console.back();
+						
+					}
+				} );
+				menu.add(doneItem);
 			}
 			@Override
 			public void menuDeselected(MenuEvent e) {
@@ -397,7 +416,7 @@ public class JIndexPanel extends JPanel implements JContext , JFacetRenderer,JRe
 			public void menuCanceled(MenuEvent e) {
 			}
 		});
-	   
+	 
 	   
 		return menu;
  }
@@ -500,8 +519,12 @@ private DefaultMutableTreeNode instantiateNode(Sack index ,String nodeKey$){
 			entityKey$=locator.getProperty(EntityHandler.ENTITY_KEY);
 			Entigrator entigrator=console.getEntigrator(entihome$);
 			requesterResponseLocator$=locator.getProperty(JRequester.REQUESTER_RESPONSE_LOCATOR);
-            index=entigrator.getEntityAtKey(entityKey$);
-            entityLabel$=index.getProperty("label");
+            entity=entigrator.getEntityAtKey(entityKey$);
+            if(!entigrator.lock_set(entity)){
+				//JOptionPane.showMessageDialog(this, entigrator.lock_message(entity));
+		  message$=entigrator.lock_message(entity);
+	  }
+            entityLabel$=entity.getProperty("label");
     		rootNode = new DefaultMutableTreeNode(entityLabel$);
    		    locator=new Properties();
    		 locator.setProperty(Locator.LOCATOR_TITLE, INDEX);
@@ -512,19 +535,19 @@ private DefaultMutableTreeNode instantiateNode(Sack index ,String nodeKey$){
    		 parentNode = new DefaultMutableTreeNode(entityLabel$);
    		 rootNode.add(parentNode);
    		 Properties parentLocator=new Properties();
-   		 parentLocator.setProperty(Locator.LOCATOR_TITLE, index.getProperty("label"));
-   		 parentLocator.setProperty(Locator.LOCATOR_ICON, entigrator.readEntityIcon(index));
+   		 parentLocator.setProperty(Locator.LOCATOR_TITLE, entity.getProperty("label"));
+   		 parentLocator.setProperty(Locator.LOCATOR_ICON, entigrator.readEntityIcon(entity));
    		 parentLocator.setProperty(NODE_TYPE,NODE_TYPE_GROUP);
    		 parentLocator.setProperty(NODE_KEY,"parent");
    		 parentLocator.setProperty(Entigrator.ENTIHOME,entihome$);
    		 parentLocator.setProperty(EntityHandler.ENTITY_KEY,entityKey$);
    		 parentNode.setUserObject(Locator.toString(parentLocator));
    		 //String[] sa=listGroupMembers(index,"parent");
-   		String[] sa=listOrderedGroupMembers(index,"parent");
+   		String[] sa=listOrderedGroupMembers(entity,"parent");
    		 DefaultMutableTreeNode child;
    		 if(sa!=null)
    			 for(String aSa:sa){
-   				 child=instantiateNode(index, aSa);
+   				 child=instantiateNode(entity, aSa);
    				 if(child!=null)
    				  parentNode.add(child);
    			 }
@@ -534,7 +557,7 @@ private DefaultMutableTreeNode instantiateNode(Sack index ,String nodeKey$){
    		 tree.setCellRenderer(new NodeRenderer()); 
    		 tree.addMouseListener(new MousePopupListener());
    		 scrollPane.getViewport().add(tree);
-   		 String selectedNodeKey$=index.getElementItemAt("index.selection","selection");
+   		 String selectedNodeKey$=entity.getElementItemAt("index.selection","selection");
    		 if(selectedNodeKey$!=null)
    		    select(selectedNodeKey$);
 		}catch(Exception e){
@@ -577,8 +600,11 @@ private DefaultMutableTreeNode instantiateNode(Sack index ,String nodeKey$){
 	 */
 	@Override
 	public String getTitle() {
-		return "Index";
-	}
+		if(message$==null)
+			return "Index";
+		else
+			return "Index"+message$;
+			}
 private String[] listGroupMembers(Sack index,String groupKey$){
 	try{
 		Core[] ca=index.elementGet("index.jlocator");
@@ -591,6 +617,28 @@ private String[] listGroupMembers(Sack index,String groupKey$){
 				memberLocator=Locator.toProperties(c.value);
 				if(groupKey$.equals(memberLocator.getProperty(NODE_GROUP_KEY)))
 					sl.add(c.name);
+			}catch(Exception ee){
+				LOGGER.info(ee.toString());
+			}
+		}
+		return sl.toArray(new String[0]);
+	}catch(Exception e){
+		LOGGER.severe(e.toString());
+	}
+	return null;
+}
+private String[] listGroupLocators(Sack index,String groupKey$){
+	try{
+		Core[] ca=index.elementGet("index.jlocator");
+		if(ca==null||ca.length<1)
+			return null;
+		Properties memberLocator;
+		ArrayList<String>sl=new ArrayList<String>();
+		for(Core c:ca){
+			try{
+				memberLocator=Locator.toProperties(c.value);
+				if(groupKey$.equals(memberLocator.getProperty(NODE_GROUP_KEY)))
+					sl.add(c.value);
 			}catch(Exception ee){
 				LOGGER.info(ee.toString());
 			}
@@ -700,11 +748,13 @@ private Sack orderGroupDefault(Sack index,String groupKey$){
 		return "Indexes";
 	}
 	/**
-	 * Complete the context. No action.
+	 * Complete the context. 
 	 */
 	@Override
 	public void close() {
-		// TODO Auto-generated method stub
+		Entigrator entigrator=console.getEntigrator(entihome$);
+		if(!entigrator.lock_release(entity))
+			JOptionPane.showMessageDialog(this, Entigrator.LOCK_CLOSE_MESSAGE);
 		
 	}
 	/**
@@ -746,7 +796,7 @@ private Sack orderGroupDefault(Sack index,String groupKey$){
 			String entihome$=locator.getProperty(Entigrator.ENTIHOME);
 			String entityKey$=locator.getProperty(EntityHandler.ENTITY_KEY);
 			Entigrator entigrator=console.getEntigrator(entihome$);
-			Sack entity=entigrator.getEntityAtKey(entityKey$);
+			entity=entigrator.getEntityAtKey(entityKey$);
 			String entityLocator$=EntityHandler.getEntityLocator(entigrator, entity);
 			IndexHandler indexHandler=new IndexHandler();
 			indexHandler.instantiate(entityLocator$);
@@ -924,11 +974,11 @@ private Sack orderGroupDefault(Sack index,String groupKey$){
 								   
 								  Properties locator=Locator.toProperties(selection$);
 								  Entigrator entigrator=console.getEntigrator(entihome$);
-								  Sack index=entigrator.getEntityAtKey(entityKey$);
+								  entity=entigrator.getEntityAtKey(entityKey$);
 								  String nodeKey$=locator.getProperty(NODE_KEY);
-								  index=orderGroupDefault(index, nodeKey$);
-								  index.putElementItem("index.selection", new Core(null,"selection",nodeKey$));
-								  entigrator.save(index);
+								  entity=orderGroupDefault(entity, nodeKey$);
+								  entity.putElementItem("index.selection", new Core(null,"selection",nodeKey$));
+								  entigrator.save(entity);
 								  JConsoleHandler.execute(console,getLocator());
 							   }catch(Exception ee){
 								   Logger.getLogger(JIndexPanel.class.getName()).info(ee.toString());
@@ -986,12 +1036,11 @@ private Sack orderGroupDefault(Sack index,String groupKey$){
 									  String entihome$=indexLocator.getProperty(Entigrator.ENTIHOME);
 									  String entityKey$=indexLocator.getProperty(EntityHandler.ENTITY_KEY);
 									  Entigrator entigrator=console.getEntigrator(entihome$);
-									  Sack index=entigrator.getEntityAtKey(entityKey$);
+									  entity=entigrator.getEntityAtKey(entityKey$);
 									  for(String aSa:sa){
-										  
-										  index=pasteItemToGroup(index,groupKey$,aSa);
+										  entity=pasteItemToGroup(entity,groupKey$,aSa);
 									  }
-									  entigrator.save(index);
+									  entigrator.save(entity);
 									  cut=false;
 								      JConsoleHandler.execute(console, getLocator());
 								   }catch(Exception ee){
@@ -1014,13 +1063,13 @@ private Sack orderGroupDefault(Sack index,String groupKey$){
 								   
 								  Properties locator=Locator.toProperties(selection$);
 								  Entigrator entigrator=console.getEntigrator(entihome$);
-								  Sack index=entigrator.getEntityAtKey(entityKey$);
+								  entity=entigrator.getEntityAtKey(entityKey$);
 								  String nodeKey$=locator.getProperty(NODE_KEY);
 								  String groupKey$=locator.getProperty(NODE_GROUP_KEY);
 								  
-								  index=removeNode(index,nodeKey$);
-								  index.putElementItem("index.selection", new Core(null,"selection",groupKey$));
-								  entigrator.save(index);
+								  entity=removeNode(entity,nodeKey$);
+								  entity.putElementItem("index.selection", new Core(null,"selection",groupKey$));
+								  entigrator.save(entity);
 								  JConsoleHandler.execute(console,getLocator());
 							   }catch(Exception ee){
 								   Logger.getLogger(JIndexPanel.class.getName()).info(ee.toString());
@@ -1104,13 +1153,13 @@ private Sack orderGroupDefault(Sack index,String groupKey$){
 							  String entihome$=indexLocator.getProperty(Entigrator.ENTIHOME);
 							  String entityKey$=indexLocator.getProperty(EntityHandler.ENTITY_KEY);
 							  Entigrator entigrator=console.getEntigrator(entihome$);
-							  Sack index=entigrator.getEntityAtKey(entityKey$);
+							  entity=entigrator.getEntityAtKey(entityKey$);
 							  String nodeKey$=selectionLocator.getProperty(NODE_KEY);
 							  String groupKey$=selectionLocator.getProperty(NODE_GROUP_KEY);
 							
-							  index.removeElementItem("index.jlocator", nodeKey$);
-							  index.putElementItem("index.selection", new Core(null,"selection",groupKey$));
-							  entigrator.save(index);
+							  entity.removeElementItem("index.jlocator", nodeKey$);
+							  entity.putElementItem("index.selection", new Core(null,"selection",groupKey$));
+							  entigrator.save(entity);
 							  JConsoleHandler.execute(console, getLocator());
 						   }
 								
@@ -1128,7 +1177,7 @@ private Sack orderGroupDefault(Sack index,String groupKey$){
 								  String entihome$=locator.getProperty(Entigrator.ENTIHOME);
 								  String nodeKey$=locator.getProperty(NODE_KEY);
 								  String title$;
-								  Core title=index.getElementItem("index.title", nodeKey$);
+								  Core title=entity.getElementItem("index.title", nodeKey$);
 								  if(title!=null&&title.value!=null)
 									  title$=title.value;
 								  else
@@ -1179,11 +1228,11 @@ private Sack orderGroupDefault(Sack index,String groupKey$){
 								   
 								  Properties locator=Locator.toProperties(selection$);
 								  String nodeKey$=locator.getProperty(NODE_KEY);
-								  Core title=index.getElementItem("index.title", nodeKey$);
+								  Core title=entity.getElementItem("index.title", nodeKey$);
 								  if(title!=null){
-								  index.removeElementItem("index.title", nodeKey$);
+								  entity.removeElementItem("index.title", nodeKey$);
 								  Entigrator entigrator=console.getEntigrator(entihome$);
-							  	  entigrator.save(index);
+							  	  entigrator.save(entity);
 								  JConsoleHandler.execute(console, getLocator());
 								  }
 							   }catch(Exception ee){
@@ -1227,8 +1276,10 @@ private Sack orderGroupDefault(Sack index,String groupKey$){
               String itemLocator$;
 			  String newItemKey$;
               Properties newItemLocator;
+              String newItemLocator$;
               String itemType$;
               String itemKey$;
+              String[] la;
               if(sa!=null){
             	  for(String aSa:sa){
             		  itemLocator$=sourceIndex.getElementItemAt("index.jlocator", aSa);
@@ -1238,7 +1289,10 @@ private Sack orderGroupDefault(Sack index,String groupKey$){
             		  newItemKey$=Identity.key();
             		  newItemLocator.setProperty(NODE_KEY, newItemKey$);
             		  newItemLocator.setProperty( NODE_GROUP_KEY, targetGroupKey$);
-            		  index.putElementItem("index.jlocator", new Core(null,newItemKey$,Locator.toString(newItemLocator)));
+            		  la=listGroupLocators(entity, targetGroupKey$);
+            		  newItemLocator$=Locator.toString(newItemLocator);
+            		  if(!contains(newItemLocator$, la))
+            		      entity.putElementItem("index.jlocator", new Core(null,newItemKey$,newItemLocator$));
             		  if(NODE_TYPE_GROUP.equals(itemType$))
             			  copyGroupContent(sourceIndex,itemKey$,newItemKey$);
             	  }
@@ -1253,10 +1307,12 @@ private Sack orderGroupDefault(Sack index,String groupKey$){
 	
 private Sack pasteItemToGroup(Sack index,String groupKey$,String itemLocator$){
 		try{
+			System.out.println("JIndexPanel:pasteItemToGroup:BEGIN");
 			Properties itemLocator=Locator.toProperties(itemLocator$);
 			String nodeType$=itemLocator.getProperty(NODE_TYPE);
 			String nodeKey$=itemLocator.getProperty(NODE_KEY);
 			String indexKey$=itemLocator.getProperty(INDEX_KEY);
+			String itemEntityKey$=itemLocator.getProperty(EntityHandler.ENTITY_KEY);
 			if(NODE_TYPE_GROUP.equals(nodeType$)){
                  if(cut){
                 	 itemLocator$=Locator.append(itemLocator$, NODE_GROUP_KEY, groupKey$);
@@ -1276,8 +1332,10 @@ private Sack pasteItemToGroup(Sack index,String groupKey$,String itemLocator$){
                       String[] sa=listGroupMembers(sourceIndex,nodeKey$);
                       String newItemKey$;
                       Properties newItemLocator;
+                      String newItemLocator$;
                       String itemType$;
                       String itemKey$;
+                      String[] la;
                       if(sa!=null){
                     	  for(String aSa:sa){
                     		  itemLocator$=sourceIndex.getElementItemAt("index.jlocator", aSa);
@@ -1288,7 +1346,11 @@ private Sack pasteItemToGroup(Sack index,String groupKey$,String itemLocator$){
                     		  newItemKey$=Identity.key();
                     		  newItemLocator.setProperty(NODE_KEY, newItemKey$);
                     		  newItemLocator.setProperty( NODE_GROUP_KEY, newGroupKey$);
-                    		  index.putElementItem("index.jlocator", new Core(null,newItemKey$,Locator.toString(newItemLocator)));
+                    		  la=listGroupLocators(entity, newGroupKey$);
+                    		  newItemLocator$=Locator.toString(newItemLocator);
+                    		  if(!contains(newItemLocator$, la))
+                    		      index.putElementItem("index.jlocator", new Core(null,newItemKey$,newItemLocator$));
+                    		 // index.putElementItem("index.jlocator", new Core(null,newItemKey$,Locator.toString(newItemLocator)));
                     		  if(NODE_TYPE_GROUP.equals(itemType$))
                     			  copyGroupContent(sourceIndex,itemKey$,newItemKey$);
                     	  }
@@ -1302,7 +1364,14 @@ private Sack pasteItemToGroup(Sack index,String groupKey$,String itemLocator$){
 			    itemLocator.setProperty(NODE_GROUP_KEY, groupKey$);
 			    itemLocator.setProperty(NODE_KEY, nodeKey$);
 			    itemLocator.setProperty(NODE_TYPE, NODE_TYPE_REFERENCE);
-			    index.putElementItem("index.jlocator", new Core(null,nodeKey$,Locator.toString(itemLocator)));
+			    String[]  la=listGroupLocators(entity, groupKey$);
+      		    itemLocator$=Locator.toString(itemLocator);
+      		  if(!contains(itemLocator$, la)){
+    		      index.putElementItem("index.jlocator", new Core(null,nodeKey$,itemLocator$));
+    		      index=orderGroupDefault(index, groupKey$);
+      		  }
+    		
+			    //index.putElementItem("index.jlocator", new Core(null,nodeKey$,itemLocator$));
 			}
 		}catch(Exception e){
 			LOGGER.severe(e.toString());
@@ -1337,7 +1406,7 @@ private Sack pasteItemToGroup(Sack index,String groupKey$,String itemLocator$){
 	        		Properties locator=Locator.toProperties((String)userObject);
 	        		String nodeKey$=locator.getProperty(NODE_KEY);
 	        		String title$;
-	        		Core title=index.getElementItem("index.title", nodeKey$);
+	        		Core title=entity.getElementItem("index.title", nodeKey$);
 	        		   if(title!=null&&title.value!=null)
 	        			   title$=title.value;
 	        		   else
@@ -1417,11 +1486,11 @@ private Sack pasteItemToGroup(Sack index,String groupKey$,String itemLocator$){
       	 Properties locator=Locator.toProperties(selection$);
          String selectedNodeKey$=locator.getProperty(NODE_KEY);
          Entigrator entigrator=console.getEntigrator(entihome$);
-         Sack index=entigrator.getEntityAtKey(entityKey$);
-         if(!index.existsElement("index.selection"))
-        	 index.createElement("index.selection");
-         index.putElementItem("index.selection", new Core(null,"selection",selectedNodeKey$));
-         entigrator.save(index);
+         entity=entigrator.getEntityAtKey(entityKey$);
+         if(!entity.existsElement("index.selection"))
+        	 entity.createElement("index.selection");
+         entity.putElementItem("index.selection", new Core(null,"selection",selectedNodeKey$));
+         entigrator.save(entity);
       	  //
   		  }
 }
@@ -1476,8 +1545,8 @@ private Sack pasteItemToGroup(Sack index,String groupKey$,String itemLocator$){
 	    try{
 	//    	System.out.println("JIndexPanel:collectReferences:BEGIN:entity key="+entityKey$+ " base ="+entigrator.getEntihome());
 	    	JReferenceEntry jre;
-	    	Sack index =entigrator.getEntityAtKey(entityKey$);
-	    	Core[] ca=index.elementGet("index.jlocator");
+	    	entity =entigrator.getEntityAtKey(entityKey$);
+	    	Core[] ca=entity.elementGet("index.jlocator");
 //	    	System.out.println("JIndexPanel:collectReferences:ca="+ca.length);
 	    	if(ca!=null){
 	    		String memberKey$;
@@ -1497,4 +1566,45 @@ private Sack pasteItemToGroup(Sack index,String groupKey$,String itemLocator$){
 	   	 Logger.getLogger(getClass().getName()).severe(e.toString());
 	   	  }
 	   }
+	
+private boolean hasSelectedItems(){
+	 TreePath[] tpa=tree.getSelectionPaths();
+	 if(tpa==null)
+		 return false;
+	 else
+		 if(tpa.length>0){
+			// boolean flag=true;
+			 for(TreePath tp:tpa){
+				 Properties locator=Locator.toProperties((String)((DefaultMutableTreeNode)tp.getLastPathComponent()).getUserObject());
+				 String nodeType$=locator.getProperty(NODE_TYPE);
+				 if(NODE_TYPE_ROOT.equals(nodeType$))
+					 return false;
+				// String nodeKey$=locator.getProperty(NODE_KEY);
+				 if(NODE_TYPE_GROUP.equals(nodeType$))//&&"parent".equals(nodeKey$))
+					 return false;
+				 System.out.println("JIndexPanel:hasSelectedItems:tp="+tp.getLastPathComponent().toString());
+			 }
+			return true;	 
+		 }
+	 return false;
+}
+private boolean contains(String locator$,String[] la){
+	try{
+       Properties locator=Locator.toProperties(locator$);
+       String candidateKey$=locator.getProperty(EntityHandler.ENTITY_KEY);
+       String memberKey$;
+       for(String l:la){
+    	   locator=Locator.toProperties(l);
+    	   
+    	   memberKey$=locator.getProperty(EntityHandler.ENTITY_KEY);
+    	   System.out.println("JIndexPanel:contains:key member="+memberKey$+" candidate="+candidateKey$);
+    	   if(candidateKey$.equals(memberKey$))
+    			   return true;
+       }
+	}catch(Exception e){
+		Logger.getLogger(getClass().getName()).severe(e.toString());
+	}
+	return false;
+	
+}
 }
