@@ -73,7 +73,7 @@ public class JBookmarksEditor extends JItemsListPanel implements JFacetRenderer,
 	String locator$;
 	JMenuItem[] mia;
 	int cnt=0;
-	String message$;
+	protected String message$;
 	Sack entity;
 	private static final long serialVersionUID = 1L;
 	/**

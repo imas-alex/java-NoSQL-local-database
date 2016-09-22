@@ -98,7 +98,7 @@ JMenuItem cutItem;
 JMenuItem pasteItem;
 protected JMenuItem doneItem;
 protected JMenuItem[] postMenu;
-String message$;
+protected String message$;
 /**
  * The default constructor.
  */
