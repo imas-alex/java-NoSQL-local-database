@@ -1,10 +1,10 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <groupId>com.github.imas-alex</groupId>
-  <artifactId>JEntigrator</artifactId>
-  <version>0.0.4-SNAPSHOT</version>
-  <name>JEntigrator</name>
-  <description>The entigrator application</description>
+  <artifactId>Community</artifactId>
+  <version>0.0.5_SNAPSHOT</version>
+   <name>Community</name>
+  <description>The community extension for the entigrator application</description>
   <url>https://github.com/imas-alex/java-NoSQL-local-database</url>
   <issueManagement>
 		<url>https://github.com/imas-alex/java-NoSQL-local-database/issues</url>
@@ -19,10 +19,10 @@
 		</license>
 	</licenses>
 	<scm>
-		<url>https://github.com/imas-alex/JEntigrator</url>
-		<connection>scm:git:git://github.com/imas-alex/java-NoSQL-local-database.git</connection>
+		<url>https://github.com/imas-alex/Community</url>
+		<connection>scm:git:git://github.com/imas-alex.git</connection>
 		<developerConnection>scm:git:git@github.com:imas-alex/java-NoSQL-local-database.git</developerConnection>
-	  <tag>JEntigrator-0.0.3</tag>
+	  <tag>Community-0.0.5</tag>
   </scm>
 	<developers>
 		<developer>
@@ -57,6 +57,31 @@
         </execution>
       </executions>
     </plugin>
+     <plugin>
+      <groupId>org.apache.maven.plugins</groupId>
+      <artifactId>maven-javadoc-plugin</artifactId>
+      <version>2.9.1</version>
+      <executions>
+        <execution>
+          <id>attach-javadocs</id>
+          <goals>
+            <goal>jar</goal>
+          </goals>
+        </execution>
+      </executions>
+    </plugin>
+    <plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-jar-plugin</artifactId>
+				<configuration>
+					<archive>
+						<manifest>
+							<addDefaultImplementationEntries>true</addDefaultImplementationEntries>
+							<addDefaultSpecificationEntries>true</addDefaultSpecificationEntries>
+						</manifest>
+					</archive>
+				</configuration>
+</plugin>
     <plugin>
       <groupId>org.apache.maven.plugins</groupId>
       <artifactId>maven-source-plugin</artifactId>
@@ -70,19 +95,6 @@
         </execution>
       </executions>
     </plugin>
-    <plugin>
-      <groupId>org.apache.maven.plugins</groupId>
-      <artifactId>maven-javadoc-plugin</artifactId>
-      <version>2.9.1</version>
-      <executions>
-        <execution>
-          <id>attach-javadocs</id>
-          <goals>
-            <goal>jar</goal>
-          </goals>
-        </execution>
-      </executions>
-    </plugin>
       <plugin>
         <artifactId>maven-compiler-plugin</artifactId>
         <version>3.3</version>
@@ -91,31 +103,16 @@
           <target>1.7</target>
         </configuration>
       </plugin>
-      <plugin>
+        <plugin>
     <groupId>org.apache.maven.plugins</groupId>
-    <artifactId>maven-jar-plugin</artifactId>
-       <configuration>
-      <archive>
-        <manifest>
-           <addClasspath>true</addClasspath>
-               <classpathPrefix>lib/</classpathPrefix>
-              <mainClass>gdt.jgui.console.JMainConsole</mainClass>
-        </manifest>
-      </archive>
-    </configuration>
-  </plugin>
-   <plugin>
+    
+   
       <artifactId>maven-assembly-plugin</artifactId>
       <version>2.3</version>
       <configuration>
           <descriptorRefs>
               <descriptorRef>jar-with-dependencies</descriptorRef>
           </descriptorRefs>
-           <archive>
-            <manifest>
-              <mainClass>gdt.jgui.console.JMainConsole</mainClass>
-            </manifest>
-          </archive>
       </configuration>
       <executions>
           <execution>
@@ -137,27 +134,24 @@
      <autoReleaseAfterClose>false</autoReleaseAfterClose>
   </configuration>
 </plugin>
-      <plugin>
-      	<groupId>com.github.imas-alex</groupId>
-      	<artifactId>JEntigrator</artifactId>
-      	<version>0.0.4-SNAPSHOT</version>
-      </plugin>
     </plugins>
-  </build>
-  <dependencies>
-  	<dependency>
+   </build>
+  <dependencies> 
+  <dependency>
+  		<groupId>com.github.imas-alex</groupId>
+ 			 <artifactId>JEntigrator</artifactId>
+  			<scope>system</scope>
+      <systemPath>/home/imasa/github/JEntigrator/target/JEntigrator-0.0.3-jar-with-dependencies.jar</systemPath>
+  			<version>0.0.3</version>
+</dependency>
+
+  		<dependency>
 	  	<groupId>commons-codec</groupId>
   		<artifactId>commons-codec</artifactId>
   		<version>1.10</version>
   	</dependency>
-  	<dependency>
-  		<groupId>org.apache.commons</groupId>
- 			 <artifactId>commons-compress</artifactId>
-  			<version>1.10</version>
-</dependency>
- 
   </dependencies>
- <distributionManagement>
+   <distributionManagement>
   <!-- Repository for snapshots -->
   <snapshotRepository>
       <id>ossrh</id>
@@ -169,5 +163,4 @@
     <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
   </repository>
 </distributionManagement> 
-
 </project>
