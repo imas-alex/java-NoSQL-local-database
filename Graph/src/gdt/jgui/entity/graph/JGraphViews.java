@@ -459,4 +459,9 @@ private void deleteView(String viewKey$){
 		Logger.getLogger(JGraphViews.class.getName()).severe(e.toString());
 	}
 }
+@Override
+public void activate() {
+	// TODO Auto-generated method stub
+	
+}
 }

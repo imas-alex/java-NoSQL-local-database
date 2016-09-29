@@ -557,5 +557,10 @@ public void response(JMainConsole console, String locator$) {
 	
 	
 }
+@Override
+public void activate() {
+	// TODO Auto-generated method stub
+	
+}
 
 }

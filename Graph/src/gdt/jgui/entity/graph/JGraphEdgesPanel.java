@@ -136,7 +136,7 @@ public JContext instantiate(JMainConsole console, String locator$) {
 			   String emLocator$=em.getLocator();
 			   emLocator$=Locator.append(emLocator$,Locator.LOCATOR_CHECKABLE, Locator.LOCATOR_TRUE);
 			   emLocator$=Locator.append(emLocator$,Locator.LOCATOR_TITLE,entigrator.indx_getLabel(s));
-			   edgeIcon$=entigrator.readIconFromIcons(entigrator.getEntityIcon(s));
+			   edgeIcon$=entigrator.readIconFromIcons(entigrator.ent_getIconAtKey(s));
 			   if(edgeIcon$!=null)
 				   emLocator$=Locator.append(emLocator$,Locator.LOCATOR_ICON,edgeIcon$);
 			   itemPanel=new JItemPanel(console,emLocator$);
@@ -337,5 +337,10 @@ private void filter(){
 		// TODO Auto-generated method stub
 		
 	}
+@Override
+public void activate() {
+	// TODO Auto-generated method stub
+	
+}
 
 }

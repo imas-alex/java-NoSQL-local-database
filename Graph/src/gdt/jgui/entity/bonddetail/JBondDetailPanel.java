@@ -68,6 +68,8 @@ public class JBondDetailPanel extends JEntitiesPanel {
 	protected String requesterResponseLocator$;
 	Hashtable<String,JItemPanel> items;
 	protected JMenu menu1;
+	String message$;
+	Sack entity;
 	/**
 	 * Get the context locator.
 	 * @return the context locator.
@@ -104,7 +106,11 @@ public class JBondDetailPanel extends JEntitiesPanel {
      */	
 	@Override
 	public String getTitle() {
-	    return  "Bond details";
+		if(message$==null)
+			return "Bond details";
+		else
+			return "Bond details"+message$;
+		
 	}
 	 /**
      * Get subtitle of the handler.  
@@ -124,7 +130,7 @@ public class JBondDetailPanel extends JEntitiesPanel {
 		return "bond details";
 	}
 	 /**
-     * Close context. No operation.  
+     * Close context.
      * 
      */	
 	@Override
@@ -149,22 +155,22 @@ public class JBondDetailPanel extends JEntitiesPanel {
 			 bondKey$=locator.getProperty(JBondsPanel.BOND_KEY);
 			 edgeKey$=locator.getProperty(JBondsPanel.EDGE_KEY);
 			 Entigrator entigrator=console.getEntigrator(entihome$);
-			 Sack edge=null;
+			 entity=null;
 			 if(edgeKey$!=null)
-				 edge =entigrator.getEntityAtKey(edgeKey$);
+				 entity =entigrator.getEntityAtKey(edgeKey$);
 			 else{
 				 Sack host= entigrator.getEntityAtKey(entityKey$);
 				 if("edge".equals(host.getProperty("entity")))
-					 edge=host;
+					 entity=host;
 			 }
-			 if(edge==null)
+			 if(entity==null)
 				 return this;
-			    
-			 Core[] ca=edge.elementGet("detail");
+			
+			 Core[] ca=entity.elementGet("detail");
 			 if(ca==null)
 				 return this;
-			Core bond=edge.getElementItem("bond", bondKey$);
-			subtitle$=entigrator.indx_getLabel(bond.type)+" --("+edge.getProperty("label")+")-> "+entigrator.indx_getLabel(bond.value);
+			Core bond=entity.getElementItem("bond", bondKey$);
+			subtitle$=entigrator.indx_getLabel(bond.type)+" --("+entity.getProperty("label")+")-> "+entigrator.indx_getLabel(bond.value);
 			saveSelection( console, entihome$, edgeKey$, bondKey$);		 
 					// entigrator.getEntityAtKey(entityKey$);
              ArrayList<String>sl=new ArrayList<String>();

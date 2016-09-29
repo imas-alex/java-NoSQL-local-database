@@ -16,10 +16,6 @@ package gdt.jgui.entity.edge;
     You should have received a copy of the GNU General Public License
     along with JEntigrator.  If not, see <http://www.gnu.org/licenses/>.
  */
-import java.awt.Desktop;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.net.URI;
 
 import java.util.ArrayList;
 import java.util.Properties;
@@ -49,37 +45,23 @@ public class JEdgeEditor extends JFieldsEditor {
 	public static final String ACTION_CREATE_EDGE="action create edge";
 	public static final String ACTION_SET_DISPLAY_EDGE="action set display edge";
 	JMenuItem itemAddNode;
+	String message$;
+	Sack entity;
 	//JMenuItem itemMap;
 	public JEdgeEditor() {
 		super();
+		/*
 		postMenu=new JMenuItem[2];
 		itemAddNode=new JMenuItem("Add node");
 		itemAddNode.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				System.out.println("JEdgeEditor:add node:");
-			/*
-				String displayAddress$=compose();
-				JTextEditor te=new JTextEditor();
-				String teLocator$=te.getLocator();
-				teLocator$=Locator.append(teLocator$, Entigrator.ENTIHOME, entihome$);
-				teLocator$=Locator.append(teLocator$, EntityHandler.ENTITY_KEY, entityKey$);
-				teLocator$=Locator.append(teLocator$,JTextEditor.TEXT,displayAddress$);
-				teLocator$=Locator.append(teLocator$,JTextEditor.TEXT_TITLE,"Display address");
-				teLocator$=Locator.append(teLocator$,JTextEditor.SUBTITLE,entityLabel$);
-				
-				String responseLocator$=getLocator();
-				responseLocator$=Locator.append(responseLocator$, BaseHandler.HANDLER_METHOD, "response");
-				responseLocator$=Locator.append(responseLocator$, BaseHandler.HANDLER_CLASS, JAddressEditor.class.getName());
-				responseLocator$=Locator.append(responseLocator$, BaseHandler.HANDLER_SCOPE, JConsoleHandler.CONSOLE_SCOPE);
-				responseLocator$=Locator.append(responseLocator$, BaseHandler.HANDLER_LOCATION,JAddressFacetAddItem.EXTENSION_KEY );
-				responseLocator$=Locator.append(responseLocator$,JRequester.REQUESTER_ACTION,ACTION_SET_DISPLAY_ADDRESS);
-				teLocator$=Locator.append(teLocator$,JRequester.REQUESTER_RESPONSE_LOCATOR,Locator.compressText(responseLocator$));
-                JConsoleHandler.execute(console, teLocator$);
-				*/
+			
 			}
 		} );
 		postMenu[0]=itemAddNode;
+		*/
 	}
 	@Override
 	public String getLocator() {

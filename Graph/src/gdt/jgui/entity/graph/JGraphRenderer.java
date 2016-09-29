@@ -134,17 +134,17 @@ public class JGraphRenderer extends JPanel implements JContext , JRequester
     AutocompleteJComboBox searchBox ;
 private VisualizationViewer<Number,Number> vv = null;
 
-private AbstractLayout<Number,Number> layout = null;
+//private AbstractLayout<Number,Number> layout = null;
 
     Timer timer;
     DirectedSparseGraph<Number, Number> graph;
-    
-    boolean done;
+ //   boolean done;
 
     protected JButton switchLayout;
 
     public static final int EDGE_LENGTH = 100;
     Integer v_prev = null;
+    String message$;
 /**
  * The default constructor
  */
@@ -370,6 +370,16 @@ private AbstractLayout<Number,Number> layout = null;
 							}
 						} );
 					   menu.add(copyItem);	
+					   menu.addSeparator();
+					   JMenuItem  doneItem = new JMenuItem("Done");
+					   doneItem.addActionListener(new ActionListener() {
+							@Override
+							public void actionPerformed(ActionEvent e) {
+								console.back();
+								
+							}
+						} );
+					   menu.add(doneItem);
 				}
 
 				@Override
@@ -442,6 +452,7 @@ private AbstractLayout<Number,Number> layout = null;
 				Entigrator entigrator=console.getEntigrator(entihome$);
 				requesterResponseLocator$=locator.getProperty(JRequester.REQUESTER_RESPONSE_LOCATOR);
 	            graphEntity=entigrator.getEntityAtKey(entityKey$);
+	             
 	            entityLabel$=graphEntity.getProperty("label");
 	            String viewComponentKey$=locator.getProperty(JGraphViews.VIEW_COMPONENT_KEY);
 	            String viewKey$=locator.getProperty(JGraphViews.VIEW_KEY);
@@ -480,7 +491,11 @@ private AbstractLayout<Number,Number> layout = null;
 	 */	
 	@Override
 	public String getTitle() {
-		return "Map";
+		if(message$==null)
+			return "Map";
+		else
+			return "Map"+message$;
+		
 	}
 	/**
 	 * Get subtitle of the context.  
@@ -499,11 +514,11 @@ private AbstractLayout<Number,Number> layout = null;
 		return "graph";
 	}
 /**
- * No action
+ * Complete facet.
  */
 	@Override
-	public void close() {
-		// TODO Auto-generated method stub
+	public void close() {Entigrator entigrator=console.getEntigrator(entihome$);
+	
 		
 	}
 	@Override
@@ -607,7 +622,7 @@ private void expand(int v){
 		           	    nodeCore= graphEntity.getElementItem("node", nb);
 		           	    if(nodeCore==null){
 		           	    	label$=entigrator.indx_getLabel(nb);
-		           	    	icon$=entigrator.indx_getIcon(nb);
+		           	    	icon$=entigrator.ent_getIconAtKey(nb);
 		           	    	if(label$!=null&&icon$!=null){
 		           	    		graphEntity.putElementItem("node", new Core(icon$,nb,label$));
 		           	    		rebuild=true;
@@ -1206,6 +1221,11 @@ class MousePopupListener extends MouseAdapter {
 	    		//System.out.println("JGraphRenderer:MousePopupListener:is Popup");
 	    	}
 	   }
+@Override
+public void activate() {
+	// TODO Auto-generated method stub
+	
+}
 }
 
 

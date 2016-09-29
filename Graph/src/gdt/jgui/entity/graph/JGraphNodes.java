@@ -53,6 +53,8 @@ public class JGraphNodes extends JEntitiesPanel{
 	private Logger LOGGER=Logger.getLogger(JGraphNodes.class.getName());
 	JMenu menu1;
 	private static final long serialVersionUID = 1L;
+	String message$;
+	Sack entity;
 /**
  * The default constructor
  */
@@ -97,10 +99,11 @@ public class JGraphNodes extends JEntitiesPanel{
 				 entityKey$=locator.getProperty(EntityHandler.ENTITY_KEY);
 				 entihome$=locator.getProperty(Entigrator.ENTIHOME);
 				 Entigrator  entigrator=console.getEntigrator(entihome$);
-				 Sack graph=entigrator.getEntityAtKey(entityKey$);
+				 entity=entigrator.getEntityAtKey(entityKey$);
+				
 				// System.out.println("JGraphNodes:instantiate:GRAPH");
 				// graph.print();
-				 String[] sa=graph.elementList("node");
+				 String[] sa=entity.elementList("node");
 				 
 				 if(sa!=null){
 					list$=Locator.toString(sa);
@@ -124,7 +127,11 @@ public class JGraphNodes extends JEntitiesPanel{
 	   */
 	
   public String getTitle() {
-	  		return "Nodes";
+		  if(message$==null)
+				return "Nodes";
+			else
+				return "Nodes"+message$;
+		  
 	  		
 	  	}
 	  /**
@@ -328,7 +335,7 @@ public class JGraphNodes extends JEntitiesPanel{
 			    locator=Locator.toProperties(s);
 			    nodeKey$=locator.getProperty(EntityHandler.ENTITY_KEY);
 			    node=entigrator.getEntityAtKey(nodeKey$);
-			   nodeIcon$=entigrator.getEntityIcon(nodeKey$);
+			   nodeIcon$=entigrator.ent_getIconAtKey(nodeKey$);
 		    	if(node.getProperty("node")!=null){
 		                graph.putElementItem("node", new Core(nodeIcon$,nodeKey$,node.getProperty("label")));
 			    	}
@@ -394,17 +401,18 @@ public class JGraphNodes extends JEntitiesPanel{
  	  try{
  	  
  	    	Entigrator entigrator=console.getEntigrator(entihome$);
- 			Sack graph=entigrator.getEntityAtKey(entityKey$);
- 			if(graph.existsElement("node.select"))
- 				graph.clearElement("node.select");
+ 			entity=entigrator.getEntityAtKey(entityKey$);
+ 			
+ 			if(entity.existsElement("node.select"))
+ 				entity.clearElement("node.select");
  			else
- 				graph.createElement("node.select");
+ 				entity.createElement("node.select");
  			String[]  sa=listSelectedItems();
  		 	if(sa!=null)	
  			for(String s:sa)
- 				graph.putElementItem("node.select", new Core(null,Locator.getProperty(s, EntityHandler.ENTITY_KEY),null));
+ 				entity.putElementItem("node.select", new Core(null,Locator.getProperty(s, EntityHandler.ENTITY_KEY),null));
  			
- 			entigrator.save(graph);
+ 			entigrator.save(entity);
  	    
  	  }catch(Exception e){
  		  Logger.getLogger(JGraphNodes.class.getName()).severe(e.toString());
@@ -424,7 +432,7 @@ public class JGraphNodes extends JEntitiesPanel{
 					//System.out.println("JGraphNodes:expandCascade:try node="+n);
 					try{
 				    nodeLabel$=entigrator.indx_getLabel(n);
-				    nodeIcon$=entigrator.getEntityIcon(n);
+				    nodeIcon$=entigrator.ent_getIconAtKey(n);
 		                graph.putElementItem("node", new Core(nodeIcon$,n,nodeLabel$));
 					}catch(Exception ee){
 						System.out.println("JGraphNodes:expandCascade:"+ee.toString());

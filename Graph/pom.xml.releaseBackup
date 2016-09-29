@@ -2,7 +2,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>com.github.imas-alex</groupId>
   <artifactId>Graph</artifactId>
-  <version>0.0.10-SNAPSHOT</version>
+  <version>0.0.13_SNAPSHOT-SNAPSHOT</version>
    <name>Graph</name>
   <description>The graph extension for the entigrator application</description>
   <url>https://github.com/imas-alex/java-NoSQL-local-database</url>
@@ -22,7 +22,7 @@
 		<url>https://github.com/imas-alex/Graph</url>
 		<connection>scm:git:git://github.com/imas-alex/java-NoSQL-local-database.git</connection>
 		<developerConnection>scm:git:git@github.com:imas-alex/java-NoSQL-local-database.git</developerConnection>
-	  <tag>Graph-0.0.42</tag>
+	  <tag>Graph-0.0.10_SNAPSHOT</tag>
   </scm>
 	<developers>
 		<developer>
@@ -134,16 +134,15 @@
      <nexusUrl>https://oss.sonatype.org/</nexusUrl>
      <autoReleaseAfterClose>false</autoReleaseAfterClose>
   </configuration>
-</plugin>
-     
-    </plugins>
-  
+</plugin> 
+   </plugins> 
   </build>
-  <dependencies>
-  <dependency>
+  <dependencies> 
+  <dependency> 
   		<groupId>com.github.imas-alex</groupId>
  			 <artifactId>JEntigrator</artifactId>
-  			<version>0.0.2</version>
+  			<version>0.0.3</version>
+  			
 </dependency>
 
   		<dependency>

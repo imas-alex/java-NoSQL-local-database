@@ -16,11 +16,8 @@ package gdt.jgui.entity.node;
     You should have received a copy of the GNU General Public License
     along with JEntigrator.  If not, see <http://www.gnu.org/licenses/>.
  */
-import java.awt.Desktop;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.net.URI;
-
 import java.util.ArrayList;
 import java.util.Properties;
 import java.util.Stack;
@@ -30,7 +27,6 @@ import gdt.data.entity.NodeHandler;
 import gdt.data.entity.BaseHandler;
 import gdt.data.entity.EdgeHandler;
 import gdt.data.entity.EntityHandler;
-import gdt.data.entity.FacetHandler;
 import gdt.data.entity.GraphHandler;
 import gdt.data.entity.facet.ExtensionHandler;
 import gdt.data.entity.facet.FieldsHandler;
@@ -44,7 +40,6 @@ import gdt.jgui.console.*;
 import gdt.jgui.entity.JEntityFacetPanel;
 import gdt.jgui.entity.JEntityPrimaryMenu;
 import gdt.jgui.entity.JReferenceEntry;
-import gdt.jgui.entity.edge.JBondsPanel;
 import gdt.jgui.entity.fields.JFieldsEditor;
 import gdt.jgui.tool.JTextEditor;
 public class JNodeEditor extends JFieldsEditor {
@@ -52,20 +47,9 @@ public class JNodeEditor extends JFieldsEditor {
 	private static final long serialVersionUID = 1L;
 	public static final String ACTION_CREATE_NODE="action create node";
 	public static final String ACTION_SET_DISPLAY_NODE="action set display node";
-	JMenuItem itemEdge;
-	//JMenuItem itemMap;
 	public JNodeEditor() {
 		super();
-		postMenu=new JMenuItem[2];
-		itemEdge=new JMenuItem("Add edge");
-		itemEdge.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				System.out.println("JNodeEditor:add edge:");
-		
-			}
-		} );
-		postMenu[0]=itemEdge;
+	
 	}
 	@Override
 	public String getLocator() {
@@ -97,7 +81,10 @@ public class JNodeEditor extends JFieldsEditor {
 	}
 	@Override
 	public String getTitle() {
-		return "Node";
+		if(message$==null)
+			return "Node";
+		else
+			return "Node"+message$;
 	}
 	@Override
 	public String getSubtitle() {

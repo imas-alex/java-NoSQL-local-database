@@ -132,6 +132,8 @@ JMenuItem[] mia;
 String requesterResponseLocator$;
 String facetHandlerClass$;
 String selectMode$=SELECT_MODE_OUT;
+String message$;
+Sack entity;
 /**
  * The default constructor.
  */
@@ -178,7 +180,7 @@ public JBondsPanel() {
 public JContext instantiate(JMainConsole console, String locator$) {
 	    
 		try{
-			System.out.println("JBondsPanel:instantiate:BEGIN");
+			//System.out.println("JBondsPanel:instantiate:BEGIN");
 			 this.console=console;
 			 this.locator$=locator$;
 			 Properties locator=Locator.toProperties(locator$);
@@ -189,7 +191,7 @@ public JContext instantiate(JMainConsole console, String locator$) {
 			 Entigrator entigrator=console.getEntigrator(entihome$);
 			 if(entityLabel$==null)
 				 entityLabel$=entigrator.indx_getLabel(entityKey$);
-			 Sack entity=entigrator.getEntityAtKey(entityKey$);
+			 entity=entigrator.getEntityAtKey(entityKey$);
 			 selectMode$=SELECT_MODE_OUT;
 			 if(SELECT_MODE_IN.equals(entity.getElementItemAt("parameter", SELECT_MODE)))
 				 selectMode$=SELECT_MODE_IN;
@@ -449,7 +451,7 @@ menu.addMenuListener(new MenuListener(){
 			//System.out.println("JBondsPanel:new:"+locator$);
 			
 			Entigrator entigrator=console.getEntigrator(entihome$);	
-			Sack entity=entigrator.getEntityAtKey(entityKey$);
+			entity=entigrator.getEntityAtKey(entityKey$);
 			if(!entity.existsElement("bond"))
 					entity.createElement("bond");
 			String bondKey$=Identity.key();
@@ -544,7 +546,7 @@ menu.addMenuListener(new MenuListener(){
 				}
 			revalidate();
 			repaint();
-			Sack entity=entigrator.getEntityAtKey(entityKey$);
+			entity=entigrator.getEntityAtKey(entityKey$);
 			if(!entity.existsElement("parameter"))
 				entity.createElement("parameter");
 			entity.putElementItem("parameter", new Core(null,SELECT_MODE,selectMode$));
@@ -571,7 +573,7 @@ menu.addMenuListener(new MenuListener(){
 				revalidate();
 				repaint();
 				Entigrator entigrator=console.getEntigrator(entihome$);	
-				Sack entity=entigrator.getEntityAtKey(entityKey$);
+				entity=entigrator.getEntityAtKey(entityKey$);
 				if(!entity.existsElement("parameter"))
 					entity.createElement("parameter");
 				entity.putElementItem("parameter", new Core(null,SELECT_MODE,selectMode$));
@@ -597,7 +599,10 @@ return menu;
 @Override
 	public String getTitle() {
 		String title$= "Bonds("+entityLabel$+")";
-		return title$;
+		if(message$==null)
+			return title$;
+		else
+			return title$+message$;
 		//return entityLabel$;
 	}
 /**
@@ -621,9 +626,7 @@ return menu;
 	 */
 	@Override
 	public void close() {
-		 //  System.out.println("JBondsPanel:close:position="+getPosition());
-		      console.getTrack().pop();
-		      console.getTrack().push(getLocator());
+		  
 	}
 	/**
 	 * Response on the call from another context
@@ -740,7 +743,7 @@ return menu;
 		    	entihome$=locator.getProperty(Entigrator.ENTIHOME);
 		    	entityKey$=locator.getProperty(EntityHandler.ENTITY_KEY);
 		    	Entigrator entigrator=console.getEntigrator(entihome$);
-		    	Sack entity=entigrator.getEntityAtKey(entityKey$);
+		    	entity=entigrator.getEntityAtKey(entityKey$);
 		    	entigrator.ent_assignProperty(entity,"edge",entity.getProperty("label")); 
 		    	
 		    }catch(Exception e){
@@ -761,7 +764,7 @@ return menu;
 	    	entihome$=locator.getProperty(Entigrator.ENTIHOME);
 	    	entityKey$=locator.getProperty(EntityHandler.ENTITY_KEY);
 	    	Entigrator entigrator=console.getEntigrator(entihome$);
-	    	Sack entity=entigrator.getEntityAtKey(entityKey$);
+	    	entity=entigrator.getEntityAtKey(entityKey$);
 	    	entigrator.ent_assignProperty(entity,"edge",entity.getProperty("label")); 
 	    	
 	    }catch(Exception e){
@@ -865,20 +868,7 @@ private static void removeBond(JMainConsole console,String locator$){
 		Logger.getLogger(JBondsPanel.class.getName()).severe(e.toString());
 	}
 }
-/*
-public  void removeDetail(){
-	try{
-	
-		
-		Entigrator entigrator=console.getEntigrator(entihome$);
-//		BondDetailHandler.deleteDetail(entigrator, locator$);
-		
-		
-	}catch(Exception e){
-		Logger.getLogger(JBondsPanel.class.getName()).severe(e.toString());
-	}
-}
-*/
+
 
 private void removeBondEntry(String locator$){
 	try{
@@ -1005,5 +995,11 @@ private static class InNodeComparator implements Comparator<JItemPanel>{
     		return 0;
     	}
     }
+}
+
+@Override
+public void activate() {
+	// TODO Auto-generated method stub
+	
 }
 }
