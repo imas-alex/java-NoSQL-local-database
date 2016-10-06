@@ -47,13 +47,14 @@ import gdt.data.store.FileExpert;
 */
 
 public class Entigrator {
-  /**
+ final static boolean debug=false;
+	/**
    * The name of headers directory. This directory contains headers
    * for all entities within the database. A header provides the short
    * information about an entity. The usage of headers accelerates 
    * building entity lists. 	
    */
-  public static final String HEADERS="_AM7SyUTiAcrd_hDOtNegtzohEbc";
+ // public static final String HEADERS="_AM7SyUTiAcrd_hDOtNegtzohEbc";
   /**
    * The name of the properties file. This XML file contains all property names
    * linked to property name/value maps.   
@@ -70,7 +71,7 @@ public class Entigrator {
 	   */
 	public static final String DEPENDENCIES="_34OGgNhynOBECkS_SlCJt_SNh_SY9Q";
 	private static final String QUICK_MAP="_0Hw7Cb9q5VrmwG6enFmb5GBKIXo";
-	private static final String DB_STATE="_h118ipt7JttV441WtL_BMFD2klA";
+	//private static final String DB_STATE="_h118ipt7JttV441WtL_BMFD2klA";
 	
 	/**
 	 * Reserved attribute name. The entities cache uses time stamp to keep
@@ -112,7 +113,7 @@ public class Entigrator {
     private final int INDX_ENTITY_FALSE_MAP = 11;
     private final int INDX_OK = 12;
     private Sack propertyIndex;
-    private Sack quickMap;
+  //  private Sack quickMap;
     public EntitiesCache entitiesCache;
     private Properties locatorsCache;
     private Hashtable <String,Class<?>>classesCache;
@@ -131,7 +132,8 @@ public class Entigrator {
 	   * The lock message.	
 	   */
    public static final String LOCK_CLOSE_MESSAGE="The changes will be not saved";
-   public static final String LOCK_MESSAGE="lock message";
+  // public static final String LOCK_MESSAGE="lock message";
+   public static final String DB_CHANGED_MESSAGE="The database changed";
    /**
     * Constructor.
     * 
@@ -247,6 +249,16 @@ public class Entigrator {
     	    return saveNative(sack);
     	 }
     }
+    public boolean replace(Sack sack){
+    	if (sack == null) 
+            return false;
+    	 String base$ = sack.getAttributeAt("residence.base");
+    	 if(!ENTITY_BASE.equals(base$))
+    		 return false;
+    	sack.putAttribute(new Core(null,SAVE_ID,Identity.key()));
+    	entitiesCache.put(sack);
+    	return saveNative(sack);
+    }
     /**
   	 * Store an entity on the disk.
   	 *  @param sack the entity.
@@ -258,8 +270,8 @@ public class Entigrator {
             LOGGER.severe(":saveNative:sack is null");
         	return false;
         }
-       // System.out.println("Entigrator:saveNative:"+sack.getKey()+" label="+sack.getProperty("label"));
-       // System.out.println(ManagementFactory.getRuntimeMXBean().getName());
+        if(debug)
+        System.out.println("Entigrator:saveNative:"+sack.getKey()+" label="+sack.getProperty("label"));
        
         String key$=sack.getKey();
         String base$ = sack.getAttributeAt("residence.base");
@@ -267,30 +279,23 @@ public class Entigrator {
         if ("register".equals(base$))
             path$ = path$ + "/" + key$;
         else{
-        	//if(!lock_ignore(sack))
-        	//	return false;
             path$ = path$ + "/" + base$ + "/data/" + key$;
         }
         try {
-           //String lockTime$=sack.getAttributeAt(LOCK_TIME);
-           //if(lockTime$!=null)
         	   sack.putAttribute(new Core(null,TIMESTAMP,String.valueOf(System.currentTimeMillis())));
-        	
-        	
-        	//   System.out.println("Entigrator:save:sack="+sack.getKey()+" path="+path$);
        if(!ENTITY_BASE.equals(base$)){
-    	   if(!store_tryLocked()){
-    		  // store_lock();
+    	 //  if(!storeAdapter.store_tryLocked()){
         	   sack.saveXML(path$);
-        	   //store_release();
         	   notifyAll();
         	   return true;
-    	   }else
+    	/*   
+       }else
     		   notifyAll();
     		   return false;
+    		   */
        }
+      
        return storeAdapter.ent_save(this, sack);
-          
         } catch (Exception e) {
         	LOGGER.severe("saveNative:"+e.toString());
         }
@@ -634,35 +639,7 @@ public String[] indx_listEntities(Properties criteria) {
      */  
     public Core[] indx_getMarks(String[] keys) {
     	return storeAdapter.indx_getMarks(keys) ;
-     	/* 
-    	try{
-              ArrayList<Core>cl=new ArrayList<Core>();
-         	 String label$;
-         	 String icon$;
-         	 Core key;
-            for(String aKeys:keys){
-            	label$=null;
-              try{	
-            	  key=quickMap.getElementItem("key", aKeys);
-            	  if(key==null){
-            		  LOGGER.severe(":indx_getMarks:cannot get mark at key="+aKeys);
-            		  continue;
-            	  }
-            	  label$=key.type;}
-              catch(Exception ee){
-            	  LOGGER.severe(":indx_getMarks:"+ee.toString());
-            	  continue;
-              }
-              icon$=quickMap.getElementItem("label", label$).type;
-           	 if(label$!=null)
-           		  cl.add(new Core(icon$,aKeys,label$));
-            }
-            return cl.toArray(new Core[0]);
-            }catch(Exception e){
-            	 LOGGER.severe(":indx_getMarks:"+e.toString());
-       	   }
-            return null;
-            */
+  
          }
     /**
      * Get entities icon files and keys by entities labels.
@@ -670,24 +647,6 @@ public String[] indx_listEntities(Properties criteria) {
      * @return array of cores where type is a name of icon file,
      * name is a key of the entity and value is a label of the entity.
      */
-    /*
-    public Core[] indx_getMarksAtLabels(String[] labels) {
-    	 try{
-      
-           ArrayList<Core>cl=new ArrayList<Core>();
-        	 Core label;
-           for(String aLabel:labels){
-          	 label =quickMap.getElementItem("label",aLabel);
-        	 if(label!=null)
-          		 cl.add(new Core(label.type,label.value,label.name));
-           }
-           return cl.toArray(new Core[0]);
-           }catch(Exception e){
-        	    LOGGER.severe(":indx_getMarksAtLabel:"+e.toString());
-           }
-           return null;
-        }
-    */
     /**
      * Get labels of all entities.
      * @return array of labels
@@ -695,16 +654,6 @@ public String[] indx_listEntities(Properties criteria) {
     
     public String[] indx_listAllLabels() {
     	return storeAdapter.indx_listAllLabels();
-    /*
-    	try{
-          String[]sa=quickMap.elementList("label");
-        Support.sortStrings(sa);
-        return sa;
-     }catch(Exception e){
-    	 LOGGER.severe(":indx_listAllLabels:"+e.toString());
-    	 return null;
-     }
-     */
     }
     /**
      * Get keys of entities having certain property name/value assigned. 
@@ -777,8 +726,10 @@ public String[] indx_listEntities(Properties criteria) {
     	   return storeAdapter.indx_listAllKeys();
        }
     	try {
-            String property$ = propertyIndex.getElementItemAt("property", propertyName$);
-
+            long begin=System.currentTimeMillis();
+    		String property$ = propertyIndex.getElementItemAt("property", propertyName$);
+    		 if(debug)
+    		System.out.println("Entigrator:indx_listEntitiesAtPropertyName:get property name:"+String.valueOf(System.currentTimeMillis()-begin));
             if (property$ == null) {
            	 //LOGGER.severe(":indx_listEntitiesAtPropertyName:cannot find property in property index  property =" + propertyName$);
             	return null;
@@ -788,6 +739,8 @@ public String[] indx_listEntities(Properties criteria) {
             	LOGGER.severe(":indx_listEntitiesAtPropertyName:cannot find property =" + property$);
             	return null;
             }
+            if(debug)
+            System.out.println("Entigrator:indx_listEntitiesAtPropertyName:get property :"+String.valueOf(System.currentTimeMillis()-begin));
             Stack<String> s = new Stack<String>();
             Stack<String> s2 = new Stack<String>();
             
@@ -796,11 +749,14 @@ public String[] indx_listEntities(Properties criteria) {
                 	LOGGER.severe(":indx_listEntitiesAtPropertyName:no values in property =" + property$);
                 	return null;
                 }
+            if(debug)
+            System.out.println("Entigrator:indx_listEntitiesAtPropertyName:list maps :"+String.valueOf(System.currentTimeMillis()-begin));
             Sack map;
             ArrayList <String>sl=new ArrayList<String>();
             String[] ea ;
                 for (int i = 0; i < ma.length; i++) {
-                    s2.clear();
+                    begin=System.currentTimeMillis();
+                	s2.clear();
                     map = getMember("property.map.base", property.getElementItemAt("value", ma[i]));
                     if (map == null) {
                     	
@@ -809,6 +765,8 @@ public String[] indx_listEntities(Properties criteria) {
                     	save(property);
                        	continue;
                     }
+                    if(debug)
+                    System.out.println("Entigrator:indx_listEntitiesAtPropertyName:get map:"+String.valueOf(System.currentTimeMillis()-begin));
                     ea = map.elementList("entity");
                     if (ea == null) {
                     	LOGGER.severe(":indx_listEntitiesAtPropertyName:empty map[" + i + "]=" + ma[i]);
@@ -816,11 +774,15 @@ public String[] indx_listEntities(Properties criteria) {
                     	delete(map);
                     	continue;
                     }
+                    if(debug)
+                    System.out.println("Entigrator:indx_listEntitiesAtPropertyName:list entitites :"+String.valueOf(System.currentTimeMillis()-begin));
                     String label$;
-                 
                     for (String anEa : ea) {
+                    	begin=System.currentTimeMillis();
                         if (!touchEntity(anEa)){
                         	label$=indx_getLabel(anEa);
+                        	if(debug)
+                        	System.out.println("Entigrator:indx_listEntitiesAtPropertyName:get label :"+String.valueOf(System.currentTimeMillis()-begin));
                         	if(label$==null||"null".equals(label$)){
                         		map.removeElementItem("entity", anEa);
                         		save(map);
@@ -830,7 +792,8 @@ public String[] indx_listEntities(Properties criteria) {
                         		continue;
                         	sl.add(anEa);
                         		//s.push(anEa);
-                            System.out.println("Entigrator:listEntities AtPropertyMame:entity key="+anEa+" label="+ indx_getLabel(anEa));
+                        	 if(debug)
+                            System.out.println("Entigrator:listEntitiesAtPropertyMame:entity key="+anEa+" label="+ indx_getLabel(anEa));
                         }
                     }
                 }
@@ -1043,12 +1006,15 @@ public void indx_rebuild(Indicator indicator) {
  *  @return the entity.
  */  
 public Sack ent_reindex(Sack entity) {
-        progress++;
+    
+	progress++;
     
         if (entity == null) {
             LOGGER.severe(":ent_reindex:argument is null");
             return null;
         }
+        if(debug)
+        System.out.println("Entigrator:ent_reindex:entity="+entity.getProperty("label"));
         Core[] ca = entity.elementGet("property");
         if (ca == null || ca.length < 1) {
             deleteEntity(entity);
@@ -1067,13 +1033,6 @@ public Sack ent_reindex(Sack entity) {
             	entity.removeElementItem("property", aCa.name);
             }
         }
-        /*
-        if(quickMap==null){
-     	   quickMap=new Sack();
-          quickMap.createElement("label");
-          quickMap.createElement("key");
-        }
-        */
         if(label$==null)
         	label$=entity.getKey();
         key$=indx_keyAtLabel(label$);
@@ -1087,7 +1046,7 @@ public Sack ent_reindex(Sack entity) {
        // quickMap.putElementItem("label", new Core(entity.getAttributeAt("icon"),label$,entity.getKey()));
        // quickMap.putElementItem("key", new Core(label$,entity.getKey(),entity.getProperty("entity")));
         Sack header=null;       
-        String header$=getEntihome()+"/"+HEADERS+"/"+entity.getKey();
+        String header$=getEntihome()+"/"+StoreAdapter.HEADERS+"/"+entity.getKey();
         try{
         File headerFile=new File(header$);
         	//System.out.println("Entigrator:ent_reindex:header="+header$);
@@ -1141,16 +1100,18 @@ private boolean ent_propertyAlreadyAssigned(Sack entity, String propertyName$, S
         	LOGGER.severe(":ent_propertyAlreadyAssigned:cannot find property map property name="+propertyName$+" value="+propertyValue$);
         	return false;
         }
-        if(!store_tryLocked()){
-         storeAdapter.store_lock();
+      //  if(!storeAdapter.store_tryLocked()){
+      //   storeAdapter.store_lock();
         for(String aSa:sa)
         	if(!ent_existsAtKey(aSa))
              		propertyMap.removeElementItem("entity", aSa);
         save(propertyMap);
-        storeAdapter.store_release();
-        }else{
+      ///  storeAdapter.store_release();
+        /*
+		}else{
         	LOGGER.info("cannot access database to remove invalid property maps");
         }
+        */
         sa=propertyMap.elementList("entity");
         if(sa==null){
         	//LOGGER.info(":ent_propertyAlreadyAssigned:not assigned yet"); 
@@ -1495,6 +1456,7 @@ private int prp_detectAtIndex(Sack entity, String propertyName$, String property
             return INDX_FALSE_ENTITY_ENTRY;
         core = entity.getElementItem("property", map$);
         if (core == null){
+        	 if(debug)
         	System.out.println("Entigrator:prp_detectAtIndex:entity="+entity.getProperty("label")+" property name="+propertyName$+" value="+propertyValue$+" map="+map$+ " status="+INDX_ENTITY_FALSE_MAP);
             return INDX_ENTITY_FALSE_MAP;
         }
@@ -2423,102 +2385,7 @@ public String[] ent_listContainers(Sack entity) {
         	return null;
         }
     }
-/*   
- private void makeQuickMap(){
-    	long currentTime=System.currentTimeMillis();
-    	long qTimestamp=0;	
-    	if(quickMap!=null){
-    	
-    		try{ qTimestamp=Long.parseLong(quickMap.getAttributeAt(Entigrator.TIMESTAMP));}catch(Exception ee){}
-    		if((currentTime-qTimestamp<100) && quickMap!=null){
-			// System.out.println("Entigrator:makeQuickMap:NOPE");
-			 return;
-		 }
-    	if(currentTime-qTimestamp<1500)
-	    	    quickMap=Sack.parseXML(getEntihome()+"/"+QUICK_MAP);
-    	if(quickMap!=null){
-    		//System.out.println("Entigrator:makeQuickMap:RELOAD");
-    		return ;
-    	}
-    	}
-    	
-    	quickMap=new Sack();
-    	
-    	//System.out.println("Entigrator:makeQuickMap:REBUILD");
-		quickMap.setKey(QUICK_MAP);
-    	String[] sa=indx_listEntities();
-    	quickMap.createElement("label");
-    	quickMap.createElement("key");
-    	if(sa!=null){
-      		Sack entity;
-    		File headerFile;
-       		String label$;
-    		String headersHome$=getEntihome()+"/"+HEADERS+"/";
-    		Sack header;
-    		for(String aSa:sa){
-             try{
-    			headerFile=new File(headersHome$+aSa);
-                if(!headerFile.exists()){
-                	entity=getMember("entity.base",aSa);
-                	if(entity!=null){
-                		save(entity);
-                		headerFile=new File(headersHome$+aSa);
-                	}
-                	 if(!headerFile.exists()){	
-                	// LOGGER.info(":makeQuickMap:cannot find  header="+aSa);
-                    continue;
-                	 }
-                }
-                header=Sack.parseXML(headerFile.getPath());
-                if(header==null){
-                //	LOGGER.info(":makeQuickMap:cannot read  header="+header.getPath());
-                	continue;
-                }
-                Core key=header.getElementItem("key", aSa);
-                label$=key.type;
-                Core label=quickMap.getElementItem("label", label$);
-                if(label!=null){
-                	entity=getEntity(aSa);
-                	label$=label$+Identity.key().substring(0,4);
-                	entity=ent_assignLabel(entity,label$ );
-                	entity=ent_reindex(entity);
-                	String header$=getEntihome()+"/"+HEADERS+"/"+entity.getKey();
-                    try{
 
-                    	header=new Sack();
-                        header.createElement("label");
-                        header.createElement("key");
-                        header.setKey(entity.getKey());
-                        header.setPath(header$);
-                        header.putElementItem("label", new Core(entity.getAttributeAt("icon"),label$,entity.getKey()));
-                        header.putElementItem("key", new Core(label$,entity.getKey(),entity.getProperty("entity")));
-                        header.putAttribute(new Core(null,TIMESTAMP,String.valueOf(System.currentTimeMillis())));
-                        header.saveXML(header$);
-                    }catch(Exception e){
-                    	//System.out.println("Entigrator:ent_reindex:"+e.toString());
-                    //	LOGGER.info(":makeQuickMap:"+e.toString());
-                    }
-                    save(entity);
-                }
-                quickMap.putElementItem("label", header.getElementItem("label", label$));
-                quickMap.putElementItem("key", key );
-             }catch(Exception e){
-            	 LOGGER.info(":makeQuickMap:"+e.toString());
-             }
-    		}
-    	}
-    	
-    	try{
-    		//long currentTime=System.currentTimeMillis();
-    		quickMap.putAttribute(new Core(null,TIMESTAMP,String.valueOf(currentTime)));
-    		new File(getEntihome()+"/"+QUICK_MAP).delete();
-    		quickMap.saveXML(getEntihome()+"/"+QUICK_MAP);
-    	}catch(Exception e){
-    		 LOGGER.severe(":makeQuickMap:"+e.toString());
-    	}
-    }
- 
- */
  private static String[] intersect(String[] list1, String[] list2) {
 
      if (list2 == null || list1 == null) {
@@ -2699,17 +2566,6 @@ public boolean ent_lock(String entityKey$){
 	return storeAdapter.ent_lock(entityKey$);
 }
 
-public boolean store_isLocked(){
-	return storeAdapter.store_isLocked();
-}
-
-public boolean store_release(){
-	
-	return storeAdapter.store_release();
-}
-public boolean store_tryLocked(){
-	return storeAdapter.store_tryLocked();
-}
 public String  ent_savedId(String entityKey$){
 	return storeAdapter.ent_savedId(entityKey$);
 }
@@ -2734,10 +2590,13 @@ public boolean ent_outdated(Sack entity){
 	return storeAdapter.ent_outdated(entity);
 	}
 public String  store_saveId(){
+	 if(debug)
+	System.out.println("Entigrator:store_saveId.BEGIN");
 	return storeAdapter.store_saveId();
 }
 public void putHandler(String handler$,Object handler){
 	try{
+		 if(debug)
 		System.out.println("Entigrator:putHandler:handler="+handler$);
 		handlers.put(handler$, handler);
 	}catch(Exception e){
@@ -2746,6 +2605,7 @@ public void putHandler(String handler$,Object handler){
 }
 public Object getHandler(String handler$){
 	try{
+		if(debug)
 		System.out.println("Entigrator:getHandler:handler="+handler$);
 		return handlers.get(handler$);
 	}catch(Exception e){
@@ -2753,32 +2613,28 @@ public Object getHandler(String handler$){
 	}
 	return null;
 }
-/*
-public String store_loadMap(){
-	return storeAdapter.map_load();
-}
-*/
-public void store_refresh(String entityKey$){
-	storeAdapter.store_refresh(entityKey$);
-}
 public boolean keyExistsInCache(String entityKey$){
 	if(entitiesCache.get(entityKey$)!=null)
 		return true;
 	else
 		return false;
 }
-public void store_newId(){
-	storeAdapter.store_newId();
-}
 public boolean store_replace(){
 	return storeAdapter.store_replace();
 }
-public boolean store_outdated(String saveId$){
-	return storeAdapter.store_outdated(saveId$);
-}
 public String store_reload(){
+	 if(debug)
+	   System.out.println("Entigrator:store_reload");
 	entitiesCache.clear();
 	return storeAdapter.store_reload();
+}
+public boolean store_outdated(String saveId$){
+	 if(debug)
+		 System.out.println("Entigrator:store_outdated");
+	return storeAdapter.store_outdated(saveId$);
+}
+public void store_refresh(){
+	storeAdapter.store_refresh();
 }
 }
 
