@@ -2,7 +2,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>com.github.imas-alex</groupId>
   <artifactId>Graph</artifactId>
-  <version>0.0.14_SNAPSHOT-SNAPSHOT</version>
+  <version>0.0.15_SNAPSHOT-SNAPSHOT</version>
    <name>Graph</name>
   <description>The graph extension for the entigrator application</description>
   <url>https://github.com/imas-alex/java-NoSQL-local-database</url>
@@ -141,9 +141,9 @@
   <dependency> 
   		<groupId>com.github.imas-alex</groupId>
  			 <artifactId>JEntigrator</artifactId>
-  			<version>0.0.16_SNAPSHOT</version>
+  			<version>0.0.17_SNAPSHOT</version>
   			 <scope>system</scope>
-     	<systemPath>/home/imasa/github/JEntigrator/target/JEntigrator-0.0.16_SNAPSHOT-jar-with-dependencies.jar</systemPath>
+     	<systemPath>/home/imasa/github/JEntigrator/target/JEntigrator-0.0.17_SNAPSHOT-jar-with-dependencies.jar</systemPath>
 </dependency>
 
   		<dependency>

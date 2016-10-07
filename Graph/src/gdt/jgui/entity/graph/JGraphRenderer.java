@@ -903,17 +903,24 @@ private void layoutVertices(){
         int nodeX;
         int nodeY;
 		for(Core c:ca){
+			try{
 			vertexId=Integer.parseInt(c.value);
-			
 			for( Number n:vc)
 				if(vertexId==n.intValue())
 			    {
-				   	nodeKey$=graphEntity.getElementItemAtValue("vertex",String.valueOf(vertexId) );
+					try{
+					nodeKey$=graphEntity.getElementItemAtValue("vertex",String.valueOf(vertexId) );
 				   	nodePointer=graphEntity.getElementItem("node.select",nodeKey$);
 				   	nodeX=Integer.parseInt(nodePointer.type);
 				   	nodeY=Integer.parseInt(nodePointer.value);
 				    layout.setLocation(n, new  Point(nodeX,nodeY));
+					}catch(Exception eee){
+						Logger.getLogger(JGraphRenderer.class.getName()).info(eee.toString()+": "+c.name);
+					}
 			    }
+			}catch(Exception ee){
+				Logger.getLogger(JGraphRenderer.class.getName()).info(ee.toString()+": "+c.name);
+			}
 		}
 	}catch(Exception e){
 		Logger.getLogger(JGraphRenderer.class.getName()).severe(e.toString());

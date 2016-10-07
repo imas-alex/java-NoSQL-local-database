@@ -81,10 +81,7 @@ public class JNodeEditor extends JFieldsEditor {
 	}
 	@Override
 	public String getTitle() {
-		if(message$==null)
 			return "Node";
-		else
-			return "Node"+message$;
 	}
 	@Override
 	public String getSubtitle() {
@@ -127,7 +124,7 @@ public class JNodeEditor extends JFieldsEditor {
 					 //NodeHandler.class.getName();
 		    	if(entity.getElementItem("fhandler", fhandler$)!=null){
 					//System.out.println("JPhoneEditor:reindex:1:entity="+entity.getProperty("label"));
-		    		entity.putElementItem("jfacet",new Core("gdt.jgui.entity.node.JNodeFacetAddItem",fhandler$,"gdt.jgui.entity.node.JNodeFacetAddItem")); 
+		    		entity.putElementItem("jfacet",new Core("gdt.jgui.entity.node.JNodeFacetAddItem",fhandler$,"gdt.jgui.entity.node.JNodeFacetOpenItem")); 
 		    				//new Core(JNodeFacetAddItem.class.getName(),fhandler$,JNodeFacetOpenItem.class.getName()));
 					entity.putElementItem("fhandler", new Core(null,fhandler$,"_Tm142C8Sgti2iAKlDEcEXT2Kj1E"));
 							//fhandler$,NodeHandler.EXTENSION_KEY));
