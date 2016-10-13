@@ -36,6 +36,7 @@ import gdt.data.entity.EntityHandler;
 import gdt.data.entity.GraphHandler;
 import gdt.data.entity.facet.ExtensionHandler;
 import gdt.data.grain.Core;
+import gdt.data.grain.Identity;
 import gdt.data.grain.Locator;
 import gdt.data.grain.Sack;
 import gdt.data.store.Entigrator;
@@ -44,6 +45,7 @@ import gdt.jgui.console.JContext;
 import gdt.jgui.console.JItemPanel;
 import gdt.jgui.console.JItemsListPanel;
 import gdt.jgui.console.JMainConsole;
+import gdt.jgui.console.ReloadDialog;
 import gdt.jgui.entity.JEntityFacetPanel;
 /**
  * This context displays a list of edges included in the graph. 
@@ -56,6 +58,7 @@ public class JGraphEdgesPanel extends JItemsListPanel{
 	private String entihome$;
     private String entityKey$;
     private String entityLabel$;
+    boolean ignoreOutdate=false;
     JMenu menu1;
   /**
    * Default constructor
@@ -339,7 +342,32 @@ private void filter(){
 	}
 @Override
 public void activate() {
-	// TODO Auto-generated method stub
+	Entigrator  entigrator=console.getEntigrator(entihome$);
+	Sack entity=entigrator.getEntity(entityKey$);
+	if(entity==null)
+		return;
+	if(ignoreOutdate){
+		ignoreOutdate=false;
+		return;
+	}
+	
+	if(!entigrator.ent_outdated(entity))
+		return;
+	int n=new ReloadDialog(this).show();
+	if(2==n){
+		ignoreOutdate=true;
+	
+		return;
+	}
+	if(1==n){
+		entity.putAttribute(new Core(null,Entigrator.SAVE_ID,Identity.key()));
+		entigrator.save(entity);
+		
+	}
+	if(0==n){
+			entity=entigrator.ent_reload(entityKey$);
+			instantiate(console,getLocator());
+		}
 	
 }
 

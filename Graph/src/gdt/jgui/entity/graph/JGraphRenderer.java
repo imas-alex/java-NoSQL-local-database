@@ -100,6 +100,7 @@ import gdt.data.grain.Support;
 import gdt.data.store.Entigrator;
 import gdt.jgui.console.JConsoleHandler;
 import gdt.jgui.console.JContext;
+import gdt.jgui.console.JFacetRenderer;
 import gdt.jgui.console.JMainConsole;
 import gdt.jgui.console.JRequester;
 import gdt.jgui.entity.JEntitiesPanel;
@@ -450,6 +451,8 @@ private VisualizationViewer<Number,Number> vv = null;
 				entityKey$=locator.getProperty(EntityHandler.ENTITY_KEY);
 				String action$=locator.getProperty(JRequester.REQUESTER_ACTION);
 				Entigrator entigrator=console.getEntigrator(entihome$);
+				 if(Locator.LOCATOR_TRUE.equals(locator.getProperty(JFacetRenderer.ONLY_ITEM)))
+					 return this;
 				requesterResponseLocator$=locator.getProperty(JRequester.REQUESTER_RESPONSE_LOCATOR);
 	            graphEntity=entigrator.getEntityAtKey(entityKey$);
 	             
@@ -911,6 +914,8 @@ private void layoutVertices(){
 					try{
 					nodeKey$=graphEntity.getElementItemAtValue("vertex",String.valueOf(vertexId) );
 				   	nodePointer=graphEntity.getElementItem("node.select",nodeKey$);
+		            if(nodePointer==null||nodePointer.type==null||nodePointer.value==null)
+		            	continue;
 				   	nodeX=Integer.parseInt(nodePointer.type);
 				   	nodeY=Integer.parseInt(nodePointer.value);
 				    layout.setLocation(n, new  Point(nodeX,nodeY));

@@ -128,7 +128,8 @@ public class JNodeEditor extends JFieldsEditor {
 		    				//new Core(JNodeFacetAddItem.class.getName(),fhandler$,JNodeFacetOpenItem.class.getName()));
 					entity.putElementItem("fhandler", new Core(null,fhandler$,"_Tm142C8Sgti2iAKlDEcEXT2Kj1E"));
 							//fhandler$,NodeHandler.EXTENSION_KEY));
-					entigrator.save(entity);
+					entigrator.replace(entity);
+					//entity.print();
 				}
 		    }catch(Exception e){
 		    	Logger.getLogger(getClass().getName()).severe(e.toString());

@@ -45,6 +45,7 @@ import gdt.data.store.Entigrator;
 
 import gdt.jgui.console.JConsoleHandler;
 import gdt.jgui.console.JContext;
+import gdt.jgui.console.JFacetRenderer;
 import gdt.jgui.console.JItemPanel;
 import gdt.jgui.console.JMainConsole;
 import gdt.jgui.entity.JEntitiesPanel;
@@ -155,6 +156,8 @@ public class JBondDetailPanel extends JEntitiesPanel {
 			 bondKey$=locator.getProperty(JBondsPanel.BOND_KEY);
 			 edgeKey$=locator.getProperty(JBondsPanel.EDGE_KEY);
 			 Entigrator entigrator=console.getEntigrator(entihome$);
+			 if(Locator.LOCATOR_TRUE.equals(locator.getProperty(JFacetRenderer.ONLY_ITEM)))
+				 return this;
 			 entity=null;
 			 if(edgeKey$!=null)
 				 entity =entigrator.getEntityAtKey(edgeKey$);
@@ -165,7 +168,6 @@ public class JBondDetailPanel extends JEntitiesPanel {
 			 }
 			 if(entity==null)
 				 return this;
-			
 			 Core[] ca=entity.elementGet("detail");
 			 if(ca==null)
 				 return this;

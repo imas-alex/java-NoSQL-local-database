@@ -45,6 +45,7 @@ import gdt.jgui.console.JItemPanel;
 import gdt.jgui.console.JItemsListPanel;
 import gdt.jgui.console.JMainConsole;
 import gdt.jgui.console.JRequester;
+import gdt.jgui.console.ReloadDialog;
 import gdt.jgui.entity.JEntityFacetPanel;
 import gdt.jgui.entity.JEntityPrimaryMenu;
 import gdt.jgui.entity.JReferenceEntry;
@@ -134,6 +135,7 @@ String facetHandlerClass$;
 String selectMode$=SELECT_MODE_OUT;
 String message$;
 Sack entity;
+boolean ignoreOutdate=false;
 /**
  * The default constructor.
  */
@@ -189,6 +191,8 @@ public JContext instantiate(JMainConsole console, String locator$) {
 			 entityLabel$=locator.getProperty(EntityHandler.ENTITY_LABEL);
 			 facetHandlerClass$=locator.getProperty(JFacetOpenItem.FACET_HANDLER_CLASS);
 			 Entigrator entigrator=console.getEntigrator(entihome$);
+			 if(Locator.LOCATOR_TRUE.equals(locator.getProperty(JFacetRenderer.ONLY_ITEM)))
+				 return this;
 			 if(entityLabel$==null)
 				 entityLabel$=entigrator.indx_getLabel(entityKey$);
 			 entity=entigrator.getEntityAtKey(entityKey$);
@@ -999,7 +1003,30 @@ private static class InNodeComparator implements Comparator<JItemPanel>{
 
 @Override
 public void activate() {
-	// TODO Auto-generated method stub
+	if(entity==null)
+		return;
+	if(ignoreOutdate){
+		ignoreOutdate=false;
+		return;
+	}
+	Entigrator entigrator=console.getEntigrator(entihome$);
+	if(!entigrator.ent_outdated(entity))
+		return;
+	int n=new ReloadDialog(this).show();
+	if(2==n){
+		ignoreOutdate=true;
+	
+		return;
+	}
+	if(1==n){
+		entity.putAttribute(new Core(null,Entigrator.SAVE_ID,Identity.key()));
+		entigrator.save(entity);
+		
+	}
+	if(0==n){
+			entity=entigrator.ent_reload(entityKey$);
+			instantiate(console,getLocator());
+		}
 	
 }
 }
