@@ -2,7 +2,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>com.github.imas-alex</groupId>
   <artifactId>Graph</artifactId>
-  <version>0.0.22_SNAPSHOT-SNAPSHOT</version>
+  <version>0.0.25_SNAPSHOT-SNAPSHOT</version>
    <name>Graph</name>
   <description>The graph extension for the entigrator application</description>
   <url>https://github.com/imas-alex/java-NoSQL-local-database</url>

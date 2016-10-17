@@ -280,6 +280,7 @@ public class JGraphViews extends JItemsListPanel implements JRequester{
 		  	});
 		  	menu1.add(deleteItem);
 		  	 }
+		  	 /*
 		  	JMenuItem newItem = new JMenuItem("New");
 		  	newItem.addActionListener(new ActionListener() {
 		  		@Override
@@ -304,6 +305,7 @@ public class JGraphViews extends JItemsListPanel implements JRequester{
 		  	});
 		  
 		  	menu1.add(newItem);  
+		  	*/
 			menu1.addSeparator();
 			JMenuItem mapItem = new JMenuItem("Map");
 		  	mapItem.addActionListener(new ActionListener() {
@@ -464,4 +466,5 @@ public void activate() {
 	// TODO Auto-generated method stub
 	
 }
+
 }

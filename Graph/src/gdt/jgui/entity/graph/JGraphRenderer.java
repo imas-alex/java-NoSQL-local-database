@@ -94,6 +94,7 @@ import gdt.data.entity.NodeHandler;
 import gdt.data.entity.facet.ExtensionHandler;
 import gdt.data.entity.facet.FieldsHandler;
 import gdt.data.grain.Core;
+import gdt.data.grain.Identity;
 import gdt.data.grain.Locator;
 import gdt.data.grain.Sack;
 import gdt.data.grain.Support;
@@ -101,8 +102,10 @@ import gdt.data.store.Entigrator;
 import gdt.jgui.console.JConsoleHandler;
 import gdt.jgui.console.JContext;
 import gdt.jgui.console.JFacetRenderer;
+import gdt.jgui.console.JItemPanel;
 import gdt.jgui.console.JMainConsole;
 import gdt.jgui.console.JRequester;
+import gdt.jgui.console.JItemsListPanel.ItemPanelComparator;
 import gdt.jgui.entity.JEntitiesPanel;
 import gdt.jgui.entity.JEntityFacetPanel;
 import gdt.jgui.entity.JEntityPrimaryMenu;
@@ -139,7 +142,7 @@ private VisualizationViewer<Number,Number> vv = null;
 
     Timer timer;
     DirectedSparseGraph<Number, Number> graph;
- //   boolean done;
+    boolean debug=true;
 
     protected JButton switchLayout;
 
@@ -162,7 +165,8 @@ private VisualizationViewer<Number,Number> vv = null;
      */  
 	@Override
 	public void response(JMainConsole console, String locator$) {
-//		System.out.println("JGraphrenderer:response:"+Locator.remove(locator$,Locator.LOCATOR_ICON ));
+   if (debug)
+		System.out.println("JGraphrenderer:response:"+Locator.remove(locator$,Locator.LOCATOR_ICON ));
 		try{
 			Properties locator=Locator.toProperties(locator$);
 			String action$=locator.getProperty(JRequester.REQUESTER_ACTION);
@@ -199,6 +203,47 @@ private VisualizationViewer<Number,Number> vv = null;
 				JConsoleHandler.execute(console, efpLocator$);
 				return;
 			}
+			if(JGraphViews.ACTION_SAVE_VIEW.equals(action$)){
+				 if (debug)
+						System.out.println("JGraphrenderer:response:save");
+					
+				String viewTitle$=locator.getProperty(JTextEditor.TEXT);
+			    String entihome$=locator.getProperty(Entigrator.ENTIHOME);
+			    String entityKey$=locator.getProperty(EntityHandler.ENTITY_KEY);
+				//Entigrator	entigrator=console.getEntigrator(entihome$);
+				Sack graph=entigrator.getEntityAtKey(entityKey$);
+				Core[] ca=graph.elementGet("node.select");
+				if(ca==null){
+					System.out.println("JGraphViews.response:no selection");
+					return;
+				}
+				//
+				entityLabel$=entigrator.indx_getLabel(entityKey$);
+				action$=locator.getProperty(JRequester.REQUESTER_ACTION);
+				String viewComponentLabel$=entityLabel$+".view";
+				String viewComponentKey$=entigrator.indx_keyAtLabel(viewComponentLabel$);
+				Sack viewComponent=null;
+				if(viewComponentKey$==null){
+					viewComponent=entigrator.ent_new("graph.vew", viewComponentLabel$);
+					viewComponentKey$=viewComponent.getKey();
+					entigrator.col_addComponent(graph, viewComponent);
+				}else
+					 viewComponent=entigrator.getEntityAtKey(viewComponentKey$);	
+			//	Sack views=entigrator.getEntityAtKey(viewComponentKey$);
+				
+				if(!viewComponent.existsElement("views"))
+					viewComponent.createElement("views");
+				String viewKey$=Identity.key();
+				viewComponent.putElementItem("views", new Core(null,viewKey$,viewTitle$));
+				viewComponent.createElement(viewKey$);
+				viewComponent.elementReplace(viewKey$, ca);
+				entigrator.save(viewComponent);
+				String gv$=new JGraphViews().getLocator();
+				gv$=Locator.append(gv$,Entigrator.ENTIHOME,entihome$);
+				gv$=Locator.append(gv$,EntityHandler.ENTITY_KEY,entityKey$);
+				JConsoleHandler.execute(console,gv$);
+			}
+		
 			}catch(Exception e){
 			Logger.getLogger(getClass().getName()).severe(e.toString());
 		}
@@ -352,14 +397,39 @@ private VisualizationViewer<Number,Number> vv = null;
 						   menu.add(expandItem);
 					}
 				    menu.addSeparator();
-				    JMenuItem  saveItem = new JMenuItem("Save");
-					   saveItem.addActionListener(new ActionListener() {
+				    JMenuItem saveItem = new JMenuItem("Save");
+				  	saveItem.addActionListener(new ActionListener() {
+				  		@Override
+				  		public void actionPerformed(ActionEvent e) {
+				  			try{
+				  				JTextEditor te=new JTextEditor();
+								String teLocator$=te.getLocator();
+								teLocator$=Locator.append(teLocator$, Entigrator.ENTIHOME, entihome$);
+								teLocator$=Locator.append(teLocator$, JTextEditor.TEXT,"New view"+Identity.key().substring(0,4));
+								locator$=getLocator();
+								//if(action$!=null)
+								locator$=Locator.append(locator$, BaseHandler.HANDLER_METHOD, "response");
+								locator$=Locator.append(locator$,JRequester.REQUESTER_ACTION , JGraphViews.ACTION_SAVE_VIEW);
+								String requesterResponceLocator$=Locator.compressText(locator$);
+								teLocator$=Locator.append(teLocator$,JRequester.REQUESTER_RESPONSE_LOCATOR,requesterResponceLocator$);
+								JConsoleHandler.execute(console,teLocator$);
+				  				
+				  			}catch(Exception ee){
+				  				System.out.println("JGraphViews:getContextMenu:new:"+ee.toString());
+				  			}
+				  		}
+				  	
+				  	});
+				  
+				  	menu.add(saveItem);  
+				    JMenuItem  exportItem = new JMenuItem("Export");
+					   exportItem.addActionListener(new ActionListener() {
 							@Override
 							public void actionPerformed(ActionEvent e) {
 								saveAsPicture();
 							}
 						} );
-					   menu.add(saveItem);	
+					   menu.add(exportItem);	
 					   JMenuItem  copyItem = new JMenuItem("Copy");
 					   copyItem.addActionListener(new ActionListener() {
 							@Override
