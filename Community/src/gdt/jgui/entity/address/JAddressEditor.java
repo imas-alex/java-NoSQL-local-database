@@ -29,7 +29,6 @@ import javax.swing.JMenuItem;
 import gdt.data.entity.AddressHandler;
 import gdt.data.entity.BaseHandler;
 import gdt.data.entity.EntityHandler;
-import gdt.data.entity.PhoneHandler;
 import gdt.data.entity.facet.ExtensionHandler;
 import gdt.data.entity.facet.FieldsHandler;
 import gdt.data.grain.Core;
@@ -45,6 +44,7 @@ import gdt.jgui.entity.JReferenceEntry;
 import gdt.jgui.entity.fields.JFieldsEditor;
 import gdt.jgui.entity.webset.JWeblinkEditor;
 import gdt.jgui.tool.JTextEditor;
+
 public class JAddressEditor extends JFieldsEditor {
 
 	private static final long serialVersionUID = 1L;
@@ -52,6 +52,7 @@ public class JAddressEditor extends JFieldsEditor {
 	public static final String ACTION_SET_DISPLAY_ADDRESS="action set display address";
 	JMenuItem itemCompose;
 	JMenuItem itemMap;
+	boolean debug=false;
 	public JAddressEditor() {
 		super();
 		postMenu=new JMenuItem[2];
@@ -59,7 +60,8 @@ public class JAddressEditor extends JFieldsEditor {
 		itemCompose.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				System.out.println("JAddressEditor:compose:");
+				//System.out.println("JAddressEditor:compose:");
+				save();
 				String displayAddress$=compose();
 				JTextEditor te=new JTextEditor();
 				String teLocator$=te.getLocator();
@@ -75,8 +77,10 @@ public class JAddressEditor extends JFieldsEditor {
 				responseLocator$=Locator.append(responseLocator$, BaseHandler.HANDLER_SCOPE, JConsoleHandler.CONSOLE_SCOPE);
 				responseLocator$=Locator.append(responseLocator$, BaseHandler.HANDLER_LOCATION,JAddressFacetAddItem.EXTENSION_KEY );
 				responseLocator$=Locator.append(responseLocator$,JRequester.REQUESTER_ACTION,ACTION_SET_DISPLAY_ADDRESS);
+				//responseLocator$=Locator.append(responseLocator$,JFieldsEditor.RELOAD_ENTITY,Locator.LOCATOR_TRUE);
 				teLocator$=Locator.append(teLocator$,JRequester.REQUESTER_RESPONSE_LOCATOR,Locator.compressText(responseLocator$));
-                JConsoleHandler.execute(console, teLocator$);
+				console.outdatedTreatment$=JContext.OUTDATED_RELOAD;
+				JConsoleHandler.execute(console, teLocator$);
 				
 			}
 		} );
@@ -85,10 +89,12 @@ public class JAddressEditor extends JFieldsEditor {
 		itemMap.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				System.out.println("JAddressEditor:map:");
+				//System.out.println("JAddressEditor:map:");
 				try{
 					String displayAddress$=getField("Display address").replaceAll("\\s+", "+");
 					String maps$="https://www.google.de/maps/place/";
+					if(debug)
+						System.out.println("JAddressEditor:map="+maps$+displayAddress$);
 					Desktop.getDesktop().browse(new URI(maps$+displayAddress$));
 				}catch(Exception ee){
 					Logger.getLogger(JWeblinkEditor.class.getName()).info(ee.toString());
@@ -128,7 +134,11 @@ public class JAddressEditor extends JFieldsEditor {
 	}
 	@Override
 	public String getTitle() {
-		return "Address";
+		if(message$==null)
+			return "Address";
+		else
+			return "Adress"+message$;
+		//return "Address";
 	}
 	@Override
 	public String getSubtitle() {
@@ -173,7 +183,7 @@ public class JAddressEditor extends JFieldsEditor {
 					//System.out.println("JPhoneEditor:reindex:1:entity="+entity.getProperty("label"));
 		    		entity.putElementItem("jfacet", new Core(JAddressFacetAddItem.class.getName(),fhandler$,JAddressFacetOpenItem.class.getName()));
 					entity.putElementItem("fhandler", new Core(null,fhandler$,JAddressFacetAddItem.EXTENSION_KEY));
-					entigrator.save(entity);
+					entigrator.replace(entity);
 				}
 		    }catch(Exception e){
 		    	Logger.getLogger(getClass().getName()).severe(e.toString());
@@ -203,7 +213,7 @@ public class JAddressEditor extends JFieldsEditor {
     	//System.out.println("FieldsEditor:newEntity:responseLocator:=:"+responseLocator$);
 		String requesterResponseLocator$=Locator.compressText(responseLocator$);
 		editorLocator$=Locator.append(editorLocator$,JRequester.REQUESTER_RESPONSE_LOCATOR,requesterResponseLocator$);
-		JConsoleHandler.execute(console,editorLocator$); 
+		editorLocator$=Locator.append(editorLocator$,Entigrator.ENTIHOME,entihome$);JConsoleHandler.execute(console,editorLocator$); 
 		return editorLocator$;
 	}
 
@@ -231,7 +241,7 @@ public class JAddressEditor extends JFieldsEditor {
 				newEntity.putElementItem("jfacet", new Core("gdt.jgui.entity.address.JAddressFacetAddItem",AddressHandler.class.getName(),"gdt.jgui.entity.address.JAddressFacetOpenItem"));
 				
 				newEntity.putAttribute(new Core (null,"icon","address.png"));
-				entigrator.save(newEntity);
+				entigrator.replace(newEntity);
 				entigrator.ent_assignProperty(newEntity, "fields", text$);
 				entigrator.ent_assignProperty(newEntity, "address", text$);
 				String icons$=entihome$+"/"+Entigrator.ICONS;
@@ -252,13 +262,20 @@ public class JAddressEditor extends JFieldsEditor {
 				return;
 			}
 			if(ACTION_SET_DISPLAY_ADDRESS.equals(action$)){
-//				System.out.println("JAddressEditor:response:set display address="+text$);
+				if(debug)
+				   System.out.println("JAddressEditor:response:set display address:locator="+locator$);
 				entityKey$=locator.getProperty(EntityHandler.ENTITY_KEY);
 				Sack entity=entigrator.getEntityAtKey(entityKey$);
 				entity.putElementItem("field", new Core(null,"Display address",text$));
-				entigrator.save(entity);
+				entigrator.replace(entity);
+				entigrator.ent_assignProperty(entity, "address", text$);
 				String feLocator$=getLocator();
 				feLocator$=Locator.remove(feLocator$, BaseHandler.HANDLER_METHOD);
+				feLocator$=Locator.append(feLocator$,JContext.OUTDATED_TREATMENT,JContext.OUTDATED_RELOAD);
+				//console.outdatedTreatment$=JContext.OUTDATED_RELOAD;
+				if(debug)
+					   System.out.println("JAddressEditor:response:set display address:feLocator="+feLocator$);
+					
 				JConsoleHandler.execute(console, feLocator$);
 				return;
 			}
@@ -273,7 +290,7 @@ public class JAddressEditor extends JFieldsEditor {
 					core.value=text$;
 //				System.out.println("FieldsEditor:response:name="+core.name+" value="+core.value);
 				entity.putElementItem("field", core);
-				entigrator.save(entity);
+				entigrator.replace(entity);
 				String feLocator$=getLocator();
 				feLocator$=Locator.append(locator$, Entigrator.ENTIHOME, entihome$);
 				feLocator$=Locator.append(locator$, EntityHandler.ENTITY_KEY, entityKey$);
@@ -318,5 +335,22 @@ public class JAddressEditor extends JFieldsEditor {
 			return null;
 		}
     }	
-	
+	@Override
+	public JFacetRenderer instantiate(JMainConsole console, String locator$) {
+		try{
+			//System.out.println("JMovieEditor.instantiate:begin");
+				this.console=console;
+				Properties locator=Locator.toProperties(locator$);
+				entihome$=locator.getProperty(Entigrator.ENTIHOME);
+				
+				entityKey$=locator.getProperty(EntityHandler.ENTITY_KEY);
+				if(entityKey$!=null)
+					return super.instantiate(console, locator$);
+				else
+					return this;
+			}catch(Exception e){
+				Logger.getLogger(getClass().getName()).severe(e.toString());
+			}
+			return this;
+	}
 }

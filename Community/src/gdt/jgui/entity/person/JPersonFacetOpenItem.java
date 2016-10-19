@@ -21,13 +21,11 @@ import java.util.Properties;
 import java.util.logging.Logger;
 import javax.swing.JPopupMenu;
 import gdt.data.entity.BaseHandler;
-import gdt.data.entity.ContactHandler;
 import gdt.data.entity.EntityHandler;
 import gdt.data.entity.FacetHandler;
 import gdt.data.entity.PersonHandler;
 import gdt.data.entity.facet.ExtensionHandler;
 import gdt.data.grain.Locator;
-import gdt.data.grain.Support;
 import gdt.data.store.Entigrator;
 import gdt.jgui.console.JConsoleHandler;
 import gdt.jgui.console.JContext;
@@ -92,6 +90,7 @@ public void removeFacet() {
 public void openFacet(JMainConsole console,String locator$) {
 	try{
 		//System.out.println("JPersonFacetOpenItem:openFacet:locator="+locator$);
+		this.console=console;
 		Properties locator=Locator.toProperties(locator$);
 		String entihome$=locator.getProperty(Entigrator.ENTIHOME);
 		String entityKey$=locator.getProperty(EntityHandler.ENTITY_KEY);

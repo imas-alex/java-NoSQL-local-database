@@ -33,6 +33,7 @@ import gdt.data.grain.Sack;
 import gdt.data.grain.Support;
 import gdt.data.store.Entigrator;
 import gdt.jgui.console.*;
+import gdt.jgui.entity.JEntityFacetPanel;
 import gdt.jgui.entity.JEntityPrimaryMenu;
 import gdt.jgui.entity.JReferenceEntry;
 import gdt.jgui.tool.JTextEditor;
@@ -42,6 +43,7 @@ String entityLabel$;
 String entihome$;
 	private static final long serialVersionUID = 1L;
 	public static final String ACTION_CREATE_EMAIL="action create email";
+	public static final String ACTION_CREATE_ADDRESS="action create address";
 	@Override
 	public String getLocator() {
 		String locator$=super.getLocator();
@@ -161,7 +163,7 @@ String entihome$;
 			JTextEditor textEditor=new JTextEditor();
 		    String teLocator$=textEditor.getLocator();
 		    teLocator$=Locator.append(teLocator$, Entigrator.ENTIHOME,entihome$);
-		    teLocator$=Locator.append(teLocator$, JTextEditor.TEXT_TITLE,"New email");
+		    teLocator$=Locator.append(teLocator$, JTextEditor.TEXT_TITLE,"Title of email");
 		    String text$="NewEmail"+Identity.key().substring(0, 4);
 		    teLocator$=Locator.append(teLocator$, JTextEditor.TEXT,text$);
 		    JEmailEditor fp=new JEmailEditor();
@@ -187,25 +189,61 @@ String entihome$;
 		String action$=locator.getProperty(JRequester.REQUESTER_ACTION);
 		
 		if(ACTION_CREATE_EMAIL.equals(action$)){
-			   String entihome$=locator.getProperty(Entigrator.ENTIHOME);
+			   entihome$=locator.getProperty(Entigrator.ENTIHOME);
 			   String text$=locator.getProperty(JTextEditor.TEXT);
 			   Entigrator entigrator=console.getEntigrator(entihome$);
 			   Sack email=entigrator.ent_new("email", text$);
-			   email=entigrator.ent_assignProperty(email, "email", "a@b.com");
 			   email.putAttribute(new Core(null,"icon","email.png"));
-			   entigrator.save(email);
+			   email.createElement("jfacet");
+			   email.putElementItem("jfacet", new Core("gdt.jgui.entity.email.JEmailFacetAddItem","gdt.data.entity.EmailHandler","gdt.jgui.entity.email.JEmailFacetOpenItem"));
+			   email.createElement("fhandler");
+			   email.putElementItem("fhandler", new Core(null,"gdt.data.entity.EmailHandler",EmailHandler.EXTENSION_KEY));
+			   entigrator.replace(email);
+			   //email=entigrator.ent_assignProperty(email, "email", "a@b.com");
+			  
 			   entigrator.saveHandlerIcon(JEmailEditor.class, "email.png");
 			   entityKey$=email.getKey();
-			   JEmailEditor pe=new JEmailEditor();
-			   String peLocator$=pe.getLocator();
-			   peLocator$=Locator.append(peLocator$, Entigrator.ENTIHOME, entihome$);
-			   peLocator$=Locator.append(peLocator$, EntityHandler.ENTITY_KEY, entityKey$);
-			   JEntityPrimaryMenu.reindexEntity(console, peLocator$);
+			   JTextEditor textEditor=new JTextEditor();
+			    String teLocator$=textEditor.getLocator();
+			    teLocator$=Locator.append(teLocator$, Entigrator.ENTIHOME,entihome$);
+			    teLocator$=Locator.append(teLocator$, JTextEditor.TEXT_TITLE,"Address");
+			    text$="a@b.com";
+			    teLocator$=Locator.append(teLocator$, JTextEditor.TEXT,text$);
+			    JEmailEditor fp=new JEmailEditor();
+			    String fpLocator$=fp.getLocator();
+			    fpLocator$=Locator.append(fpLocator$, Entigrator.ENTIHOME,entihome$);
+			    fpLocator$=Locator.append(fpLocator$, EntityHandler.ENTITY_KEY,entityKey$);
+			    fpLocator$=Locator.append(fpLocator$, BaseHandler.HANDLER_METHOD,"response");
+			    fpLocator$=Locator.append(fpLocator$, JRequester.REQUESTER_ACTION,ACTION_CREATE_ADDRESS);
+			    String requesterResponseLocator$=Locator.compressText(fpLocator$);
+			    teLocator$=Locator.append(teLocator$,JRequester.REQUESTER_RESPONSE_LOCATOR,requesterResponseLocator$);
+			    JConsoleHandler.execute(console, teLocator$);
+			   /*
+			   JEmailEditor ee=new JEmailEditor();
+			   String eeLocator$=ee.getLocator();
+			   eeLocator$=Locator.append(eeLocator$, Entigrator.ENTIHOME, entihome$);
+			   eeLocator$=Locator.append(eeLocator$, EntityHandler.ENTITY_KEY, entityKey$);
+			   JEntityPrimaryMenu.reindexEntity(console, eeLocator$);
 			   Stack<String> s=console.getTrack();
 			   s.pop();
 			   console.setTrack(s);
-			   JConsoleHandler.execute(console, peLocator$);
+			   JConsoleHandler.execute(console, eeLocator$);
+			   */
 			}
+		if(ACTION_CREATE_ADDRESS.equals(action$)){
+			   entihome$=locator.getProperty(Entigrator.ENTIHOME);
+			   entityKey$=locator.getProperty(EntityHandler.ENTITY_KEY);
+			   String text$=locator.getProperty(JTextEditor.TEXT);
+			   Entigrator entigrator=console.getEntigrator(entihome$);
+			   Sack email=entigrator.ent_getAtKey(entityKey$);
+			   email=entigrator.ent_assignProperty(email, "email", text$);
+			   entigrator.replace(email);
+			   JEntityFacetPanel efp=new JEntityFacetPanel();
+			   String efpLocator$=efp.getLocator();
+			   efpLocator$=Locator.append(efpLocator$, Entigrator.ENTIHOME, entihome$);
+			   efpLocator$=Locator.append(efpLocator$, EntityHandler.ENTITY_KEY, entityKey$);
+			   JConsoleHandler.execute(console, efpLocator$);
+			  	}
 	}
 	@Override
 	public void collectReferences(Entigrator entigrator, String entityKey$, ArrayList<JReferenceEntry> rel) {

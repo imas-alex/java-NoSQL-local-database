@@ -92,6 +92,7 @@ public void removeFacet() {
 public void openFacet(JMainConsole console,String locator$) {
 	try{
 	//	System.out.println("JBankFacetOpenItem:openFacet:locator="+locator$);
+		this.console=console;
 		Properties locator=Locator.toProperties(locator$);
 		String entihome$=locator.getProperty(Entigrator.ENTIHOME);
 		String entityKey$=locator.getProperty(EntityHandler.ENTITY_KEY);

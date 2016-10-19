@@ -18,11 +18,9 @@ package gdt.jgui.entity.phone;
  */
 import java.util.ArrayList;
 import java.util.Properties;
-import java.util.Stack;
 import java.util.logging.Logger;
 
 import gdt.data.entity.BaseHandler;
-import gdt.data.entity.EmailHandler;
 import gdt.data.entity.EntityHandler;
 import gdt.data.entity.PhoneHandler;
 import gdt.data.entity.facet.ExtensionHandler;
@@ -30,10 +28,9 @@ import gdt.data.grain.Core;
 import gdt.data.grain.Identity;
 import gdt.data.grain.Locator;
 import gdt.data.grain.Sack;
-import gdt.data.grain.Support;
 import gdt.data.store.Entigrator;
 import gdt.jgui.console.*;
-import gdt.jgui.entity.JEntityPrimaryMenu;
+import gdt.jgui.entity.JEntityFacetPanel;
 import gdt.jgui.entity.JReferenceEntry;
 import gdt.jgui.tool.JTextEditor;
 public class JPhoneEditor extends JTextEditor implements JFacetRenderer,JRequester{
@@ -42,6 +39,7 @@ String entityLabel$;
 String entihome$;
 	private static final long serialVersionUID = 1L;
 	public static final String ACTION_CREATE_PHONE="action create phone";
+	public static final String ACTION_EDIT_PHONE="action edit phone";
 	@Override
 	public String getLocator() {
 		String locator$=super.getLocator();
@@ -64,22 +62,28 @@ String entihome$;
 
 	@Override
 	public JContext instantiate(JMainConsole console, String locator$) {
-		//System.out.println("JPhoneEditor.instantiatelocator:0::"+locator$);	   
-		
-		Properties locator=Locator.toProperties(locator$);
-	    entityKey$=locator.getProperty(EntityHandler.ENTITY_KEY);
-	    entityLabel$=locator.getProperty(EntityHandler.ENTITY_LABEL);
-	    entihome$=locator.getProperty(Entigrator.ENTIHOME);
-	    if(entityLabel$==null){
-	    	Entigrator entigrator=console.getEntigrator(entihome$);
-	    	entityLabel$=entigrator.indx_getLabel(entityKey$);
-	    }
-	    text$=locator.getProperty(JTextEditor.TEXT);
-		return super.instantiate(console, locator$);
-	}
+			try{
+				//System.out.println("JMovieEditor.instantiate:begin");
+					this.console=console;
+					Properties locator=Locator.toProperties(locator$);
+					entihome$=locator.getProperty(Entigrator.ENTIHOME);
+					
+					entityKey$=locator.getProperty(EntityHandler.ENTITY_KEY);
+					if(entityKey$!=null)
+						return super.instantiate(console, locator$);
+					else
+						return this;
+				}catch(Exception e){
+					Logger.getLogger(getClass().getName()).severe(e.toString());
+				}
+				return this;
+		}
+	
+	
 
 	@Override
 	public String getTitle() {
+		
 		return "Phone";
 	}
 
@@ -146,7 +150,7 @@ String entihome$;
 		    	if(entity.getElementItem("fhandler", fhandler$)!=null){
 					//System.out.println("JPhoneEditor:reindex:1:entity="+entity.getProperty("label"));
 		    		entity.putElementItem("jfacet", new Core(JPhoneFacetAddItem.class.getName(),fhandler$,JPhoneFacetOpenItem.class.getName()));
-					entity.putElementItem("fhandler", new Core(null,fhandler$,JPhoneFacetAddItem.EXTENSION_KEY));
+					entity.putElementItem("fhandler", new Core(null,fhandler$,PhoneHandler.EXTENSION_KEY));
 					entigrator.save(entity);
 				}
 		    }catch(Exception e){
@@ -161,7 +165,7 @@ String entihome$;
 			JTextEditor textEditor=new JTextEditor();
 		    String teLocator$=textEditor.getLocator();
 		    teLocator$=Locator.append(teLocator$, Entigrator.ENTIHOME,entihome$);
-		    teLocator$=Locator.append(teLocator$, JTextEditor.TEXT_TITLE,"New phone");
+		    teLocator$=Locator.append(teLocator$, JTextEditor.TEXT_TITLE,"Title of phone");
 		    String text$="NewPhone"+Identity.key().substring(0, 4);
 		    teLocator$=Locator.append(teLocator$, JTextEditor.TEXT,text$);
 		    JPhoneEditor fp=new JPhoneEditor();
@@ -172,6 +176,7 @@ String entihome$;
 		    fpLocator$=Locator.append(fpLocator$, JRequester.REQUESTER_ACTION,ACTION_CREATE_PHONE);
 		    String requesterResponseLocator$=Locator.compressText(fpLocator$);
 		    teLocator$=Locator.append(teLocator$,JRequester.REQUESTER_RESPONSE_LOCATOR,requesterResponseLocator$);
+		    teLocator$=Locator.append(teLocator$,Entigrator.ENTIHOME,entihome$);
 		    JConsoleHandler.execute(console, teLocator$);
 		}catch(Exception ee){   
 			Logger.getLogger(getClass().getName()).severe(ee.toString());
@@ -193,9 +198,29 @@ String entihome$;
 			   Sack phone=entigrator.ent_new("phone", text$);
 			   phone=entigrator.ent_assignProperty(phone, "phone", "123456");
 			   phone.putAttribute(new Core(null,"icon","phone.png"));
-			   entigrator.save(phone);
+			   phone.createElement("jfacet");
+			   phone.putElementItem("jfacet", new Core("gdt.jgui.entity.phone.JPhoneFacetAddItem","gdt.data.entity.PhoneHandler","gdt.jgui.entity.phone.JPhoneFacetOpenItem"));
+			   phone.createElement("fhandler");
+			   phone.putElementItem("fhandler", new Core(null,"gdt.data.entity.PhoneHandler",PhoneHandler.EXTENSION_KEY));
+			   entigrator.replace(phone);
 			   entigrator.saveHandlerIcon(JPhoneEditor.class, "phone.png");
 			   entityKey$=phone.getKey();
+			   JTextEditor textEditor=new JTextEditor();
+			    String teLocator$=textEditor.getLocator();
+			    teLocator$=Locator.append(teLocator$, Entigrator.ENTIHOME,entihome$);
+			    teLocator$=Locator.append(teLocator$, JTextEditor.TEXT_TITLE,"Phone number");
+			    text$="123";
+			    teLocator$=Locator.append(teLocator$, JTextEditor.TEXT,text$);
+			    JPhoneEditor pe=new JPhoneEditor();
+			    String peLocator$=pe.getLocator();
+			    peLocator$=Locator.append(peLocator$, Entigrator.ENTIHOME,entihome$);
+			    peLocator$=Locator.append(peLocator$, EntityHandler.ENTITY_KEY,entityKey$);
+			    peLocator$=Locator.append(peLocator$, BaseHandler.HANDLER_METHOD,"response");
+			    peLocator$=Locator.append(peLocator$, JRequester.REQUESTER_ACTION,ACTION_EDIT_PHONE);
+			    String requesterResponseLocator$=Locator.compressText(peLocator$);
+			    teLocator$=Locator.append(teLocator$,JRequester.REQUESTER_RESPONSE_LOCATOR,requesterResponseLocator$);
+			    JConsoleHandler.execute(console, teLocator$);
+			   /*
 			   JPhoneEditor pe=new JPhoneEditor();
 			   String peLocator$=pe.getLocator();
 			   peLocator$=Locator.append(peLocator$, Entigrator.ENTIHOME, entihome$);
@@ -205,7 +230,23 @@ String entihome$;
 			   s.pop();
 			   console.setTrack(s);
 			   JConsoleHandler.execute(console, peLocator$);
+			   */
 			}
+		if(ACTION_EDIT_PHONE.equals(action$)){
+			   entihome$=locator.getProperty(Entigrator.ENTIHOME);
+			   entityKey$=locator.getProperty(EntityHandler.ENTITY_KEY);
+			   String text$=locator.getProperty(JTextEditor.TEXT);
+			   Entigrator entigrator=console.getEntigrator(entihome$);
+			   Sack phone=entigrator.ent_getAtKey(entityKey$);
+			   phone=entigrator.ent_assignProperty(phone, "phone", text$);
+			   entigrator.replace(phone);
+			   JEntityFacetPanel efp=new JEntityFacetPanel();
+			   String efpLocator$=efp.getLocator();
+			   efpLocator$=Locator.append(efpLocator$, Entigrator.ENTIHOME, entihome$);
+			   efpLocator$=Locator.append(efpLocator$, EntityHandler.ENTITY_KEY, entityKey$);
+			   JConsoleHandler.execute(console, efpLocator$);
+			  	}
+		
 	}
 	@Override
 	public void collectReferences(Entigrator entigrator, String entityKey$, ArrayList<JReferenceEntry> rel) {

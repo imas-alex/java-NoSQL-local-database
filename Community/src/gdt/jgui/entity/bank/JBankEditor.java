@@ -170,7 +170,7 @@ public class JBankEditor extends JFieldsEditor {
     	//System.out.println("JBankEditor:newEntity:responseLocator:=:"+responseLocator$);
 		String requesterResponseLocator$=Locator.compressText(responseLocator$);
 		editorLocator$=Locator.append(editorLocator$,JRequester.REQUESTER_RESPONSE_LOCATOR,requesterResponseLocator$);
-		JConsoleHandler.execute(console,editorLocator$); 
+		editorLocator$=Locator.append(editorLocator$,Entigrator.ENTIHOME,entihome$);JConsoleHandler.execute(console,editorLocator$); 
 		return editorLocator$;
 	}
 
@@ -198,7 +198,7 @@ public class JBankEditor extends JFieldsEditor {
 				newEntity.putElementItem("jfacet", new Core("gdt.jgui.entity.bank.JBankFacetAddItem",BankHandler.class.getName(),"gdt.jgui.entity.bank.JBankFacetOpenItem"));
 				
 				newEntity.putAttribute(new Core (null,"icon","bank.png"));
-				entigrator.save(newEntity);
+				entigrator.replace(newEntity);
 				entigrator.ent_assignProperty(newEntity, "fields", text$);
 				entigrator.ent_assignProperty(newEntity, "bank", text$);
 				String icons$=entihome$+"/"+Entigrator.ICONS;
@@ -243,5 +243,23 @@ public class JBankEditor extends JFieldsEditor {
 	@Override
 	public void collectReferences(Entigrator entigrator, String entityKey$, ArrayList<JReferenceEntry> rel) {
 		
+	}
+	@Override
+	public JFacetRenderer instantiate(JMainConsole console, String locator$) {
+		try{
+			//System.out.println("JMovieEditor.instantiate:begin");
+				this.console=console;
+				Properties locator=Locator.toProperties(locator$);
+				entihome$=locator.getProperty(Entigrator.ENTIHOME);
+				
+				entityKey$=locator.getProperty(EntityHandler.ENTITY_KEY);
+				if(entityKey$!=null)
+					return super.instantiate(console, locator$);
+				else
+					return this;
+			}catch(Exception e){
+				Logger.getLogger(getClass().getName()).severe(e.toString());
+			}
+			return this;
 	}
 	}

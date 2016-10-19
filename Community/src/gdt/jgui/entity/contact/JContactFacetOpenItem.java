@@ -148,18 +148,7 @@ public class JContactFacetOpenItem extends JFacetOpenItem implements JRequester{
 	}
 	@Override
 	public boolean isRemovable() {
-		/*
-		try{
-			Entigrator entigrator=console.getEntigrator(entihome$);
-			 Sack entity =entigrator.getEntityAtKey(entityKey$);
-			 if("contact".equals(entity.getProperty("entity")))
-				 return false;
-			 return true;
-		}catch(Exception e){
-			LOGGER.severe(e.toString());
-		return false;
-		}
-		*/
+		
 		return false;
 	}
 	@Override
@@ -195,6 +184,7 @@ public class JContactFacetOpenItem extends JFacetOpenItem implements JRequester{
 	public void openFacet(JMainConsole console, String locator$) {
 		try{
 			//System.out.println("JPhoneFacetOpenItem:openFacet:locator="+locator$);
+			this.console=console;
 			Properties locator=Locator.toProperties(locator$);
 			String entihome$=locator.getProperty(Entigrator.ENTIHOME);
 			String entityKey$=locator.getProperty(EntityHandler.ENTITY_KEY);

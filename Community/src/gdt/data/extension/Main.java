@@ -33,7 +33,8 @@ public class Main implements ExtensionMain{
 	 public static final String EXTENSION_KEY="_v6z8CVgemqMI6Bledpc7F1j0pVY";
 	 private static final String EXTENSION_LABEL="community";
 	 private static final String EXTENSION_JAR="community.jar";
-	public void main(String[] args) {
+	static boolean debug =false;
+	 public void main(String[] args) {
       
 		final String[] sa=args;
         if(sa!=null)
@@ -43,6 +44,7 @@ public class Main implements ExtensionMain{
            	//System.out.println("Community:main");
             	  
                String entihome$=sa[0];
+               if(debug)
                System.out.println("Community:main.entihome="+entihome$);
                Entigrator entigrator=new Entigrator(new String[]{entihome$});
            //    System.out.println(entigrator.getEntihome());
@@ -64,11 +66,7 @@ public class Main implements ExtensionMain{
                FileExpert.copyFile(jar, target);
           //     System.out.println("CommunityMain:main:url="+Main.class.getProtectionDomain().getCodeSource().getLocation().toString());
                InputStream is = ExtensionHandler.getResourceStream(entigrator, EXTENSION_KEY,"community.tar" );
-               
-              // URL[] urls = { Main.class.getProtectionDomain().getCodeSource().getLocation() };
-              // URLClassLoader classloader = URLClassLoader.newInstance(urls);
-              // InputStream is = classloader.getResourceAsStream("res/community.tar");
-               target=new File(folder$+"/community.tar");
+                  target=new File(folder$+"/community.tar");
                if(is!=null){
             	  if(!target.exists())
                 	   target.createNewFile();
@@ -98,6 +96,7 @@ public class Main implements ExtensionMain{
               String path$=entigrator.getEntihome()+"/"+Entigrator.ENTITY_BASE+"/data/"+EXTENSION_KEY;
               extension.setPath(path$);
         	  if(!extension.saveXML(path$)){
+        		 if(debug)
         		  System.out.println("Main:makeExtension:cannot save extension="+entigrator.getEntihome()+"/"+Entigrator.ENTITY_BASE+"/data/"+EXTENSION_KEY) ;
         		  return null;
         	  }

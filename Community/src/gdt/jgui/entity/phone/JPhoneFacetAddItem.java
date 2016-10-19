@@ -24,7 +24,6 @@ import java.util.logging.Logger;
 
 
 import gdt.data.entity.BaseHandler;
-import gdt.data.entity.ContactHandler;
 import gdt.data.entity.EntityHandler;
 import gdt.data.entity.FacetHandler;
 import gdt.data.entity.PhoneHandler;
@@ -43,12 +42,10 @@ import gdt.jgui.console.JMainConsole;
 import gdt.jgui.console.JRequester;
 import gdt.jgui.entity.JEntitiesPanel;
 import gdt.jgui.entity.JEntityFacetPanel;
-import gdt.jgui.entity.contact.JContactFacetOpenItem;
 import gdt.jgui.tool.JTextEditor;
 public class JPhoneFacetAddItem extends JFacetAddItem{
 
 	private static final long serialVersionUID = 1L;
-	public static final String EXTENSION_KEY="_v6z8CVgemqMI6Bledpc7F1j0pVY";
 	private Logger LOGGER=Logger.getLogger(JPhoneFacetAddItem.class.getName());
     public JPhoneFacetAddItem(){
 		super();
@@ -62,7 +59,7 @@ public String getLocator(){
 	locator.setProperty(BaseHandler.HANDLER_CLASS,JPhoneFacetAddItem.class.getName());
 	locator.setProperty(BaseHandler.HANDLER_SCOPE,JConsoleHandler.CONSOLE_SCOPE);
 	locator.setProperty(BaseHandler.HANDLER_METHOD,METHOD_ADD_COMPONENT);
-	locator.setProperty(BaseHandler.HANDLER_LOCATION,EXTENSION_KEY);
+	locator.setProperty(BaseHandler.HANDLER_LOCATION,PhoneHandler.EXTENSION_KEY);
 	locator.setProperty( JContext.CONTEXT_TYPE,"Phone add ");
 	locator.setProperty(Locator.LOCATOR_TITLE,"Phone");
 	locator.setProperty(JFacetOpenItem.FACET_HANDLER_CLASS,PhoneHandler.class.getName());
@@ -92,7 +89,7 @@ public void response(JMainConsole console, String locator$) {
 			Sack component=entigrator.ent_new("phone", componentLabel$);
 			component=entigrator.ent_assignProperty(component, "phone", "123456");
 			component.createElement("fhandler");
-			component.putElementItem("fhandler", new Core(null,PhoneHandler.class.getName(),EXTENSION_KEY));
+			component.putElementItem("fhandler", new Core(null,PhoneHandler.class.getName(),PhoneHandler.EXTENSION_KEY));
 			component.createElement("jfacet");
 			component.putElementItem("jfacet", new Core(getClass().getName(),PhoneHandler.class.getName(),JPhoneFacetOpenItem.class.getName()));
 			entigrator.save(component);
@@ -122,7 +119,7 @@ public void addFacet(JMainConsole console, String locator$) {
 	   Sack entity=entigrator.getEntityAtKey(entityKey$);
 	   if(!entity.existsElement("fhandler"))
 		   entity.createElement("fhandler");
-	   entity.putElementItem("fhandler", new Core(null,PhoneHandler.class.getName(),EXTENSION_KEY)); 
+	   entity.putElementItem("fhandler", new Core(null,PhoneHandler.class.getName(),PhoneHandler.EXTENSION_KEY)); 
 	   if(!entity.existsElement("jfacet"))
 		   entity.createElement("jfacet");
 	   entity.putElementItem("jfacet", new Core(JPhoneFacetAddItem.class.getName(),PhoneHandler.class.getName(),JPhoneFacetOpenItem.class.getName()));
@@ -186,7 +183,7 @@ public String markAppliedUncheckable(JMainConsole console, String locator$) {
 		Core fhandler=entity.getElementItem("fhandler",PhoneHandler.class.getName());
 		if(fhandler!=null){
 			if(PhoneHandler.class.getName().equals(fhandler.name)
-					&& EXTENSION_KEY.equals(fhandler.value)){
+					&& PhoneHandler.EXTENSION_KEY.equals(fhandler.value)){
 				Core jfacet=entity.getElementItem("jfacet", PhoneHandler.class.getName());
 				if(jfacet!=null){
 					if( JPhoneFacetOpenItem.class.getName().equals(jfacet.value)

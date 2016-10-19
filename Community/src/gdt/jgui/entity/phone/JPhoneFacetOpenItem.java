@@ -16,28 +16,21 @@ package gdt.jgui.entity.phone;
     You should have received a copy of the GNU General Public License
     along with JEntigrator.  If not, see <http://www.gnu.org/licenses/>.
  */
-import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Properties;
 import java.util.logging.Logger;
-
-import javax.swing.ImageIcon;
 import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
 import javax.swing.tree.DefaultMutableTreeNode;
-
 import org.apache.commons.codec.binary.Base64;
-
 import gdt.data.entity.BaseHandler;
-import gdt.data.entity.ContactHandler;
 import gdt.data.entity.EntityHandler;
 import gdt.data.entity.FacetHandler;
 import gdt.data.entity.PhoneHandler;
 import gdt.data.entity.facet.ExtensionHandler;
 import gdt.data.grain.Locator;
 import gdt.data.grain.Sack;
-import gdt.data.grain.Support;
 import gdt.data.store.Entigrator;
 import gdt.jgui.console.JConsoleHandler;
 import gdt.jgui.console.JContext;
@@ -51,8 +44,6 @@ import gdt.jgui.tool.JTextEditor;
 public class JPhoneFacetOpenItem extends JFacetOpenItem implements JRequester{
 
 	private static final long serialVersionUID = 1L;
-	
-	public static final String EXTENSION_KEY="_v6z8CVgemqMI6Bledpc7F1j0pVY";
 	private Logger LOGGER=Logger.getLogger(PhoneHandler.class.getName());
 	String phone$;
 	public JPhoneFacetOpenItem(){
@@ -66,12 +57,10 @@ public class JPhoneFacetOpenItem extends JFacetOpenItem implements JRequester{
 			Properties locator=Locator.toProperties(locator$);
 			entihome$=locator.getProperty(Entigrator.ENTIHOME);
 			entityKey$=locator.getProperty(EntityHandler.ENTITY_KEY);
-			String doNotOpen$=locator.getProperty(JFacetOpenItem.DO_NOT_OPEN);
 	        this.locator$=getLocator();
 	        this.locator$=Locator.append(this.locator$,BaseHandler.HANDLER_CLASS, getClass().getName());
 	        this.locator$=Locator.append(this.locator$,BaseHandler.HANDLER_METHOD, "openFacet");
-	     //   if(!Locator.LOCATOR_TRUE.equals(doNotOpen$))
-	     //       JConsoleHandler.execute(console, this.locator$);
+	  
 		}catch(Exception e){
 			LOGGER.severe(e.toString());
 		}
@@ -86,12 +75,11 @@ public class JPhoneFacetOpenItem extends JFacetOpenItem implements JRequester{
 			editorLocator$=Locator.append(editorLocator$,Entigrator.ENTIHOME,entihome$);
 		if(entityKey$!=null)
 			editorLocator$=Locator.append(editorLocator$,EntityHandler.ENTITY_KEY,entityKey$);
-	//	String facetRenderer$=Locator.compressText(editorLocator$);
 		Properties locator=new Properties();
 		locator.setProperty(Locator.LOCATOR_TITLE,"Phone");
 		locator.setProperty(BaseHandler.HANDLER_CLASS,getClass().getName());
 		locator.setProperty(BaseHandler.HANDLER_SCOPE,JConsoleHandler.CONSOLE_SCOPE);
-		locator.setProperty(BaseHandler.HANDLER_LOCATION,EXTENSION_KEY);
+		locator.setProperty(BaseHandler.HANDLER_LOCATION,PhoneHandler.EXTENSION_KEY);
 		locator.setProperty(BaseHandler.HANDLER_METHOD,METHOD_OPEN_FACET);
 		locator.setProperty( JContext.CONTEXT_TYPE,"Phone facet");
 		locator.setProperty(Locator.LOCATOR_TITLE,"Phone");
@@ -114,23 +102,23 @@ public class JPhoneFacetOpenItem extends JFacetOpenItem implements JRequester{
 	}
 	@Override
 	public void response(JMainConsole console, String locator$) {
-		System.out.println("JPhoneFacetItem:response:locator:"+locator$);
+		//System.out.println("JPhoneFacetItem:response:locator:"+locator$);
 		try{
 			Properties locator=Locator.toProperties(locator$);
 			entihome$=locator.getProperty(Entigrator.ENTIHOME);
 			entityKey$=locator.getProperty(EntityHandler.ENTITY_KEY);
 			String text$=locator.getProperty(JTextEditor.TEXT);
 			String requesterAction$=locator.getProperty(JRequester.REQUESTER_ACTION);
-			System.out.println("JPhoneFacetItem:response:requester action="+requesterAction$);
+		//	System.out.println("JPhoneFacetItem:response:requester action="+requesterAction$);
 			Entigrator entigrator=console.getEntigrator(entihome$);
 			Sack entity=entigrator.getEntityAtKey(entityKey$);
 			entity=entigrator.ent_assignProperty(entity, "phone", text$);
 			if(ACTION_DIGEST_CALL.equals(requesterAction$)){
-				System.out.println("JPhoneFacetOpenItem:response:digest call:text:"+text$);
+			//	System.out.println("JPhoneFacetOpenItem:response:digest call:text:"+text$);
 				String requesterResponseLocator$=locator.getProperty(JRequester.REQUESTER_RESPONSE_LOCATOR);
 				byte[] ba=Base64.decodeBase64(requesterResponseLocator$);
 				String responseLocator$=new String(ba,"UTF-8");
-				System.out.println("JPhoneFacetOpenItem:response:response locator="+responseLocator$);
+			//	System.out.println("JPhoneFacetOpenItem:response:response locator="+responseLocator$);
 				JEntityDigestDisplay edd=new JEntityDigestDisplay();
 				String eddLocator$=edd.getLocator();
 				eddLocator$=Locator.append(eddLocator$, Entigrator.ENTIHOME, entihome$);
@@ -202,6 +190,7 @@ public class JPhoneFacetOpenItem extends JFacetOpenItem implements JRequester{
 	public void openFacet(JMainConsole console, String locator$) {
 		try{
 			//System.out.println("JPhoneFacetOpenItem:openFacet:locator="+locator$);
+			this.console=console;
 			Properties locator=Locator.toProperties(locator$);
 			String entihome$=locator.getProperty(Entigrator.ENTIHOME);
 			String entityKey$=locator.getProperty(EntityHandler.ENTITY_KEY);
@@ -266,7 +255,7 @@ public class JPhoneFacetOpenItem extends JFacetOpenItem implements JRequester{
 		   editItem.addActionListener(new ActionListener() {
 				@Override
 				public void actionPerformed(ActionEvent e) {
-				   System.out.println("JPhoneFacetOpenItem:edit:digest locator="+digestLocator$);
+				 //  System.out.println("JPhoneFacetOpenItem:edit:digest locator="+digestLocator$);
 				   try{
 					   Properties locator=Locator.toProperties(digestLocator$);
 					   String entihome$=locator.getProperty(Entigrator.ENTIHOME);
@@ -282,7 +271,7 @@ public class JPhoneFacetOpenItem extends JFacetOpenItem implements JRequester{
 					   foiLocator$=Locator.append(foiLocator$, JRequester.REQUESTER_ACTION,ACTION_DIGEST_CALL);
 					   foiLocator$=Locator.append(foiLocator$, JRequester.REQUESTER_RESPONSE_LOCATOR, Locator.compressText(digestLocator$));
 					   teLocator$=Locator.append(teLocator$, JRequester.REQUESTER_RESPONSE_LOCATOR, Locator.compressText(foiLocator$));
-					   System.out.println("JPhoneFacetOpenItem:edit:text editor="+teLocator$);
+					//   System.out.println("JPhoneFacetOpenItem:edit:text editor="+teLocator$);
 					   JConsoleHandler.execute(console, teLocator$);
 				   }catch(Exception ee){
 					   Logger.getLogger(JPhoneFacetOpenItem.class.getName()).info(ee.toString());

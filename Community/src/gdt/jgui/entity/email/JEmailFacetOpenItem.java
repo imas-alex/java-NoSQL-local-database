@@ -16,21 +16,16 @@ package gdt.jgui.entity.email;
     You should have received a copy of the GNU General Public License
     along with JEntigrator.  If not, see <http://www.gnu.org/licenses/>.
  */
-import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Properties;
 import java.util.logging.Logger;
-
-import javax.swing.ImageIcon;
 import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
 import javax.swing.tree.DefaultMutableTreeNode;
 
 import org.apache.commons.codec.binary.Base64;
 
-import gdt.data.entity.AddressHandler;
-import gdt.data.entity.BankHandler;
 import gdt.data.entity.BaseHandler;
 import gdt.data.entity.EmailHandler;
 import gdt.data.entity.EntityHandler;
@@ -38,7 +33,6 @@ import gdt.data.entity.FacetHandler;
 import gdt.data.entity.facet.ExtensionHandler;
 import gdt.data.grain.Locator;
 import gdt.data.grain.Sack;
-import gdt.data.grain.Support;
 import gdt.data.store.Entigrator;
 import gdt.jgui.console.JConsoleHandler;
 import gdt.jgui.console.JContext;
@@ -53,9 +47,10 @@ public class JEmailFacetOpenItem extends JFacetOpenItem implements JRequester{
 
 	private static final long serialVersionUID = 1L;
 	
-	public static final String EXTENSION_KEY="_v6z8CVgemqMI6Bledpc7F1j0pVY";
+	//public static final String EXTENSION_KEY="_v6z8CVgemqMI6Bledpc7F1j0pVY";
 	private Logger LOGGER=Logger.getLogger(EmailHandler.class.getName());
 	String email$;
+	boolean debug=false;
 	public JEmailFacetOpenItem(){
 		super();
 	}
@@ -78,6 +73,9 @@ public class JEmailFacetOpenItem extends JFacetOpenItem implements JRequester{
 	@Override
 	public String getLocator(){
 		try{
+			if(debug)	
+				System.out.println("JEmailFacetOpenItem:getLocator:BEGIN");
+			
 		JEmailEditor editor=new JEmailEditor();
 		String editorLocator$=editor.getLocator();
 		if(entihome$!=null)
@@ -88,7 +86,7 @@ public class JEmailFacetOpenItem extends JFacetOpenItem implements JRequester{
 		locator.setProperty(Locator.LOCATOR_TITLE,"Email");
 		locator.setProperty(BaseHandler.HANDLER_CLASS,getClass().getName());
 		locator.setProperty(BaseHandler.HANDLER_SCOPE,JConsoleHandler.CONSOLE_SCOPE);
-		locator.setProperty(BaseHandler.HANDLER_LOCATION,EXTENSION_KEY);
+		locator.setProperty(BaseHandler.HANDLER_LOCATION,EmailHandler.EXTENSION_KEY);
 		locator.setProperty(BaseHandler.HANDLER_METHOD,METHOD_OPEN_FACET);
 		locator.setProperty( JContext.CONTEXT_TYPE,"Email facet");
 		locator.setProperty(Locator.LOCATOR_TITLE,"Email");
@@ -97,12 +95,16 @@ public class JEmailFacetOpenItem extends JFacetOpenItem implements JRequester{
 		if(entihome$!=null){
 			locator.setProperty(Entigrator.ENTIHOME,entihome$);
 			locator.setProperty(Locator.LOCATOR_CHECKABLE,Locator.LOCATOR_TRUE);
+			if(debug)	
+				System.out.println("JEmailFacetOpenItem:getLocator:1");
 			Entigrator entigrator=console.getEntigrator(entihome$);
 			String icon$=ExtensionHandler.loadIcon(entigrator,EmailHandler.EXTENSION_KEY, "email.png");
 		    if(icon$!=null)
 		    	locator.setProperty(Locator.LOCATOR_ICON,icon$);
 		}
 		locator$=Locator.toString(locator);
+		if(debug)	
+			System.out.println("JEmailFacetOpenItem:getLocator:locator="+locator$);
 		 return locator$;
 			}catch(Exception e){
 				LOGGER.severe(e.toString());
@@ -197,8 +199,10 @@ public class JEmailFacetOpenItem extends JFacetOpenItem implements JRequester{
 	@Override
 	public void openFacet(JMainConsole console, String locator$) {
 		try{
-			//System.out.println("JEmailFacetOpenItem:openFacet:locator="+locator$);
-			Properties locator=Locator.toProperties(locator$);
+		if(debug)	
+			System.out.println("JEmailFacetOpenItem:openFacet:locator="+locator$);
+		this.console=console;	
+		Properties locator=Locator.toProperties(locator$);
 			String entihome$=locator.getProperty(Entigrator.ENTIHOME);
 			String entityKey$=locator.getProperty(EntityHandler.ENTITY_KEY);
 			String responseLocator$=getLocator();
@@ -208,13 +212,15 @@ public class JEmailFacetOpenItem extends JFacetOpenItem implements JRequester{
 			responseLocator.setProperty(EntityHandler.ENTITY_KEY, entityKey$);
 			responseLocator.setProperty(BaseHandler.HANDLER_METHOD, JFacetOpenItem.METHOD_RESPONSE);
 			responseLocator$=Locator.toString(responseLocator);
-			//System.out.println("JEmailFacetOpenItem:openFacet:response locator="+responseLocator$);
+		if(debug)	
+			System.out.println("JEmailFacetOpenItem:openFacet:response locator="+responseLocator$);
 			String requesterResponseLocator$=Locator.compressText(responseLocator$);
 
 			Entigrator entigrator=console.getEntigrator(entihome$);
 			Sack entity=entigrator.getEntityAtKey(entityKey$);
 			email$=entity.getProperty("email");
-		//System.out.println("JEmailFacetOpenItem:openFacet:email="+email$);	
+		if(debug)	
+		   System.out.println("JEmailFacetOpenItem:openFacet:email="+email$);	
 			JEmailEditor emailEditor=new JEmailEditor();
 			String emailLocator$=emailEditor.getLocator();
 			emailLocator$=Locator.append(emailLocator$, Entigrator.ENTIHOME, entihome$);

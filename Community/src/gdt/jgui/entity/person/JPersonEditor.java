@@ -23,15 +23,10 @@ import java.util.Properties;
 import java.util.Stack;
 import java.util.logging.Logger;
 import javax.swing.JMenuItem;
-
-import gdt.data.entity.BankHandler;
 import gdt.data.entity.BaseHandler;
-import gdt.data.entity.EmailHandler;
 import gdt.data.entity.EntityHandler;
 import gdt.data.entity.PersonHandler;
-import gdt.data.entity.PhoneHandler;
 import gdt.data.entity.facet.ExtensionHandler;
-import gdt.data.entity.facet.FieldsHandler;
 import gdt.data.grain.Core;
 import gdt.data.grain.Identity;
 import gdt.data.grain.Locator;
@@ -57,7 +52,7 @@ public class JPersonEditor extends JFieldsEditor {
 		itemCompose.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				System.out.println("JPersonEditor:compose:");
+				//System.out.println("JPersonEditor:compose:");
 				String displayName$=compose();
 				JTextEditor te=new JTextEditor();
 				String teLocator$=te.getLocator();
@@ -151,7 +146,7 @@ public class JPersonEditor extends JFieldsEditor {
 	public void reindex(JMainConsole console, Entigrator entigrator, Sack entity) {
 		 try{
 			// System.out.println("JPhoneEditor:reindex:0:entity="+entity.getProperty("label"));
-		    	String fhandler$=PhoneHandler.class.getName();
+		    	String fhandler$=PersonHandler.class.getName();
 		    	if(entity.getElementItem("fhandler", fhandler$)!=null){
 					//System.out.println("JPhoneEditor:reindex:1:entity="+entity.getProperty("label"));
 		    		entity.putElementItem("jfacet", new Core(JPersonFacetAddItem.class.getName(),fhandler$,JPersonFacetOpenItem.class.getName()));
@@ -190,13 +185,14 @@ public class JPersonEditor extends JFieldsEditor {
     	//System.out.println("FieldsEditor:newEntity:responseLocator:=:"+responseLocator$);
 		String requesterResponseLocator$=Locator.compressText(responseLocator$);
 		editorLocator$=Locator.append(editorLocator$,JRequester.REQUESTER_RESPONSE_LOCATOR,requesterResponseLocator$);
+		editorLocator$=Locator.append(editorLocator$,Entigrator.ENTIHOME,entihome$);
 		JConsoleHandler.execute(console,editorLocator$); 
 		return editorLocator$;
 	}
 
 	@Override
 	public void response(JMainConsole console, String locator$) {
-		System.out.println("JPersonEditor:response:"+Locator.remove(locator$,Locator.LOCATOR_ICON ));
+		//System.out.println("JPersonEditor:response:"+Locator.remove(locator$,Locator.LOCATOR_ICON ));
 		try{
 			Properties locator=Locator.toProperties(locator$);
 			String action$=locator.getProperty(JRequester.REQUESTER_ACTION);
@@ -219,9 +215,9 @@ public class JPersonEditor extends JFieldsEditor {
 				newEntity.putElementItem("fhandler", new Core(null,PersonHandler.class.getName(),JPersonFacetAddItem.EXTENSION_KEY));
 				newEntity.createElement("jfacet");
 				newEntity.putElementItem("jfacet", new Core("gdt.jgui.entity.person.JPersonFacetAddItem",PersonHandler.class.getName(),"gdt.jgui.entity.person.JPersonFacetOpenItem"));
-				
 				newEntity.putAttribute(new Core (null,"icon","person.png"));
-				entigrator.save(newEntity);
+				//entigrator.save(newEntity);
+				entigrator.replace(newEntity);
 				entigrator.ent_assignProperty(newEntity, "fields", text$);
 				entigrator.ent_assignProperty(newEntity, "person", text$);
 				String icons$=entihome$+"/"+Entigrator.ICONS;
@@ -243,7 +239,7 @@ public class JPersonEditor extends JFieldsEditor {
 				return;
 			}
 			if(ACTION_SET_DISPLAY_NAME.equals(action$)){
-				System.out.println("JPersonEditor:response:set display name="+text$);
+				//System.out.println("JPersonEditor:response:set display name="+text$);
 				entityKey$=locator.getProperty(EntityHandler.ENTITY_KEY);
 				Sack entity=entigrator.getEntityAtKey(entityKey$);
 				entity.putElementItem("field", new Core(null,"Display name",text$));
@@ -320,7 +316,7 @@ public class JPersonEditor extends JFieldsEditor {
 	@Override
 	public void adaptRename(JMainConsole console, String locator$) {
 		try{
-			System.out.println("JPersonEditor:adaptRename:locator="+locator$);
+			//System.out.println("JPersonEditor:adaptRename:locator="+locator$);
 			if(console==null)
 				System.out.println("JPersonEditor:adaptRename:console is null");
 			Properties locator=Locator.toProperties(locator$);
@@ -335,5 +331,23 @@ public class JPersonEditor extends JFieldsEditor {
 		}catch(Exception e){
 			Logger.getLogger(JPersonEditor.class.getName()).severe(e.toString());
 		}
-	}		
+	}
+	@Override
+	public JFacetRenderer instantiate(JMainConsole console, String locator$) {
+		try{
+			//System.out.println("JMovieEditor.instantiate:begin");
+				this.console=console;
+				Properties locator=Locator.toProperties(locator$);
+				entihome$=locator.getProperty(Entigrator.ENTIHOME);
+				
+				entityKey$=locator.getProperty(EntityHandler.ENTITY_KEY);
+				if(entityKey$!=null)
+					return super.instantiate(console, locator$);
+				else
+					return this;
+			}catch(Exception e){
+				Logger.getLogger(getClass().getName()).severe(e.toString());
+			}
+			return this;
+	}
 }

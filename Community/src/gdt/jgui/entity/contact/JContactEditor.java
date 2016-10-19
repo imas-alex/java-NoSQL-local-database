@@ -462,6 +462,7 @@ public class JContactEditor extends JPanel implements JContext,JFacetRenderer,JR
 		    ceLocator$=Locator.append(ceLocator$, JRequester.REQUESTER_ACTION,ACTION_CREATE_CONTACT);
 		    String requesterResponseLocator$=Locator.compressText(ceLocator$);
 		    teLocator$=Locator.append(teLocator$,JRequester.REQUESTER_RESPONSE_LOCATOR,requesterResponseLocator$);
+		    teLocator$=Locator.append(teLocator$,Entigrator.ENTIHOME,entihome$);
 		    JConsoleHandler.execute(console, teLocator$);
 		}catch(Exception ee){   
 			Logger.getLogger(getClass().getName()).severe(ee.toString());
@@ -472,7 +473,7 @@ public class JContactEditor extends JPanel implements JContext,JFacetRenderer,JR
 
 	@Override
 	public void response(JMainConsole console, String locator$) {
-		System.out.println("JContactEditor.response:locator="+locator$);
+		//System.out.println("JContactEditor.response:locator="+locator$);
 		try{
 		Properties locator=Locator.toProperties(locator$);
 		String action$=locator.getProperty(JRequester.REQUESTER_ACTION);
@@ -486,7 +487,7 @@ public class JContactEditor extends JPanel implements JContext,JFacetRenderer,JR
 			   contact=entigrator.ent_assignProperty(contact, "email", "a@b.com");
 			   contact=entigrator.ent_assignProperty(contact, "phone", "123456");
 			   contact.putAttribute(new Core(null,"icon","contact.png"));
-			   entigrator.save(contact);
+			   entigrator.replace(contact);
 			   entigrator.saveHandlerIcon(JContactEditor.class, "contact.png");
 			   entityKey$=contact.getKey();
 			   JContactEditor ce=new JContactEditor();
@@ -502,6 +503,12 @@ public class JContactEditor extends JPanel implements JContext,JFacetRenderer,JR
 		}catch(Exception e){
 			Logger.getLogger(JContactEditor.class.getName()).severe(e.toString());
 		}
+	}
+
+	@Override
+	public void activate() {
+		// TODO Auto-generated method stub
+		
 	}
 		}	
 	

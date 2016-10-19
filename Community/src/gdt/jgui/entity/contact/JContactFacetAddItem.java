@@ -37,7 +37,6 @@ import gdt.jgui.console.JMainConsole;
 import gdt.jgui.console.JRequester;
 import gdt.jgui.entity.JEntitiesPanel;
 import gdt.jgui.entity.JEntityFacetPanel;
-import gdt.jgui.entity.bookmark.JBookmarksFacetOpenItem;
 import gdt.jgui.tool.JTextEditor;
 public class JContactFacetAddItem extends JFacetAddItem{
 
