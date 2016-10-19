@@ -39,6 +39,9 @@ public class JClipboardPanel extends JItemsListPanel {
 	private static final long serialVersionUID = 1L;
 	private Logger LOGGER=Logger.getLogger(getClass().getName());
 	JMenuItem	deleteItem;
+	public JClipboardPanel() {
+        super();
+	}
 	/**
 	 * Get context locator. 
 	 * @return the locator.
@@ -158,5 +161,10 @@ public class JClipboardPanel extends JItemsListPanel {
 			}	
 		});
 		return menu;
+	}
+	@Override
+	public void activate() {
+		// TODO Auto-generated method stub
+		
 	}
 }

@@ -553,4 +553,9 @@ public class JEntityStructurePanel extends JPanel implements JContext{
         	selection$=(String)userObject;
 		    		  }
 }
+	@Override
+	public void activate() {
+		// TODO Auto-generated method stub
+		
+	}
 }

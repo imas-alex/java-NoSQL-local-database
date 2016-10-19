@@ -380,7 +380,8 @@ public class ArchiveHandler {
                 if (new File(entityHome$).exists()) {
                     append(entigrator,entigrator.getEntihome(), entityHome$, aos);
                 }
-                icon$=entigrator.indx_getIcon(aSa);
+                //icon$=entigrator.indx_getIcon(aSa);
+                icon$=entigrator.ent_getIconAtKey(aSa);
                 if(icon$!=null)
                 	append(entigrator,entigrator.getEntihome(), iconsHome$+icon$, aos);
             }
@@ -426,7 +427,8 @@ public class ArchiveHandler {
                 entityHome$ = entigrator.ent_getHome(aSa);
                 if (new File(entityHome$).exists()) 
                     append(entigrator,entigrator.getEntihome(), entityHome$, aos);
-                icon$=entigrator.indx_getIcon(aSa);
+                //icon$=entigrator.indx_getIcon(aSa);
+                icon$=entigrator.ent_getIconAtKey(aSa);
                 if(icon$!=null)
                 	append(entigrator,entigrator.getEntihome(), iconsHome$+icon$, aos);
        
@@ -543,7 +545,8 @@ public  boolean compressEntitiesToZip(Entigrator entigrator,String locator$){
 			entityHome=new File(entihome$+"/"+aSa);
 			if(entityHome.exists()&&entityHome.isDirectory())
 				getAllFiles(entityHome,fl);
-			icon$=entigrator.indx_getIcon(aSa);
+			//icon$=entigrator.indx_getIcon(aSa);
+			icon$=entigrator.ent_getIconAtKey(aSa);
             if(icon$!=null){
             	icon=new File(iconsHome$+icon$);
             	if(icon.exists())

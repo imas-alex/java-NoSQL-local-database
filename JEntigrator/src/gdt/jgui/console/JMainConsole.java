@@ -35,6 +35,8 @@ import javax.swing.JMenuItem;
 import javax.swing.AbstractAction;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
 import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.Properties;
@@ -71,10 +73,13 @@ public class JMainConsole {
 	JMenuItem File;
 	JMenuItem BaseNavigator;
 	JMenu trackMenu;
-//	Hashtable <String,String>categories;
+	
 	Hashtable <String,String>recents;
 	String entihome$;
+	public String saveId$;
+	public String outdatedTreatment$;
 	public JClipboard clipboard=new JClipboard();
+	static boolean debug=false;
 	/**
 
    * This is the main method which displays the main application console.
@@ -94,10 +99,31 @@ public class JMainConsole {
 					console.frmEntigrator.addWindowListener(new java.awt.event.WindowAdapter() {
 					    public void windowClosing(WindowEvent winEvt) {
 					      //  System.out.println("MainConsole:exit:user home="+System.getProperty("user.home") );
-					        JTrackPanel.storeTrack(console);
+					        
+					    	JTrackPanel.storeTrack(console);
 					        JClipboard.store(console);
 					        JRecentPanel.store(console);
 					        System.exit(0);
+					    }
+					    public void windowActivated(WindowEvent e) {
+					    	try{
+					    	    	
+					    		int cnt=console.frmEntigrator.getContentPane().getComponentCount();
+					    	if(cnt>0){
+					    	
+					    	JContext current=(JContext)console.frmEntigrator.getContentPane().getComponent(0);
+					    	
+					    	if(current!=null)
+					    	    	
+					    	    current.activate();
+					    	}
+					    	}catch(Exception ee){
+					    		Logger.getLogger(getClass().getName()).severe(ee.toString());
+					    	}
+					    }
+					    public void windowDeactivated(WindowEvent e){
+					    	if(debug)
+					    	System.out.println("MainConsole:deactivated.save id="+console.saveId$);  
 					    }
 					});
 				} catch (Exception e) {
@@ -128,10 +154,11 @@ public class JMainConsole {
     		track=new Stack<String>();
     	return track;
     }
-    public Hashtable getRecents(){
+    public Hashtable<String,String> getRecents(){
     	return recents;
     }
 	private void initialize() {
+		
 		frmEntigrator = new JFrame();
 		frmEntigrator.setTitle("Entigrator");
 		frmEntigrator.setBounds(100, 100, 450, 300);
@@ -150,6 +177,7 @@ public class JMainConsole {
 		File.setAction(openWorkspace);
 		fileMenu.add(File);
 		recents=new Hashtable<String,String>();
+	
 		JMenuItem newBase = new JMenuItem("New base");
 		newBase.addActionListener(new ActionListener() {
 			@Override
@@ -205,6 +233,7 @@ public class JMainConsole {
 		
 		
 	}
+	
 /**
  * Put entigrator into the cache
  * @param entigrator theentigrator.
@@ -213,7 +242,9 @@ public class JMainConsole {
 	if(entigrators==null)
 		entigrators=new Hashtable<String,Entigrator>();
 	entigrators.put(entigrator.getEntihome(),entigrator);
+	
 }
+	
 	/**
 	 * Get entigrator.
 	 * @param entihome$ the database directory
@@ -316,6 +347,7 @@ public void putContext(JContext context,String locator$){
 public Component getContentPanel(){
 	 return	frmEntigrator.getContentPane();
 	}
+
 private class OpenWorkspace extends AbstractAction {
 		private static final long serialVersionUID = 1L;
 		public OpenWorkspace() {
@@ -329,13 +361,19 @@ private class OpenWorkspace extends AbstractAction {
 			    chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
 			    chooser.setAcceptAllFileFilterUsed(false);
 			    if (chooser.showOpenDialog(frmEntigrator) == JFileChooser.APPROVE_OPTION) { 
+			    	
 			    	String entiroot$=chooser.getSelectedFile().getPath();
 			    	Properties locator= new Properties();
 			    	locator.setProperty(BaseHandler.ENTIROOT,entiroot$);
 			    	locator.setProperty(BaseHandler.HANDLER_SCOPE,JConsoleHandler.CONSOLE_SCOPE);
 			    	locator.setProperty(BaseHandler.HANDLER_CLASS,JBasesPanel.class.getName());
 			    	String locator$=Locator.toString(locator);
-			    	JConsoleHandler.execute(JMainConsole.this, locator$);
+			    	
+			    	//JConsoleHandler.execute(JMainConsole.this, locator$);
+			    	JBasesPanel bp=new JBasesPanel();
+			    	bp.instantiate(JMainConsole.this, locator$);
+			    	putContext(bp, locator$);
+			    	
 		      }
 			    else {
 			    	Logger.getLogger(JMainConsole.class.getName()).info(" no selection");

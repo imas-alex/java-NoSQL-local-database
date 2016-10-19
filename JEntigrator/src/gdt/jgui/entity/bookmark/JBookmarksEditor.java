@@ -41,6 +41,7 @@ import gdt.jgui.console.JItemPanel;
 import gdt.jgui.console.JItemsListPanel;
 import gdt.jgui.console.JMainConsole;
 import gdt.jgui.console.JRequester;
+import gdt.jgui.console.ReloadDialog;
 import gdt.jgui.entity.JEntitiesPanel;
 import gdt.jgui.entity.JEntityPrimaryMenu;
 import gdt.jgui.entity.JReferenceEntry;
@@ -75,6 +76,8 @@ public class JBookmarksEditor extends JItemsListPanel implements JFacetRenderer,
 	int cnt=0;
 	protected String message$;
 	Sack entity;
+	boolean debug=false;
+	boolean ignoreOutdate=false;
 	private static final long serialVersionUID = 1L;
 	/**
 	 * The default constructor.
@@ -143,8 +146,10 @@ public class JBookmarksEditor extends JItemsListPanel implements JFacetRenderer,
 										  continue;
 				                   entity.removeElementItem("jbookmark", bookmarkKey$);
 								  }
-				                   entigrator.save(entity);  
-								   JConsoleHandler.execute(console,getLocator());
+				                   
+								  //entigrator.save(entity);
+								  entigrator.replace(entity);
+								  JConsoleHandler.execute(console,getLocator());
 							   }
 							}catch(Exception ee){
 								LOGGER.severe(ee.toString());
@@ -168,7 +173,9 @@ public class JBookmarksEditor extends JItemsListPanel implements JFacetRenderer,
 				doneItem.addActionListener(new ActionListener() {
 					@Override
 					public void actionPerformed(ActionEvent e) {
-						//close();
+						Entigrator entigrator=console.getEntigrator(entihome$);
+						//entigrator.save(entity);
+						entigrator.replace(entity);
 						console.back();
 					}
 				} );
@@ -235,7 +242,7 @@ private void paste(){
     	}
     	ca=cl.toArray(new Core[0]);
     	entity.elementReplace("jbookmark", ca);
-    	entigrator.save(entity);
+    	entigrator.replace(entity);
     	JConsoleHandler.execute(console, getLocator());
     }catch(Exception e){
     	LOGGER.severe(e.toString());
@@ -285,12 +292,15 @@ private void paste(){
 			entihome$=locator.getProperty(Entigrator.ENTIHOME);
 			entityKey$=locator.getProperty(EntityHandler.ENTITY_KEY);
 			Entigrator entigrator=console.getEntigrator(entihome$);
+			entityLabel$=entigrator.indx_getLabel(entityKey$);
+			 if(Locator.LOCATOR_TRUE.equals(locator.getProperty(JFacetRenderer.ONLY_ITEM)))
+				 return this;
 			requesterResponseLocator$=locator.getProperty(JRequester.REQUESTER_RESPONSE_LOCATOR);
             entity=entigrator.getEntityAtKey(entityKey$);
-            if(!entigrator.lock_set(entity)){
+           // if(!entigrator.lock_set(entity)){
 				//JOptionPane.showMessageDialog(this, entigrator.lock_message(entity));
-		  message$=entigrator.lock_message(entity);
-	  } 
+		  //message$=entigrator.lock_message(entity);
+	  //} 
             entityLabel$=entity.getProperty("label");
             Core[] ca=entity.elementGet("jbookmark");
             Core.sortAtType(ca);
@@ -348,8 +358,7 @@ private void paste(){
 	public void close() {
 		Entigrator entigrator=console.getEntigrator(entihome$);
         entity=entigrator.getEntityAtKey(entityKey$);
-		if(!entigrator.lock_release(entity))
-			JOptionPane.showMessageDialog(this, "The changes will be not saved");
+	
 	}
 /**
  * Execute the response locator.
@@ -382,6 +391,7 @@ private void paste(){
 				   Stack<String> s=console.getTrack();
 				   s.pop();
 				   console.setTrack(s);
+				   entigrator.store_replace();
 				   JConsoleHandler.execute(console, beLocator$);
 				   return;
 				}
@@ -551,6 +561,7 @@ private void paste(){
 		    beLocator$=Locator.append(beLocator$, JRequester.REQUESTER_ACTION,ACTION_CREATE_BOOKMARKS);
 		    String requesterResponseLocator$=Locator.compressText(beLocator$);
 		    teLocator$=Locator.append(teLocator$,JRequester.REQUESTER_RESPONSE_LOCATOR,requesterResponseLocator$);
+		    
 		    JConsoleHandler.execute(console, teLocator$);
 		}catch(Exception ee){   
 			LOGGER.severe(ee.toString());
@@ -593,5 +604,34 @@ private void paste(){
 			Logger.getLogger(getClass().getName()).severe(e.toString());
 		}
 	}
+@Override
+public void activate() {
+	if(debug)
+		System.out.println("JBookmarksEditor:activate:begin");
+	if(ignoreOutdate){
+		ignoreOutdate=false;
+		return;
+	}
+	Entigrator entigrator=console.getEntigrator(entihome$);
+	if(entity==null)
+		return;
+	if(!entigrator.ent_outdated(entity)){
+		System.out.println("JBookmarksEditor:activate:up to date");
+		return;
+	}
+	int n=new ReloadDialog(this).show();
+	if(2==n){
+		ignoreOutdate=true;
+		return;
+	}
+	if(1==n){
+		entigrator.save(entity);
+		//JConsoleHandler.execute(console, getLocator());
+	}
+	if(0==n){
+		 JConsoleHandler.execute(console, getLocator());
+		}
+	
+}
 
 }

@@ -39,6 +39,7 @@ import gdt.jgui.console.JItemPanel;
 import gdt.jgui.console.JItemsListPanel;
 import gdt.jgui.console.JMainConsole;
 import gdt.jgui.console.JRequester;
+import gdt.jgui.console.ReloadDialog;
 import gdt.jgui.entity.JEntitiesPanel;
 import gdt.jgui.entity.folder.JFileOpenItem;
 
@@ -81,6 +82,8 @@ JMenuItem[] mia;
 String requesterResponseLocator$;
 String message$;
 Sack entity;
+boolean debug=false;
+boolean ignoreOutdate=false;
 /**
  * The default constructor.
  */
@@ -131,8 +134,8 @@ public JContext instantiate(JMainConsole console, String locator$) {
 			 if(entityLabel$==null)
 				 entityLabel$=entigrator.indx_getLabel(entityKey$);
 			  entity=entigrator.getEntityAtKey(entityKey$);
-			  if(!entigrator.lock_set(entity))
-				  message$=entigrator.lock_message(entity);
+			//  if(!entigrator.lock_set(entity))
+			//	  message$=entigrator.lock_message(entity);
     		 JItemPanel[] ipa=getItems(console,entity);
         	 putItems(ipa);
         	return this;
@@ -369,8 +372,11 @@ menu.addMenuListener(new MenuListener(){
 					}catch(Exception ee){
 						Logger.getLogger(JWeblinksPanel.class.getName()).severe(ee.toString());
 					}
-				}else
+				}else{
+					Entigrator entigrator=console.getEntigrator(entihome$);
+					entigrator.replace(entity);
 					console.back();
+				}
 		}
 	} );
 	menu.add(doneItem);
@@ -418,9 +424,9 @@ return menu;
 	 */
 	@Override
 	public void close() {
-		Entigrator entigrator=console.getEntigrator(entihome$);
-		if(!entigrator.lock_release(entity))
-			JOptionPane.showMessageDialog(this, Entigrator.LOCK_CLOSE_MESSAGE);
+		//Entigrator entigrator=console.getEntigrator(entihome$);
+		//if(!entigrator.lock_release(entity))
+		//	JOptionPane.showMessageDialog(this, Entigrator.LOCK_CLOSE_MESSAGE);
 	}
 	/**
 	 * Open URL in the system browser. 
@@ -440,5 +446,35 @@ return menu;
 		}catch(Exception e){
 			Logger.getLogger(getClass().getName()).severe(e.toString());
 		}
+	}
+	@Override
+	public void activate() {
+		if(debug)
+			System.out.println("JWeblinksPanel:activate:begin");
+		if(ignoreOutdate){
+			ignoreOutdate=false;
+			return;
+		}
+		Entigrator entigrator=console.getEntigrator(entihome$);
+		if(entity==null)
+			return;
+		if(!entigrator.ent_outdated(entity)){
+			System.out.println("JWeblinksPanel:activate:up to date");
+			return;
+		}
+		int n=new ReloadDialog(this).show();
+		if(2==n){
+			ignoreOutdate=true;
+			return;
+		}
+		if(1==n){
+			entigrator.save(entity);
+			
+		}
+		if(0==n){
+			 JConsoleHandler.execute(console, getLocator());
+			}
+		
+		
 	}
 }

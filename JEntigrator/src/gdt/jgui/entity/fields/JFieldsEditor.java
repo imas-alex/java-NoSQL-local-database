@@ -43,6 +43,7 @@ import gdt.jgui.console.JFacetOpenItem;
 import gdt.jgui.console.JFacetRenderer;
 import gdt.jgui.console.JMainConsole;
 import gdt.jgui.console.JRequester;
+import gdt.jgui.console.ReloadDialog;
 import gdt.jgui.entity.JEntityFacetPanel;
 import gdt.jgui.entity.JEntityPrimaryMenu;
 import gdt.jgui.entity.JReferenceEntry;
@@ -70,7 +71,8 @@ import org.apache.commons.codec.binary.Base64;
  * a set of fields assigned to the entity.
  * @author imasa
  */
-public class JFieldsEditor extends JPanel implements JFacetRenderer,JRequester{
+public class JFieldsEditor extends JPanel implements JFacetRenderer,JRequester
+{
 	private static final long serialVersionUID = 1L;
 	private Logger LOGGER=Logger.getLogger(JFieldsEditor.class.getName());
 	public static final String CELL_FIELD_NAME="cell field name";
@@ -80,6 +82,7 @@ public class JFieldsEditor extends JPanel implements JFacetRenderer,JRequester{
 	public static final String ACTION_CUT_FIELDS="action cut fields";
 	public static final String ACTION_NEW_ENTITY="action new entity";
 	public static final String LOCATOR_TYPE_FIELD="locator type field";
+	//public static final String RELOAD_ENTITY="reload entity";
 protected String entihome$;
 protected String entityKey$;
 protected String entityLabel$;
@@ -99,6 +102,8 @@ JMenuItem pasteItem;
 protected JMenuItem doneItem;
 protected JMenuItem[] postMenu;
 protected String message$;
+boolean debug=false;
+protected boolean ignoreOutdate=false;
 /**
  * The default constructor.
  */
@@ -171,6 +176,7 @@ public JFieldsEditor() {
 					   if (response == JOptionPane.YES_OPTION) {
 							   deleteRows();
 						    }
+					  
 				   }
 			      } );
 			menu.add(deleteItemsItem);
@@ -286,14 +292,9 @@ public JFieldsEditor() {
 		} );
 		menu.add(addItemItem);
 		if(postMenu!=null){
-		//System.out.println("JFieldsEditor:postMenu="+postMenu.length);
 			for(JMenuItem jmi:postMenu)
 				menu.add(jmi);
 		}
-		//else
-		//	System.out.println("JFieldsEditor:postMenu empty");
-			
-		
 		return menu;
 		}
 /**
@@ -333,11 +334,15 @@ public JFieldsEditor() {
 	@Override
 	public JFacetRenderer instantiate(JMainConsole console, String locator$) {
 		try{
-			System.out.println("FieldsEditor.instantiate:begin");
+			if(debug)
+				System.out.println("FieldsEditor.instantiate:locator="+locator$);
 			this.console=console;
 			Properties locator=Locator.toProperties(locator$);
 			entihome$=locator.getProperty(Entigrator.ENTIHOME);
 			entityKey$=locator.getProperty(EntityHandler.ENTITY_KEY);
+			if(entityKey$==null){
+				return null;
+			}
 			
 			requesterResponseLocator$=locator.getProperty(JRequester.REQUESTER_RESPONSE_LOCATOR);
 			table = new JTable();
@@ -349,10 +354,10 @@ public JFieldsEditor() {
 						}
 					);
 			  entigrator=console.getEntigrator(entihome$);
-			  entity=entigrator.getEntityAtKey(entityKey$);
-			  if(!entigrator.lock_set(entity))
-				  message$=entigrator.lock_message(entity);
-			  
+			  entityLabel$=entigrator.indx_getLabel(entityKey$);
+				if(Locator.LOCATOR_TRUE.equals(locator.getProperty(JFacetRenderer.ONLY_ITEM)))
+					 return this;
+			    entity=entigrator.ent_getAtKey(entityKey$);
 			  entityLabel$=entity.getProperty("label");
 			  Core[] ca=entity.elementGet("field");
 			  if(ca!=null)
@@ -376,6 +381,7 @@ public JFieldsEditor() {
 	        LOGGER.severe(e.toString());
 			
 			}
+		
 		return this;
 		
 	}
@@ -413,10 +419,8 @@ public JFieldsEditor() {
  */
 	@Override
 	public String getTitle() {
-		if(message$==null)
 			return "Fields";
-		else
-			return "Fields"+message$;
+	
 	}
 	/**
 	 * Get the context type.
@@ -431,10 +435,8 @@ public JFieldsEditor() {
  */
 	@Override
 	public void close() {
-		
-		if(!entigrator.lock_release(entity))
-			JOptionPane.showMessageDialog(this, Entigrator.LOCK_CLOSE_MESSAGE);
-				}
+		activate();	
+	}
 	private boolean hasEditingCell(){
 		try{
 			
@@ -477,7 +479,7 @@ public JFieldsEditor() {
         	return null;
         }
 	}
-	private void save(){
+	protected void save(){
 		try{
 			int rCnt;
 			Core row;
@@ -490,7 +492,12 @@ public JFieldsEditor() {
 					row=new Core(null,(String)model.getValueAt(j,0),(String)model.getValueAt(j,1));
 					entity.putElementItem("field", row);
 				}
-           entigrator.save(entity);			
+		//	System.out.println("JFieldsEditor:save:finish");
+			//entity.print();
+				entity.putAttribute(new Core(null,Entigrator.TIMESTAMP,String.valueOf(System.currentTimeMillis())));	
+				entity.putAttribute(new Core(null,Entigrator.SAVE_ID,Identity.key()));
+           //entigrator.save(entity);
+				entigrator.replace(entity);
 		}catch(Exception e){
 			LOGGER.severe(e.toString());
 		}
@@ -639,7 +646,7 @@ public JFieldsEditor() {
 	 */
 	@Override
 	public void response(JMainConsole console, String locator$) {
-//		System.out.println("FieldsEditor:response:"+Locator.remove(locator$,Locator.LOCATOR_ICON ));
+		System.out.println("FieldsEditor:response:"+Locator.remove(locator$,Locator.LOCATOR_ICON ));
 		try{
 			Properties locator=Locator.toProperties(locator$);
 			String action$=locator.getProperty(JRequester.REQUESTER_ACTION);
@@ -647,18 +654,22 @@ public JFieldsEditor() {
 			Entigrator entigrator=console.getEntigrator(entihome$);
 			String text$=locator.getProperty(JTextEditor.TEXT);
 			if(ACTION_NEW_ENTITY.equals(action$)){
+				System.out.println("JFieldsEditor:response:new entity");
 				Sack newEntity=entigrator.ent_new("fields", text$);
+				
 				newEntity.createElement("field");
 				newEntity.putElementItem("field", new Core(null,"Name","Value"));
 				newEntity.createElement("fhandler");
 				newEntity.putElementItem("fhandler", new Core(null,FieldsHandler.class.getName(),null));
 				newEntity.putAttribute(new Core (null,"icon","fields.png"));
-				entigrator.save(newEntity);
+				if(!entigrator.save(newEntity))
+					return;
 				String icons$=entihome$+"/"+Entigrator.ICONS;
 				Support.addHandlerIcon(getClass(), "fields.png", icons$);
 				newEntity=entigrator.ent_reindex(newEntity);
+				
 			//	newEntity.print();
-				reindex(console, entigrator, newEntity);
+			//	reindex(console, entigrator, newEntity);
 				JEntityFacetPanel efp=new JEntityFacetPanel(); 
 				String efpLocator$=efp.getLocator();
 				efpLocator$=Locator.append(efpLocator$,Locator.LOCATOR_TITLE,newEntity.getProperty("label"));
@@ -670,6 +681,7 @@ public JFieldsEditor() {
 				s.pop();
 				console.setTrack(s);
 				JConsoleHandler.execute(console, efpLocator$);
+				entigrator.store_replace();
 				return;
 			}
 				String entityKey$=locator.getProperty(EntityHandler.ENTITY_KEY);
@@ -754,14 +766,14 @@ public JFieldsEditor() {
 	@Override
 	public void adaptRename(JMainConsole console, String locator$) {
 		try{
+			if(debug)
 			System.out.println("JFieldsEditor:adaptRename:locator="+locator$);
-			if(console==null)
-				System.out.println("JFieldsEditor:adaptRename:console is null");
 			Properties locator=Locator.toProperties(locator$);
 			String entihome$=locator.getProperty(Entigrator.ENTIHOME);
 			String entityKey$=locator.getProperty(EntityHandler.ENTITY_KEY);
 			Entigrator entigrator=console.getEntigrator(entihome$);
-			Sack entity=entigrator.getEntityAtKey(entityKey$);
+			//Sack entity=entigrator.getEntityAtKey(entityKey$);
+			Sack entity=entigrator.ent_getAtKey(entityKey$);
 			String entityLocator$=EntityHandler.getEntityLocator(entigrator, entity);
 			FieldsHandler fieldsHandler=new FieldsHandler();
 			fieldsHandler.instantiate(entityLocator$);
@@ -779,12 +791,18 @@ public JFieldsEditor() {
 	@Override
 	public void reindex(JMainConsole console, Entigrator entigrator, Sack entity) {
 	    try{
+	    //	System.out.println("JFieldsEditor:reindex:entity="+entity.getProperty("label"));
 	    	
 	    	String fhandler$=FieldsHandler.class.getName();
 	    	if(entity.getElementItem("fhandler", fhandler$)!=null){
 				entity.putElementItem("jfacet", new Core(JFieldsFacetAddItem.class.getName(),fhandler$,JFieldsFacetOpenItem.class.getName()));
 				entigrator.save(entity);
 			}
+	    	String entityLocator$=EntityHandler.getEntityLocator(entigrator, entity);
+			FieldsHandler fieldsHandler=new FieldsHandler();
+			fieldsHandler.instantiate(entityLocator$);
+			fieldsHandler.adaptRename(entigrator);
+	    	adaptRename(console, entityLocator$);
 	    }catch(Exception e){
 	    	LOGGER.severe(e.toString());
 	    }
@@ -825,12 +843,14 @@ public JFieldsEditor() {
 	    String editorLocator$=textEditor.getLocator();
 	    editorLocator$=Locator.append(editorLocator$, JTextEditor.TEXT, "Fields"+Identity.key().substring(0,4));
 	    editorLocator$=Locator.append(editorLocator$,Locator.LOCATOR_TITLE,"Fields entity");
+	    entihome$=Locator.getProperty(locator$,Entigrator.ENTIHOME );
+	    if(entihome$!=null)
+	    	editorLocator$=Locator.append(editorLocator$,Entigrator.ENTIHOME,entihome$);
 	    String icon$=Support.readHandlerIcon(null,getClass(), "fields.png");
 	    editorLocator$=Locator.append(editorLocator$,Locator.LOCATOR_ICON,icon$);
 	    JFieldsEditor fe=new JFieldsEditor();
 	    String feLocator$=fe.getLocator();
 	    Properties responseLocator=Locator.toProperties(feLocator$);
-	    entihome$=Locator.getProperty(locator$,Entigrator.ENTIHOME );
 	    if(entihome$!=null)
 	      responseLocator.setProperty(Entigrator.ENTIHOME,entihome$);
 	   responseLocator.setProperty(BaseHandler.HANDLER_CLASS,getClass().getName());
@@ -861,4 +881,54 @@ public JFieldsEditor() {
 		return null;
 	}
 	}
+	@Override
+	public void activate() {
+		if(debug)
+			System.out.println("JFieldsEditor:activate:locator="+getLocator());
+		if(entity==null)
+			return;
+		
+		if(ignoreOutdate){
+			ignoreOutdate=false;
+			return;
+		}
+		System.out.println("JFieldsEditor:activate:outdated treatment="+console.outdatedTreatment$);
+		if(console.outdatedTreatment$!=null){
+			if(JContext.OUTDATED_CANCEL.equals(console.outdatedTreatment$)){
+				console.outdatedTreatment$=null;
+				return;
+			}
+			if(JContext.OUTDATED_RELOAD.equals(console.outdatedTreatment$)){
+				entity=entigrator.ent_reload(entityKey$);
+				instantiate(console,getLocator());
+				console.outdatedTreatment$=null;
+				return;
+			}
+			if(JContext.OUTDATED_REPLACE.equals(console.outdatedTreatment$)){
+				entity.putAttribute(new Core(null,Entigrator.SAVE_ID,Identity.key()));
+				save();
+				console.outdatedTreatment$=null;
+				return;
+			}
+		}
+		if(!entigrator.ent_outdated(entity))
+			return;
+		int n=new ReloadDialog(this).show();
+		if(2==n){
+			ignoreOutdate=true;
+		
+			return;
+		}
+		if(1==n){
+			entity.putAttribute(new Core(null,Entigrator.SAVE_ID,Identity.key()));
+			save();
+			
+		}
+		if(0==n){
+				entity=entigrator.ent_reload(entityKey$);
+				instantiate(console,getLocator());
+			}
+	
 	}
+		
+}

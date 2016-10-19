@@ -58,6 +58,7 @@ String entityKey$;
 String entityLabel$;
 String locator$;
 JMenuItem addItem;
+boolean debug=false;
 /**
  * The default constructor.
  */
@@ -85,6 +86,7 @@ public JEntityAddFacets() {
 						      String[] sa=JEntityAddFacets.this.listSelectedItems();
 						      if(sa!=null){
 						    	  for(String aSa:sa)
+						    		 if(debug)
 						    		  System.out.println("EntityAddFacets:item="+aSa);
 						    	  applyFacets();
 						    	  JEntityFacetPanel erm=new JEntityFacetPanel();
@@ -144,6 +146,8 @@ public JEntityAddFacets() {
 			entihome$=locator.getProperty(Entigrator.ENTIHOME);
 			entityKey$=locator.getProperty(EntityHandler.ENTITY_KEY);
 			entityLabel$=locator.getProperty(EntityHandler.ENTITY_LABEL);
+			
+			
 			putItems(getAllFacetAddItems());
 			//revalidate();
 			//repaint();
@@ -312,5 +316,10 @@ public void close() {
 @Override
 public String getSubtitle() {
 	return entityLabel$;
+}
+@Override
+public void activate() {
+	// TODO Auto-generated method stub
+	
 }
 }

@@ -147,11 +147,15 @@ public class JFolderPanel extends JItemsListPanel implements JFacetRenderer,JReq
 			entihome$=locator.getProperty(Entigrator.ENTIHOME);
 			entityKey$=locator.getProperty(EntityHandler.ENTITY_KEY);
 			Entigrator entigrator=console.getEntigrator(entihome$);
+			entityLabel$=entigrator.indx_getLabel(entityKey$);
+			if(Locator.LOCATOR_TRUE.equals(locator.getProperty(JFacetRenderer.ONLY_ITEM)))
+				 return this;
+			
 			entity=entigrator.getEntityAtKey(entityKey$);
-			  if(!entigrator.lock_set(entity)){
+			//  if(!entigrator.lock_set(entity)){
 						//JOptionPane.showMessageDialog(this, entigrator.lock_message(entity));
-				  message$=entigrator.lock_message(entity);
-			  }
+			//	  message$=entigrator.lock_message(entity);
+			 // }
 			requesterResponseLocator$=locator.getProperty(JRequester.REQUESTER_RESPONSE_LOCATOR);
 			entityLabel$=locator.getProperty(EntityHandler.ENTITY_LABEL);
 			if(entityLabel$==null){
@@ -233,10 +237,12 @@ public class JFolderPanel extends JItemsListPanel implements JFacetRenderer,JReq
  */
 	@Override
 	public void close() {
+		/*
 		Entigrator entigrator=console.getEntigrator(entihome$);
 		//Sack entity=entigrator.getEntityAtKey(entityKey$);
 		if(!entigrator.lock_release(entity))
 			JOptionPane.showMessageDialog(this, Entigrator.LOCK_CLOSE_MESSAGE);
+			*/
 		
 	}
 /**
@@ -296,7 +302,9 @@ public class JFolderPanel extends JItemsListPanel implements JFacetRenderer,JReq
 				   Stack<String> s=console.getTrack();
 				   s.pop();
 				   console.setTrack(s);
+				   entigrator.store_replace();
 				   JConsoleHandler.execute(console, fLocator$);
+				   
 				}
 		      
 		}catch(Exception e){
@@ -808,5 +816,10 @@ public JMenu getContextMenu() {
 				LOGGER.severe(e.toString());
 			}
 		}
+	@Override
+	public void activate() {
+		// TODO Auto-generated method stub
+		
+	}
 	
 }

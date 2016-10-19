@@ -103,7 +103,9 @@ public JContext instantiate(JMainConsole console, String locator$) {
 			 Properties locator=Locator.toProperties(locator$);
 			 entihome$=locator.getProperty(Entigrator.ENTIHOME);
 			 try{
+				 removeAll(); 
 				 Entigrator entigrator=console.getEntigrator(entihome$);
+				 entigrator.store_refresh();
 				 String[] labels=entigrator.indx_listAllLabels();
 		//		 System.out.println("SearchPanel:instantiate.labels="+labels.length);
 				 comboBox = new AutocompleteJComboBox(labels);
@@ -235,4 +237,8 @@ public JMenu getContextMenu() {
 			menu.add(doneItem);
 			return menu;
 		}
+@Override
+public void activate() {
+	JConsoleHandler.execute(console, getLocator());
+}
 }

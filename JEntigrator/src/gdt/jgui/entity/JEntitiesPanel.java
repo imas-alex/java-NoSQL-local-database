@@ -18,6 +18,8 @@ package gdt.jgui.entity;
  */
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Properties;
@@ -30,23 +32,25 @@ import javax.swing.event.MenuListener;
 import org.apache.commons.codec.binary.Base64;
 import gdt.data.entity.BaseHandler;
 import gdt.data.entity.EntityHandler;
-import gdt.data.grain.Core;
 import gdt.data.grain.Locator;
 import gdt.data.grain.Sack;
 import gdt.data.grain.Support;
 import gdt.data.store.Entigrator;
+import gdt.jgui.base.JCategoryPanel;
 import gdt.jgui.console.JConsoleHandler;
 import gdt.jgui.console.JContext;
+import gdt.jgui.console.JFacetRenderer;
 import gdt.jgui.console.JItemPanel;
 import gdt.jgui.console.JItemsListPanel;
 import gdt.jgui.console.JMainConsole;
+import gdt.jgui.console.ReloadDialog;
 /**
  * Displays the list of entities.
  * @author imasa
  *
  */
 
-public class JEntitiesPanel extends JItemsListPanel{
+public class JEntitiesPanel extends JItemsListPanel {
 	private static final long serialVersionUID = 1L;
 	
 	
@@ -65,13 +69,16 @@ public class JEntitiesPanel extends JItemsListPanel{
 	protected String requesterResponseLocator$;
 	protected String containerKey$;
 	protected String componentKey$;
-	
- //   protected JMenuItem[] mia;
+	protected String saveId$;
+	static boolean debug=false; 
+	boolean ignoreOutdate=false;
+
 /**
  * The default constructor.
  */
     public JEntitiesPanel (){
-        super();	
+        super();
+       
     }
     
   /**
@@ -127,7 +134,7 @@ public class JEntitiesPanel extends JItemsListPanel{
 				}
 				}
 				if(locator.getProperty(EntityHandler.ENTITY_COMPONENT)!=null){
-					 if(componentKey$!=null){	
+					 if(componentKey$!=null&&JEntitiesPanel.this.hasSelectedItems()){	
 							removeContainersItem = new JMenuItem("Remove containers");
 							removeContainersItem.addActionListener(new ActionListener() {
 								@Override
@@ -185,12 +192,14 @@ public class JEntitiesPanel extends JItemsListPanel{
 								}
 							}
 							String[] sa=sl.toArray(new String[0]);
-							System.out.println("JEntitiesPanel:archive:1");
+							
 							String[] ea=JReferenceEntry.getCoalition(console, entigrator, sa);
+							if(debug){
 							if(ea==null)
 								System.out.println("JEntitiesPanel:archive:ea null");
 							else
 							System.out.println("JEntitiesPanel:archive:ea="+ea.length);
+							}
 							JArchivePanel archivePanel=new JArchivePanel();
 				        	String apLocator$=archivePanel.getLocator();
 				        	//locator$=getLocator();
@@ -207,10 +216,12 @@ public class JEntitiesPanel extends JItemsListPanel{
 					deleteItem.addActionListener(new ActionListener() {
 						@Override
 						public void actionPerformed(ActionEvent e) {
+							//System.out.println("JEntitiesPanel:delete:0");
 							int response = JOptionPane.showConfirmDialog(console.getContentPanel(), "Delete ?", "Confirm",
 							        JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
 						   if (response == JOptionPane.YES_OPTION) {
-							JItemPanel[] ipa=JEntitiesPanel.this.getItems();
+							  // System.out.println("JEntitiesPanel:delete:1");
+							   JItemPanel[] ipa=JEntitiesPanel.this.getItems();
 							Entigrator entigrator=console.getEntigrator(entihome$);
 							String iLocator$;
 							Properties iLocator;
@@ -220,13 +231,19 @@ public class JEntitiesPanel extends JItemsListPanel{
 							ArrayList<String>sl=new ArrayList<String>();
 							for(JItemPanel ip:ipa){
 								iLocator$=ip.getLocator();
+								
 								iLocator=Locator.toProperties(iLocator$);
+							//	System.out.println("JEntitiesPanel:delete title="+iLocator.getProperty(Locator.LOCATOR_TITLE));
 								iEntityLabel$=iLocator.getProperty(EntityHandler.ENTITY_LABEL);
 								if(ip.isChecked()){
-									iEntityKey$=iLocator.getProperty(EntityHandler.ENTITY_KEY);
-										iEntity=entigrator.getEntityAtKey(iEntityKey$);
+								//	System.out.println("JEntitiesPanel:delete label="+iEntityLabel$);
+									iEntity=entigrator.ent_getAtLabel(iEntityLabel$);
+									
+									//iEntityKey$=iLocator.getProperty(EntityHandler.ENTITY_KEY);
+									//	iEntity=entigrator.getEntityAtKey(iEntityKey$);
 									if(iEntity!=null)
 										entigrator.deleteEntity(iEntity);
+									
 								}
 								else{
 									sl.add(iEntityLabel$);
@@ -316,26 +333,32 @@ public class JEntitiesPanel extends JItemsListPanel{
 	@Override
 	public JContext instantiate(JMainConsole console, String locator$) {
 		try{
-			 System.out.println("JEntitiesPanel:instantiate:BEGIN");
 			 this.console=console;
 			 this.locator$=locator$;
 			 Properties locator=Locator.toProperties(locator$);
 			 list$=locator.getProperty(EntityHandler.ENTITY_LIST);
+			if(debug)
+			 System.out.println("JEntitiesPanel:instantiate:list="+list$);
 			 entityKey$=locator.getProperty(EntityHandler.ENTITY_KEY);
 			 entihome$=locator.getProperty(Entigrator.ENTIHOME);
         	 containerKey$=locator.getProperty(EntityHandler.ENTITY_CONTAINER);
         	 componentKey$=locator.getProperty(EntityHandler.ENTITY_COMPONENT);
-        	 
+        	  Entigrator entigrator=console.getEntigrator(entihome$);
+        	 saveId$=entigrator.store_saveId();
+        	
+        	
 			 JItemPanel[] ipl= listEntitiesAtLabelList( console,locator$);
         	 putItems(ipl);
         	 try{
         		 pos=Integer.parseInt(locator.getProperty(POSITION));
+        		if(debug)
         		 System.out.println("JEntitiesPanel:instantiate:pos="+pos);
         		 select(pos);
         	 }catch(Exception e){
         		 LOGGER.info(e.toString());
         	 }
-        	
+        	 if(debug)
+        	 System.out.println("JEntitiesPanel:instantiate:save id="+saveId$);
         	return this;
         }catch(Exception e){
         
@@ -375,26 +398,41 @@ public String getTitle() {
 			   Properties locator=Locator.toProperties(locator$);
 			   String list$=locator.getProperty(EntityHandler.ENTITY_LIST);
 			   String[]la=Locator.toArray(list$);
+			  
 			   if(la==null){
 				   Logger.getLogger(JEntitiesPanel.class.getName()).info("empty list");
 				   return null;
 			   }
+			   
 			   String entihome$=locator.getProperty(Entigrator.ENTIHOME);
 			   Entigrator entigrator=console.getEntigrator(entihome$);
-			   ArrayList<JItemPanel>ipl=new ArrayList<JItemPanel>();
+			    ArrayList<JItemPanel>ipl=new ArrayList<JItemPanel>();
 			   JItemPanel itemPanel;
 			   String entityLocator$;
 			   int i=0;
 		   for(String aLa:la){
 			   try{
+			if(debug)
+				   System.out.println("JEntitiesPanel: listEntitiesAtLabelList:aLa="+aLa);	   
 			   entityLocator$=EntityHandler.getEntityLocator(entigrator, aLa);
+		  if(debug)   
+			   System.out.println("JEntitiesPanel: listEntitiesAtLabelList:locator="+entityLocator$);	
+			   if(entityLocator$==null)
+				   entityLocator$=EntityHandler.getEntityLocatorAtKey(entigrator, aLa);
+			   if(entityLocator$==null)
+				   continue;
 			   entityLocator$=Locator.append(entityLocator$,Entigrator.ENTIHOME , entihome$);
 			   entityLocator$=Locator.append(entityLocator$,Locator.LOCATOR_CHECKABLE , Locator.LOCATOR_TRUE);
+			  // if("No label".equals(Locator.getProperty(entityLocator$, Locator.LOCATOR_TITLE)))
+				//   continue;
 			   JEntityFacetPanel em=new JEntityFacetPanel();
+			   entityLocator$=Locator.append(entityLocator$, JFacetRenderer.ONLY_ITEM, Locator.LOCATOR_TRUE);
 			   em.instantiate(console, entityLocator$);
+			   
 			   String emLocator$=em.getLocator();
 			   emLocator$=Locator.append(emLocator$,Locator.LOCATOR_CHECKABLE, Locator.LOCATOR_TRUE);
 			   emLocator$=Locator.append(emLocator$,POSITION, String.valueOf(i++));
+			   
 			   itemPanel=new JItemPanel(console,emLocator$);
 			   ipl.add(itemPanel);
 			   }catch(Exception ee){
@@ -494,6 +532,41 @@ public String getTitle() {
 			LOGGER.severe(e.toString());
 			}
 	}
+
+	@Override
+	public void activate() {
+		if(debug)
+			System.out.println("JEntitiesPanel:activate:begin");
+		if(ignoreOutdate){
+			ignoreOutdate=false;
+			return;
+		}
+		Entigrator entigrator=console.getEntigrator(entihome$);
+		
+		if(!entigrator.store_outdated()){
+			System.out.println("JEntitiesPanel:activate:up to date");
+			return;
+		}
+		int n=new ReloadDialog(this).show();
+		if(2==n){
+			//cancel
+			ignoreOutdate=true;
+			return;
+		}
+		if(1==n){
+			//replace
+			entigrator.store_replace();//JConsoleHandler.execute(console, getLocator());
+		}
+		if(0==n){
+			//reload
+			entigrator.store_reload();
+			 JConsoleHandler.execute(console, getLocator());
+			}
+		
+		
+	}
+
+	
 	
 	
 }

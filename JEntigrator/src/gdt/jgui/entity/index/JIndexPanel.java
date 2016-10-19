@@ -67,6 +67,7 @@ import gdt.jgui.console.JContext;
 import gdt.jgui.console.JFacetRenderer;
 import gdt.jgui.console.JMainConsole;
 import gdt.jgui.console.JRequester;
+import gdt.jgui.console.ReloadDialog;
 import gdt.jgui.entity.JEntitiesPanel;
 import gdt.jgui.entity.JEntityPrimaryMenu;
 import gdt.jgui.entity.JEntityStructurePanel;
@@ -122,6 +123,8 @@ public class JIndexPanel extends JPanel implements JContext , JFacetRenderer,JRe
 	boolean cut=false;
 	String message$;
 	Sack entity;
+	boolean debug=false;
+	boolean ignoreOutdate=false;
 /**
  * The default constructor.
  */
@@ -403,6 +406,8 @@ public class JIndexPanel extends JPanel implements JContext , JFacetRenderer,JRe
 				doneItem.addActionListener(new ActionListener() {
 					@Override
 					public void actionPerformed(ActionEvent e) {
+						Entigrator entigrator=console.getEntigrator(entihome$);
+						entigrator.replace(entity);
 						console.back();
 						
 					}
@@ -518,12 +523,15 @@ private DefaultMutableTreeNode instantiateNode(Sack index ,String nodeKey$){
 			entihome$=locator.getProperty(Entigrator.ENTIHOME);
 			entityKey$=locator.getProperty(EntityHandler.ENTITY_KEY);
 			Entigrator entigrator=console.getEntigrator(entihome$);
+			entityLabel$=entigrator.indx_getLabel(entityKey$);
+			if(Locator.LOCATOR_TRUE.equals(locator.getProperty(JFacetRenderer.ONLY_ITEM)))
+				 return this;
 			requesterResponseLocator$=locator.getProperty(JRequester.REQUESTER_RESPONSE_LOCATOR);
             entity=entigrator.getEntityAtKey(entityKey$);
-            if(!entigrator.lock_set(entity)){
+           // if(!entigrator.lock_set(entity)){
 				//JOptionPane.showMessageDialog(this, entigrator.lock_message(entity));
-		  message$=entigrator.lock_message(entity);
-	  }
+	//	  message$=entigrator.lock_message(entity);
+	 // }
             entityLabel$=entity.getProperty("label");
     		rootNode = new DefaultMutableTreeNode(entityLabel$);
    		    locator=new Properties();
@@ -752,9 +760,10 @@ private Sack orderGroupDefault(Sack index,String groupKey$){
 	 */
 	@Override
 	public void close() {
-		Entigrator entigrator=console.getEntigrator(entihome$);
-		if(!entigrator.lock_release(entity))
-			JOptionPane.showMessageDialog(this, Entigrator.LOCK_CLOSE_MESSAGE);
+		
+		//Entigrator entigrator=console.getEntigrator(entihome$);
+		//if(!entigrator.lock_release(entity))
+		//	JOptionPane.showMessageDialog(this, Entigrator.LOCK_CLOSE_MESSAGE);
 		
 	}
 	/**
@@ -1579,10 +1588,10 @@ private boolean hasSelectedItems(){
 				 String nodeType$=locator.getProperty(NODE_TYPE);
 				 if(NODE_TYPE_ROOT.equals(nodeType$))
 					 return false;
-				// String nodeKey$=locator.getProperty(NODE_KEY);
+				
 				 if(NODE_TYPE_GROUP.equals(nodeType$))//&&"parent".equals(nodeKey$))
 					 return false;
-				 System.out.println("JIndexPanel:hasSelectedItems:tp="+tp.getLastPathComponent().toString());
+				// System.out.println("JIndexPanel:hasSelectedItems:tp="+tp.getLastPathComponent().toString());
 			 }
 			return true;	 
 		 }
@@ -1605,6 +1614,36 @@ private boolean contains(String locator$,String[] la){
 		Logger.getLogger(getClass().getName()).severe(e.toString());
 	}
 	return false;
+	
+}
+@Override
+public void activate() {
+	if(debug)
+		System.out.println("JIndexPanel:activate:begin");
+	if(ignoreOutdate){
+		ignoreOutdate=false;
+		return;
+	}
+	Entigrator entigrator=console.getEntigrator(entihome$);
+	if(entity==null)
+		return;
+	if(!entigrator.ent_outdated(entity)){
+		System.out.println("JIndexPanel:activate:up to date");
+		return;
+	}
+	int n=new ReloadDialog(this).show();
+	if(2==n){
+		ignoreOutdate=true;
+		return;
+	}
+	if(1==n){
+		entigrator.save(entity);
+		//JConsoleHandler.execute(console, getLocator());
+	}
+	if(0==n){
+		 JConsoleHandler.execute(console, getLocator());
+		}
+	
 	
 }
 }

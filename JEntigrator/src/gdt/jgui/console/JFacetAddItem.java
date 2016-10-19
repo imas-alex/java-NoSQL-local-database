@@ -47,6 +47,7 @@ public abstract class JFacetAddItem extends JItemPanel implements JRequester{
 	protected String method$;
 	protected String extension$;
 	protected String addItem$;
+	protected boolean debug=false;
 	/**
 	 * Set mode to add facet as component.	
 	 */
@@ -66,8 +67,8 @@ public abstract class JFacetAddItem extends JItemPanel implements JRequester{
 	@Override
 	public JFacetAddItem instantiate(JMainConsole console,String locator$){
 		try{
-			
-			System.out.println("JFacetAddItem:instantiate:locator="+locator$);  
+			if(debug)
+			 System.out.println("JFacetAddItem:instantiate:locator="+locator$);  
 			Properties locator=Locator.toProperties(locator$);
 			entihome$=locator.getProperty(Entigrator.ENTIHOME);
 			entityKey$=locator.getProperty(EntityHandler.ENTITY_KEY);
@@ -81,6 +82,7 @@ public abstract class JFacetAddItem extends JItemPanel implements JRequester{
 			else
 				addItem=(JFacetAddItem)JConsoleHandler.getHandlerInstance(entigrator, addItem$,extension$);
 			locator$=addItem.getLocator();
+			if(debug)
 			System.out.println("FacetAddItem:instantiate:0:faiLocator="+locator$); 
 			//getLocator();
 			if(entihome$!=null)
@@ -98,8 +100,8 @@ public abstract class JFacetAddItem extends JItemPanel implements JRequester{
 				if(icon$!=null)
 					locator$=Locator.append(locator$,Locator.LOCATOR_ICON,icon$);
 			}
-			
-			System.out.println("FacetAddItem:instantiate:1:faiLocator="+locator$);  
+			if(debug)
+			System.out.println("JFacetAddItem:instantiate:1:faiLocator="+locator$);  
 			locator$=markAppliedUncheckable(console, locator$);
 			super.instantiate(console, locator$);
 		

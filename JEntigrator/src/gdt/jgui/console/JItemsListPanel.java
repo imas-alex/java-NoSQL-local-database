@@ -123,6 +123,7 @@ public  abstract class JItemsListPanel extends JPanel implements JContext{
 			      }
 				}
 			} );
+		   
 			menu.add(unselectItem);
 			 recentItem = new JMenuItem("Put as recent");
 			   recentItem.addActionListener(new ActionListener() {
@@ -139,7 +140,7 @@ public  abstract class JItemsListPanel extends JPanel implements JContext{
  * Put items into list.    
  * @param ipa the item panel array.
  */
-    public void putItems(JItemPanel[] ipa) {
+    protected void putItems(JItemPanel[] ipa) {
     	panel.removeAll();
     	setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
 		 if(ipa!=null)
@@ -151,6 +152,9 @@ public  abstract class JItemsListPanel extends JPanel implements JContext{
 			 }
 		
 		 
+	}
+    protected void clearItems() {
+    	panel.removeAll();
 	}
     /**
      * Get items of the list.

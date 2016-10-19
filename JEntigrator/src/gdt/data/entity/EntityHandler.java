@@ -102,9 +102,10 @@ public static boolean isForeignEntity(String entihome$,String entityLocator$){
  */	 
 public static String getEntityLocator( Entigrator entigrator, String label$){
 	try{
-	String entityKey$=entigrator.indx_keyAtLabel(label$);
-	Sack entity=entigrator.getEntityAtKey(entityKey$);
-	return getEntityLocator( entigrator, entity);
+		//System.out.println("Entityhandler:getEntityLocator:label="+label$);
+		String entityKey$=entigrator.indx_keyAtLabel(label$);
+		//String entityKey$=entigrator.ent_.indx_keyAtLabel(label$);
+				return getEntityLocatorAtKey( entigrator, entityKey$);
 	}catch(Exception e){
 		Logger.getLogger(EntityHandler.class.getName()).severe(e.toString());
 		return null;
@@ -118,7 +119,10 @@ public static String getEntityLocator( Entigrator entigrator, String label$){
  */	 
 public static String getEntityLocatorAtKey( Entigrator entigrator, String entityKey$){
 	try{
-	//	System.out.println("EntityHandler:getEntityLocator:at key="+entityKey$);
+		//System.out.println("EntityHandler:getEntityLocator:at key="+entityKey$);
+		if(entityKey$==null)
+	    	return null;
+		
 		Properties locator=new Properties();
 	    locator.setProperty(Locator.LOCATOR_TYPE, ENTITY_TYPE);
 	    locator.setProperty(Locator.LOCATOR_SCOPE, ENTITY_SCOPE);
@@ -131,7 +135,7 @@ public static String getEntityLocatorAtKey( Entigrator entigrator, String entity
 	    String entityType$=entigrator.getEntityType(entityKey$);
 	    if(entityType$!=null)
 	    	locator.setProperty(ENTITY_TYPE,entityType$);
-	    String iconFile$=entigrator.getEntityIcon(entityKey$);
+	    String iconFile$=entigrator.ent_getIconAtKey(entityKey$);
 	    String icon$=entigrator.readIconFromIcons(iconFile$);
 	    if(icon$!=null)
 	    	locator.setProperty(Locator.LOCATOR_ICON,icon$);
@@ -150,12 +154,16 @@ public static String getEntityLocatorAtKey( Entigrator entigrator, String entity
  */	 
 public static String getEntityLocator( Entigrator entigrator, Sack entity){
 	//System.out.println("EntityHandler:getEntityLocator:at entity="+entity.getProperty("label"));
+	if(entity==null)
+		return null;
 	Properties locator=new Properties();
     locator.setProperty(Locator.LOCATOR_TYPE, ENTITY_TYPE);
     locator.setProperty(Locator.LOCATOR_SCOPE, ENTITY_SCOPE);
     String entihome$=entigrator.getEntihome();
     locator.setProperty(Entigrator.ENTIHOME,entihome$);
     String label$=entity.getProperty("label");
+    if(label$==null)
+    	label$=entity.getKey();
     locator.setProperty(Locator.LOCATOR_TITLE,label$);
     locator.setProperty(ENTITY_KEY,entity.getKey());
     locator.setProperty(ENTITY_LABEL,label$);
@@ -168,15 +176,17 @@ public static String getEntityLocator( Entigrator entigrator, Sack entity){
 	return Locator.toString(locator);
 }
 public static String getEntityLocator( String entihome$,String entityKey$,String entityLabel$,String icon$){
-	//System.out.println("EntityHandler:getEntityLocator:at entity="+entity.getProperty("label"));
+	System.out.println("EntityHandler:getEntityLocator:at entity="+entityLabel$);
 	Properties locator=new Properties();
     locator.setProperty(Locator.LOCATOR_TYPE, ENTITY_TYPE);
     locator.setProperty(Locator.LOCATOR_SCOPE, ENTITY_SCOPE);
+    
     locator.setProperty(Entigrator.ENTIHOME,entihome$);
     locator.setProperty(Locator.LOCATOR_TITLE,entityLabel$);
-    locator.setProperty(ENTITY_KEY,entityKey$);
-    locator.setProperty(ENTITY_LABEL,entityLabel$);
-    
+    if(entityKey$!=null)
+    	locator.setProperty(ENTITY_KEY,entityKey$);
+    if(entityLabel$!=null)
+       locator.setProperty(ENTITY_LABEL,entityLabel$);
     if(icon$!=null)
     	locator.setProperty(Locator.LOCATOR_ICON,icon$);
 	return Locator.toString(locator);

@@ -33,6 +33,7 @@ import gdt.jgui.console.JClipboard;
 import gdt.jgui.console.JConsoleHandler;
 import gdt.jgui.console.JContext;
 import gdt.jgui.console.JMainConsole;
+import gdt.jgui.console.ReloadDialog;
 import gdt.jgui.entity.JEntitiesPanel;
 import gdt.jgui.entity.JEntityPrimaryMenu;
 import gdt.jgui.entity.JEntityFacetPanel;
@@ -104,6 +105,7 @@ public class JDesignPanel extends JPanel implements JContext{
 	private JComboBox<String> containerComboBox;
 	private Logger LOGGER =Logger.getLogger(JDesignPanel.class.getName());
 	private JMainConsole console;
+	protected String saveId$;
 	/**
 	 * The default constructor.
 	 */
@@ -439,8 +441,10 @@ private void delete(){
     }
   }
 private void listEntities(){
+	activate();
 	ComboBoxModel<String> model=entityComboBox.getModel();
 	int cnt=model.getSize();
+	//System.out.println("JDesignPanel: listEntities:cnt="+cnt);
 	if(cnt<1)
 		return;
 	String[] la=new String[cnt];
@@ -697,6 +701,8 @@ public void close(){
 		//System.out.println("DesignPanel:instantiate:locator="+locator$);
 		Properties locator=Locator.toProperties(locator$);
 		entihome$=locator.getProperty(Entigrator.ENTIHOME);
+		Entigrator entigrator=console.getEntigrator(entihome$);
+		//saveId$=entigrator.store_saveId();
 		String mode$=locator.getProperty(MODE);
 		if(mode$!=null){
 			this.mode$=mode$;
@@ -779,6 +785,8 @@ public void close(){
 		String entityLabel$=(String)entityComboBox.getSelectedItem();
 		if(entityLabel$!=null){
 			String entityKey$=entigrator.indx_keyAtLabel(entityLabel$);
+			System.out.println("JDesignPanel:showValuePanel:entity label="+entityLabel$+ " key="+entityKey$);
+			//tring entityKey$=entigrator.indx_keyAtLabel(label$)
 			locator$=Locator.append(locator$,EntityHandler.ENTITY_KEY,entityKey$);
 		}
 		String[] sa=getSelectedEntities();
@@ -882,4 +890,12 @@ private void listContainers(){
 			return null;
 		}
 	}
+@Override
+public void activate() {
+	Entigrator entigrator=console.getEntigrator(entihome$);
+	if(entigrator.store_outdated()){
+			entigrator.store_reload();
+			JConsoleHandler.execute(console, getLocator());
+	}
+}
 }

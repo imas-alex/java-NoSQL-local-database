@@ -42,6 +42,8 @@ Entigrator entigrator;
 Hashtable <String,Sack>entities=new Hashtable<String,Sack>();
 Thread saver;
 final Logger LOGGER= Logger.getLogger(EntitiesCache.class.getName());
+final static boolean debug=false;
+//boolean storeFinished=true; 
 /**
  * Constructor
  *  @param entigrator the entigrator.
@@ -71,12 +73,20 @@ public synchronized void put(Sack entity){
  */
 public synchronized Sack get(String entityKey$){
 	try{
+		 if(debug)
+		System.out.println("EntitiesCache:get:entity="+entityKey$);
 		Sack entity= (Sack)Support.getValue(entityKey$, entities);
-	if(entity==null)
-		entity= entigrator.getEntity(entityKey$);
-	if(entity==null)
-		return null;
-	put(entity);
+	boolean reload=false;
+		if(entity==null)
+			reload=true;
+	if(!reload)
+		reload=entigrator.ent_outdated(entity);
+	if(reload){
+		entity=Sack.parseXML(entigrator.getEntihome() + "/" + Entigrator.ENTITY_BASE + "/data/"+entityKey$);
+     	if(entity!=null){	
+		put(entity);
+     	}
+	}
 	return entity;
 	}catch(Exception e){
 		LOGGER.severe(":get:"+e.toString());
@@ -94,25 +104,6 @@ public synchronized void delete(String entityKey$){
  * Save entity on  disk.
  *  @param entity the entity .
  */
-public synchronized void saveEntity(Sack entity){
-	try{
-		Sack header=null;
-		String header$=entigrator.getEntihome()+"/"+Entigrator.HEADERS+"/"+entity.getKey();
-        File headerFile=new File(header$);
-        if(headerFile.exists())
-        		header=Sack.parseXML(header$);
-        else{
-        	entigrator.saveNative(entity);
-        	return;
-        }
-        long hTimestamp=Long.parseLong(header.getAttributeAt(Entigrator.TIMESTAMP));
-        long eTimestamp=Long.parseLong(entity.getAttributeAt(Entigrator.TIMESTAMP));
-        if(eTimestamp>hTimestamp)
-        	entigrator.saveNative(entity);
-	}catch(Exception e){
-		LOGGER.severe(":saveEntity:"+e.toString());
-	}
-}
 /**
  * Save all entities on  disk.
  */
@@ -137,8 +128,10 @@ public synchronized void save(){
 Runnable store=		new Runnable(){
 	public void run(){
 			try{
+			while(saverIsRunning)
+				Thread.sleep(1500);
 			saverIsRunning=true;
-			Thread.sleep(1500);
+			
             String entityKey$;
             Sack entity;
 		    Iterator<String> itr;
@@ -180,6 +173,10 @@ Runnable store=		new Runnable(){
 			}catch(Exception e){
 				LOGGER.severe(":store:"+e.toString());
 			}
+			
 		}
 };
+public void clear(){
+	entities.clear();
+}
 }

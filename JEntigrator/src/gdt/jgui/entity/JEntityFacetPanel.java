@@ -38,6 +38,7 @@ import gdt.data.store.Entigrator;
 import gdt.jgui.console.JConsoleHandler;
 import gdt.jgui.console.JContext;
 import gdt.jgui.console.JFacetOpenItem;
+import gdt.jgui.console.JFacetRenderer;
 import gdt.jgui.console.JItemPanel;
 import gdt.jgui.console.JItemsListPanel;
 import gdt.jgui.console.JMainConsole;
@@ -105,6 +106,8 @@ public class JEntityFacetPanel extends JItemsListPanel {
 		 entityKey$=locator.getProperty(EntityHandler.ENTITY_KEY);
 		 entityLabel$=locator.getProperty(EntityHandler.ENTITY_LABEL);
 		 entityIcon$=locator.getProperty(Locator.LOCATOR_ICON);
+		 if(Locator.LOCATOR_TRUE.equals(locator.getProperty(JFacetRenderer.ONLY_ITEM)))
+			 return this;
 		 requesterResponseLocator$=locator.getProperty(JRequester.REQUESTER_RESPONSE_LOCATOR);
 //		 System.out.println("EntityFacetPanel:instantiate:locator="+Locator.remove(locator$,Locator.LOCATOR_ICON));
 		 ArrayList<JItemPanel>ipl=new ArrayList<JItemPanel>();
@@ -168,7 +171,8 @@ private JFacetOpenItem[] getFacetOpenItems(){
 		Properties locator=Locator.toProperties(locator$);
 		entihome$=locator.getProperty(Entigrator.ENTIHOME);
 		entityKey$=locator.getProperty(EntityHandler.ENTITY_KEY);
-	    Entigrator entigrator=console.getEntigrator(entihome$);
+		//System.out.println("EntityFacetPanel:getFacetOpenItems:entity key="+entityKey$); 
+		Entigrator entigrator=console.getEntigrator(entihome$);
 	    Sack entity=entigrator.getEntityAtKey(entityKey$);
         Core[]	ca=entity.elementGet("jfacet");
         if(ca==null)
@@ -382,5 +386,10 @@ private boolean hasSelectedRemovableFacets(){
     		     return true;
      }
      return false;
+}
+@Override
+public void activate() {
+	// TODO Auto-generated method stub
+	
 }
 }

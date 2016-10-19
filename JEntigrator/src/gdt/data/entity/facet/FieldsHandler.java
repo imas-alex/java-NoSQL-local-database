@@ -99,9 +99,11 @@ public final static String FIELDS="fields";
 private void adaptLabel(Entigrator entigrator){
 	 try{
 		Sack entity=entigrator.getEntityAtKey(entityKey$);
-		entigrator.ent_assignProperty(entity, "fields", entityLabel$);
-    }catch(Exception e){
-    	
+		entityLabel$= entity.getProperty("label");
+		entity=entigrator.ent_assignProperty(entity, "fields",entityLabel$);
+		entigrator.save(entity);
+	 }catch(Exception e){
+    	Logger.getLogger(getClass().getName()).severe(e.toString());
 	    }
 }
 /**

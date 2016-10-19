@@ -19,6 +19,7 @@ package gdt.jgui.tool;
 import gdt.data.entity.BaseHandler;
 import gdt.data.entity.EntityHandler;
 import gdt.data.grain.Core;
+import gdt.data.grain.Identity;
 import gdt.data.grain.Locator;
 import gdt.data.grain.Sack;
 import gdt.data.grain.Support;
@@ -27,7 +28,9 @@ import gdt.jgui.console.JConsoleHandler;
 import gdt.jgui.console.JContext;
 import gdt.jgui.console.JMainConsole;
 import gdt.jgui.console.JRequester;
+import gdt.jgui.console.ReloadDialog;
 import gdt.jgui.entity.JEntityPrimaryMenu;
+import gdt.jgui.entity.fields.JFieldsEditor;
 
 import javax.swing.BorderFactory;
 import javax.swing.JLabel;
@@ -93,6 +96,9 @@ public class JEntityEditor extends JPanel implements JContext,JRequester{
 	JMenuItem pasteItem;
 	String message$;
 	Sack entity;
+	String saveId$;
+	boolean debug=false;
+	boolean ignoreOutdate=false;
 /**
  * The default consturctor.
  */
@@ -442,10 +448,12 @@ private void sort(String header$){
 			 entityKey$=locator.getProperty(EntityHandler.ENTITY_KEY);
 			 Entigrator entigrator=console.getEntigrator(entihome$);
 			 entity=entigrator.getEntityAtKey(entityKey$);
-			 if(!entigrator.lock_set(entity)){
-					
-			  message$=entigrator.lock_message(entity);
-		  }
+			/*
+			 if(entigrator.ent_tryLocked(entityKey$))
+				 message$=entigrator.ent_lockInfo(entityKey$);
+			 else
+				 entigrator.ent_lock(entityKey$);
+				 */
 			 entityLabel$=locator.getProperty(EntityHandler.ENTITY_LABEL);
 			 requesterAction$=locator.getProperty(JRequester.REQUESTER_ACTION);
 			 element$=locator.getProperty(ELEMENT);
@@ -457,6 +465,7 @@ private void refresh(){
 	try{
 		Entigrator entigrator=console.getEntigrator(entihome$);
 		entity=entigrator.getEntityAtKey(entityKey$);
+		tabbedPane.removeAll();
 		showElement(entity,"attributes");
 		String[]sa=entity.elementsList();
 		Support.sortStrings(sa);
@@ -518,7 +527,11 @@ private void refresh(){
 				}
 			}
 			candidate.setKey(entityKey$);
-			candidate.saveXML(entihome$+"/"+Entigrator.ENTITY_BASE+"/data/"+entityKey$);
+			candidate.putAttribute(new Core(null,Entigrator.SAVE_ID,Identity.key()));
+			candidate.putAttribute(new Core(null,Entigrator.SAVE_ID,Identity.key()));
+			Entigrator entigrator=console.getEntigrator(entihome$);
+			entigrator.save(candidate);
+			//candidate.saveXML(entihome$+"/"+Entigrator.ENTITY_BASE+"/data/"+entityKey$);
 		}catch(Exception e){
 			LOGGER.severe(e.toString());
 		}
@@ -766,10 +779,6 @@ public void response(JMainConsole console, String locator$) {
 	 */
 	@Override
 	public void close() {
-		Entigrator entigrator=console.getEntigrator(entihome$);
-		//entity=entigrator.getEntityAtKey(entityKey$);
-		if(!entigrator.lock_release(entity))
-			JOptionPane.showMessageDialog(this, Entigrator.LOCK_CLOSE_MESSAGE);
 		
 	}
 	/**
@@ -780,5 +789,34 @@ public void response(JMainConsole console, String locator$) {
 	public String getSubtitle() {
 		// TODO Auto-generated method stub
 		return entityKey$;
+	}
+	@Override
+	public void activate() {
+		if(debug)
+			System.out.println("JWeblinksPanel:activate:begin");
+		if(ignoreOutdate){
+			ignoreOutdate=false;
+			return;
+		}
+		Entigrator entigrator=console.getEntigrator(entihome$);
+		if(entity==null)
+			return;
+		if(!entigrator.ent_outdated(entity)){
+			System.out.println("JWeblinksPanel:activate:up to date");
+			return;
+		}
+		int n=new ReloadDialog(this).show();
+		if(2==n){
+			ignoreOutdate=true;
+			return;
+		}
+		if(1==n){
+			entigrator.save(entity);
+			
+		}
+		if(0==n){
+			 JConsoleHandler.execute(console, getLocator());
+			}
+		
 	}
 }

@@ -33,6 +33,7 @@ import gdt.data.entity.BaseHandler;
 import gdt.data.entity.EntityHandler;
 import gdt.data.grain.Core;
 import gdt.data.grain.Locator;
+import gdt.data.grain.Sack;
 import gdt.data.grain.Support;
 import gdt.data.store.Entigrator;
 import gdt.jgui.console.JConsoleHandler;
@@ -41,6 +42,7 @@ import gdt.jgui.console.JFacetRenderer;
 import gdt.jgui.console.JItemPanel;
 import gdt.jgui.console.JItemsListPanel;
 import gdt.jgui.console.JMainConsole;
+import gdt.jgui.console.ReloadDialog;
 import gdt.jgui.entity.JArchivePanel;
 import gdt.jgui.entity.JEntitiesPanel;
 import gdt.jgui.entity.JEntityFacetPanel;
@@ -55,6 +57,7 @@ import gdt.jgui.entity.JReferenceEntry;
 public class JCategoryPanel extends JItemsListPanel {
 	private static final long serialVersionUID = 1L;
 	public static final String RENDERER = "renderer";
+	public static final String LIST_MEMBERS = "list members";
 	String entihome$;
 	String renderer$;
 	String entityType$;
@@ -63,8 +66,11 @@ public class JCategoryPanel extends JItemsListPanel {
 	JMenu menu;
 	JMenuItem deleteItem;
 	JMenuItem copyItem;
-	Hashtable<String,JItemPanel> items;
 	private JMenuItem[] mia;
+//	String saveId$;
+	static boolean debug=false; 
+	boolean ignoreOutdate=false;
+	boolean refresh=false;
 	/**
 	 * Default constructor
 	 *  
@@ -111,45 +117,63 @@ public class JCategoryPanel extends JItemsListPanel {
 	   	
 		try{
 		this.console=console;
-		boolean debug=false;
-//		System.out.println("CategoryPanel:instantiate:locator="+locator$);
-		System.out.println("JCategory:instantiate:locator="+Locator.remove(locator$,Locator.LOCATOR_ICON));
+		if(debug)
+		System.out.println("JCategoryPanel:instantiate:locator="+locator$);
+		//System.out.println("JCategory:instantiate:locator="+Locator.remove(locator$,Locator.LOCATOR_ICON));
 		Properties locator=Locator.toProperties(locator$);
 		entihome$=locator.getProperty(Entigrator.ENTIHOME);
-		Entigrator entigrator=console.getEntigrator(entihome$);	
+		Entigrator entigrator=console.getEntigrator(entihome$);
+		//saveId$=entigrator.store_saveId();
 		renderer$=locator.getProperty(RENDERER);
-		if("gdt.jgui.entity.graph.JGraphViewSelector".equals(renderer$))
-		   System.out.println("JCategoryPanel:instantiate:renderer="+renderer$);
+		
+		//if("gdt.jgui.entity.graph.JGraphViewSelector".equals(renderer$))
+		//   System.out.println("JCategoryPanel:instantiate:renderer="+renderer$);
 		JFacetRenderer facetRenderer=(JFacetRenderer)JConsoleHandler.getHandlerInstance(entigrator, renderer$);
 		if(facetRenderer==null){
+			if(debug)
 			 System.out.println("JCategoryPanel:instantiate:ERROR:cannot load renderer="+renderer$);
 			
 		}
-		if("gdt.jgui.entity.graph.JGraphViewSelector".equals(renderer$))
-			   System.out.println("JCategoryPanel:instantiate:got renderer="+facetRenderer.getClass().getName());
 		String frLocator$=facetRenderer.getLocator();
-		if("gdt.jgui.entity.graph.JGraphViewSelector".equals(renderer$))
-			System.out.println("JCategoryPanel:instantiate:renderer locator="+frLocator$);
 		frLocator$=Locator.append(frLocator$, Entigrator.ENTIHOME, entihome$);
+		frLocator$=Locator.append(frLocator$, JFacetRenderer.ONLY_ITEM,Locator.LOCATOR_TRUE);
 		facetRenderer.instantiate(console,frLocator$ );
-		
 		entityType$=facetRenderer.getEntityType();
     	categoryIcon$=facetRenderer.getCategoryIcon();
 		categoryTitle$=facetRenderer.getCategoryTitle();
-		if("gdt.jgui.entity.graph.JGraphViewSelector".equals(renderer$))
-			System.out.println("JCategoryPanel:instantiate:entity type="+entityType$+" category="+categoryTitle$);
+		//if("gdt.jgui.entity.graph.JGraphViewSelector".equals(renderer$))
+		if(debug)
+		 System.out.println("JCategoryPanel:instantiate:entity type="+entityType$+" category="+categoryTitle$);
 		this.locator$=getLocator();
-
-		JItemPanel[] ipa=listCategoryMembers(console, this.locator$);
-	
-		putItems(ipa);
-		try{
-   		 pos=Integer.parseInt(locator.getProperty(POSITION));
-   		 System.out.println("JCategoryPanel:instantiate:pos="+pos);
-   		 select(pos);
+		String listMembers$=locator.getProperty(LIST_MEMBERS);
+		if(debug)
+			 System.out.println("JCategoryPanel:instantiate:list members="+listMembers$);
+			
+		if(Locator.LOCATOR_TRUE.equals(listMembers$)){
+		  JItemPanel[] ipa=listCategoryMembers(console, this.locator$);
+		  if(debug)
+				 System.out.println("JCategoryPanel:instantiate:1");
+		
+	    if(ipa!=null){
+		    putItems(ipa);
+			try{
+				pos=Integer.parseInt(locator.getProperty(POSITION));
+   		// System.out.println("JCategoryPanel:instantiate:pos="+pos);
+				select(pos);
 			}catch(Exception e){
 					Logger.getLogger(getClass().getName()).info(e.toString());
 			}
+	    }
+		}else{
+				
+			JItemPanel[] ipa=listCategoryMembers(console, locator$);
+		//	if(debug)
+		//		 System.out.println("JCategoryPanel:instantiate:no list:ipa="+ipa.length);
+		    if(ipa!=null)  	
+			  putItems(ipa);
+		}
+		
+			
 		}catch(Exception e){
 		Logger.getLogger(getClass().getName()).info(e.toString());
 		}
@@ -198,7 +222,8 @@ public class JCategoryPanel extends JItemsListPanel {
 					JFacetRenderer facetRenderer=(JFacetRenderer)JConsoleHandler.getHandlerInstance(entigrator, renderer$);
 					String fcLocator$=facetRenderer.getLocator();
 					fcLocator$=Locator.append(fcLocator$, Entigrator.ENTIHOME, entihome$);
-					facetRenderer.newEntity(console, fcLocator$);
+			    	facetRenderer.newEntity(console, fcLocator$);
+			    	//entigrator.store_newId();
 					
 				}
 			} );
@@ -216,20 +241,30 @@ public class JCategoryPanel extends JItemsListPanel {
 						  if(sa==null)
 							  return;
 						  String candidate$;
-						  ArrayList<String>sl=new ArrayList<String>();
+						  Entigrator entigrator=console.getEntigrator(entihome$);
+						  Sack candidate;
 						  for(String aSa:sa){
+							try{
+							  if(debug)
+							  System.out.println("JCatehoryPanel:delete:aSa="+aSa);
 							  candidate$=Locator.getProperty(aSa, EntityHandler.ENTITY_KEY);
-							  if(candidate$!=null)
-								  sl.add(candidate$);
-						   sa=sl.toArray(new String[0]);
-						   String list$=Locator.toString(sa);
-						   String baseHandlerLocator$=BaseHandler.getLocator();
-						   baseHandlerLocator$=Locator.append(baseHandlerLocator$, EntityHandler.ENTITY_LIST,list$ );
-						   baseHandlerLocator$=Locator.append(baseHandlerLocator$, Entigrator.ENTIHOME,entihome$ );
-						   baseHandlerLocator$=Locator.append(baseHandlerLocator$, BaseHandler.HANDLER_METHOD,BaseHandler.BASE_METHOD_DELETE_ENTITIES );
-						   JConsoleHandler.execute(console, baseHandlerLocator$);
-						   JConsoleHandler.execute(console,locator$);
+							  candidate=entigrator.ent_getAtKey(candidate$);
+							  if(candidate!=null)
+								  entigrator.deleteEntity(candidate);
+							}catch(Exception ee){
+								Logger.getLogger(getClass().getName()).info(ee.toString()+":"+aSa);
+							}
 						  }
+						  refresh=true;
+						  /*
+						  entigrator.store_replace();
+
+						  JCategoryPanel cp=new JCategoryPanel();
+						  String cpLocator$=cp.getLocator();
+						  cpLocator$=Locator.append(cpLocator$, Entigrator.ENTIHOME, entihome$);
+						  cpLocator$=Locator.append(cpLocator$, RENDERER, renderer$);
+						  JConsoleHandler.execute(console,cpLocator$);
+						  */
 					   }
 					
 				}
@@ -299,37 +334,50 @@ public class JCategoryPanel extends JItemsListPanel {
 	
 	private  JItemPanel[] listCategoryMembers(JMainConsole console,String locator$){
 		try{
-			//System.out.println("EntitesPanel:listEntities:locator="+locator$);
+			if(debug)
+			System.out.println("JCategoryPanel:listCategoryMembers:locator="+locator$);
 			   Properties locator=Locator.toProperties(locator$);
 			   String entihome$=locator.getProperty(Entigrator.ENTIHOME);
 			   String entityType$=locator.getProperty(EntityHandler.ENTITY_TYPE);
+			   if(entityType$==null||"null".equals(entityType$))
+				   return null;
 			   Entigrator entigrator=console.getEntigrator(entihome$);
 			   String[] sa=entigrator.indx_listEntitiesAtPropertyName(entityType$);
 			   if(sa==null){
-				   Logger.getLogger(JEntitiesPanel.class.getName()).info("empty category="+entityType$);
+				   if(debug)
+					   System.out.println("JCategoryPanel:listCategoryMembers:empty category="+entityType$);
+					   //Logger.getLogger(JEntitiesPanel.class.getName()).info("empty category="+entityType$);
 				   return null;
 			   }
  		   ArrayList<JItemPanel>ipl=new ArrayList<JItemPanel>();
 		   JItemPanel itemPanel;
 	       String emLocator$;
 	       Core [] ca=entigrator.indx_getMarks(sa);
+	       if(debug)
+				System.out.println("JCategoryPanel:listCategoryMembers:ca="+ca.length);
+				
 	       JEntityFacetPanel em;
 	       String icon$;
 		   for(Core c:ca){
 			   try{
-			   itemPanel=getItem(c.name);
-			   if(itemPanel==null){
+				   if(debug)
+						System.out.println("JCategoryPanel:listCategoryMembers:c type="+c.type+" name="+c.name+" value="+c.value);
+					   
+			   //itemPanel=getItem(c.name);
+			   itemPanel=null;
+			   //if(itemPanel==null){
 			   em=new JEntityFacetPanel();
 			   emLocator$=em.getLocator();
 			   emLocator$=Locator.append(emLocator$,Entigrator.ENTIHOME , entihome$);
 			   emLocator$=Locator.append(emLocator$,EntityHandler.ENTITY_KEY ,c.name);
 			   emLocator$=Locator.append(emLocator$,Locator.LOCATOR_CHECKABLE, Locator.LOCATOR_TRUE);
 			   emLocator$=Locator.append(emLocator$,Locator.LOCATOR_TITLE, c.value);
+			   emLocator$=Locator.append(emLocator$,BaseHandler.HANDLER_SCOPE, JConsoleHandler.CONSOLE_SCOPE);
 			   icon$=entigrator.readIconFromIcons(c.type);
 			   emLocator$=Locator.append(emLocator$,Locator.LOCATOR_ICON, icon$);
 			   itemPanel=new JItemPanel(console,emLocator$);
-			   putItem(c.name, itemPanel);
-			   }
+			 //  putItem(c.name, itemPanel);
+			   //}
 			   if(itemPanel!=null)
 			      ipl.add(itemPanel);
 			   }catch(Exception ee){
@@ -380,14 +428,42 @@ public class JCategoryPanel extends JItemsListPanel {
 	   	  console.getTrack().pop();
 	      console.getTrack().push(getLocator());
 	}
-	private void putItem(String key$,JItemPanel item){
-		if(items==null)
-			items=new Hashtable<String,JItemPanel>();
-		items.put(key$, item);
-	}
-	private JItemPanel getItem(String key$){
-		if(items==null)
-			return null;
-		return (JItemPanel)Support.getValue(key$, items);
+	@Override
+	public void activate() {
+		if(debug)
+			System.out.println("JCategoryPanel:activate:begin");
+		if(ignoreOutdate){
+			ignoreOutdate=false;
+			return;
+		}
+		Entigrator entigrator=console.getEntigrator(entihome$);
+		
+		if(!entigrator.store_outdated()){
+			if(debug)
+			System.out.println("JCategoryPanel:activate:up to date");
+			if(refresh){
+				if(debug)
+					System.out.println("JCategoryPanel:refresh");
+				refresh=false;
+				JConsoleHandler.execute(console,getLocator());
+			}
+			return;
+		}
+		int n=new ReloadDialog(this).show();
+		if(2==n){
+			//cancel
+			ignoreOutdate=true;
+			return;
+		}
+		if(1==n){
+			//replace
+			entigrator.store_replace();
+		}
+		if(0==n){
+			//reload
+			entigrator.store_reload();
+			 JConsoleHandler.execute(console, getLocator());
+			}
+		
 	}
 }

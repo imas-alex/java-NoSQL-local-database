@@ -18,6 +18,7 @@ package gdt.jgui.tool;
  */
 import gdt.data.entity.BaseHandler;
 import gdt.data.entity.EntityHandler;
+import gdt.data.grain.Core;
 import gdt.data.grain.Locator;
 import gdt.data.grain.Sack;
 import gdt.data.grain.Support;
@@ -26,7 +27,10 @@ import gdt.jgui.console.JConsoleHandler;
 import gdt.jgui.console.JContext;
 import gdt.jgui.console.JMainConsole;
 import gdt.jgui.console.JRequester;
+import gdt.jgui.console.ReloadDialog;
 import gdt.jgui.entity.JEntitiesPanel;
+import gdt.jgui.entity.fields.JFieldsEditor;
+
 import javax.swing.JPanel;
 import java.awt.Image;
 import javax.swing.JLabel;
@@ -71,6 +75,8 @@ JScrollPane scrollPane;
 JPanel panel ;
 String message$;
 Sack entity;
+//String saveId$;
+
 /**
  * The default constructor.
  */
@@ -150,11 +156,23 @@ public JIconSelector() {
 			 entihome$=locator.getProperty(Entigrator.ENTIHOME);
 			 entityKey$=locator.getProperty(EntityHandler.ENTITY_KEY);
 			 Entigrator entigrator=console.getEntigrator(entihome$);
+//			 saveId$=entigrator.store_saveId();
+			 //message$=entigrator.ent_lockInfo(entityKey$);
+			 
 			 entity=entigrator.getEntityAtKey(entityKey$);
+			 /*
+			 if(message$!=null){
+				 if(!entigrator.ent_tryLocked(entityKey$))
+					 entigrator.ent_lock(entityKey$);
+			 }else
+				 entigrator.ent_lock(entityKey$); 
+			 */
+			/*
 			 if(!entigrator.lock_set(entity)){
 				
 			  message$=entigrator.lock_message(entity);
 		  }
+		  */
 			 entityLabel$=locator.getProperty(EntityHandler.ENTITY_LABEL);
 			 requesterResponseLocator$=locator.getProperty(JRequester.REQUESTER_RESPONSE_LOCATOR);
 //			 System.out.println("IconSelector:instantiate:locator="+locator$);
@@ -227,10 +245,7 @@ public JIconSelector() {
 	 */
 	@Override
 	public void close() {
-		Entigrator entigrator=console.getEntigrator(entihome$);
-		//entity=entigrator.getEntityAtKey(entityKey$);
-		if(!entigrator.lock_release(entity))
-			JOptionPane.showMessageDialog(this, Entigrator.LOCK_CLOSE_MESSAGE);
+		
 	}
 	/**
 	 * Get context subtitle.
@@ -239,5 +254,9 @@ public JIconSelector() {
 	@Override
 	public String getSubtitle() {
 		return entityLabel$;
+	}
+	@Override
+	public void activate() {
+			
 	}
 }

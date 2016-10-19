@@ -331,6 +331,11 @@ private String getClearPropertiesLocator(){
 			  LOGGER.severe(e.toString());
 		  }
 		}
+	@Override
+	public void activate() {
+		// TODO Auto-generated method stub
+		
+	}
 	
 	
 }

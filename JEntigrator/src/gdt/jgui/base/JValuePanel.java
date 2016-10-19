@@ -198,8 +198,12 @@ private String getDeleteValueLocator(){
 }
 private String getAssignValueLocator(){
 	 try{
-			Entigrator entigrator=console.getEntigrator(entihome$);
-			Sack entity=entigrator.getEntityAtKey(entityKey$);
+		System.out.println("JValueLocator:getAssignValueLocator:entity key="+entityKey$);	
+	if(entityKey$==null)
+		return null;
+		Entigrator entigrator=console.getEntigrator(entihome$);
+		Sack entity=entigrator.getEntityAtKey(entityKey$);
+			
 			if(entity.getProperty(propertyName$)!=null)
 				return null;
 			 String   locator$=getLocator();
@@ -215,6 +219,9 @@ private String getAssignValueLocator(){
 }
 private String getTakeOffValueLocator(){
 	 try{
+		 System.out.println("JValueLocator:TakeOffValueLocator:entity key="+entityKey$);	
+			if(entityKey$==null)
+				return null;
 		 Entigrator entigrator=console.getEntigrator(entihome$);
 			Sack entity=entigrator.getEntityAtKey(entityKey$);
 			if(entity.getProperty(propertyName$)==null)
@@ -368,6 +375,45 @@ private String getClearValuesLocator(){
 			return null;
 		}
 	}
+	public void assignValue(JMainConsole console,String locator$){
+		  try{
+			  Properties locator=Locator.toProperties(locator$);
+			  String entihome$=locator.getProperty(Entigrator.ENTIHOME);
+			  Entigrator entigrator=console.getEntigrator(entihome$);
+			  propertyName$=locator.getProperty(JDesignPanel.PROPERTY_NAME);
+			  propertyValue$=locator.getProperty(JDesignPanel.PROPERTY_VALUE);
+			  
+			  entityKey$=locator.getProperty(EntityHandler.ENTITY_KEY);
+			  String list$=locator.getProperty(EntityHandler.ENTITY_LIST);
+			  if(list$!=null){
+				  selectedEntities=Locator.toArray(list$);
+			  System.out.println("JValuePanel:assignValue:selected list="+selectedEntities.length);
+			  }
+			  Sack entity;
+			  if(selectedEntities!=null)
+			     for(String entity$:selectedEntities){
+			    	 System.out.println("JValuePanel:assignValue:entity="+entity$);
+			    	 entity=entigrator.getEntityAtKey(entity$);
+			    	 if(entity!=null)
+			    		 entigrator.ent_assignProperty(entity, propertyName$, propertyValue$);
+			    	 else
+			    		 entity=entigrator.getEntityAtKey(entityKey$);
+			    	 if(entity!=null)
+			    		 entigrator.ent_assignProperty(entity, propertyName$, propertyValue$);
+			    	 else
+			    		 System.out.println("JValuePanel:assignValue:cannot find entity="+entity$);
+			    		 
+			     }
+			  System.out.println("ValuePanel:assignValue.entity key="+entityKey$);
+			  JDesignPanel dp=new JDesignPanel();
+			  String dpLocator$=dp.getLocator();
+			  dpLocator$=Locator.append(dpLocator$, Entigrator.ENTIHOME,entihome$);
+			  dpLocator$=Locator.append(dpLocator$, JDesignPanel.PROPERTY_NAME,propertyName$);
+			  JConsoleHandler.execute(console,dpLocator$);
+		  }catch(Exception e){
+			  LOGGER.severe(e.toString());
+		  }
+		}
 	public   void takeOffValue(JMainConsole console,String locator$) {
 		try{
 		//	System.out.println("JValuePanel:takeOffValue:locator="+locator$);
@@ -386,4 +432,31 @@ private String getClearValuesLocator(){
 		Logger.getLogger(getClass().getName()).severe(e.toString());
 		}
 	}
+	@Override
+	public void activate() {
+		// TODO Auto-generated method stub
+		
+	}
+	public void deleteValue(JMainConsole console,String locator$){
+		  try{
+			  Properties locator=Locator.toProperties(locator$);
+			  String entihome$=locator.getProperty(Entigrator.ENTIHOME);
+			  Entigrator entigrator=console.getEntigrator(entihome$);
+			  String propertyName$=locator.getProperty(JDesignPanel.PROPERTY_NAME);
+			  String propertyValue$=locator.getProperty(JDesignPanel.PROPERTY_VALUE);
+			  int response = JOptionPane.showConfirmDialog(console.getContentPanel(), "Delete value ?", "Confirm",
+				        JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
+			   if (response == JOptionPane.YES_OPTION) {
+				   entigrator.prp_deletePropertyValue(propertyName$,propertyValue$);
+				   JDesignPanel dp=new JDesignPanel();
+				   String dpLocator$=dp.getLocator();
+				   dpLocator$=Locator.append(dpLocator$, Entigrator.ENTIHOME,entihome$);
+				   dpLocator$=Locator.append(dpLocator$, JDesignPanel.PROPERTY_NAME,propertyName$);
+				   JConsoleHandler.execute(console,dpLocator$);
+			   }
+			  
+		  }catch(Exception e){
+			  LOGGER.severe(e.toString());
+		  }
+		}
 }

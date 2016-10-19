@@ -62,6 +62,7 @@ import gdt.jgui.console.JContext;
 import gdt.jgui.console.JFacetOpenItem;
 import gdt.jgui.console.JMainConsole;
 import gdt.jgui.console.JRequester;
+import gdt.jgui.console.ReloadDialog;
 /**
  * Displays the digest view of the entity.
  * @author imasa
@@ -113,6 +114,9 @@ public  class JEntityDigestDisplay extends JPanel implements JContext ,JRequeste
 	String selection$;
 	JPopupMenu popup;
 	int nodeNumber=0;
+	boolean debug=false;
+	boolean ignoreOutdate=false;
+	Sack entity;
 	/**
 	 * The default constructor.
 	 */
@@ -160,6 +164,8 @@ public  class JEntityDigestDisplay extends JPanel implements JContext ,JRequeste
 		 entihome$=locator.getProperty(Entigrator.ENTIHOME);
 		 entityKey$=locator.getProperty(EntityHandler.ENTITY_KEY);
 		 entityLabel$=locator.getProperty(EntityHandler.ENTITY_LABEL);
+		 Entigrator entigrator=console.getEntigrator(entihome$);
+		 entity=entigrator.getEntity(entityKey$);
 		 String compressedSelection$=locator.getProperty(SELECTION);
 		 if(compressedSelection$!=null){
 			try{
@@ -169,7 +175,7 @@ public  class JEntityDigestDisplay extends JPanel implements JContext ,JRequeste
 				Logger.getLogger(getClass().getName()).info(ee.toString());
 			}
 		 }
-		 Entigrator entigrator=console.getEntigrator(entihome$);
+		 
 		 DefaultMutableTreeNode root = new DefaultMutableTreeNode(entityLabel$);
 		 locator=new Properties();
 		 locator.setProperty(Locator.LOCATOR_TITLE, DIGEST);
@@ -737,5 +743,36 @@ private void instantiateFacetNode(DefaultMutableTreeNode facetNode){
 	@Override
 	public void response(JMainConsole console, String locator$) {
 		//System.out.println("EntityDigestDisplay:response:locator="+locator$);
+	}
+	@Override
+	public void activate() {
+		if(debug)
+			System.out.println("JEntityDigestDisplay:activate:begin");
+		if(ignoreOutdate){
+			ignoreOutdate=false;
+			return;
+		}
+		Entigrator entigrator=console.getEntigrator(entihome$);
+		if(entity==null)
+			return;
+		if(!entigrator.ent_outdated(entity)){
+			System.out.println("JEntityDigestDisplay:activate:up to date");
+			return;
+		}
+		int n=new ReloadDialog(this).show();
+		if(2==n){
+			ignoreOutdate=true;
+			return;
+		}
+		if(1==n){
+			entigrator.save(entity);
+			
+		}
+		if(0==n){
+			 JConsoleHandler.execute(console, getLocator());
+			}
+		
+		
+		
 	} 
 }

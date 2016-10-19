@@ -41,6 +41,7 @@ public abstract class JFacetOpenItem extends JItemPanel {
 	public static final String ACTION_DIGEST_CALL="action digest call";
 	public String entihome$;
 	public String entityKey$;
+	static boolean debug=false;
 	/**
 	 * The constructor.
 	 * @param console the main console.
@@ -64,15 +65,18 @@ public abstract class JFacetOpenItem extends JItemPanel {
  */
 public static JFacetOpenItem getFacetOpenItemInstance(JMainConsole console,String locator$){
 		try{
-		System.out.println("JFacetOpenItem:getFacetOpenItemInstance:locator="+locator$);
+		if(debug)
+			System.out.println("JFacetOpenItem:getFacetOpenItemInstance:locator="+locator$);
 			
 		Properties locator=Locator.toProperties(locator$);
 		String entihome$=locator.getProperty(Entigrator.ENTIHOME);
 		String entityKey$=locator.getProperty(EntityHandler.ENTITY_KEY);
 		String extension$=locator.getProperty(BaseHandler.HANDLER_LOCATION);
+		if(debug)
 		System.out.println("JFacetOpenItem:getFacetOpenItemInstance:extension="+extension$);
 		String handler$=locator.getProperty(BaseHandler.HANDLER_CLASS);
-//		System.out.println("JFacetItem:getFacetOpenItemInstance:handler="+handler$+" extension="+extension$);
+		if(debug)
+		System.out.println("JFacetItem:getFacetOpenItemInstance:handler="+handler$+" extension="+extension$);
 		Entigrator entigrator=console.getEntigrator(entihome$);
 		JFacetOpenItem facetOpenItem;
 		if(extension$==null||"null".equals(extension$))
@@ -99,9 +103,7 @@ public static JFacetOpenItem getFacetOpenItemInstance(JMainConsole console,Strin
   		else
   			 foiLocator.setProperty(Locator.LOCATOR_CHECKABLE, Locator.LOCATOR_FALSE);
   		facetOpenItem.instantiate(console, Locator.toString(foiLocator));
-		//if(facetOpenItem.icon$!=null)
-		//    foiLocator.setProperty(Locator.LOCATOR_ICON,facetOpenItem.icon$);
-  		//System.out.println("JFacetOpenItem:getFacetOpenItemInstance:icon="+facetOpenItem.icon$);
+	 		//System.out.println("JFacetOpenItem:getFacetOpenItemInstance:icon="+facetOpenItem.icon$);
   		return facetOpenItem;
 		}catch(Exception e){
 			Logger.getLogger(JFacetAddItem.class.getName()).severe(e.toString());

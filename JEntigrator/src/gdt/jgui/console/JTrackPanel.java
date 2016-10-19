@@ -286,4 +286,9 @@ public String getSubtitle() {
 	// TODO Auto-generated method stub
 	return null;
 }
+@Override
+public void activate() {
+	// TODO Auto-generated method stub
+	
+}
 }

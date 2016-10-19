@@ -52,6 +52,7 @@ import gdt.jgui.console.JContext;
 import gdt.jgui.console.JFacetRenderer;
 import gdt.jgui.console.JMainConsole;
 import gdt.jgui.console.JRequester;
+import gdt.jgui.console.ReloadDialog;
 import gdt.jgui.entity.JEntitiesPanel;
 import gdt.jgui.entity.JEntityFacetPanel;
 import gdt.jgui.entity.JEntityPrimaryMenu;
@@ -119,6 +120,8 @@ public class JWeblinkEditor extends JPanel implements JFacetRenderer,JRequester,
 	JPopupMenu iconMenu;
 	String message$;
 	Sack entity;
+	boolean debug=false;
+	boolean ignoreOutdate=false;
 	/**
 	 * The default constructor.
 	 */
@@ -399,8 +402,11 @@ try{
 						}catch(Exception ee){
 							Logger.getLogger(getClass().getName()).severe(ee.toString());
 						}
-				}else
+				}else{
+					Entigrator entigrator=console.getEntigrator(entihome$);
+					entigrator.replace(entity);	
 				  console.back();
+				}
 				
 			}
 		} );
@@ -516,12 +522,14 @@ private void save(){
 			entihome$=locator.getProperty(Entigrator.ENTIHOME);
 			entityKey$=locator.getProperty(EntityHandler.ENTITY_KEY);
 			webLinkKey$=locator.getProperty(JWeblinksPanel.WEB_LINK_KEY);
-			System.out.println("WeblinkEditor.instantiate:1");
+			
 			Entigrator entigrator=console.getEntigrator(entihome$);
 			entityLabel$=entigrator.indx_getLabel(entityKey$);
-            entity=entigrator.getEntityAtKey(entityKey$);
-            if(!entigrator.lock_set(entity))
-				  message$=entigrator.lock_message(entity);
+			 if(Locator.LOCATOR_TRUE.equals(locator.getProperty(JFacetRenderer.ONLY_ITEM)))
+				 return this;
+			entity=entigrator.getEntityAtKey(entityKey$);
+           // if(!entigrator.lock_set(entity))
+			//	  message$=entigrator.lock_message(entity);
 			  
             Core address=entity.getElementItem("web", webLinkKey$);
             addressField.setText(address.value);
@@ -724,6 +732,7 @@ private void save(){
 				Stack<String> s=console.getTrack();
 				s.pop();
 				console.setTrack(s);
+				entigrator.store_replace();
 				JConsoleHandler.execute(console, efpLocator$);
 				return;
 			}
@@ -820,9 +829,9 @@ public String getType() {
  */
 @Override
 public void close() {
-	Entigrator entigrator=console.getEntigrator(entihome$);
-	if(!entigrator.lock_release(entity))
-		JOptionPane.showMessageDialog(this, Entigrator.LOCK_CLOSE_MESSAGE);
+	//Entigrator entigrator=console.getEntigrator(entihome$);
+	//if(!entigrator.lock_release(entity))
+	//	JOptionPane.showMessageDialog(this, Entigrator.LOCK_CLOSE_MESSAGE);
 }
 /**
  * No action.
@@ -836,6 +845,36 @@ public void lostOwnership(Clipboard clipboard, Transferable contents) {
 @Override
 public void collectReferences(Entigrator entigrator, String entiyKey$, ArrayList<JReferenceEntry> sl) {
 
+}
+@Override
+public void activate() {
+	if(debug)
+		System.out.println("JWeblinkEditor:activate:begin");
+	Entigrator entigrator=console.getEntigrator(entihome$);
+	if(entity==null)
+		return;
+	if(ignoreOutdate){
+		ignoreOutdate=false;
+		return;
+	}
+	if(!entigrator.ent_outdated(entity)){
+		System.out.println("JWeblinkEditor:activate:up to date");
+		return;
+	}
+	int n=new ReloadDialog(this).show();
+	if(2==n){
+		ignoreOutdate=true;
+		return;
+	}
+	if(1==n){
+		entigrator.save(entity);
+		
+	}
+	if(0==n){
+		 JConsoleHandler.execute(console, getLocator());
+		}
+	
+	
 }
 }
 	

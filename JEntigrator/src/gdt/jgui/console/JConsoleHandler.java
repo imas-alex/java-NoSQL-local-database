@@ -57,6 +57,7 @@ public class JConsoleHandler {
 	 * Indicates that an execute request must be handled by this class. 
 	 */
 	public final static String CONSOLE_SCOPE="console scope";
+	final static boolean debug=false;
 	/**
 	 * Execute a handle request.
 	 *  @param console the main console
@@ -65,7 +66,8 @@ public class JConsoleHandler {
 	 */
 		public static String execute(JMainConsole console,String locator$){
         try{
-  //  System.out.println("ConsoleHandler:execute:locator="+Locator.remove(locator$, Locator.LOCATOR_ICON));	
+     if(debug)   	
+    	 System.out.println("ConsoleHandler:execute:locator="+Locator.remove(locator$, Locator.LOCATOR_ICON));	
        	 Properties locator=Locator.toProperties(locator$);
        	 String handlerScope$=locator.getProperty(BaseHandler.HANDLER_SCOPE);
        	String handlerClass$=locator.getProperty(BaseHandler.HANDLER_CLASS);
@@ -79,37 +81,43 @@ public class JConsoleHandler {
     		   console.putContext(trackPanel,null);
 	    		return locator$; 
 	    	 }
+    	   if(JClipboardPanel.class.getName().equals(handlerClass$)){
+    		   JClipboardPanel clipPanel=new JClipboardPanel();
+    		   console.putContext(clipPanel,null);
+	    		return locator$; 
+	    	 }
+    	   if(JRecentPanel.class.getName().equals(handlerClass$)){
+    		   JRecentPanel recentPanel=new JRecentPanel();
+    		   console.putContext(recentPanel,recentPanel.getLocator());
+	    		return locator$; 
+	    	 }
     	   Object obj;
     	   Entigrator entigrator=null;
     	   if(entihome$!=null)
     	      entigrator=console.getEntigrator(entihome$);
-    	
+    	   console.outdatedTreatment$=locator.getProperty(JContext.OUTDATED_TREATMENT);
     	   if(extension$==null)
     	      obj =getHandlerInstance(entigrator, handlerClass$);
     	 else
     		 obj =getHandlerInstance(entigrator, handlerClass$,extension$);
-    		 
-    	  // obj=Class.forName(handlerClass$).newInstance();
     	   if(obj==null){
+    		   if(debug)
     		   System.out.println("ConsoleHandler:execute:cannot instantiate "+handlerClass$);
     	       return null;
     	   }
-    		   
-    	   
     	   if (obj instanceof JContext){
-    //	    	 System.out.println("ConsoleHandler:execute:context="+handlerClass$);
-    	    	// if(console==null)
-    	    	//	 System.out.println("ConsoleHandler:execute:consoleis null");
-    	    	
     	    	 console.putContext((JContext)obj,locator$);
     	    	
     	    	   if(method$!=null){
-    	    		 //  System.out.println("ConsoleHandler:execute:method="+method$); 
+    	    		   if(debug)
+    	    			   System.out.println("ConsoleHandler:execute:method="+method$+" class="+obj.getClass().getName()+" locator="+locator$); 
    	    	    	Method method = obj.getClass().getDeclaredMethod(method$,JMainConsole.class,String.class);
    	    	    	method.invoke((JContext)obj,console, locator$);
    	    	    	  }
       	    	   return locator$;
     	    }else{
+    	    	if(debug)
+    	    	   System.out.println("ConsoleHandler:execute:NOT context="+handlerClass$);
     	    	if(method$!=null){
    	    	    	Method method =obj.getClass().getDeclaredMethod(method$,JMainConsole.class,String.class);
    	    	    	method.invoke(obj,console, locator$);
@@ -135,7 +143,8 @@ public class JConsoleHandler {
 
 		public  JItemPanel[] listBases(JMainConsole console,String entiroot$){
 		try{
-			//System.out.println("ConsoleHandler:listBases:entiroot="+entiroot$);
+			if(debug)
+			System.out.println("ConsoleHandler:listBases:entiroot="+entiroot$);
 		   String[] sa=BaseHandler.bases(entiroot$);
 		   if(sa==null){
 			   return null;
@@ -152,7 +161,7 @@ public class JConsoleHandler {
 			   baseLocator$=Locator.append(baseLocator$, Entigrator.ENTIHOME, aSa);
 			   File file = new File(aSa);
 			   baseLocator$=Locator.append(baseLocator$,Locator.LOCATOR_TITLE, file.getName());
-			 //  baseLocator$=Locator.append(baseLocator$,BaseHandler.HANDLER_METHOD,"openDatabase");
+	
 	//		   System.out.println("ConsoleHandler:listBases:base="+Locator.remove(baseLocator$,Locator.LOCATOR_ICON));
 			   itemPanel=new JItemPanel(console,baseLocator$);
 			   ipl.add(itemPanel);
@@ -207,6 +216,7 @@ public static JFacetRenderer getFacetRenderer(Entigrator entigrator,String fhand
 		//		    System.out.println("ConsoleHandler:getFacetRenderer:aca.value="+aCa.value);	 
 					facetOpenItem=(JFacetOpenItem)getHandlerInstance(entigrator,aCa.value);
 					facetRenderer$= facetOpenItem.getFacetRenderer();
+					if(debug)
 					System.out.println("JConsoleHandler:getFacetRenderer:facet renderer="+facetRenderer$);	 
 						return (JFacetRenderer)ExtensionHandler.loadHandlerInstance( entigrator,extension.getKey(), facetRenderer$);
 				}
@@ -225,19 +235,38 @@ public static JFacetRenderer getFacetRenderer(Entigrator entigrator,String fhand
  */
 public static Object getHandlerInstance(Entigrator entigrator,String handlerClass$){
 try{
-	System.out.println("ConsoleHandler:getHandlerInstance:handler="+handlerClass$);
+	if(debug)
+	System.out.println("ConsoleHandler:getHandlerInstance:handler class="+handlerClass$);
 	if(handlerClass$==null||"null".equals(handlerClass$)){
 		System.out.println("ConsoleHandler:getHandlerInstance:argument null");
 		return null;
 	}
 	
 	try{
-//		System.out.println("ConsoleHandler:getHandlerInstance:forName");
-			return Class.forName(handlerClass$).newInstance();
+		if(debug)
+		System.out.println("ConsoleHandler:getHandlerInstance:forName");
+		//Object 	handler=null;
+		Object 	handler=entigrator.getHandler(handlerClass$);
+		if(handler!=null){
+			if(debug)
+			System.out.println("ConsoleHandler:getHandlerInstance:found handler="+handler.toString());
+			return handler;
+		}
+		
+		 handler= Class.forName(handlerClass$).newInstance();
+		if(handler!=null){
+			if(debug)
+				System.out.println("ConsoleHandler:getHandlerInstance:found handler for name="+handlerClass$);
+			entigrator.putHandler(handlerClass$, handler);
+			return handler;
+		}else{
+			if(debug)
+				System.out.println("ConsoleHandler:getHandlerInstance:cannot get class for name="+handlerClass$);
+				
+		}
 	}catch(ClassNotFoundException ee){
+		if(debug)
 		System.out.println("ConsoleHandler:getHandlerInstance:embedded class not found");
-	//
-	//	
 	String[]sa=entigrator.indx_listEntities("entity", "extension");
 	if(sa==null){
 		System.out.println("ConsoleHandler:getHandlerInstance:no extensions");
@@ -247,13 +276,18 @@ try{
 	Core[] ca;
 	for(String aSa:sa){
 		extension=entigrator.getEntityAtKey(aSa);
+		if(debug)
 		System.out.println("ConsoleHandler:getHandlerInstance:try extension="+extension.getProperty("label"));
 		ca=extension.elementGet("content.fhandler");
 		if(ca!=null)
 			for(Core aCa:ca){
 				if(handlerClass$.equals(aCa.name)){
+					if(debug)
 					System.out.println("ConsoleHandler:getHandlerInstance:aCa.name="+aCa.name);	
 					Object obj= ExtensionHandler.loadHandlerInstance( entigrator,extension.getKey(), handlerClass$);
+					if(obj!=null)
+						entigrator.putHandler(handlerClass$, obj);
+					if(debug)
 					System.out.println("ConsoleHandler:getHandlerInstance:handler="+handlerClass$);
 					return obj;
 				}
@@ -261,6 +295,7 @@ try{
 		ca=extension.elementGet("content.jfacet");
 		if(ca!=null)
 			for(Core aCa:ca){
+				if(debug)
 				System.out.println("ConsoleHandler:getHandlerInstance:jfacet: type="+aCa.type+" name="+aCa.name+" value="+aCa.value);	
 				if(handlerClass$.equals(aCa.type)||handlerClass$.equals(aCa.value)||handlerClass$.equals(aCa.name)){
 						Object obj= ExtensionHandler.loadHandlerInstance( entigrator,extension.getKey(), handlerClass$);
@@ -270,10 +305,12 @@ try{
 		ca=extension.elementGet("content.jrenderer");
 		if(ca!=null)
 			for(Core aCa:ca){
+				if(debug)
 				System.out.println("ConsoleHandler:getHandlerInstance:jrenderer: type="+aCa.type+" name="+aCa.name+" value="+aCa.value);	
 				if(handlerClass$.equals(aCa.value)){
 					Object obj= ExtensionHandler.loadHandlerInstance( entigrator,extension.getKey(), handlerClass$);
-					//System.out.println("ConsoleHandler:getHandlerInstance:2");
+					if(obj!=null)
+						entigrator.putHandler(handlerClass$, obj);
 					return obj;
 				}
 			}
@@ -287,44 +324,36 @@ try{
 }
 public static Object getHandlerInstance(Entigrator entigrator,String handlerClass$,String extension$){
 try{
-	System.out.println("ConsoleHandler:getHandlerInstance:2:handler="+handlerClass$+" extension ="+extension$);
+	Object 	handler=entigrator.getHandler(handlerClass$);
+	if(handler!=null)
+		return handler;
 	if(extension$==null||"null".equals(extension$))
 		return getHandlerInstance(entigrator, handlerClass$);
-	/*
 	
-	try{
-		Object obj=Class.forName(handlerClass$).newInstance();
-		if(obj!=null){
-		System.out.println("ConsoleHandler:getHandlerInstance:2:forName");
-			return obj;
-		}
-	}catch(ClassNotFoundException ee){
-		System.out.println("ConsoleHandler:getHandlerInstance:2:embedded class not found");
-	}
-	*/
 	if(handlerClass$==null||"null".equals(handlerClass$)|extension$==null){
+		if(debug)
 		System.out.println("ConsoleHandler:getHandlerInstance:argument null");
 		return null;
 	}
-	
-if(entigrator==null){
-	System.out.println("ConsoleHandler:getHandlerInstance:entigrator is null");
-	return null;
-}
 	Sack extension=entigrator.getEntityAtKey(extension$);
 	if(extension==null){
+		if(debug)
 		System.out.println("ConsoleHandler:getHandlerInstance:extension is null");
 		return null;
 	}
-	
 	Core[] ca;
+	if(debug)
 	System.out.println("ConsoleHandler:getHandlerInstance:try extension="+extension.getProperty("label"));
 		ca=extension.elementGet("content.fhandler");
 		if(ca!=null)
 			for(Core aCa:ca){
 				if(handlerClass$.equals(aCa.name)){
+					if(debug)
 					System.out.println("ConsoleHandler:getHandlerInstance:aCa.name="+aCa.name);	
 					Object obj= ExtensionHandler.loadHandlerInstance( entigrator,extension.getKey(), handlerClass$);
+					if(obj!=null)
+						entigrator.putHandler(handlerClass$, handler);
+					if(debug)
 					System.out.println("ConsoleHandler:getHandlerInstance:handler="+handlerClass$);
 					return obj;
 				}
@@ -332,9 +361,12 @@ if(entigrator==null){
 		ca=extension.elementGet("content.jfacet");
 		if(ca!=null)
 			for(Core aCa:ca){
+				if(debug)
 				System.out.println("ConsoleHandler:getHandlerInstance:jfacet: type="+aCa.type+" name="+aCa.name+" value="+aCa.value);	
 				if(handlerClass$.equals(aCa.type)||handlerClass$.equals(aCa.value)||handlerClass$.equals(aCa.name)){
 						Object obj= ExtensionHandler.loadHandlerInstance( entigrator,extension.getKey(), handlerClass$);
+						if(obj!=null)
+							entigrator.putHandler(handlerClass$, obj);
 						return obj;
 				}
 			}
@@ -345,6 +377,8 @@ if(entigrator==null){
 				if(handlerClass$.equals(aCa.value)){
 					Object obj= ExtensionHandler.loadHandlerInstance( entigrator,extension.getKey(), handlerClass$);
 					//System.out.println("ConsoleHandler:getHandlerInstance:2");
+					if(obj!=null)
+						entigrator.putHandler(handlerClass$, obj);
 					return obj;
 				}
 			}

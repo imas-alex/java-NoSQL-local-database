@@ -24,8 +24,10 @@ import gdt.jgui.entity.JReferenceEntry;
 /**
  * This interface defines the facet renderer functionality.  
  */
+
 public interface JFacetRenderer extends JContext {
-  /**
+	public static final String ONLY_ITEM="only item";
+	/**
    * Add the renderer's icon bitmap in the form of Base64
    * string to the locator.
    * @param locator$ the origin locator

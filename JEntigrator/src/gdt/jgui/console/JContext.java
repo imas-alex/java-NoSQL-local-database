@@ -28,6 +28,10 @@ public interface JContext {
  * 
  */
 	public static final String CONTEXT_TYPE="context type";
+	public static final String OUTDATED_CANCEL="outdated cancel";
+	public static final String OUTDATED_RELOAD="outdated reload";
+	public static final String OUTDATED_REPLACE="outdated replace";
+	public static final String OUTDATED_TREATMENT="outdated treatment";
 /**
  * Get the panel to put into the main console.
  * @return the context panel.
@@ -70,4 +74,5 @@ public interface JContext {
 	 * remove it from the main console.
 	 */	
     public abstract void close();
+    public abstract void activate();
 }

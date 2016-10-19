@@ -36,6 +36,7 @@ import gdt.jgui.console.JFacetRenderer;
 import gdt.jgui.console.JItemPanel;
 import gdt.jgui.console.JItemsListPanel;
 import gdt.jgui.console.JMainConsole;
+import gdt.jgui.console.ReloadDialog;
 /**
 * This context displays a list of all categories (types of entities).   
 * @author  Alexander Imas
@@ -48,6 +49,8 @@ public class JAllCategoriesPanel extends JItemsListPanel {
 String entihome$;
 Hashtable<String,JItemPanel> items;
 	private static final long serialVersionUID = 1L;
+	boolean debug=false;
+	boolean ignoreOutdate=false;
 	/**
 	 * Default constructor
 	 *  
@@ -65,16 +68,14 @@ Hashtable<String,JItemPanel> items;
 	    locator.setProperty(Locator.LOCATOR_TYPE, JContext.CONTEXT_TYPE);
 	    locator.setProperty(JContext.CONTEXT_TYPE,getType());
 	    locator.setProperty(Locator.LOCATOR_TITLE, getTitle());
-	    if(entihome$!=null){
+	    if(entihome$!=null)
 	    locator.setProperty(Entigrator.ENTIHOME,entihome$);
 	
 	    String icon$=Support.readHandlerIcon(null,JAllCategoriesPanel.class, "category.png");
-	//    System.out.println("JAllCategoriesPanel:getLocator:icon="+icon$);
+	    //System.out.println("JAllCategoriesPanel:getLocator:icon="+icon$);
 	    if(icon$!=null)
 	    	locator.setProperty(Locator.LOCATOR_ICON,icon$);
-	    }
-	   // 
-	    locator.setProperty(Locator.LOCATOR_TITLE, getTitle());
+		    locator.setProperty(Locator.LOCATOR_TITLE, getTitle());
 	    locator.setProperty(BaseHandler.HANDLER_SCOPE,JConsoleHandler.CONSOLE_SCOPE);
 	    locator.setProperty(BaseHandler.HANDLER_CLASS,getClass().getName());
 		return Locator.toString(locator);
@@ -88,9 +89,7 @@ Hashtable<String,JItemPanel> items;
 	 */		
 	@Override
 	public JContext instantiate(JMainConsole console, String locator$) {
-        //debug
-		boolean debug=false;
-		//end debug
+      
 		//System.out.println("BaseNavigator:instantiate:locator="+Locator.remove(locator$,Locator.LOCATOR_ICON));
 		Properties locator=Locator.toProperties(locator$);
 		entihome$=locator.getProperty(Entigrator.ENTIHOME);
@@ -111,25 +110,18 @@ Hashtable<String,JItemPanel> items;
 			 JCategoryPanel cp;
 			 cp=new JCategoryPanel();
 			  cpLocator$=cp.getLocator();
-//			  System.out.println("AllCategoriesPanel:instantiate:cpLocator="+cpLocator$);
+			  if(debug)
+			  System.out.println("AllCategoriesPanel:instantiate:cpLocator="+cpLocator$);
 			  cpLocator=Locator.toProperties(cpLocator$);
 			  cpLocator.setProperty(Entigrator.ENTIHOME,entihome$);
-			// System.out.println("AllCategoriesPanel:instantiate:BEGIN MAKE CATEGORY PANELS");
 			 String fh$;
 			 for(FacetHandler fh:fha){
 				 try{
 			  fh$=fh.getClassName();
-			  if("gdt.data.entity.GraphHandler".equals(fh$))
-				  debug=true;
-			  else
-				  debug=false;
 			 if(debug) 
 			     System.out.println("AllCategoriesPanel:instantiate:fh="+fh.getClass().getName());		 
 			  itemPanel=getItem(fh$);
 			   if(itemPanel==null){
-			  //cpLocator$=entigrator.getLocator(fh$);
-			  //cpLocator$=null;  
-			  //if(cpLocator$==null)
 			  {
 			  
 			  facetRenderer=JConsoleHandler.getFacetRenderer(entigrator, fh.getClass().getName());
@@ -139,12 +131,15 @@ Hashtable<String,JItemPanel> items;
 			  cpLocator.setProperty(JCategoryPanel.RENDERER,facetRenderer.getClass().getName());
 			  cpLocator$=Locator.toString(cpLocator);
 			  if(debug)
-				  System.out.println("AllCategoriesPanel:instantiate:category panel(1)="+cpLocator$);		 
+			 System.out.println("AllCategoriesPanel:instantiate:category panel(begin)="+cpLocator$);		 
 				
 			  cp.instantiate(console, cpLocator$);
-			  cpLocator$=cp.getLocator();
 			  if(debug)
-				  System.out.println("AllCategoriesPanel:instantiate:category panel(2)="+cpLocator$);		 
+			  System.out.println("AllCategoriesPanel:instantiate:finish category panel(finish)="+cpLocator$); 
+			  cpLocator$=cp.getLocator();
+			  cpLocator$=Locator.append(cpLocator$, JCategoryPanel.LIST_MEMBERS,Locator.LOCATOR_TRUE);
+//			  if(debug)
+	//			  System.out.println("AllCategoriesPanel:instantiate:category panel(2)="+cpLocator$);		 
 			  
 			  entigrator.putLocator(fh$, cpLocator$);
 			  }
@@ -222,5 +217,43 @@ Hashtable<String,JItemPanel> items;
 		if(items==null)
 			return null;
 		return (JItemPanel)Support.getValue(key$, items);
+	}
+	@Override
+	public void activate() {
+		if(debug)
+			System.out.println("JAllCatigoriesPanel:activate:begin");
+		if(ignoreOutdate){
+			
+			ignoreOutdate=false;
+			return;
+		}
+		if(debug)
+			System.out.println("JAllCatigoriesPanel:activate:0");
+		if(entihome$==null||console==null)
+			return;
+		Entigrator entigrator=console.getEntigrator(entihome$);
+		if(!entigrator.store_outdated()){
+			if(debug)
+			System.out.println("JAllCatigoriesPanel:activate:up to date");
+			return;
+		}
+		
+		int n=new ReloadDialog(this).show();
+		if(2==n){
+			//cancel
+			ignoreOutdate=true;
+			return;
+		}
+		if(1==n){
+			//replace
+			entigrator.store_replace();//JConsoleHandler.execute(console, getLocator());
+		}
+		if(0==n){
+			//reload
+			entigrator.store_reload();
+			 JConsoleHandler.execute(console, getLocator());
+			}
+		
+		
 	}
 }

@@ -37,13 +37,11 @@ import javax.swing.event.MenuEvent;
 import javax.swing.event.MenuListener;
 
 import gdt.data.entity.BaseHandler;
-import gdt.data.entity.FacetHandler;
 import gdt.data.grain.Locator;
 import gdt.data.grain.Support;
 import gdt.data.store.Entigrator;
 import gdt.jgui.console.JConsoleHandler;
 import gdt.jgui.console.JContext;
-import gdt.jgui.console.JFacetRenderer;
 import gdt.jgui.console.JItemPanel;
 import gdt.jgui.console.JItemsListPanel;
 import gdt.jgui.console.JMainConsole;
@@ -60,6 +58,7 @@ public class JRecentPanel extends JItemsListPanel {
 	String entihome$;
 Hashtable<String,JItemPanel> items;
 JMenu menu;
+static boolean debug=false;
 	private static final long serialVersionUID = 1L;
 	/**
 	 * Default constructor
@@ -82,7 +81,6 @@ JMenu menu;
 	    locator.setProperty(Entigrator.ENTIHOME,entihome$);
 	
 	    String icon$=Support.readHandlerIcon(null,JRecentPanel.class, "recent.png");
-	//    System.out.println("JAllCategoriesPanel:getLocator:icon="+icon$);
 	    if(icon$!=null)
 	    	locator.setProperty(Locator.LOCATOR_ICON,icon$);
 	    }
@@ -101,8 +99,10 @@ JMenu menu;
 	 */		
 	@Override
 	public JContext instantiate(JMainConsole console, String locator$) {
-        super.instantiate(console, locator$);
-		//System.out.println("BaseNavigator:instantiate:locator="+Locator.remove(locator$,Locator.LOCATOR_ICON));
+      // super.instantiate(console, locator$);
+		this.console=console;
+		if(debug)
+        System.out.println("JRecentPanel:instantiate:locator="+Locator.remove(locator$,Locator.LOCATOR_ICON));
 		try{
         Properties locator=Locator.toProperties(locator$);
 		entihome$=locator.getProperty(Entigrator.ENTIHOME);
@@ -123,8 +123,6 @@ JMenu menu;
 			itemPanel=new JItemPanel(console,itemLocator$);
 			ipl.add(itemPanel); 
 		}
-	//	 System.out.println("AllCategoriesPanel:instantiate:END MAKE CATEGORY PANELS");
-			
 		Collections.sort(ipl,new ItemPanelComparator()); 
 		putItems(ipl.toArray(new JItemPanel[0]));
 		   }catch(Exception e){
@@ -234,9 +232,11 @@ JMenu menu;
 			}
 			String[] sa= sl.toArray(new String[0]);
 			if(sa==null){
+				if(debug)
 				System.out.println("JRecentPanel:store:no content");
 				return;
 			}
+			if(debug)
 			System.out.println("JRecentPanel:store:sa="+sa.length);
    	     FileOutputStream fos = new FileOutputStream(recentFile);
 	     OutputStreamWriter osw = new OutputStreamWriter(fos);
@@ -274,17 +274,15 @@ JMenu menu;
 				title$=Locator.getProperty(s, Locator.LOCATOR_TITLE);
 				 console.recents.put(title$,s);
 			}
-			
-			/*
-			while((locator$=rd.readLine())!=null){
-				 title$=Locator.getProperty(locator$, Locator.LOCATOR_TITLE);
-				 console.recents.put(title$, locator$);
-			 }
-			 */
 			rd.close();
 			fis.close();
 		}catch(Exception e){
 			Logger.getLogger(JClipboard.class.getName()).severe(e.toString());
 		}
+	}
+	@Override
+	public void activate() {
+		// TODO Auto-generated method stub
+		
 	}	
 }

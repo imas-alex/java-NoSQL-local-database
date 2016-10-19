@@ -219,4 +219,9 @@ public JBasesPanel(){
 				Logger.getLogger(JQueryPanel.class.getName()).severe(e.toString());	
 			}
 		}
+	@Override
+	public void activate() {
+		// TODO Auto-generated method stub
+		
+	}
 }

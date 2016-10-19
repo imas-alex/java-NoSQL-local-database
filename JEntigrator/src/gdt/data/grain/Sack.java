@@ -25,6 +25,7 @@ import java.io.OutputStreamWriter;
 import java.io.RandomAccessFile;
 import java.io.Writer;
 import java.lang.reflect.Array;
+import java.nio.channels.Channels;
 import java.nio.channels.FileChannel;
 import java.nio.channels.FileLock;
 import java.util.Stack;
@@ -45,10 +46,12 @@ import gdt.data.btree.BTree;
 public class Sack extends Identity {
     private final BTree attributes;
     private final BTree elements;
+    static boolean debug=false;    
     public Sack() {
-        super();
+    super();
         attributes = new BTree();
         elements = new BTree();
+    
     }
     /**
    	 * Load a sack from a xml file.
@@ -56,28 +59,32 @@ public class Sack extends Identity {
 	 * @return a sack.   
    	 */
       public static Sack parseXML(String fname$) {
-    	   final Logger LOGGER= Logger.getLogger(Sack.class.getName());
+    	  if(debug)
+    	    System.out.println("Sack:parseXML:fname="+fname$); 
+    	  final Logger LOGGER= Logger.getLogger(Sack.class.getName());
     	   try {
-            if (fname$ == null) {
-                LOGGER.severe(":parseXML:file path is null");
+            if (fname$ == null||fname$.endsWith("/null")) {
+               // LOGGER.severe(":parseXML:file path is null");
                 return null;
             }
+            long begin=System.currentTimeMillis();
             DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
             DocumentBuilder db = dbf.newDocumentBuilder();
             File file = new File(fname$);
             if(file.exists()&&file.length()<10){
-            	 LOGGER.severe(":parseXML:emty file="+fname$);
+            	 LOGGER.severe(":parseXML:empty file="+fname$);
+            	 file.delete();
                  return null;
             }
             RandomAccessFile raf=new RandomAccessFile(fname$, "rw");
             FileChannel channel = raf.getChannel();
-            FileLock fl = channel.tryLock();
+            FileLock fl =   channel.tryLock();
             if (fl == null) {
                 int cnt = 0;
                 while (fl == null) {
                     try {
                        // System.out.println("Sack:parseXML:try lock file=" + fname + " cnt=" + cnt);
-                        Thread.sleep(100);
+                        Thread.sleep(10);
                         fl = channel.tryLock();
                         cnt++;
                         if (cnt > 10) {
@@ -100,16 +107,8 @@ public class Sack extends Identity {
                 }
 
             }
-
-            try {
-                fl.release();
-                channel.close();
-                raf.close();
-            } catch (Exception e) {
-                LOGGER.severe(":parseXML:"+e.toString());
-            }
-            file = new File(fname$);
-            Document doc = db.parse(file);
+            InputStream is = Channels.newInputStream(channel);
+            Document doc = db.parse(is);
             doc.setXmlVersion("1.1");
             Sack ret = new Sack();
             ret.setKey(file.getName());
@@ -147,10 +146,10 @@ public class Sack extends Identity {
                         }
                     }
             }
-            //ret.print();
+            raf.close();
             return ret;
         } catch (Exception e) {
-        	LOGGER.severe(":parseXML:"+e.toString()+ " file=" + fname$);
+        	LOGGER.severe(e.toString()+":"+fname$);
         	return null;
         }
     }

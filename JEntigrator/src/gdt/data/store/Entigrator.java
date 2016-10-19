@@ -765,8 +765,10 @@ public String[] indx_listEntities(Properties criteria) {
                     	save(property);
                        	continue;
                     }
-                    if(debug)
+                    if(debug){
+                    	System.out.println("Entigrator:indx_listEntitiesAtPropertyName:map="+map.getKey());	
                     System.out.println("Entigrator:indx_listEntitiesAtPropertyName:get map:"+String.valueOf(System.currentTimeMillis()-begin));
+                    }
                     ea = map.elementList("entity");
                     if (ea == null) {
                     	LOGGER.severe(":indx_listEntitiesAtPropertyName:empty map[" + i + "]=" + ma[i]);
@@ -793,7 +795,7 @@ public String[] indx_listEntities(Properties criteria) {
                         	sl.add(anEa);
                         		//s.push(anEa);
                         	 if(debug)
-                            System.out.println("Entigrator:listEntitiesAtPropertyMame:entity key="+anEa+" label="+ indx_getLabel(anEa));
+                               System.out.println("Entigrator:listEntitiesAtPropertyMame:entity key="+anEa+" label="+ indx_getLabel(anEa));
                         }
                     }
                 }
@@ -831,7 +833,12 @@ public String[] indx_listEntities(Properties criteria) {
     
     private void prp_deleteWrongValueEntries(String propertyName$, String propertyValue$) {
         try {
-            String property$ = propertyIndex.getElementItemAt("property", propertyName$);
+        	if("label".equals(propertyName$))
+        		return;
+        	if(debug)
+            	System.out.println("Entigrator:prp_deleteWrongValueEntries:property name="+propertyName$+ " value="+propertyValue$);
+        	
+        	String property$ = propertyIndex.getElementItemAt("property", propertyName$);
             Sack property = getMember("property.base", property$);
             Sack map = getMember("property.map.base", property.getElementItemAt("value", propertyValue$));
             if(map==null){
@@ -840,24 +847,36 @@ public String[] indx_listEntities(Properties criteria) {
             }
             String[] ea = map.elementList("entity");
               Sack entity = null;
-            if (ea != null){
+            String label$;  
+            if (ea != null)
             	for (String anEa : ea) {
                     try {
-                        entity = getMember("entity.base", anEa);
-                        if(entity.getProperty("label")==null||"null".equals(entity.getProperty("label"))){
+                        if(debug)
+                        	System.out.println("Entigrator:prp_deleteWrongValueEntries:anEa="+anEa);
+                    	entity = getMember("entity.base", anEa);
+                    	 if (entity == null) {
+                    		 if(debug)
+                             	System.out.println("Entigrator:prp_deleteWrongValueEntries:remove from map anEa="+anEa);
+                         
+                             map.removeElementItem("entity", anEa);
+                             save(map);
+                             continue;
+                         }
+                    	label$=entity.getProperty("label");
+                    	 if(debug)
+                           	System.out.println("Entigrator:prp_deleteWrongValueEntries:check label="+label$);
+                      
+                    	if(label$==null||"null".equals(label$)){
                         	deleteEntity(entity);
-                        	entity=null;
                         }
                     } catch (Exception ee) {
-                    	LOGGER.severe(":prp_deleteWrongValueEntries:"+ee.toString());
-                                           }
-                    if (entity == null) {
-                        map.removeElementItem("entity", anEa);
-                    }
+                    	  if(debug)
+                          	System.out.println("Entigrator:prp_deleteWrongValueEntries:"+ee.toString());
+                   
                 }
             
             }
-            ea = map.elementList("entity");
+             ea = map.elementList("entity");
             if(ea!=null)
             	return;
             else
@@ -865,7 +884,7 @@ public String[] indx_listEntities(Properties criteria) {
                prp_deletePropertyValue(propertyName$,propertyValue$);
                delete(map);
             }
-             save(map);
+//             save(map);
         } catch (Exception e) {
            
         	LOGGER.severe(":prp_deleteWrongValueEntries:"+e.toString());
@@ -2547,14 +2566,6 @@ public Class<?> getClass(String key$){
 		return null;
 	return (Class<?>)Support.getValue(key$, classesCache);
 }
-public String  ent_lockInfo(String entityKey$){
-    return storeAdapter.ent_lockInfo(entityKey$);	
-
-}
-
-public boolean ent_release(String entityKey$){
-	return storeAdapter.ent_release(entityKey$);	
-}
 public Sack ent_reload(String entityKey$){
 	Sack entity= Sack.parseXML(entihome$+"/"+ Entigrator.ENTITY_BASE +"/data/"+entityKey$);
 	if(entity!=null)
@@ -2562,13 +2573,6 @@ public Sack ent_reload(String entityKey$){
 	return entity;
 }
 
-public boolean ent_lock(String entityKey$){
-	return storeAdapter.ent_lock(entityKey$);
-}
-
-public String  ent_savedId(String entityKey$){
-	return storeAdapter.ent_savedId(entityKey$);
-}
 /*
 public boolean store_isSelfLocked(){
 	return storeAdapter.store_isSelfLocked();
@@ -2628,13 +2632,26 @@ public String store_reload(){
 	entitiesCache.clear();
 	return storeAdapter.store_reload();
 }
+/*
 public boolean store_outdated(String saveId$){
 	 if(debug)
 		 System.out.println("Entigrator:store_outdated");
 	return storeAdapter.store_outdated(saveId$);
 }
+*/
+public boolean store_outdated(){
+	 if(debug)
+		 System.out.println("Entigrator:store_outdated");
+	return storeAdapter.store_outdated();
+}
 public void store_refresh(){
 	storeAdapter.store_refresh();
+}
+public void store_block(){
+	storeAdapter.store_block();
+}
+public void store_unblock(){
+	storeAdapter.store_unblock();
 }
 }
 

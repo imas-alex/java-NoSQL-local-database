@@ -113,13 +113,13 @@ private Logger LOGGER=Logger.getLogger(ExtensionHandler.class.getName());
 	
 	public static Object loadHandlerInstance(Entigrator entigrator,String extension$,String handlerClass$){
 		try{
-		System.out.println("ExtensionHandler:loadHandlerInstance:extension="+extension$+" handler="+handlerClass$);
+		//System.out.println("ExtensionHandler:loadHandlerInstance:extension="+extension$+" handler="+handlerClass$);
 		
 		
 		Object obj=null;
 		Class<?>cls=entigrator.getClass(handlerClass$);
-		if(cls==null){
-			System.out.println("ExtensionHandler:loadHandlerInstance:1");
+	if(cls==null){
+		//	System.out.println("ExtensionHandler:loadHandlerInstance:1");
 		Sack extension=entigrator.getEntityAtKey(extension$);
 			String lib$=extension.getElementItemAt("field", "lib");
 			String jar$="jar:file:" +entigrator.getEntihome()+"/"+extension$+"/"+lib$+"!/";
@@ -155,7 +155,7 @@ private Logger LOGGER=Logger.getLogger(ExtensionHandler.class.getName());
 			try{
 				
 				Constructor[] ctors = cls.getDeclaredConstructors();
-				System.out.println("ExtensionHandler:loadHandlerInstance:ctors="+ctors.length);
+			//	System.out.println("ExtensionHandler:loadHandlerInstance:ctors="+ctors.length);
 				Constructor ctor = null;
 				for (int i = 0; i < ctors.length; i++) {
 				    ctor = ctors[i];
@@ -170,7 +170,7 @@ private Logger LOGGER=Logger.getLogger(ExtensionHandler.class.getName());
 				return null;
 			}
 			//if(obj!=null)
-		      System.out.println("ExtensionHandler:loadHandlerInstance:obj="+obj.getClass().getName());
+	//	      System.out.println("ExtensionHandler:loadHandlerInstance:obj="+obj.getClass().getName());
 		    return obj;
 		}catch(Exception e){
 			Logger.getLogger(ExtensionHandler.class.getName()).severe(e.toString());
@@ -181,7 +181,7 @@ private Logger LOGGER=Logger.getLogger(ExtensionHandler.class.getName());
 	
 	private static FacetHandler[] listExtensionHandlers( Entigrator entigrator,String extension$){
 		try{
-			System.out.println("ExtesionHandler:listExtensionHandlers:extension="+extension$);
+		//	System.out.println("ExtesionHandler:listExtensionHandlers:extension="+extension$);
 			Sack extension=entigrator.getEntityAtKey(extension$);
 		String lib$=extension.getElementItemAt("field", "lib");
 		String[] sa=extension.elementList("content.fhandler");
@@ -196,8 +196,12 @@ private Logger LOGGER=Logger.getLogger(ExtensionHandler.class.getName());
 		URLClassLoader cl = URLClassLoader.newInstance(urls);
 		for(String aSa:sa){
 			try{
+			cls=(Class)entigrator.getHandler(aSa);	
 	//			System.out.println("ExtesionHandler:listExtensionHandlers:jar="+jar$);
-			cls=cl.loadClass(aSa);
+			if(cls==null){
+			   cls=cl.loadClass(aSa);
+			   entigrator.putHandler(aSa, cls);
+			}
 			fh=(FacetHandler)cls.newInstance();
 			fl.add(fh);
 			}catch(Exception ee){

@@ -29,13 +29,8 @@ import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.io.BufferedReader;
-import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileOutputStream;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.lang.reflect.Method;
@@ -63,10 +58,6 @@ import javax.swing.event.MenuEvent;
 import javax.swing.event.MenuListener;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableCellRenderer;
-
-import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;
-
-import gdt.data.entity.ArchiveHandler;
 import gdt.data.entity.BaseHandler;
 import gdt.data.entity.EntityHandler;
 import gdt.data.entity.facet.FolderHandler;
@@ -77,7 +68,6 @@ import gdt.data.grain.Locator;
 import gdt.data.grain.Sack;
 import gdt.data.grain.Support;
 import gdt.data.store.Entigrator;
-import gdt.data.store.FileExpert;
 import gdt.jgui.console.JConsoleHandler;
 import gdt.jgui.console.JContext;
 import gdt.jgui.console.JFacetRenderer;
@@ -113,6 +103,7 @@ public class JQueryPanel extends JPanel implements JFacetRenderer,JRequester{
 	protected String entityLabel$;
 	protected JMainConsole console;
 	private JMenu menu;
+	boolean debug=false;
 	/**
 	 * The default constructor.
 	 */
@@ -273,8 +264,9 @@ public class JQueryPanel extends JPanel implements JFacetRenderer,JRequester{
 		menu.addMenuListener(new MenuListener(){
 				@Override
 				public void menuSelected(MenuEvent e) {
-				menu.removeAll();	
-//				System.out.println("BookmarksEditor:getConextMenu:menu selected");
+				menu.removeAll();
+				if(debug)
+				System.out.println("JQueryPanel:getConextMenu:menu selected");
 					 JMenuItem selectItem = new JMenuItem("Select");
 						selectItem.addActionListener(new ActionListener() {
 							@Override
@@ -322,7 +314,6 @@ public class JQueryPanel extends JPanel implements JFacetRenderer,JRequester{
 							}
 						} );
 						menu.add(folderItem);
-						
 						menu.addSeparator();
 				 JMenuItem addHeader = new JMenuItem("Add column");
 					addHeader.addActionListener(new ActionListener() {
@@ -366,8 +357,23 @@ public class JQueryPanel extends JPanel implements JFacetRenderer,JRequester{
 								showContent();
 						}
 					} );
-					menu.add(excludeRows);		
-					}
+					menu.add(excludeRows);
+					if(debug)
+						System.out.println("JQueryPanel:getConextMenu:add done");
+					}	
+					menu.addSeparator();
+					JMenuItem doneItem = new JMenuItem("Done");
+					doneItem.addActionListener(new ActionListener() {
+						@Override
+						public void actionPerformed(ActionEvent e) {
+							Entigrator entigrator=console.getEntigrator(entihome$);
+							Sack query=entigrator.getEntityAtKey(entityKey$);
+							entigrator.save(query);
+							console.back();
+						}
+					} );
+					menu.add(doneItem);
+					
 			}
 				@Override
 				public void menuDeselected(MenuEvent e) {
@@ -380,6 +386,7 @@ public class JQueryPanel extends JPanel implements JFacetRenderer,JRequester{
 		 }
 private String[] select(){
 		try{
+			  
 			Entigrator entigrator=console.getEntigrator(entihome$);
 			Sack query=entigrator.getEntityAtKey(entityKey$);
 			//String queryClass$=query.getElementItemAt("parameter", "query.class");
@@ -393,10 +400,14 @@ private String[] select(){
 		 // Method method = obj.getClass().getDeclaredMethod("select",JMainConsole.class,String.class);
 		  Method method = obj.getClass().getDeclaredMethod("select",JMainConsole.class,String.class);
  	      Object value=method.invoke(obj,console,entihome$);
+ 	     
  	      String[] sa=(String[])value;
  	      String []ea=query.elementList("exclude");
- 	      if(ea==null)
+ 	      if(ea==null){
+ 	    	 if(debug)
+ 	 			System.out.println("JQueryPanel.select:FINISH");
  	    	  return sa;
+ 	      }
  	      else{
  	    	  ArrayList<String>sl=new ArrayList<String>();
  	    	  String label$;
@@ -405,6 +416,7 @@ private String[] select(){
  	    		  if(query.getElementItem("exclude", label$)==null)
  	    			  sl.add(s);
  	    	  }
+ 	    	
           return sl.toArray(new String[0]);
  	      }
 		}catch(Exception e){
@@ -450,7 +462,8 @@ private String[] select(){
 @Override
 	public JContext instantiate(JMainConsole console, String locator$) {
 		try{
-//			System.out.println("JQueryPanel.instantiate:locator="+locator$);
+		if(debug)
+			System.out.println("JQueryPanel.instantiate:locator="+locator$);
 			this.console=console;
 			Properties locator=Locator.toProperties(locator$);
 			entihome$=locator.getProperty(Entigrator.ENTIHOME);
@@ -459,10 +472,18 @@ private String[] select(){
 			entityLabel$=locator.getProperty(EntityHandler.ENTITY_LABEL);
 			if(entityLabel$==null)
 				entityLabel$=entigrator.indx_getLabel(entityKey$);
-            Sack entity=entigrator.getEntityAtKey(entityKey$);
+			 if(Locator.LOCATOR_TRUE.equals(locator.getProperty(JFacetRenderer.ONLY_ITEM)))
+				 return this;
+			Sack entity=entigrator.getEntityAtKey(entityKey$);
             entityLabel$=entity.getProperty("label");
+            if(debug)
+    			System.out.println("JQueryPanel.instantiate:1");    
             initElementSelector();
+            if(debug)
+    			System.out.println("JQueryPanel.instantiate:2");   
             initItemNameFieldSelector();
+            if(debug)
+    			System.out.println("JQueryPanel.instantiate:3");   
             initItemNameSelector();
             initItemValueSelector();
             showHeader();
@@ -721,12 +742,17 @@ private void initElementSelector(){
 		elementComboBox.setModel(model);
 		return;
 	}
+	 if(debug)
+			System.out.println("JQueryPanel. initElementSelector:1");
+  
 	try{
 		Entigrator entigrator=console.getEntigrator(entihome$);
 		ArrayList <String>sl=new ArrayList<String>();
 		Sack entity;
         String[] ea;		
 		for(String s:sa){
+			 if(debug)
+					System.out.println("JQueryPanel. initElementSelector:s="+s);
 			entity=entigrator.getEntityAtKey(s);
 			if(entity==null)
 				continue;
@@ -1048,9 +1074,15 @@ private void showContent(){
      for(String s:sa){
     	 label$=entigrator.indx_getLabel(s);
     	 if(label$==null){
-    		 System.out.println("JQueryPanel:showContent:cannot get  label for key="+s);
+    		 if(debug)
+    		    System.out.println("JQueryPanel:showContent:cannot get  label for key="+s);
     		 continue;
     	 }
+    	
+    	// if(debug)
+ 		   // System.out.println("JQueryPanel:showContent:label="+label$+" key="+s);
+    	 
+ 		
     	 sl.add(label$);
      }
      
@@ -1274,5 +1306,10 @@ private void reset(){
 	}catch(Exception e){
 		Logger.getLogger(getClass().getName()).severe(e.toString());
 }
+}
+@Override
+public void activate() {
+	// TODO Auto-generated method stub
+	
 }
 }

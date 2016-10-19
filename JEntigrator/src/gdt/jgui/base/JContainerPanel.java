@@ -24,6 +24,8 @@ import java.util.logging.Logger;
 
 import gdt.data.entity.BaseHandler;
 import gdt.data.entity.EntityHandler;
+import gdt.data.grain.Core;
+import gdt.data.grain.Identity;
 import gdt.data.grain.Locator;
 import gdt.data.grain.Sack;
 import gdt.data.grain.Support;
@@ -34,6 +36,7 @@ import gdt.jgui.console.JItemPanel;
 import gdt.jgui.console.JItemsListPanel;
 import gdt.jgui.console.JMainConsole;
 import gdt.jgui.console.JRequester;
+import gdt.jgui.console.ReloadDialog;
 import gdt.jgui.entity.JEntitiesPanel;
 import gdt.jgui.entity.JEntityFacetPanel;
 import gdt.jgui.entity.JEntityPrimaryMenu;
@@ -362,6 +365,10 @@ private String getFacetsLocator(){
 	@Override
 	public String getSubtitle() {
 			return entihome$;
+	}
+	@Override
+	public void activate() {
+		
 	}
 
 }

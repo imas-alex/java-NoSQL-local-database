@@ -121,7 +121,8 @@ public void response(JMainConsole console, String locator$) {
 
 public void addFacet(JMainConsole console, String locator$) {
 	try{
-	   System.out.println("JFieldsFacetAddItem:addFacet:locator:"+locator$);
+	   if(debug)
+		System.out.println("JFieldsFacetAddItem:addFacet:locator:"+locator$);
 	   Properties locator=Locator.toProperties(locator$);
 	   String entihome$=locator.getProperty(Entigrator.ENTIHOME);
 	   String entityKey$=locator.getProperty(EntityHandler.ENTITY_KEY);
@@ -133,7 +134,8 @@ public void addFacet(JMainConsole console, String locator$) {
 	   if(!entity.existsElement("jfacet"))
 		   entity.createElement("jfacet");
 	   entity.putElementItem("jfacet", new Core(JFieldsFacetAddItem.class.getName(),FieldsHandler.class.getName(),JFieldsFacetOpenItem.class.getName()));
-	   entigrator.save(entity);
+	   //entigrator.save(entity);
+	   entigrator.replace(entity);
 	   entity=entigrator.ent_assignProperty(entity, "fields", entity.getProperty("label"));
 	}catch(Exception e){
 		  LOGGER.severe(e.toString());

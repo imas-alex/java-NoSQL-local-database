@@ -167,6 +167,14 @@ private boolean setDivider=true;
 								}
 							} );
 							menu.add(folderItem);
+							JMenuItem doneItem = new JMenuItem("Done");
+							doneItem.addActionListener(new ActionListener() {
+								@Override
+								public void actionPerformed(ActionEvent e) {
+								   console.back();
+								}
+							} );
+							menu.add(doneItem);
 							try{
 								//Entigrator entigrator=console.getEntigrator(entihome$);
 								Sack entity=entigrator.getEntityAtKey(entityKey$);
@@ -242,7 +250,11 @@ private boolean setDivider=true;
 			entihome$=locator.getProperty(Entigrator.ENTIHOME);
 			entityKey$=locator.getProperty(EntityHandler.ENTITY_KEY);
 			Entigrator entigrator=console.getEntigrator(entihome$);
-            Sack entity=entigrator.getEntityAtKey(entityKey$);
+			entityLabel$=entigrator.indx_getLabel(entityKey$);
+			if(Locator.LOCATOR_TRUE.equals(locator.getProperty(JFacetRenderer.ONLY_ITEM)))
+				 return this;
+			
+			Sack entity=entigrator.getEntityAtKey(entityKey$);
             entityLabel$=entity.getProperty("label");
             String dividerLocation$=locator.getProperty(DIVIDER_LOCATION);
             if(dividerLocation$!=null)
@@ -732,5 +744,10 @@ private class ShowListener implements ComponentListener{
 }
 	public JEditorPane getSourcePanel() {
 		return sourcePanel;
+	}
+	@Override
+	public void activate() {
+		// TODO Auto-generated method stub
+		
 	}
 }

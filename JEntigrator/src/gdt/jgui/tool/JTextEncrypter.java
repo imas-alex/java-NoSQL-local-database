@@ -321,4 +321,9 @@ public class JTextEncrypter extends JPanel implements JContext{
             return null;
         }
     }
+	@Override
+	public void activate() {
+		// TODO Auto-generated method stub
+		
+	}
 }

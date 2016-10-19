@@ -59,6 +59,7 @@ private final static String ACTION_ENCODE_TEXT="action encode text";
 private JEditorPane editorPane;
 protected String text$;
 String entihome$;
+String info$;
 protected String textTitle$="Text editor";
 protected String subtitle$;
 protected JMainConsole console;
@@ -101,7 +102,7 @@ public JTextEditor() {
 					   if(base64)
 						   text$=Locator.compressText(text$);
 					   responseLocator$=Locator.append(responseLocator$, TEXT, text$);
-					   System.out.println("TextEditor:done:response locator="+Locator.remove(responseLocator$, Locator.LOCATOR_ICON));
+					  // System.out.println("TextEditor:done:response locator="+Locator.remove(responseLocator$, Locator.LOCATOR_ICON));
 					   JConsoleHandler.execute(console, responseLocator$);
 						}catch(Exception ee){
 							LOGGER.severe(ee.toString());
@@ -132,6 +133,7 @@ public JTextEditor() {
 					 tenLocator$=Locator.append(tenLocator$,JTextEditor.TEXT, editorPane.getText());
 					 String tedLocator$=getLocator();
 					 tedLocator$=Locator.append(tedLocator$, BaseHandler.HANDLER_METHOD,"response");
+					 tedLocator$=Locator.append(tedLocator$, BaseHandler.HANDLER_SCOPE,JConsoleHandler.CONSOLE_SCOPE);
 					 tedLocator$=Locator.append(tedLocator$, JRequester.REQUESTER_ACTION,ACTION_ENCODE_TEXT);
 					 tenLocator$=Locator.append(tenLocator$,JRequester.REQUESTER_RESPONSE_LOCATOR,Locator.compressText(tedLocator$));
 					 JConsoleHandler.execute(console, tenLocator$);
@@ -183,6 +185,13 @@ public JTextEditor() {
 		subtitle$=locator.getProperty(SUBTITLE);
 		textTitle$=locator.getProperty(TEXT_TITLE);
 		entihome$=locator.getProperty(Entigrator.ENTIHOME);
+		if(Locator.LOCATOR_TRUE.equals(locator.getProperty(Entigrator.LOCK_STORE))){
+			Entigrator entigrator=console.getEntigrator(entihome$);
+			//if(!entigrator.store_tryLocked())
+			//entigrator.store_lock();
+			//if(!entigrator.store_isSelfLocked())
+			//		info$=entigrator.store_lockInfo();
+		}
 		if(Locator.LOCATOR_TRUE.equals(locator.getProperty(IS_BASE64))){
 				byte[] ba=Base64.decodeBase64(text$);
 				text$ = new String(ba, "UTF-8");
@@ -201,10 +210,19 @@ public JTextEditor() {
 	 */	
 	@Override
 	public String getTitle() {
-		if(textTitle$==null)
-		   return "Text editor";
+		if(textTitle$==null){
+			if(info$==null)
+					   return "Text editor";
+			else
+				 return "Text editor"+info$;
+		}
+		else{
+			if(info$==null)
+				   return textTitle$;
 		else
-			 return textTitle$;
+			 return textTitle$+info$;
+		}
+			 
 	}
 	/**
 	 * Get context type.
@@ -235,6 +253,11 @@ public JTextEditor() {
 	@Override
 	public void response(JMainConsole console, String locator$) {
 	//	System.out.println("TextEditor:response:locator="+locator$);
+		
+	}
+	@Override
+	public void activate() {
+		// TODO Auto-generated method stub
 		
 	}
 
