@@ -17,4 +17,6 @@
 <fullyQualifiedTypeName name="javax.swing.JPopupMenu"/>
 <fullyQualifiedTypeName name="javax.media.j3d.View"/>
 <fullyQualifiedTypeName name="java.awt.Point"/>
+<fullyQualifiedTypeName name="java.util.logging.Logger"/>
+<fullyQualifiedTypeName name="gdt.data.grain.Sack"/>
 </qualifiedTypeNameHistroy>

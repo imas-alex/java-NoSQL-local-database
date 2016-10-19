@@ -136,19 +136,20 @@ public class JGraphRenderer extends JPanel implements JContext , JRequester
   private JPopupMenu popup;
     String requesterResponseLocator$;
     AutocompleteJComboBox searchBox ;
+    String title$="Map";
 private VisualizationViewer<Number,Number> vv = null;
 
 //private AbstractLayout<Number,Number> layout = null;
 
     Timer timer;
     DirectedSparseGraph<Number, Number> graph;
-    boolean debug=true;
+    boolean debug=false;
 
     protected JButton switchLayout;
 
     public static final int EDGE_LENGTH = 100;
     Integer v_prev = null;
-    String message$;
+    //String message$;
 /**
  * The default constructor
  */
@@ -512,7 +513,8 @@ private VisualizationViewer<Number,Number> vv = null;
 	@Override
 	public JContext instantiate(JMainConsole console, String locator$) {
 		try{
-			//	System.out.println("JGraphRenderer:instantiate:locator="+locator$);
+			if(debug)
+			  System.out.println("JGraphRenderer:instantiate:locator="+locator$);
 				this.console=console;
 				this.locator$=locator$;
 				
@@ -527,11 +529,12 @@ private VisualizationViewer<Number,Number> vv = null;
 	            graphEntity=entigrator.getEntityAtKey(entityKey$);
 	             
 	            entityLabel$=graphEntity.getProperty("label");
+	            title$=entityLabel$;
 	            String viewComponentKey$=locator.getProperty(JGraphViews.VIEW_COMPONENT_KEY);
 	            String viewKey$=locator.getProperty(JGraphViews.VIEW_KEY);
 	   		    locator=new Properties();
    	   		 locator.setProperty(Locator.LOCATOR_TITLE, "Graph");
-   	  	locator.setProperty(Entigrator.ENTIHOME,entihome$);
+   	  	      locator.setProperty(Entigrator.ENTIHOME,entihome$);
    	  	String icon$=ExtensionHandler.loadIcon(entigrator, GraphHandler.EXTENSION_KEY,"graph.png");
    	  	if(icon$!=null)
 	    	locator.setProperty(Locator.LOCATOR_ICON,icon$);
@@ -539,8 +542,9 @@ private VisualizationViewer<Number,Number> vv = null;
    	  	if(JGraphViews.ACTION_SHOW_VIEW.equals(action$)){
    	  	//System.out.println("JGraphRenderer:instantiate:show view");
    	  	     try{
+   	  	    
    	  	    	 Sack viewComponent=entigrator.getEntityAtKey(viewComponentKey$);
-   	  	     
+   	  		title$=viewComponent.getElementItemAt("views", viewKey$); 
    	  	     Core[]ca=viewComponent.elementGet(viewKey$);
    	  	     if(graphEntity.existsElement("node.select"))
    	  	    graphEntity.createElement("node.select");
@@ -564,10 +568,7 @@ private VisualizationViewer<Number,Number> vv = null;
 	 */	
 	@Override
 	public String getTitle() {
-		if(message$==null)
-			return "Map";
-		else
-			return "Map"+message$;
+		return title$;
 		
 	}
 	/**
@@ -984,7 +985,8 @@ private void layoutVertices(){
 					try{
 					nodeKey$=graphEntity.getElementItemAtValue("vertex",String.valueOf(vertexId) );
 				   	nodePointer=graphEntity.getElementItem("node.select",nodeKey$);
-		            if(nodePointer==null||nodePointer.type==null||nodePointer.value==null)
+		            if(nodePointer==null||nodePointer.type==null||nodePointer.value==null
+		            	||"null".equals(nodePointer.type)||	"null".equals(nodePointer.value))
 		            	continue;
 				   	nodeX=Integer.parseInt(nodePointer.type);
 				   	nodeY=Integer.parseInt(nodePointer.value);

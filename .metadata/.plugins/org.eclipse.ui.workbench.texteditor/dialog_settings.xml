@@ -2,29 +2,29 @@
 <section name="Workbench">
 	<section name="org.eclipse.ui.texteditor.FindReplaceDialog">
 		<item value="false" key="isRegEx"/>
-		<item value="transform(" key="selection"/>
+		<item value="ent_saveId" key="selection"/>
 		<item value="false" key="casesensitive"/>
 		<item value="false" key="incremental"/>
 		<item value="true" key="wrap"/>
 		<item value="false" key="wholeword"/>
 		<list key="findhistory">
-			<item value="transform("/>
-			<item value="transform"/>
-			<item value="vertexId"/>
-			<item value="popup"/>
-			<item value="readHandlerIcon"/>
-			<item value="console"/>
-			<item value="maven-release-plugin"/>
-			<item value="maven-javadoc-plugin"/>
+			<item value="ent_saveId"/>
+			<item value="StoreAdapter:store_reload:BEGIN"/>
+			<item value="reload"/>
+			<item value="getMarks"/>
+			<item value="JCategoryPanel:activate:reload save id="/>
+			<item value="renderer$"/>
+			<item value="outdated"/>
+			<item value="listEntitiesAtLabelList:aLa="/>
 		</list>
 		<list key="replacehistory">
 		</list>
 	</section>
 	<section name="org.eclipse.ui.texteditor.FindReplaceDialog_dialogBounds">
-		<item value="318" key="DIALOG_WIDTH"/>
+		<item value="278" key="DIALOG_WIDTH"/>
 		<item value="1|Ubuntu|11.0|0|GTK|1|" key="DIALOG_FONT_NAME"/>
-		<item value="434" key="DIALOG_HEIGHT"/>
-		<item value="4" key="DIALOG_X_ORIGIN"/>
-		<item value="137" key="DIALOG_Y_ORIGIN"/>
+		<item value="366" key="DIALOG_HEIGHT"/>
+		<item value="132" key="DIALOG_X_ORIGIN"/>
+		<item value="146" key="DIALOG_Y_ORIGIN"/>
 	</section>
 </section>

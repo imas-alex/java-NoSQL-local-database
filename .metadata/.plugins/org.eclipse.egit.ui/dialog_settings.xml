@@ -2,12 +2,12 @@
 <section name="Workbench">
 	<item value="true" key="CommitDialog.showUntracked"/>
 	<list key="CommitDialog.authorValues">
-		<item value="Alexander Imas &lt;alexander.imas@gmail.com&gt;"/>
 		<item value="imasa &lt;alexander.imas@gmail.com&gt;"/>
+		<item value="Alexander Imas &lt;alexander.imas@gmail.com&gt;"/>
 	</list>
 	<list key="CommitDialog.committerValues">
-		<item value="Alexander Imas &lt;alexander.imas@gmail.com&gt;"/>
 		<item value="imasa &lt;alexander.imas@gmail.com&gt;"/>
+		<item value="Alexander Imas &lt;alexander.imas@gmail.com&gt;"/>
 	</list>
 	<section name="org.eclipse.egit.ui.internal.push.PushResultDialog.dialogBounds">
 		<item value="650" key="DIALOG_WIDTH"/>
@@ -28,5 +28,10 @@
 		<item value="-15" key="DIALOG_Y_ORIGIN"/>
 	</section>
 	<section name="GitCommitMessageComponent">
+	</section>
+	<section name="org.eclipse.egit.ui.internal.staging.StagingView">
+		<item value="500,500" key="STAGING_SASH_FORM_WEIGHT"/>
+		<item value="false" key="sortItemState"/>
+		<item value="500,500" key="HORIZONTAL_SASH_FORM_WEIGHT"/>
 	</section>
 </section>

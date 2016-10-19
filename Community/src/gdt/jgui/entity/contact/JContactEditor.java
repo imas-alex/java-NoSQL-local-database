@@ -78,6 +78,7 @@ public class JContactEditor extends JPanel implements JContext,JFacetRenderer,JR
 	private JTextField phone;
 	private JTextField email;
 	private String requesterResponseLocator$;
+	boolean debug=false;
 	public JContactEditor() {
 		GridBagLayout gridBagLayout = new GridBagLayout();
 		gridBagLayout.columnWidths = new int[]{100, 0, 0};
@@ -318,15 +319,20 @@ public class JContactEditor extends JPanel implements JContext,JFacetRenderer,JR
 	public JContext instantiate(JMainConsole console, String locator$) {
 		try{
 		this.console=console;
-		//System.out.println("DesignPanel:instantiate:locator="+locator$);
+		if(debug)
+		System.out.println("JContactPanel:instantiate:locator="+locator$);
 		Properties locator=Locator.toProperties(locator$);
 		entihome$=locator.getProperty(Entigrator.ENTIHOME);
 		entityKey$=locator.getProperty(EntityHandler.ENTITY_KEY,entityKey$);
 		Entigrator entigrator=console.getEntigrator(entihome$);
+		if(Locator.LOCATOR_TRUE.equals(locator.getProperty(JFacetRenderer.ONLY_ITEM)))
+			 return this;
 		Sack contact=entigrator.getEntityAtKey(entityKey$);
+		if(contact!=null){
 		title.setText(contact.getProperty("label"));
 		phone.setText(contact.getProperty("phone"));
 		email.setText(contact.getProperty("email"));
+		}
 		requesterResponseLocator$=locator.getProperty(JRequester.REQUESTER_RESPONSE_LOCATOR);
 		}catch(Exception e){
 			Logger.getLogger(JContactEditor.class.getName()).severe(e.toString());

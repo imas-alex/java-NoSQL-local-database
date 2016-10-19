@@ -53,6 +53,7 @@ public class JGraphViews extends JItemsListPanel implements JRequester{
 	private static final String ACTION_RENAME_VIEW="action rename view";
 	public static final String VIEW_COMPONENT_KEY="view component key";
 	public static final String VIEW_KEY="view key";
+	public static final String VIEW_NAME="view name";
 	private String entihome$;
     private String entityKey$;
     private String entityLabel$;
@@ -60,6 +61,7 @@ public class JGraphViews extends JItemsListPanel implements JRequester{
     String action$;
     JMenu menu1;
     JPopupMenu popup;
+    boolean debug=false;
   /**
    * The default constructor.
    */
@@ -146,6 +148,7 @@ public class JGraphViews extends JItemsListPanel implements JRequester{
 				JItemPanel ip;
 				for(Core c:ca){
 					gr$=Locator.append(gr$, VIEW_KEY, c.name);
+					gr$=Locator.append(gr$, VIEW_NAME, c.value);
 					gr$=Locator.append(gr$, Locator.LOCATOR_TITLE, c.value);
 					ip=new JItemPanel(console,gr$);
 					addPopup(ip);
@@ -171,8 +174,8 @@ public class JGraphViews extends JItemsListPanel implements JRequester{
 				@Override
 				public void actionPerformed(ActionEvent e) {
 					try{
-				//	System.out.println("JGraphView:makePopup:locator="+ip.getLocator());	
-				
+					if(debug)	
+					  System.out.println("JGraphView:addPopup:locator="+ip.getLocator());
 					Properties locator=Locator.toProperties(ip.getLocator());
 					String title$=locator.getProperty(Locator.LOCATOR_TITLE);
 					locator.setProperty(BaseHandler.HANDLER_CLASS, JGraphViews.class.getName());
@@ -181,6 +184,7 @@ public class JGraphViews extends JItemsListPanel implements JRequester{
 					JTextEditor te=new JTextEditor();
 					String teLocator$=te.getLocator();
 					teLocator$=Locator.append(teLocator$, JTextEditor.TEXT, title$);
+					teLocator$=Locator.append(teLocator$, Entigrator.ENTIHOME, entihome$);
 					teLocator$=Locator.append(teLocator$,JRequester.REQUESTER_RESPONSE_LOCATOR,Locator.compressText(Locator.toString(locator)));
 					JConsoleHandler.execute(console, teLocator$);
 					
@@ -189,34 +193,7 @@ public class JGraphViews extends JItemsListPanel implements JRequester{
 					}
 				}
 			    });
-		   JMenuItem replaceItem=new JMenuItem("Replace");
-		   popup.add(replaceItem);
-		   replaceItem.setHorizontalTextPosition(JMenuItem.RIGHT);
-		   replaceItem.addActionListener(new ActionListener() {
-				@Override
-				public void actionPerformed(ActionEvent e) {
-					
-					Properties locator=Locator.toProperties(ip.getLocator());
-					String viewKey$=locator.getProperty(VIEW_KEY);
-					replaceView(viewKey$);
-					
-				}
-			    });
-		   JMenuItem deleteItem=new JMenuItem("Delete");
-		   popup.add(deleteItem);
-		   deleteItem.setHorizontalTextPosition(JMenuItem.RIGHT);
-		   deleteItem.addActionListener(new ActionListener() {
-				@Override
-				public void actionPerformed(ActionEvent e) {
-					
-					Properties locator=Locator.toProperties(ip.getLocator());
-					String viewKey$=locator.getProperty(VIEW_KEY);
-					int response = JOptionPane.showConfirmDialog(console.getContentPanel(), "Delete view ?", "Confirm",
-					        JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
-				   if (response == JOptionPane.YES_OPTION) 
-					deleteView(viewKey$);
-				}
-			    });
+		 
 		  ip.setPopupMenu(popup);
 	}
 	 /**
@@ -225,13 +202,10 @@ public class JGraphViews extends JItemsListPanel implements JRequester{
 	 */
 	@Override
 	  public JMenu getContextMenu() {
-		  //menu=super.getContextMenu();
 	   menu1=new JMenu("Context");
-		  //menu.setName("Context");
-		  menu=super.getContextMenu();
+	   menu=super.getContextMenu();
 		  if(menu!=null){
 	      int cnt=menu.getItemCount();
-		//  System.out.println("JGraphNode:getContextMenu:super menu cnt="+cnt);
 		  mia=new JMenuItem[cnt];
 		  for (int i=0;i<cnt;i++)
 			  mia[i]=menu.getItem(i);
@@ -240,14 +214,14 @@ public class JGraphViews extends JItemsListPanel implements JRequester{
 		  menu1.addMenuListener(new MenuListener(){
 		  	@Override
 		  	public void menuSelected(MenuEvent e) {
-		  		// System.out.println("JGraphNode:getContextMenu:menu selected");
-		  		 menu1.removeAll();
+		  		menu1.removeAll();
 		  		 if(mia!=null){
 		  		 for(JMenuItem mi:mia)
 		  			try{
-		  			 if(mi!=null&&mi.getText()!=null){ 
+		  			 if(mi!=null&&mi.getText()!=null&&!"Put as recent".equals(mi.getText())){ 
 		  			    menu1.add(mi);
-		  			  System.out.println("JGraphNode:getConextMenu:add item="+mi.getText());
+		  			  if(debug)
+		  			    System.out.println("JGraphNode:getConextMenu:add item="+mi.getText());
 		  			 }
 		  			}catch(Exception ee){
 		  				 System.out.println("JGraphNode:getConextMenu:"+ee.toString());
@@ -255,11 +229,26 @@ public class JGraphViews extends JItemsListPanel implements JRequester{
 		  	
 		  	 }
 		  	
-		  //	 System.out.println("JGraphNode:getContextMenu:2:menu cnt="+menu1.getItemCount());
 		  	 menu1.addSeparator();
-		  
 		  	 if(hasSelectedItems()){
-		  	JMenuItem deleteItem = new JMenuItem("Delete");
+		  		 JMenuItem recentItem = new JMenuItem("Put as recent");
+				   recentItem.addActionListener(new ActionListener() {
+						@Override
+						public void actionPerformed(ActionEvent e) {
+					      JItemPanel[] ipa=JGraphViews.this.getItems();
+					      String ipLocator$;
+					      Entigrator entigrator=console.getEntigrator(entihome$);
+					      String icon$=ExtensionHandler.loadIcon(entigrator, GraphHandler.EXTENSION_KEY,"map.png");
+					      for(JItemPanel ip:ipa){
+					    	  ipLocator$=ip.getLocator(); 
+							if(icon$!=null)
+									ipLocator$=Locator.append(ipLocator$,Locator.LOCATOR_ICON,icon$);
+							console.getRecents().put( Locator.getProperty(ipLocator$,Locator.LOCATOR_TITLE),ipLocator$);
+					      }
+						}
+					} );
+					menu1.add(recentItem);
+		  		 JMenuItem deleteItem = new JMenuItem("Delete");
 		  	 deleteItem.addActionListener(new ActionListener() {
 		  		@Override
 		  		public void actionPerformed(ActionEvent e) {
@@ -280,33 +269,8 @@ public class JGraphViews extends JItemsListPanel implements JRequester{
 		  	});
 		  	menu1.add(deleteItem);
 		  	 }
-		  	 /*
-		  	JMenuItem newItem = new JMenuItem("New");
-		  	newItem.addActionListener(new ActionListener() {
-		  		@Override
-		  		public void actionPerformed(ActionEvent e) {
-		  			try{
-		  				JTextEditor te=new JTextEditor();
-						String teLocator$=te.getLocator();
-						teLocator$=Locator.append(teLocator$, Entigrator.ENTIHOME, entihome$);
-						teLocator$=Locator.append(teLocator$, JTextEditor.TEXT,"New view ");
-						locator$=getLocator();
-						if(action$!=null)
-						locator$=Locator.append(locator$, BaseHandler.HANDLER_METHOD, "response");
-						String requesterResponceLocator$=Locator.compressText(locator$);
-						teLocator$=Locator.append(teLocator$,JRequester.REQUESTER_RESPONSE_LOCATOR,requesterResponceLocator$);
-						JConsoleHandler.execute(console,teLocator$);
-		  				
-		  			}catch(Exception ee){
-		  				System.out.println("JGraphViews:getContextMenu:new:"+ee.toString());
-		  			}
-		  		}
-		  	
-		  	});
 		  
-		  	menu1.add(newItem);  
-		  	*/
-			menu1.addSeparator();
+			
 			JMenuItem mapItem = new JMenuItem("Map");
 		  	mapItem.addActionListener(new ActionListener() {
 		  		@Override

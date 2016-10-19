@@ -242,7 +242,7 @@ public class JMovieEditor extends JFieldsEditor {
 	@Override
 	public JFacetRenderer instantiate(JMainConsole console, String locator$) {
 		try{
-			System.out.println("JMovieEditor.instantiate:begin");
+			//System.out.println("JMovieEditor.instantiate:begin");
 				this.console=console;
 				Properties locator=Locator.toProperties(locator$);
 				entihome$=locator.getProperty(Entigrator.ENTIHOME);

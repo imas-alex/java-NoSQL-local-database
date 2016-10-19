@@ -1,2 +1,12 @@
-commit_dialog_history_messages=<?xml version\="1.0" encoding\="UTF-8"?>\n<messages>\n<message>version  10</message>\n<message>current</message>\n<message>not close after staging</message>\n<message>no delete after staging</message>\n<message>correct javadoc plugin</message>\n<message>add staging plugin</message>\n<message>first create  community javadoc</message>\n<message>Initial</message>\n</messages>
+//BranchProjectTracker__/home/imasa/github/.git_9cd3c3aa323b4cb6e5c85b3f3c7a190a3a35804f=<?xml version\="1.0" encoding\="UTF-8"?>\n<projects branch\="9cd3c3aa323b4cb6e5c85b3f3c7a190a3a35804f">\n<project>/Community</project>\n<project>/Graph</project>\n<project>/JEntigrator</project>\n<project>/Movies</project>\n</projects>
+//BranchProjectTracker__/home/imasa/github/.git_master=<?xml version\="1.0" encoding\="UTF-8"?>\n<projects branch\="master">\n<project>/Community</project>\n<project>/Graph</project>\n<project>/JEntigrator</project>\n<project>/Movies</project>\n</projects>
+//BranchProjectTracker__/home/imasa/github/.git_multiuser=<?xml version\="1.0" encoding\="UTF-8"?>\n<projects branch\="multiuser">\n<project>/Community</project>\n<project>/Graph</project>\n<project>/JEntigrator</project>\n<project>/Movies</project>\n</projects>
+//BranchProjectTracker__/home/imasa/github/.git_test=<?xml version\="1.0" encoding\="UTF-8"?>\n<projects branch\="test">\n<project>/Community</project>\n<project>/Graph</project>\n<project>/JEntigrator</project>\n<project>/Movies</project>\n</projects>
+commit_dialog_history_messages=<?xml version\="1.0" encoding\="UTF-8"?>\n<messages>\n<message>interim 1</message>\n<message>Initial version</message>\n<message>Support multiuser access</message>\n<message>Support multi-user access</message>\n<message>init multiuser</message>\n<message>Test branch commit</message>\n<message>Test branch</message>\n<message>Merge branch &apos;master&apos; of github.com\:imas-alex/java-NoSQL-local-database&\#x0A;&\#x0A;\# Conflicts\:&\#x0A;\#&\#x09;Graph/src/gdt/data/entity/NodeHandler.java&\#x0A;</message>\n<message>v0.0.10a</message>\n<message>version  10</message>\n</messages>
 eclipse.preferences.version=1
+org.eclipse.egit.ui.githistorypage.showallfilter=SHOWALLRESOURCE
+resourcehistory_compare_mode=true
+resourcehistory_graph_split=500,500
+resourcehistory_rev_split=700,300
+resourcehistory_show_all_branches=true
+show_initial_config_dialog=false
