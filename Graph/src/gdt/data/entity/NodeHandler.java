@@ -1,5 +1,6 @@
 package gdt.data.entity;
 import java.util.ArrayList;
+import java.util.Arrays;
 /*
  * Copyright 2016 Alexander Imas
  * This file is extension of JEntigrator.
@@ -39,6 +40,7 @@ public class NodeHandler extends FieldsHandler{
 	String entihome$;
 	String entityKey$;
 	public final static String NODE="node";
+	public final static boolean debug=true;
 	/**
 	 * Default constructor
 	 */
@@ -205,4 +207,213 @@ public static void rebuild(Entigrator entigrator,String graphKey$){
 		Logger.getLogger(NodeHandler.class.getName()).severe(e.toString());
 	}
 }
+public static String[] getRelatedNodeKeys(Entigrator entigrator, String nodeKey$){
+	try{
+		 Sack node=entigrator.getEntityAtKey(nodeKey$);
+		 Core[] ca=node.elementGet("bond");
+		 if(ca==null)
+			 return null;
+		 ArrayList<String>sl=new ArrayList<String>();
+		 sl.add(nodeKey$);
+		 for(Core c:ca){
+			 if(!sl.contains(c.value))
+				 sl.add(c.value);
+			 if(!sl.contains(c.type))
+				 sl.add(c.type);
+		 }
+		 return sl.toArray(new String[0]);
+	}catch(Exception e){
+		Logger.getLogger(NodeHandler.class.getName()).severe(e.toString());	
+	}
+	return null;
+	}
+private static void collectRelatedNodes(Entigrator entigrator, String nodeKey$,ArrayList<String>nl){
+	try{
+		if(nl.contains(nodeKey$))
+			return;
+		 nl.add(nodeKey$);
+		 Sack node=entigrator.getEntityAtKey(nodeKey$);
+		 Core[] ca=node.elementGet("bond");
+		 if(ca==null)
+			 return ;
+		 for(Core c:ca){
+			 if(!nl.contains(c.value))
+				 collectRelatedNodes(entigrator,c.value,nl);
+			 if(!nl.contains(c.type))
+				 collectRelatedNodes(entigrator,c.type,nl);
+		 }
+	}catch(Exception e){
+		Logger.getLogger(NodeHandler.class.getName()).severe(e.toString());	
+	}
+	}
+public static String[] getExpandedNodeKeys(Entigrator entigrator, String nodeKey$,String[] scope){
+	try{
+		if(debug)
+			 System.out.println("NodeHandler:getExpandedNodeKeys:node="+entigrator.indx_getLabel(nodeKey$));
+		if(nodeKey$==null)
+			return scope;
+		ArrayList<String>sl=new ArrayList<String>();
+		if(scope!=null){
+			if(debug)
+				 System.out.println("NodeHandler:getExpandedNodeKeys:scope="+scope.length);
+			
+			for(String s:scope){
+	        	 if(!sl.contains(s))
+	        	  sl.add(s);
+	         }
+		}
+		
+		 String[] ra=getRelatedNodeKeys(entigrator, nodeKey$);
+		 
+		 if(ra!=null){
+			 if(debug)
+				 System.out.println("NodeHandler:getExpandedNodeKeys:relations="+ra.length);
+			
+	         for(String s:ra)
+	        	 if(!sl.contains(s))
+	        	  sl.add(s);
+		 }
+		
+		 if(debug)
+			 System.out.println("NodeHandler:getExpandedNodeKeys:all="+sl.size());
+	
+		 return sl.toArray(new String[0]);
+	}catch(Exception e){
+		Logger.getLogger(NodeHandler.class.getName()).severe(e.toString());	
+	}
+	return null;
+	}
+public static String[] getScopeExpandedNodeKeys(Entigrator entigrator, String nodeKey$,String[] scope){
+	try{
+		if(debug)
+			 System.out.println("NodeHandler:getExpandedScopeNodeKeys:node="+entigrator.indx_getLabel(nodeKey$));
+		
+		String[] ra=null;	
+		
+		ArrayList<String>sl=new ArrayList<String>();
+		if(nodeKey$!=null){
+		 ra=getRelatedNodeKeys(entigrator, nodeKey$);
+		  if(ra!=null){
+			 if(debug)
+				 System.out.println("NodeHandler:getExpandedScopeNodeKeys:relations="+ra.length);
+	         for(String s:ra)
+	        	 if(!sl.contains(s))
+	        	  sl.add(s);
+		 }
+		}
+		if(scope!=null){
+			if(debug)
+				 System.out.println("NodeHandler:getExpandedScopeNodeKeys:scope="+scope.length);
+			
+			for(String s:scope){
+	        	 if(!sl.contains(s))
+	        	  sl.add(s);
+	        	 ra=getRelatedNodeKeys(entigrator, s);
+	        	 if(ra!=null)
+	        		 for(String r:ra)
+	    	        	 if(!sl.contains(r))
+	    	        	  sl.add(r); 
+	         }
+		}
+		 if(debug)
+			 System.out.println("NodeHandler:getExpandedScopeNodeKeys:all="+sl.size());
+	
+		 return sl.toArray(new String[0]);
+	}catch(Exception e){
+		Logger.getLogger(NodeHandler.class.getName()).severe(e.toString());	
+	}
+	return null;
+	}
+public static String[] getNetwordNodeKeys(Entigrator entigrator,String nodeKey$,String[] scope){
+	try{
+		ArrayList<String>sl=new ArrayList<String>();
+		String[]na;
+		if(nodeKey$!=null){
+			na=getNetwordNodeKeys( entigrator, nodeKey$);
+			if(na!=null)
+				  for(String n:na)
+					sl.add(n);
+		}
+		if(scope!=null)
+		for(String s:scope){
+			na=getNetwordNodeKeys( entigrator, s);
+			if(na!=null)
+			  for(String n:na)
+				sl.add(n);
+		}
+		return sl.toArray(new String[0]);	
+	}catch(Exception e){
+		Logger.getLogger(NodeHandler.class.getName()).severe(e.toString());	
+	}
+	return null;
 }
+public static String[] getNetwordNodeKeys(Entigrator entigrator,String[] scope){
+	try{
+		ArrayList<String>sl=new ArrayList<String>();
+		String[]na;
+		if(scope==null)
+			return null;
+		for(String s:scope){
+			na=getNetwordNodeKeys( entigrator, s);
+			if(na!=null)
+			  for(String n:na)
+				sl.add(n);
+		}
+		return sl.toArray(new String[0]);	
+			
+	}catch(Exception e){
+		Logger.getLogger(NodeHandler.class.getName()).severe(e.toString());	
+	}
+	return null;
+}
+public static String[] getNetwordNodeKeys(Entigrator entigrator, String nodeKey$){
+	try{
+		 ArrayList <String>nl=new ArrayList<String>();
+		 collectRelatedNodes(entigrator,nodeKey$,nl);
+         return nl.toArray(new String[0]);
+	}catch(Exception e){
+		Logger.getLogger(NodeHandler.class.getName()).severe(e.toString());	
+	}
+	return null;
+	}
+public static Bond[] getScopeBonds(Entigrator entigrator, String[] scope){
+	try{
+		 if(scope==null)
+			 return null;
+		 if(debug)
+			 System.out.println("NodeHandler:getScopeBondes:scope="+scope.length);
+		 Sack node;
+		 Core[] ca;
+		 ArrayList<String>sl=new ArrayList<String>(Arrays.asList(scope));
+		 ArrayList<Bond>bl=new ArrayList<Bond>();
+		 ArrayList<String>kl=new ArrayList<String>();
+		 Bond b;
+         for(String s:scope){
+	        	 node=entigrator.getEntityAtKey(s);
+	        	 
+	        	 if(node==null)
+	        		 continue;
+	        	// if(debug)
+	    		//	 System.out.println("NodeHandler:getScopeBondes:node label="+node.getProperty("label")+" key="+s);
+	        	 ca=node.elementGet("bond");
+	        	 if(ca==null)
+	        		 continue;
+	        	 for(Core c:ca){
+	        		 if(sl.contains(c.type)&&sl.contains(c.value))
+	        		 if(!kl.contains(c.name)){
+	   	        	  kl.add(c.name);
+	   	        	  b=new Bond(c.value,c.type,c.name,node.getElementItemAt("edge",c.name));
+	   	        	  bl.add(b);
+	        		 }
+	        	 }
+	         }
+         if(debug)
+			 System.out.println("NodeHandler:getScopeBondes:bons="+bl.size());
+        return bl.toArray(new Bond[0]);
+	}catch(Exception e){
+		Logger.getLogger(NodeHandler.class.getName()).severe(e.toString());	
+	}
+	return null;
+}
+}
+

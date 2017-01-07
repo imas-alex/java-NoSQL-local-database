@@ -1,4 +1,7 @@
 package gdt.jgui.entity.bonddetail;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Hashtable;
 /*
  * Copyright 2016 Alexander Imas
  * This file is extension of JEntigrator.
@@ -19,25 +22,35 @@ package gdt.jgui.entity.bonddetail;
 import java.util.Properties;
 import java.util.logging.Logger;
 import javax.swing.JPopupMenu;
+
+import org.apache.commons.codec.binary.Base64;
+
 import gdt.data.entity.BaseHandler;
 import gdt.data.entity.BondDetailHandler;
 import gdt.data.entity.EntityHandler;
 import gdt.data.entity.FacetHandler;
 import gdt.data.entity.facet.ExtensionHandler;
 import gdt.data.entity.EdgeHandler;
+import gdt.data.grain.Core;
 import gdt.data.grain.Locator;
-
+import gdt.data.grain.Sack;
 import gdt.data.grain.Support;
 import gdt.data.store.Entigrator;
+import gdt.jgui.base.JBaseNavigator;
+import gdt.jgui.base.JBasesPanel;
+import gdt.jgui.base.JCategoryPanel;
 import gdt.jgui.console.JConsoleHandler;
 import gdt.jgui.console.JContext;
 import gdt.jgui.console.JFacetOpenItem;
+import gdt.jgui.console.JFacetRenderer;
 import gdt.jgui.console.JMainConsole;
 import gdt.jgui.console.JRequester;
-
+import gdt.jgui.console.WContext;
+import gdt.jgui.console.WUtils;
 import gdt.jgui.entity.JEntityFacetPanel;
 import gdt.jgui.entity.edge.JBondsPanel;
 import gdt.jgui.entity.fields.JFieldsFacetOpenItem;
+import gdt.jgui.entity.node.JNodeFacetOpenItem;
 /**
  * This class represents the bond detail facet item in the list
  * of  entity's facets.
@@ -45,9 +58,10 @@ import gdt.jgui.entity.fields.JFieldsFacetOpenItem;
  *
  */
 
-public class JBondDetailFacetOpenItem extends JFieldsFacetOpenItem {
+public class JBondDetailFacetOpenItem extends JFieldsFacetOpenItem  implements WContext {
 	private static final long serialVersionUID = 1L;
-	 /**
+	public static boolean debug=true;
+	/**
      * The default constructor.
      * 
      */
@@ -104,12 +118,10 @@ public String getFacetName() {
  * @return the facet icon string.
  */
 @Override
-public String getFacetIcon() {
-	if(console!=null){
-	Entigrator entigrator=console.getEntigrator(entihome$);
+public String getFacetIcon(Entigrator entigrator) {
+	
 	return ExtensionHandler.loadIcon(entigrator,EdgeHandler.EXTENSION_KEY,"bond.png");
-	}
-	return null;
+	
 }
 /**
  * Remove the facet from the entity.
@@ -181,4 +193,164 @@ public void response(JMainConsole console, String locator$) {
 	super.response(console,locator$);
 
 }
+@Override
+public String getFacetIconName() {
+	// TODO Auto-generated method stub
+	return "detail.png";
+}
+@Override
+public String getWebView(Entigrator entigrator, String locator$) {
+	try{
+		if(debug)
+			System.out.println("JBondDetaiFacetOpenitem:getWebView:locator="+locator$);
+		
+		Properties locator=Locator.toProperties(locator$);
+		String webHome$=locator.getProperty(WContext.WEB_HOME);
+		String entityLabel$=locator.getProperty(EntityHandler.ENTITY_LABEL);
+		String webRequester$=locator.getProperty(WContext.WEB_REQUESTER);
+		
+		//Sack entity=entigrator.getEntityAtKey(entityKey$);
+		String edgeKey$=locator.getProperty(JBondsPanel.EDGE_KEY);
+		String edgeLabel$=locator.getProperty(JBondsPanel.EDGE_LABEL);
+		if(edgeKey$==null&&edgeLabel$!=null)
+			edgeKey$=entigrator.indx_keyAtLabel(edgeLabel$);
+		if(edgeKey$==null){
+			if(debug)
+				System.out.println("JBondDetaiFacetOpenitem:getWebView:bonds mode");
+			
+			JNodeFacetOpenItem nfoi=new JNodeFacetOpenItem();
+			return nfoi.getWebView(entigrator, locator$);
+		}
+		entityKey$=entigrator.indx_keyAtLabel(entityLabel$);
+		String bondKey$=locator.getProperty(JBondsPanel.BOND_KEY);
+		if(edgeLabel$==null)
+		  edgeLabel$=entigrator.indx_getLabel(edgeKey$);
+	    Sack edge=entigrator.getEntityAtKey(edgeKey$);
+	    Core bond=edge.getElementItem("bond", bondKey$);
+	    String sourceLabel$=entigrator.indx_getLabel(bond.type);
+	    String targetLabel$=entigrator.indx_getLabel(bond.value);
+		//    Core[]	ca=entity.elementGet("field");
+		StringBuffer sb=new StringBuffer();
+		sb.append("<!DOCTYPE html PUBLIC \"-//W3C//DTD HTML 4.01//EN\" \"http://www.w3.org/TR/html4/strict.dtd\">");
+		sb.append("<html>");
+		sb.append("<head>");
+		
+		sb.append(WUtils.getMenuBarScript());
+		sb.append(WUtils.getMenuBarStyle());
+	    sb.append("</head>");
+	    sb.append("<body onload=\"onLoad()\" >");
+	    sb.append("<ul class=\"menu_list\">");
+	    sb.append("<li class=\"menu_item\"><a id=\"back\">Back</a></li>");
+	    sb.append("<li class=\"menu_item\"><a href=\""+webHome$+"\">Home</a></li>");
+	    String navLocator$=Locator.append(locator$, BaseHandler.HANDLER_CLASS, JBaseNavigator.class.getName());
+	    navLocator$=Locator.append(navLocator$, Entigrator.ENTIHOME, entigrator.getEntihome());
+	    String navUrl$=webHome$+"?"+WContext.WEB_LOCATOR+"="+Base64.encodeBase64URLSafeString(navLocator$.getBytes());
+	    sb.append("<li class=\"menu_item\"><a href=\""+navUrl$+"\">Base</a></li>");
+	    sb.append("</ul>");
+	    sb.append("<table><tr><td>Base:</td><td><strong>");
+	    sb.append(entigrator.getBaseName());
+	    sb.append("</strong></td></tr><tr><td>Source: </td><td><strong>");
+	    sb.append(sourceLabel$);
+	    sb.append("</strong></td></tr><tr><td>Target: </td><td><strong>");
+	    sb.append(targetLabel$);
+	    sb.append("</strong></td></tr>");
+	    sb.append("<tr><td>Relation: </td><td><strong>"+edgeLabel$+"</strong></td></tr>");
+	    sb.append("<tr><td>Context: </td><td><strong>Details</strong></td></tr></table>");
+	     String [] sa=listWebItems( entigrator, webHome$,locator$, bondKey$, edgeKey$);
+	     if(sa!=null)
+	    	 for(String s:sa)
+	    		 sb.append(s+"<br>");
+        sb.append("<script>");
+	    sb.append("function onLoad() {");
+	    sb.append("initBack(\""+this.getClass().getName()+"\",\""+webRequester$+"\");");
+	    sb.append("}");
+	    sb.append("window.localStorage.setItem(\""+this.getClass().getName()+"\",\""+Base64.encodeBase64URLSafeString(locator$.getBytes())+"\");");
+	 	    sb.append("</script>");
+	    sb.append("</body>");
+	    sb.append("</html>");
+	    return sb.toString();
+        
+	}catch(Exception e){
+		Logger.getLogger(JBondDetailFacetOpenItem.class.getName()).severe(e.toString());	
+	}
+	return null;
+}
+private static String[] listDetailes(Entigrator entigrator,String bondKey$,String edgeKey$){
+	try{
+		Sack edge=entigrator.getEntityAtKey(edgeKey$);
+		 Core[] ca=edge.elementGet("detail");
+		 if(ca==null)
+			 return null;
+		Core bond=edge.getElementItem("bond", bondKey$);
+		ArrayList<String>sl=new ArrayList<String>();
+		String detailLabel$;
+		for(Core c:ca)
+           try{
+			if(bondKey$.equals(c.type)){
+			  detailLabel$=entigrator.indx_getLabel(c.value);
+			  if(detailLabel$!=null)
+        	    sl.add(detailLabel$);
+			}
+           }catch(Exception ee){
+        	   Logger.getLogger(JBondDetailFacetOpenItem.class.getName()).info(ee.toString());	
+           }
+		Collections.sort(sl);
+		return sl.toArray(new String[0]);
+	}catch(Exception e){
+		Logger.getLogger(JNodeFacetOpenItem.class.getName()).info(e.toString());
+	}
+	return null;
+}
+private static String getItem(String icon$, String url$, String title$,String foiLocator$){
+	if(debug)
+			System.out.println("JBondDetailFacetOpenItem:getItem: locator="+foiLocator$);
+    
+	String iconTerm$="<img src=\"data:image/png;base64,"+WUtils.scaleIcon(icon$)+
+			  "\" width=\"24\" height=\"24\" alt=\""+title$+"\">";
+	foiLocator$=Locator.remove(foiLocator$, Locator.LOCATOR_ICON);
+	foiLocator$=Locator.append(foiLocator$,WContext.WEB_HOME, url$);
+	foiLocator$=Locator.append(foiLocator$,WContext.WEB_REQUESTER, JBondDetailFacetOpenItem.class.getName());
+	  return iconTerm$+"<a href=\""+url$+"?"+WContext.WEB_LOCATOR+"="+Base64.encodeBase64URLSafeString(foiLocator$.getBytes())+"\" >"+" "+title$+"</a>";
+}
+private  static String[] listWebItems(Entigrator entigrator,String webHome$,String locator$,String bondKey$,String edgeKey$){
+	try{
+		if(debug)
+		System.out.println("JBondDetailFacetOpenItem:listWebItems:locator="+locator$);
+	String[] sa= listDetailes( entigrator, bondKey$, edgeKey$);   
+    Properties foiLocator=new Properties();   
+   	foiLocator.setProperty(BaseHandler.HANDLER_CLASS,JEntityFacetPanel.class.getName());
+	foiLocator.setProperty(Entigrator.ENTIHOME,entigrator.getEntihome());
+	//foiLocator.setProperty(EntityHandler.ENTITY_LABEL,foiTitle$);
+	String itemIcon$;
+    String itemTitle$;
+    String itemKey$;
+    String foiItem$;
+      ArrayList<String>sl=new ArrayList<String>();
+    Sack item;
+	   for(String s:sa){
+		   try{
+			   if(debug)
+				   		System.out.println("JBondDetailFacetOpenItem:listWebItems:s0"+s);
+			   itemKey$=entigrator.indx_keyAtLabel(s);
+			   item=entigrator.getEntityAtKey(itemKey$);
+			   itemIcon$=entigrator.getEntityIcon(item);
+					   //entigrator.readIconFromIcons(itemKey$);
+			   itemTitle$=s;
+			   foiLocator.setProperty(EntityHandler.ENTITY_KEY,itemKey$);
+			   foiLocator.setProperty(EntityHandler.ENTITY_LABEL,s);
+			   foiLocator.setProperty(Locator.LOCATOR_TITLE,s);
+			   foiItem$=getItem(itemIcon$, webHome$,itemTitle$,Locator.toString(foiLocator));
+			   sl.add(getItem(itemIcon$, webHome$, s,Locator.toString(foiLocator))); 
+		   }catch(Exception ee){
+			   Logger.getLogger(JBondDetailFacetOpenItem.class.getName()).info(ee.toString());
+		   }
+	   }
+	   return sl.toArray(new String[0]);
+				   
+	}catch(Exception e) {
+    	Logger.getLogger(JBondDetailFacetOpenItem.class.getName()).severe(e.toString());
+        return null;
+    }
+}
+
 }

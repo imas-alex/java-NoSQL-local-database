@@ -415,6 +415,7 @@ public class JBondItem extends JItemPanel{
 	 * Detect if the bond is committed.
 	 * @param console the main console.
 	 * @param locator$ the locator string.
+	 * @return true if is committed false otherwise.
 	 */
 	public static boolean isCommitted(JMainConsole console,String locator$){
 		try{

@@ -337,17 +337,13 @@ public String getEntityType() {
 }
 /**
  * Get facet icon as a Base64 string. 
+ * @param entigrator the entigrator.
  * @return the icon string.
  */
 @Override
-public String getCategoryIcon() {
-	try{
-		Entigrator entigrator=console.getEntigrator(entihome$);
+public String getCategoryIcon(Entigrator entigrator) {
 		return ExtensionHandler.loadIcon(entigrator, GraphHandler.EXTENSION_KEY,"graph.png");
-}catch(Exception e){
-	LOGGER.severe(e.toString());
-	return null;
-}
+
 }
 /**
  * Get category title for entities having the facet type.
@@ -408,7 +404,7 @@ public void adaptRename(JMainConsole console, String locator$) {
  * Add all facet-relevant related entities within the database 
  * to the relations list. 
  * @param entigrator the entigrator.
- * @param entiyKey$ the key of the origin entity.
+ * @param entityKey$ the key of the origin entity.
  * @param sl the list of relations.
  */
 @Override
@@ -561,6 +557,11 @@ public void response(JMainConsole console, String locator$) {
 public void activate() {
 	// TODO Auto-generated method stub
 	
+}
+@Override
+public String getFacetOpenItem() {
+	// TODO Auto-generated method stub
+	return null;
 }
 
 }

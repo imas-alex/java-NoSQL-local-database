@@ -40,6 +40,7 @@ public class EdgeHandler extends FieldsHandler{
 	String entihome$;
 	String entityKey$;
 	public final static String EDGE="edge";
+	public final static boolean debug=true;
 	/**
 	 * Default constructor
 	 */
@@ -209,4 +210,94 @@ public void completeMigration(Entigrator entigrator) {
 		Logger.getLogger(EdgeHandler.class.getName()).severe(e.toString());
 	}
 }
+public static String[] getEdgesKeys(Entigrator entigrator, String[] nodes){
+	try{
+		if(nodes==null)
+			return null;
+		 ArrayList<String>sl=new ArrayList<String>();
+		 
+		Sack node;
+		Core[] ca;
+		String edgeKey$;
+		for(String n:nodes){
+			node=entigrator.getEntityAtKey(n);
+			if(node==null)
+				continue;
+			ca=node.elementGet("edge");
+			if(ca==null)
+				continue;
+			for(Core c:ca){
+				edgeKey$=c.value;
+				if(edgeKey$!=null)
+				if(!sl.contains(edgeKey$))
+					sl.add(edgeKey$);
+			}
+		}
+		 return sl.toArray(new String[0]);
+	}catch(Exception e){
+		Logger.getLogger(EdgeHandler.class.getName()).severe(e.toString());	
+	}
+	return null;
+	}
+public static String[] filterNodesAtEdge(Entigrator entigrator, String[] nodeLabels,String edgeLabel$){
+	try{
+		if(debug)
+			System.out.println("EdgeHandler:filterNodesAtEdge: nodes="+nodeLabels.length+" edge="+edgeLabel$);
+		if(nodeLabels==null)
+			return null;
+		if(edgeLabel$==null)
+			return nodeLabels;
+		 ArrayList<String>sl=new ArrayList<String>();
+		
+		
+		String edgeKey$=entigrator.indx_keyAtLabel(edgeLabel$);
+		Sack edge=entigrator.getEntity(edgeKey$);
+		Core[] ca=edge.elementGet("bond");
+		String nodeKey$;
+		boolean out;
+		boolean in;
+		for(String n:nodeLabels){
+			nodeKey$=entigrator.indx_keyAtLabel(n);
+			if(nodeKey$==null)
+				continue;
+			//if(debug)
+			//	System.out.println("EdgeHandler:filterNodesAtEdge: node key="+nodeKey$);
+			out=false;
+			in=false;
+			for(Core c:ca){
+				if(c.type.equals(nodeKey$)){
+					//out=true;
+					sl.add(nodeKey$);
+					break;
+				}
+				if(c.value.equals(nodeKey$)){
+					//in=true;
+				//if(out&&in){
+					sl.add(nodeKey$);
+					break;
+				}
+			}
+		 
+		}
+		if(debug)
+			System.out.println("EdgeHandler:filterNodesAtEdge: found="+sl.size());
+		ArrayList<String>nl=new ArrayList<String>();
+		for(String s:sl)
+			nl.add(entigrator.indx_getLabel(s));
+		sl.clear();
+		for(String f:nl)
+			for(String o:nodeLabels){
+				if(f.equals(o)){
+					sl.add(f);
+					break;
+				}
+						
+			}
+		 return sl.toArray(new String[0]);
+	}catch(Exception e){
+		Logger.getLogger(EdgeHandler.class.getName()).severe(e.toString());	
+	}
+	return null;
+	}
+
 }

@@ -76,6 +76,7 @@ public class JBondsPanel extends JItemsListPanel implements JContext,JFacetRende
 	 * The  tag of the edge key.
 	 */
 	public static final String EDGE_KEY="edge key" ;
+	public static final String EDGE_LABEL="edge label" ;
 	/**
 	 * The  'edge' tag .
 	 */
@@ -721,8 +722,8 @@ return menu;
 	 * @return the icon string.
 	 */
 	@Override
-	public String getCategoryIcon() {
-		Entigrator entigrator=console.getEntigrator(entihome$);
+	public String getCategoryIcon(Entigrator entigrator) {
+		
 		return ExtensionHandler.loadIcon(entigrator,EdgeHandler.EXTENSION_KEY,"edge.png"); 
 	}
 	/**
@@ -1028,5 +1029,11 @@ public void activate() {
 			instantiate(console,getLocator());
 		}
 	
+}
+
+@Override
+public String getFacetOpenItem() {
+	// TODO Auto-generated method stub
+	return null;
 }
 }

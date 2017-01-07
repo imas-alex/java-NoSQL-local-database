@@ -102,8 +102,8 @@ public class JNodeEditor extends JFieldsEditor {
 	}
 
 	@Override
-	public String getCategoryIcon() {
-		Entigrator entigrator=console.getEntigrator(entihome$);
+	public String getCategoryIcon(Entigrator entigrator) {
+		
 		return ExtensionHandler.loadIcon(entigrator,EdgeHandler.EXTENSION_KEY,"node.png"); 
 
 	}

@@ -113,14 +113,9 @@ public class JEdgeEditor extends JFieldsEditor {
 	}
 
 	@Override
-	public String getCategoryIcon() {
-		try{
-			Entigrator entigrator=console.getEntigrator(entihome$);
+	public String getCategoryIcon(Entigrator entigrator) {
 		return ExtensionHandler.loadIcon(entigrator, EdgeHandler.EXTENSION_KEY,"edge.png");
-		}catch(Exception e){
-			 Logger.getLogger(getClass().getName()).severe(e.toString());
-			 return null;
-		}
+		
 	}
 
 	@Override

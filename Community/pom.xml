@@ -2,7 +2,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>com.github.imas-alex</groupId>
   <artifactId>Community</artifactId>
-  <version>0.0.7-SNAPSHOT</version>
+  <version>0.0.25-SNAPSHOT</version>
    <name>Community</name>
   <description>The community extension for the entigrator application</description>
   <url>https://github.com/imas-alex/java-NoSQL-local-database</url>
@@ -18,12 +18,14 @@
             <comments>A free, copyleft license for software and other kinds of works</comments>
 		</license>
 	</licenses>
+	
 	<scm>
 		<url>https://github.com/imas-alex/Community</url>
 		<connection>scm:git:git://github.com/imas-alex.git</connection>
 		<developerConnection>scm:git:git@github.com:imas-alex/java-NoSQL-local-database.git</developerConnection>
-	  <tag>Community-0.0.5</tag>
+	  <tag>Community-0.0.20</tag>
   </scm>
+  
 	<developers>
 		<developer>
 			<email>Alexander.Imas@gmail.com</email>
@@ -141,9 +143,11 @@
   <dependency>
   		<groupId>com.github.imas-alex</groupId>
  			 <artifactId>JEntigrator</artifactId>
-  			 <version>0.0.4</version>
+  			 <version>0.0.536</version>
+  			 <scope>system</scope>
+    <systemPath>${basedir}/../JEntigrator/target/JEntigrator-0.0.536_SNAPSHOT-jar-with-dependencies.jar</systemPath>
   			
-</dependency>
+  </dependency>
 
 
   		<dependency>
