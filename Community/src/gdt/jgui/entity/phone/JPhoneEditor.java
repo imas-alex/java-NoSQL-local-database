@@ -32,6 +32,7 @@ import gdt.data.store.Entigrator;
 import gdt.jgui.console.*;
 import gdt.jgui.entity.JEntityFacetPanel;
 import gdt.jgui.entity.JReferenceEntry;
+import gdt.jgui.entity.address.JAddressFacetOpenItem;
 import gdt.jgui.tool.JTextEditor;
 public class JPhoneEditor extends JTextEditor implements JFacetRenderer,JRequester{
 String entityKey$;
@@ -120,15 +121,10 @@ String entihome$;
 	}
 
 	@Override
-	public String getCategoryIcon() {
-		if(entihome$!=null)	{
-			Entigrator entigrator=console.getEntigrator(entihome$);
-		    return ExtensionHandler.loadIcon(entigrator,PhoneHandler.EXTENSION_KEY, "phone.png");
-		
+	public String getCategoryIcon(Entigrator entigrator) {
+		   return ExtensionHandler.loadIcon(entigrator,PhoneHandler.EXTENSION_KEY, "phone.png");
 	}
-		return null;
-	}
-
+	
 	@Override
 	public String getCategoryTitle() {
 		return "Phones";
@@ -248,8 +244,20 @@ String entihome$;
 			  	}
 		
 	}
+
 	@Override
-	public void collectReferences(Entigrator entigrator, String entityKey$, ArrayList<JReferenceEntry> rel) {
+	public void collectReferences(Entigrator entigrator, String entityKey$, ArrayList<JReferenceEntry> rel)
+	{
+
+	}
+	@Override
+	public String getFacetOpenItem() {
+		// TODO Auto-generated method stub
+		return JPhoneFacetOpenItem.class.getName();
+	}
+	@Override
+	public String getFacetIcon() {
 		
+		return "phone.png";
 	}
 }

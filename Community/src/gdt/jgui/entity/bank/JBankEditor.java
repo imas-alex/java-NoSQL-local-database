@@ -54,6 +54,7 @@ import gdt.jgui.console.*;
 import gdt.jgui.entity.JEntityFacetPanel;
 import gdt.jgui.entity.JEntityPrimaryMenu;
 import gdt.jgui.entity.JReferenceEntry;
+import gdt.jgui.entity.address.JAddressFacetOpenItem;
 import gdt.jgui.entity.fields.JFieldsEditor;
 import gdt.jgui.tool.JTextEditor;
 public class JBankEditor extends JFieldsEditor {
@@ -80,11 +81,14 @@ public class JBankEditor extends JFieldsEditor {
 				locator.setProperty(EntityHandler.ENTITY_KEY,entityKey$);
 			if(entihome$!=null){
 				locator.setProperty(Entigrator.ENTIHOME,entihome$);
-			Entigrator entigrator=console.getEntigrator(entihome$);
-		    String icon$=ExtensionHandler.loadIcon(entigrator,BankHandler.EXTENSION_KEY, "bank.png");
-		    if(icon$!=null)
-		    	locator.setProperty(Locator.LOCATOR_ICON,icon$);	
+			//Entigrator entigrator=console.getEntigrator(entihome$);
+		    //String icon$=ExtensionHandler.loadIcon(entigrator,BankHandler.EXTENSION_KEY, "bank.png");
+		    //if(icon$!=null)
+		    //	locator.setProperty(Locator.LOCATOR_ICON,icon$);	
 			}
+			locator.setProperty( Locator.LOCATOR_ICON_CONTAINER, Locator.LOCATOR_ICON_CONTAINER_CLASS);
+	    	locator.setProperty( Locator.LOCATOR_ICON_CLASS, getClass().getName());
+	    	locator.setProperty( Locator.LOCATOR_ICON_FILE, "bank.png");
 			return Locator.toString(locator);
 			}catch(Exception e){
 	        Logger.getLogger(getClass().getName()).severe(e.toString());
@@ -114,14 +118,8 @@ public class JBankEditor extends JFieldsEditor {
 	}
 
 	@Override
-	public String getCategoryIcon() {
-		String icon$=null;
-		if(entihome$!=null)	{
-			Entigrator entigrator=console.getEntigrator(entihome$);
-		    icon$=ExtensionHandler.loadIcon(entigrator,AddressHandler.EXTENSION_KEY, "bank.png");
-		
-	}
-		return icon$;
+	public String getCategoryIcon(Entigrator entigrator) {
+		    return ExtensionHandler.loadIcon(entigrator,AddressHandler.EXTENSION_KEY, "bank.png");
 	}
 	@Override
 	public String getCategoryTitle() {
@@ -154,11 +152,11 @@ public class JBankEditor extends JFieldsEditor {
 	    entihome$=Locator.getProperty(locator$,Entigrator.ENTIHOME );
 	    if(entihome$!=null){
 	      responseLocator.setProperty(Entigrator.ENTIHOME,entihome$);
-	  		Entigrator entigrator=console.getEntigrator(entihome$);
+	  		//Entigrator entigrator=console.getEntigrator(entihome$);
 	  		// String icon$=Support.readHandlerIcon(null,JAddressEditor.class, "address.png");
-	  	 String icon$=ExtensionHandler.loadIcon(entigrator,AddressHandler.EXTENSION_KEY, "bank.png");
-	  	if(icon$!=null)
-	  		 editorLocator$=Locator.append(editorLocator$,Locator.LOCATOR_ICON,icon$);
+	  	 //String icon$=ExtensionHandler.loadIcon(entigrator,AddressHandler.EXTENSION_KEY, "bank.png");
+	  	//if(icon$!=null)
+	  	//	 editorLocator$=Locator.append(editorLocator$,Locator.LOCATOR_ICON,icon$);
 	    }
 	   responseLocator.setProperty(BaseHandler.HANDLER_CLASS,JBankEditor.class.getName());
 		responseLocator.setProperty(BaseHandler.HANDLER_METHOD,"response");
@@ -261,5 +259,13 @@ public class JBankEditor extends JFieldsEditor {
 				Logger.getLogger(getClass().getName()).severe(e.toString());
 			}
 			return this;
+	}
+	@Override
+	public String getFacetOpenItem() {
+		// TODO Auto-generated method stub
+		return JBankFacetOpenItem.class.getName();
+	}
+public String getFacetIcon() {
+		return "bank.png";
 	}
 	}

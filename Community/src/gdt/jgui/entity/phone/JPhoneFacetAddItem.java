@@ -67,10 +67,13 @@ public String getLocator(){
 		locator.setProperty(EntityHandler.ENTITY_KEY,entityKey$);
 	if(entihome$!=null){
 		locator.setProperty(Entigrator.ENTIHOME,entihome$);
-		Entigrator entigrator=console.getEntigrator(entihome$);
-	 icon$=ExtensionHandler.loadIcon(entigrator, PhoneHandler.EXTENSION_KEY, "phone.png");
-	    	locator.setProperty(Locator.LOCATOR_ICON,icon$);
+		//Entigrator entigrator=console.getEntigrator(entihome$);
+	 //icon$=ExtensionHandler.loadIcon(entigrator, PhoneHandler.EXTENSION_KEY, "phone.png");
+	  //  	locator.setProperty(Locator.LOCATOR_ICON,icon$);
 	}
+	locator.setProperty( Locator.LOCATOR_ICON_CONTAINER, Locator.LOCATOR_ICON_CONTAINER_CLASS);
+	locator.setProperty( Locator.LOCATOR_ICON_CLASS, getClass().getName());
+	locator.setProperty( Locator.LOCATOR_ICON_FILE, "phone.png");
 	 locator$=Locator.toString(locator);
 	locator.setProperty(Locator.LOCATOR_CHECKABLE,Locator.LOCATOR_TRUE);
 	 return Locator.toString(locator);
@@ -148,8 +151,8 @@ public void addComponent(JMainConsole console, String locator$) {
 	   // editorLocator$=Locator.append(editorLocator$,Locator.LOCATOR_DATA,Locator.compressText(locator$));
 	    editorLocator$=Locator.append(editorLocator$,Locator.LOCATOR_TITLE,"Component label");
 	    editorLocator$=Locator.append(editorLocator$,JTextEditor.TEXT_TITLE,"Add phone component");
-	    String icon$=Support.readHandlerIcon(null,JEntitiesPanel.class, "edit.png");
-	    editorLocator$=Locator.append(editorLocator$,Locator.LOCATOR_ICON,icon$);
+	    //String icon$=Support.readHandlerIcon(null,JEntitiesPanel.class, "edit.png");
+	    //editorLocator$=Locator.append(editorLocator$,Locator.LOCATOR_ICON,icon$);
 	    String responseLocator$=getLocator();
 	    responseLocator$=Locator.append(responseLocator$, BaseHandler.HANDLER_METHOD, "response");
 	    responseLocator$=Locator.append(responseLocator$, Entigrator.ENTIHOME, entihome$);

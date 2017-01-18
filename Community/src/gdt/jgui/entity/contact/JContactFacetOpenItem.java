@@ -19,6 +19,7 @@ package gdt.jgui.entity.contact;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.ArrayList;
 import java.util.Properties;
 import java.util.logging.Logger;
 
@@ -32,29 +33,38 @@ import org.apache.commons.codec.binary.Base64;
 
 import gdt.data.entity.BaseHandler;
 import gdt.data.entity.ContactHandler;
+import gdt.data.entity.EmailHandler;
 import gdt.data.entity.EntityHandler;
 import gdt.data.entity.FacetHandler;
+import gdt.data.entity.PhoneHandler;
 import gdt.data.entity.facet.ExtensionHandler;
 import gdt.data.grain.Locator;
 import gdt.data.grain.Sack;
-import gdt.data.grain.Support;
 import gdt.data.store.Entigrator;
+import gdt.jgui.base.JBaseNavigator;
 import gdt.jgui.console.JConsoleHandler;
 import gdt.jgui.console.JContext;
 import gdt.jgui.console.JFacetOpenItem;
 import gdt.jgui.console.JMainConsole;
 import gdt.jgui.console.JRequester;
+import gdt.jgui.console.WContext;
+import gdt.jgui.console.WUtils;
 import gdt.jgui.entity.JEntityDigestDisplay;
 import gdt.jgui.entity.JEntityFacetPanel;
+import gdt.jgui.entity.address.JAddressFacetOpenItem;
+import gdt.jgui.entity.email.JEmailFacetOpenItem;
+import gdt.jgui.entity.phone.JPhoneFacetOpenItem;
+import gdt.jgui.tool.JEntityEditor;
 import gdt.jgui.tool.JTextEditor;
 
-public class JContactFacetOpenItem extends JFacetOpenItem implements JRequester{
+public class JContactFacetOpenItem extends JFacetOpenItem implements JRequester,WContext{
 
 	private static final long serialVersionUID = 1L;
 	
 	public static final String EXTENSION_KEY="_v6z8CVgemqMI6Bledpc7F1j0pVY";
 	private Logger LOGGER=Logger.getLogger(ContactHandler.class.getName());
 	String contact$;
+	boolean debug=true;
 	public JContactFacetOpenItem(){
 		super();
 	}
@@ -96,11 +106,18 @@ public class JContactFacetOpenItem extends JFacetOpenItem implements JRequester{
 		if(entihome$!=null){
 			locator.setProperty(Entigrator.ENTIHOME,entihome$);
 		//String icon$=Support.readHandlerIcon(JContactFacetOpenItem.class, "contact.png");
+			/*
 			Entigrator entigrator=console.getEntigrator(entihome$);
 			String icon$=ExtensionHandler.loadIcon(entigrator, ContactHandler.EXTENSION_KEY, "contact.png");
 		    if(icon$!=null)
 		    	locator.setProperty(Locator.LOCATOR_ICON,icon$);
+		    	*/
 		}
+			locator.setProperty(Locator.LOCATOR_ICON_CONTAINER,Locator.LOCATOR_ICON_CONTAINER_CLASS);
+			locator.setProperty(Locator.LOCATOR_ICON_CLASS,getClass().getName());
+			locator.setProperty(Locator.LOCATOR_ICON_FILE,"contact.png");
+			locator.setProperty(Locator.LOCATOR_ICON_LOCATION,ContactHandler.EXTENSION_KEY);
+		
 		locator$=Locator.toString(locator);
 		 return locator$;
 			}catch(Exception e){
@@ -156,12 +173,9 @@ public class JContactFacetOpenItem extends JFacetOpenItem implements JRequester{
 		return "Contact";
 	}
 	@Override
-	public String getFacetIcon() {
-		if(entihome$!=null){
-			Entigrator entigrator=console.getEntigrator(entihome$);
+	public String getFacetIcon(Entigrator entigrator) {
 			return ExtensionHandler.loadIcon(entigrator,ContactHandler.EXTENSION_KEY, "contact.png");
-		}
-		return null;
+		
 	}
 	@Override
 	public void removeFacet() {
@@ -220,16 +234,59 @@ public class JContactFacetOpenItem extends JFacetOpenItem implements JRequester{
 		return JContactEditor.class.getName();
 	}
 	@Override
-	public DefaultMutableTreeNode[] getDigest() {
+	public DefaultMutableTreeNode[] getDigest(Entigrator entigrator,String locator$) {
 		try{
-			Entigrator entigrator=console.getEntigrator(entihome$);
+			if(debug)
+				System.out.println("JContactFacetOpenItem:getDigest:locator="+locator$);
+		
+			entityKey$=Locator.getProperty(locator$,EntityHandler.ENTITY_KEY);
 			Sack entity =entigrator.getEntityAtKey(entityKey$);
-			contact$=entity.getProperty("contact");
-			String locator$=getLocator();
-			locator$=Locator.append(locator$, Locator.LOCATOR_TITLE, contact$);
-			DefaultMutableTreeNode contactNode=new DefaultMutableTreeNode();
-			contactNode.setUserObject(locator$);
-			return new DefaultMutableTreeNode[]{contactNode};
+			ArrayList<DefaultMutableTreeNode>nl=new ArrayList<DefaultMutableTreeNode>();
+//			contact$=entity.getProperty("contact");
+		    EmailHandler emailHandler=new EmailHandler();
+		    if(emailHandler.isApplied(entigrator, locator$)){
+			String email$=entity.getProperty("email");
+			String itemLocator$;
+			if(email$!=null){
+				JEmailFacetOpenItem eoi=new JEmailFacetOpenItem();
+			    itemLocator$=eoi.getLocator();
+			    itemLocator$=Locator.append(itemLocator$,Locator.LOCATOR_TITLE,email$);
+			    itemLocator$=Locator.append(itemLocator$,EntityHandler.ENTITY_KEY,entityKey$);
+			    itemLocator$=Locator.append(itemLocator$,Entigrator.ENTIHOME,entigrator.getEntihome());
+			if(debug)
+				System.out.println("JContactFacetOpenItem:getDigest:email locator="+itemLocator$);
+			//locator$=Locator.append(locator$, Locator.LOCATOR_ICON,eoi.getFacetIcon(entigrator));
+			DefaultMutableTreeNode emailNode=new DefaultMutableTreeNode();
+			emailNode.setUserObject(itemLocator$);
+			nl.add(emailNode);
+			}
+		    }
+			String phone$=entity.getProperty("phone");
+			if(phone$!=null){
+			locator$=Locator.append(locator$, Locator.LOCATOR_TITLE, phone$);
+			JPhoneFacetOpenItem poi=new JPhoneFacetOpenItem();
+			locator$=Locator.append(locator$,Locator.LOCATOR_ICON_CLASS,poi.getClass().getName());
+			locator$=Locator.append(locator$,Locator.LOCATOR_ICON_CONTAINER,Locator.LOCATOR_ICON_CONTAINER_CLASS);
+			locator$=Locator.append(locator$,Locator.LOCATOR_ICON_FILE,"phone.png");
+		
+			//locator$=Locator.append(locator$, Locator.LOCATOR_ICON,poi.getFacetIcon(entigrator));
+			DefaultMutableTreeNode phoneNode=new DefaultMutableTreeNode();
+			phoneNode.setUserObject(locator$);
+			nl.add(phoneNode);
+			}
+			String address$=entity.getProperty("address");
+			if(address$!=null){
+			locator$=Locator.append(locator$, Locator.LOCATOR_TITLE, address$);
+			JAddressFacetOpenItem aoi=new JAddressFacetOpenItem();
+			locator$=Locator.append(locator$,Locator.LOCATOR_ICON_CLASS,aoi.getClass().getName());
+			locator$=Locator.append(locator$,Locator.LOCATOR_ICON_CONTAINER,Locator.LOCATOR_ICON_CONTAINER_CLASS);
+			locator$=Locator.append(locator$,Locator.LOCATOR_ICON_FILE,"address.png");
+			//locator$=Locator.append(locator$, Locator.LOCATOR_ICON,aoi.getFacetIcon(entigrator));
+			DefaultMutableTreeNode addressNode=new DefaultMutableTreeNode();
+			addressNode.setUserObject(locator$);
+			nl.add(addressNode);
+			}
+			return nl.toArray(new DefaultMutableTreeNode[0]);
 				
 		}catch(Exception e){
 			Logger.getLogger(getClass().getName()).severe(e.toString());
@@ -268,5 +325,80 @@ public class JContactFacetOpenItem extends JFacetOpenItem implements JRequester{
 			    });
 		return popup;
 
+	}
+
+	@Override
+	public String getFacetIconName() {
+		// TODO Auto-generated method stub
+		return "contact.png";
+	}
+
+	@Override
+	public String getWebConsole(Entigrator arg0, String arg1) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public String getWebView(Entigrator entigrator, String locator$) {
+		try{
+		if(debug)
+			System.out.println("JContactFacetOpenItem:locator="+locator$);
+		Properties locator=Locator.toProperties(locator$);
+		String webHome$=locator.getProperty(WContext.WEB_HOME);
+		String entityLabel$=locator.getProperty(EntityHandler.ENTITY_LABEL);
+		String entityKey$=entigrator.indx_keyAtLabel(entityLabel$);
+		if(entityLabel$!=null)
+		entityLabel$=entityLabel$.replaceAll("&quot;", "\"");
+		String webRequester$=locator.getProperty(WContext.WEB_REQUESTER);
+		Sack entity=entigrator.getEntityAtKey(entityKey$);
+		String email$=entity.getProperty("email");
+		String phone$=entity.getProperty("phone");
+		String address$=entity.getProperty("address");
+		StringBuffer sb=new StringBuffer();
+		sb.append("<!DOCTYPE html PUBLIC \"-//W3C//DTD HTML 4.01//EN\" \"http://www.w3.org/TR/html4/strict.dtd\">");
+		sb.append("<html>");
+		sb.append("<head>");
+		sb.append(WUtils.getMenuBarScript());
+		sb.append(WUtils.getMenuBarStyle());
+		sb.append("</head>");
+	    sb.append("<body onload=\"onLoad()\">");
+	    sb.append("<ul class=\"menu_list\">");
+	    sb.append("<li class=\"menu_item\"><a id=\"back\">Back</a></li>");
+	    sb.append("<li class=\"menu_item\"><a href=\""+webHome$+"\">Home</a></li>");
+	    String navLocator$=Locator.append(locator$, BaseHandler.HANDLER_CLASS, JBaseNavigator.class.getName());
+	    navLocator$=Locator.append(navLocator$, Entigrator.ENTIHOME, entigrator.getEntihome());
+	    String navUrl$=webHome$+"?"+WContext.WEB_LOCATOR+"="+Base64.encodeBase64URLSafeString(navLocator$.getBytes());
+	    sb.append("<li class=\"menu_item\"><a href=\""+navUrl$+"\">Base</a></li>");
+	    sb.append("</ul>");
+	    sb.append("<table><tr><td>Base:</td><td><strong>");
+	    sb.append(entigrator.getBaseName());
+	    sb.append("</strong></td></tr><tr><td>Entity: </td><td><strong>");
+	    sb.append(entityLabel$);
+	    sb.append("</strong></td></tr>");
+	    sb.append("</strong></td></tr><tr><td>Facet: </td><td><strong>");
+	    sb.append("Contact");
+	    sb.append("</strong></td></tr>");
+	    if(email$!=null)
+	    sb.append("<tr><td>email:</td><td><strong>"+email$+"</strong></td></tr>");
+	    if(phone$!=null)
+		    sb.append("<tr><td>phone:</td><td><strong>"+phone$+"</strong></td></tr>");
+	    if(address$!=null)
+		    sb.append("<tr><td>address:</td><td><strong>"+address$+"</strong></td></tr>");
+	    sb.append("</table>");
+	    
+	    sb.append("<script>");
+	    sb.append("function onLoad() {");
+	    sb.append("initBack(\""+this.getClass().getName()+"\",\""+webRequester$+"\");");
+	    sb.append("}");
+	    sb.append("window.localStorage.setItem(\""+this.getClass().getName()+"\",\""+Base64.encodeBase64URLSafeString(locator$.getBytes())+"\");");
+	    sb.append("</script>");
+	    sb.append("</body>");
+	    sb.append("</html>");
+	    return sb.toString();
+	}catch(Exception e){
+		Logger.getLogger(JEntityEditor.class.getName()).severe(e.toString());	
+	}
+	return null;
 	}
 }

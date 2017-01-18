@@ -56,6 +56,7 @@ import gdt.jgui.entity.JEntityFacetPanel;
 import gdt.jgui.entity.JEntityPrimaryMenu;
 import gdt.jgui.entity.JEntityStructurePanel;
 import gdt.jgui.entity.JReferenceEntry;
+import gdt.jgui.entity.address.JAddressFacetOpenItem;
 import gdt.jgui.tool.JTextEditor;
 
 import javax.swing.JTextField;
@@ -294,11 +295,14 @@ public class JContactEditor extends JPanel implements JContext,JFacetRenderer,JR
 	    locator.setProperty(Locator.LOCATOR_TITLE, "Contact");
 	   if(entihome$!=null){
 	      locator.setProperty(Entigrator.ENTIHOME,entihome$);
-			Entigrator entigrator=console.getEntigrator(entihome$);
-		String icon$=ExtensionHandler.loadIcon(entigrator,ContactHandler.EXTENSION_KEY, "contact.png");
-		if(icon$!=null)
-		    	locator.setProperty(Locator.LOCATOR_ICON,icon$);
+		//	Entigrator entigrator=console.getEntigrator(entihome$);
+		//String icon$=ExtensionHandler.loadIcon(entigrator,ContactHandler.EXTENSION_KEY, "contact.png");
+		//if(icon$!=null)
+		 //   	locator.setProperty(Locator.LOCATOR_ICON,icon$);
 	   }
+	   locator.setProperty( Locator.LOCATOR_ICON_CONTAINER, Locator.LOCATOR_ICON_CONTAINER_CLASS);
+   	locator.setProperty( Locator.LOCATOR_ICON_CLASS, getClass().getName());
+   	locator.setProperty( Locator.LOCATOR_ICON_FILE, "contact.png");
 	   if(entityKey$!=null)
 		      locator.setProperty(EntityHandler.ENTITY_KEY,entityKey$);
 	    locator.setProperty(BaseHandler.HANDLER_SCOPE,JConsoleHandler.CONSOLE_SCOPE);
@@ -368,12 +372,9 @@ public class JContactEditor extends JPanel implements JContext,JFacetRenderer,JR
 		
 	}
 	@Override
-	public String getCategoryIcon() {
-		if(entihome$!=null){
-			Entigrator entigrator=console.getEntigrator(entihome$);
+	public String getCategoryIcon(Entigrator entigrator) {
 			return ExtensionHandler.loadIcon(entigrator,ContactHandler.EXTENSION_KEY, "contact.png");
-		}
-		return null;
+		
 	}
 
 	@Override
@@ -515,6 +516,17 @@ public class JContactEditor extends JPanel implements JContext,JFacetRenderer,JR
 	public void activate() {
 		// TODO Auto-generated method stub
 		
+	}
+	@Override
+	public String getFacetOpenItem() {
+		// TODO Auto-generated method stub
+		return JContactFacetOpenItem.class.getName();
+	}
+
+	@Override
+	public String getFacetIcon() {
+		
+		return "contact.png";
 	}
 		}	
 	

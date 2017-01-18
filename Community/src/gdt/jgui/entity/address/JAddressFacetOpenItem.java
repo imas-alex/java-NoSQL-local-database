@@ -22,8 +22,10 @@ import javax.swing.JPopupMenu;
 import gdt.data.entity.AddressHandler;
 import gdt.data.entity.BankHandler;
 import gdt.data.entity.BaseHandler;
+import gdt.data.entity.EmailHandler;
 import gdt.data.entity.EntityHandler;
 import gdt.data.entity.FacetHandler;
+import gdt.data.entity.PhoneHandler;
 import gdt.data.entity.facet.ExtensionHandler;
 import gdt.data.grain.Locator;
 
@@ -34,12 +36,12 @@ import gdt.jgui.console.JContext;
 import gdt.jgui.console.JFacetOpenItem;
 import gdt.jgui.console.JMainConsole;
 import gdt.jgui.console.JRequester;
-
+import gdt.jgui.console.WContext;
 import gdt.jgui.entity.JEntityFacetPanel;
 import gdt.jgui.entity.fields.JFieldsFacetOpenItem;
 
 
-public class JAddressFacetOpenItem extends JFieldsFacetOpenItem {
+public class JAddressFacetOpenItem extends JFieldsFacetOpenItem  {
 	private static final long serialVersionUID = 1L;
 	public JAddressFacetOpenItem(){
 		super();
@@ -60,9 +62,15 @@ public String getLocator(){
 		locator.setProperty(EntityHandler.ENTITY_KEY,entityKey$);
 	if(entihome$!=null)
 		locator.setProperty(Entigrator.ENTIHOME,entihome$);
-	 String icon$=Support.readHandlerIcon(null,JAddressEditor.class, "address.png");
+	/*
+	String icon$=Support.readHandlerIcon(null,JAddressEditor.class, "address.png");
     if(icon$!=null)
     	locator.setProperty(Locator.LOCATOR_ICON,icon$);
+    	*/
+	locator.setProperty(Locator.LOCATOR_ICON_CONTAINER,Locator.LOCATOR_ICON_CONTAINER_CLASS);
+	locator.setProperty(Locator.LOCATOR_ICON_CLASS,getClass().getName());
+	locator.setProperty(Locator.LOCATOR_ICON_FILE,"address.png");
+	locator.setProperty(Locator.LOCATOR_ICON_LOCATION,AddressHandler.EXTENSION_KEY);
     if(entihome$!=null){   
  	locator.setProperty(Locator.LOCATOR_CHECKABLE,Locator.LOCATOR_TRUE);
 	    }
@@ -78,12 +86,12 @@ public String getFacetName() {
 	return "Address";
 }
 @Override
-public String getFacetIcon() {
-	if(entihome$!=null){
-		Entigrator entigrator=console.getEntigrator(entihome$);
+public String getFacetIcon(Entigrator entigrator) {
+	if(entihome$!=null)
+		 entigrator=console.getEntigrator(entihome$);
+
+
 		return ExtensionHandler.loadIcon(entigrator,AddressHandler.EXTENSION_KEY, "address.png");
-	}
-	return null;
 }
 @Override
 public void removeFacet() {

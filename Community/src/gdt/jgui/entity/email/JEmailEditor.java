@@ -36,6 +36,7 @@ import gdt.jgui.console.*;
 import gdt.jgui.entity.JEntityFacetPanel;
 import gdt.jgui.entity.JEntityPrimaryMenu;
 import gdt.jgui.entity.JReferenceEntry;
+import gdt.jgui.entity.address.JAddressFacetOpenItem;
 import gdt.jgui.tool.JTextEditor;
 public class JEmailEditor extends JTextEditor implements JFacetRenderer,JRequester{
 String entityKey$;
@@ -118,13 +119,9 @@ String entihome$;
 	}
 
 	@Override
-	public String getCategoryIcon() {
-		if(entihome$!=null)	{
-			Entigrator entigrator=console.getEntigrator(entihome$);
-		    return ExtensionHandler.loadIcon(entigrator,EmailHandler.EXTENSION_KEY, "email.png");
+	public String getCategoryIcon(Entigrator entigrator) {
 		
-	}
-		return null;
+		    return ExtensionHandler.loadIcon(entigrator,EmailHandler.EXTENSION_KEY, "email.png");
 	}
 
 	@Override
@@ -248,5 +245,16 @@ String entihome$;
 	@Override
 	public void collectReferences(Entigrator entigrator, String entityKey$, ArrayList<JReferenceEntry> rel) {
 	
+	}
+	@Override
+	public String getFacetOpenItem() {
+		// TODO Auto-generated method stub
+		return JEmailFacetOpenItem.class.getName();
+	}
+
+	@Override
+	public String getFacetIcon() {
+		
+		return "email.png";
 	}
 }

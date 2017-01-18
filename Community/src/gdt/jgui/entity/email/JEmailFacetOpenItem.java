@@ -18,6 +18,7 @@ package gdt.jgui.entity.email;
  */
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.ArrayList;
 import java.util.Properties;
 import java.util.logging.Logger;
 import javax.swing.JMenuItem;
@@ -30,27 +31,36 @@ import gdt.data.entity.BaseHandler;
 import gdt.data.entity.EmailHandler;
 import gdt.data.entity.EntityHandler;
 import gdt.data.entity.FacetHandler;
+import gdt.data.entity.PhoneHandler;
 import gdt.data.entity.facet.ExtensionHandler;
+import gdt.data.grain.Core;
 import gdt.data.grain.Locator;
 import gdt.data.grain.Sack;
+import gdt.data.grain.Support;
 import gdt.data.store.Entigrator;
+import gdt.jgui.base.JBaseNavigator;
 import gdt.jgui.console.JConsoleHandler;
 import gdt.jgui.console.JContext;
 import gdt.jgui.console.JFacetOpenItem;
 import gdt.jgui.console.JMainConsole;
 import gdt.jgui.console.JRequester;
+import gdt.jgui.console.WContext;
+import gdt.jgui.console.WUtils;
+import gdt.jgui.entity.JEntitiesPanel;
 import gdt.jgui.entity.JEntityDigestDisplay;
 import gdt.jgui.entity.JEntityFacetPanel;
+import gdt.jgui.entity.webset.JWeblinksPanel;
+import gdt.jgui.tool.JEntityEditor;
 import gdt.jgui.tool.JTextEditor;
 
-public class JEmailFacetOpenItem extends JFacetOpenItem implements JRequester{
+public class JEmailFacetOpenItem extends JFacetOpenItem implements JRequester,WContext{
 
 	private static final long serialVersionUID = 1L;
 	
 	//public static final String EXTENSION_KEY="_v6z8CVgemqMI6Bledpc7F1j0pVY";
 	private Logger LOGGER=Logger.getLogger(EmailHandler.class.getName());
 	String email$;
-	boolean debug=false;
+	boolean debug=true;
 	public JEmailFacetOpenItem(){
 		super();
 	}
@@ -97,11 +107,18 @@ public class JEmailFacetOpenItem extends JFacetOpenItem implements JRequester{
 			locator.setProperty(Locator.LOCATOR_CHECKABLE,Locator.LOCATOR_TRUE);
 			if(debug)	
 				System.out.println("JEmailFacetOpenItem:getLocator:1");
-			Entigrator entigrator=console.getEntigrator(entihome$);
+			//Entigrator entigrator=console.getEntigrator(entihome$);
+			/*
 			String icon$=ExtensionHandler.loadIcon(entigrator,EmailHandler.EXTENSION_KEY, "email.png");
 		    if(icon$!=null)
 		    	locator.setProperty(Locator.LOCATOR_ICON,icon$);
+		    	*/
+			
 		}
+		locator.setProperty(Locator.LOCATOR_ICON_CONTAINER,Locator.LOCATOR_ICON_CONTAINER_CLASS);
+		locator.setProperty(Locator.LOCATOR_ICON_CLASS,getClass().getName());
+		locator.setProperty(Locator.LOCATOR_ICON_FILE,"email.png");
+		locator.setProperty(Locator.LOCATOR_ICON_LOCATION,EmailHandler.EXTENSION_KEY);
 		locator$=Locator.toString(locator);
 		if(debug)	
 			System.out.println("JEmailFacetOpenItem:getLocator:locator="+locator$);
@@ -170,12 +187,9 @@ public class JEmailFacetOpenItem extends JFacetOpenItem implements JRequester{
 		return "Email";
 	}
 	@Override
-	public String getFacetIcon() {
-		if(entihome$!=null){
-			Entigrator entigrator=console.getEntigrator(entihome$);
+	public String getFacetIcon(Entigrator entigrator) {
 			return ExtensionHandler.loadIcon(entigrator,EmailHandler.EXTENSION_KEY, "email.png");
-		}
-		return null;
+		
 	}
 	@Override
 	public void removeFacet() {
@@ -239,17 +253,32 @@ public class JEmailFacetOpenItem extends JFacetOpenItem implements JRequester{
 		return JEmailEditor.class.getName();
 	}
 	@Override
-	public DefaultMutableTreeNode[] getDigest() {
+	public DefaultMutableTreeNode[] getDigest(Entigrator entigrator,String locator$) {
 		try{
-			Entigrator entigrator=console.getEntigrator(entihome$);
+			entityKey$=Locator.getProperty(locator$,EntityHandler.ENTITY_KEY);
 			Sack entity =entigrator.getEntityAtKey(entityKey$);
 			String email$=entity.getProperty("email");
-			String locator$=getLocator();
 			locator$=Locator.append(locator$, Locator.LOCATOR_TITLE, email$);
+			locator$=Locator.append(locator$,Locator.LOCATOR_ICON_CONTAINER,Locator.LOCATOR_ICON_CONTAINER_CLASS);
+			locator$=Locator.append(locator$,Locator.LOCATOR_ICON_CLASS,getClass().getName());
+			locator$=Locator.append(locator$,Locator.LOCATOR_ICON_FILE,"email.png");
+		
+			//locator$=Locator.append(locator$, Locator.LOCATOR_ICON,getFacetIcon(entigrator));
 			DefaultMutableTreeNode emailNode=new DefaultMutableTreeNode();
 			emailNode.setUserObject(locator$);
+			/*
+			DefaultMutableTreeNode nameNode=new DefaultMutableTreeNode();
+			Properties valueLocator=new Properties();
+			String valueIcon$=ExtensionHandler.loadIcon(entigrator, EmailHandler.EXTENSION_KEY, "email.png");
+			valueLocator.setProperty(Locator.LOCATOR_TITLE,"email");
+			valueLocator.setProperty(Locator.LOCATOR_ICON,valueIcon$);
+			valueLocator.setProperty(JEntityDigestDisplay.NODE_TYPE,JEntityDigestDisplay.NODE_TYPE_PROPERTY);
+			valueLocator.setProperty(Entigrator.ENTIHOME,entigrator.getEntihome());
+			valueLocator.setProperty(EntityHandler.ENTITY_KEY,entityKey$);
+			nameNode.setUserObject(Locator.toString(valueLocator));
+			emailNode.add(nameNode);
+			*/
 			return new DefaultMutableTreeNode[]{emailNode};
-				
 		}catch(Exception e){
 			Logger.getLogger(getClass().getName()).severe(e.toString());
 		}
@@ -295,5 +324,73 @@ public class JEmailFacetOpenItem extends JFacetOpenItem implements JRequester{
 			    });
 		return popup;
 
+	}
+
+	@Override
+	public String getFacetIconName() {
+		
+		return "email.png";
+	}
+
+	@Override
+	public String getWebConsole(Entigrator arg0, String arg1) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public String getWebView(Entigrator entigrator, String locator$) {
+		try{
+			if(debug)
+				System.out.println("JEmailFacetOpenItem:locator="+locator$);
+			Properties locator=Locator.toProperties(locator$);
+			String webHome$=locator.getProperty(WContext.WEB_HOME);
+			String entityLabel$=locator.getProperty(EntityHandler.ENTITY_LABEL);
+			String entityKey$=entigrator.indx_keyAtLabel(entityLabel$);
+			if(entityLabel$!=null)
+			entityLabel$=entityLabel$.replaceAll("&quot;", "\"");
+			String webRequester$=locator.getProperty(WContext.WEB_REQUESTER);
+			Sack entity=entigrator.getEntityAtKey(entityKey$);
+			String text$=entity.getProperty("email");
+			StringBuffer sb=new StringBuffer();
+			sb.append("<!DOCTYPE html PUBLIC \"-//W3C//DTD HTML 4.01//EN\" \"http://www.w3.org/TR/html4/strict.dtd\">");
+			sb.append("<html>");
+			sb.append("<head>");
+			sb.append(WUtils.getMenuBarScript());
+			sb.append(WUtils.getMenuBarStyle());
+			sb.append("</head>");
+		    sb.append("<body onload=\"onLoad()\">");
+		    sb.append("<ul class=\"menu_list\">");
+		    sb.append("<li class=\"menu_item\"><a id=\"back\">Back</a></li>");
+		    sb.append("<li class=\"menu_item\"><a href=\""+webHome$+"\">Home</a></li>");
+		    String navLocator$=Locator.append(locator$, BaseHandler.HANDLER_CLASS, JBaseNavigator.class.getName());
+		    navLocator$=Locator.append(navLocator$, Entigrator.ENTIHOME, entigrator.getEntihome());
+		    String navUrl$=webHome$+"?"+WContext.WEB_LOCATOR+"="+Base64.encodeBase64URLSafeString(navLocator$.getBytes());
+		    sb.append("<li class=\"menu_item\"><a href=\""+navUrl$+"\">Base</a></li>");
+		    sb.append("</ul>");
+		    sb.append("<table><tr><td>Base:</td><td><strong>");
+		    sb.append(entigrator.getBaseName());
+		    sb.append("</strong></td></tr><tr><td>Entity: </td><td><strong>");
+		    sb.append(entityLabel$);
+		    sb.append("</strong></td></tr>");
+		    sb.append("</strong></td></tr><tr><td>Facet: </td><td><strong>");
+		    sb.append("Email");
+		    sb.append("</strong></td></tr>");
+		    sb.append("<tr><td>email:</td></tr>");
+		    sb.append("</table>");
+		    sb.append(text$);
+		    sb.append("<script>");
+		    sb.append("function onLoad() {");
+		    sb.append("initBack(\""+this.getClass().getName()+"\",\""+webRequester$+"\");");
+		    sb.append("}");
+		    sb.append("window.localStorage.setItem(\""+this.getClass().getName()+"\",\""+Base64.encodeBase64URLSafeString(locator$.getBytes())+"\");");
+		    sb.append("</script>");
+		    sb.append("</body>");
+		    sb.append("</html>");
+		    return sb.toString();
+		}catch(Exception e){
+			Logger.getLogger(JEntityEditor.class.getName()).severe(e.toString());	
+		}
+		return null;
 	}
 }

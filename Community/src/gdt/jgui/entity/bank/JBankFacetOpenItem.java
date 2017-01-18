@@ -25,6 +25,7 @@ import gdt.data.entity.BankHandler;
 import gdt.data.entity.BaseHandler;
 import gdt.data.entity.EntityHandler;
 import gdt.data.entity.FacetHandler;
+import gdt.data.entity.PhoneHandler;
 import gdt.data.entity.facet.ExtensionHandler;
 import gdt.data.grain.Locator;
 import gdt.data.grain.Support;
@@ -58,11 +59,18 @@ public class JBankFacetOpenItem extends JFieldsFacetOpenItem{
 		if(entihome$!=null){
 			locator.setProperty(Entigrator.ENTIHOME,entihome$);
 			locator.setProperty(Locator.LOCATOR_CHECKABLE,Locator.LOCATOR_TRUE);
+			/*
 			Entigrator entigrator=console.getEntigrator(entihome$);
 			String icon$=ExtensionHandler.loadIcon(entigrator,BankHandler.EXTENSION_KEY, "bank.png");
 		    if(icon$!=null)
 		    	locator.setProperty(Locator.LOCATOR_ICON,icon$);
+		    	*/
 		}
+			locator.setProperty(Locator.LOCATOR_ICON_CONTAINER,Locator.LOCATOR_ICON_CONTAINER_CLASS);
+			locator.setProperty(Locator.LOCATOR_ICON_CLASS,getClass().getName());
+			locator.setProperty(Locator.LOCATOR_ICON_FILE,"bank.png");
+			locator.setProperty(Locator.LOCATOR_ICON_LOCATION,BankHandler.EXTENSION_KEY);
+		
 		return Locator.toString(locator);
 	}
 
@@ -76,13 +84,10 @@ public String getFacetName() {
 	return "Bank";
 }
 @Override
-public String getFacetIcon() {
-	//return Support.readHandlerIcon(JBankFacetOpenItem.class, "bank.png");
-	if(entihome$!=null){
-		Entigrator entigrator=console.getEntigrator(entihome$);
+public String getFacetIcon(Entigrator entigrator) {
+	
 		return ExtensionHandler.loadIcon(entigrator,BankHandler.EXTENSION_KEY, "bank.png");
-	}
-	return null;
+	
 }
 @Override
 public void removeFacet() {

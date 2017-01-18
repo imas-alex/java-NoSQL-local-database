@@ -43,6 +43,7 @@ import gdt.jgui.entity.JEntityPrimaryMenu;
 import gdt.jgui.entity.JReferenceEntry;
 import gdt.jgui.entity.fields.JFieldsEditor;
 import gdt.jgui.entity.webset.JWeblinkEditor;
+import gdt.jgui.entity.webset.JWebsetFacetOpenItem;
 import gdt.jgui.tool.JTextEditor;
 
 public class JAddressEditor extends JFieldsEditor {
@@ -122,10 +123,13 @@ public class JAddressEditor extends JFieldsEditor {
 				locator.setProperty(Entigrator.ENTIHOME,entihome$);
 				Entigrator entigrator=console.getEntigrator(entihome$);
 				// String icon$=Support.readHandlerIcon(null,JAddressEditor.class, "address.png");
-			String icon$=ExtensionHandler.loadIcon(entigrator,AddressHandler.EXTENSION_KEY, "address.png");
-			if(icon$!=null)
-			    	locator.setProperty(Locator.LOCATOR_ICON,icon$);
+			//String icon$=ExtensionHandler.loadIcon(entigrator,AddressHandler.EXTENSION_KEY, "address.png");
+			//if(icon$!=null)
+			 //   	locator.setProperty(Locator.LOCATOR_ICON,icon$);
 			}
+			locator.setProperty( Locator.LOCATOR_ICON_CONTAINER, Locator.LOCATOR_ICON_CONTAINER_CLASS);
+	    	locator.setProperty( Locator.LOCATOR_ICON_CLASS, getClass().getName());
+	    	locator.setProperty( Locator.LOCATOR_ICON_FILE, "address.png");
 			return Locator.toString(locator);
 			}catch(Exception e){
 	        Logger.getLogger(getClass().getName()).severe(e.toString());
@@ -159,13 +163,8 @@ public class JAddressEditor extends JFieldsEditor {
 	}
 
 	@Override
-	public String getCategoryIcon() {
-		try{
-		Entigrator entigrator=console.getEntigrator(entihome$);
+	public String getCategoryIcon(Entigrator entigrator) {
 		return ExtensionHandler.loadIcon(entigrator, AddressHandler.EXTENSION_KEY, "address.png");
-		}catch(Exception e){
-			return null;
-		}
 				//Support.readHandlerIcon(null,JAddressEditor.class, "address.png");
 	}
 
@@ -195,8 +194,8 @@ public class JAddressEditor extends JFieldsEditor {
 	    String editorLocator$=textEditor.getLocator();
 	    editorLocator$=Locator.append(editorLocator$, JTextEditor.TEXT, "Address"+Identity.key().substring(0,4));
 	    editorLocator$=Locator.append(editorLocator$,Locator.LOCATOR_TITLE,"Address entity");
-	    String icon$=Support.readHandlerIcon(null,getClass(), "address.png");
-	    editorLocator$=Locator.append(editorLocator$,Locator.LOCATOR_ICON,icon$);
+	    //String icon$=Support.readHandlerIcon(null,getClass(), "address.png");
+	    //editorLocator$=Locator.append(editorLocator$,Locator.LOCATOR_ICON,icon$);
 	    JAddressEditor fe=new JAddressEditor();
 	    String feLocator$=fe.getLocator();
 	    Properties responseLocator=Locator.toProperties(feLocator$);
@@ -352,5 +351,14 @@ public class JAddressEditor extends JFieldsEditor {
 				Logger.getLogger(getClass().getName()).severe(e.toString());
 			}
 			return this;
+	}
+	@Override
+	public String getFacetOpenItem() {
+		// TODO Auto-generated method stub
+		return JAddressFacetOpenItem.class.getName();
+	}
+public String getFacetIcon() {
+		
+		return "address.png";
 	}
 }

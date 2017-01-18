@@ -37,9 +37,10 @@ import gdt.jgui.console.*;
 import gdt.jgui.entity.JEntityFacetPanel;
 import gdt.jgui.entity.JEntityPrimaryMenu;
 import gdt.jgui.entity.JReferenceEntry;
+import gdt.jgui.entity.address.JAddressFacetOpenItem;
 import gdt.jgui.entity.fields.JFieldsEditor;
 import gdt.jgui.tool.JTextEditor;
-public class JPersonEditor extends JFieldsEditor {
+public class JPersonEditor extends JFieldsEditor implements JExtendedFacetRenderer{
 
 	private static final long serialVersionUID = 1L;
 	public static final String ACTION_CREATE_PERSON="action create person";
@@ -91,11 +92,14 @@ public class JPersonEditor extends JFieldsEditor {
 				locator.setProperty(EntityHandler.ENTITY_KEY,entityKey$);
 			if(entihome$!=null){
 				locator.setProperty(Entigrator.ENTIHOME,entihome$);
-			Entigrator entigrator=console.getEntigrator(entihome$);
-		    String icon$=ExtensionHandler.loadIcon(entigrator,PersonHandler.EXTENSION_KEY, "person.png");
-		    if(icon$!=null)
-		    	locator.setProperty(Locator.LOCATOR_ICON,icon$);	
+			//Entigrator entigrator=console.getEntigrator(entihome$);
+		    //String icon$=ExtensionHandler.loadIcon(entigrator,PersonHandler.EXTENSION_KEY, "person.png");
+		    //if(icon$!=null)
+		    //	locator.setProperty(Locator.LOCATOR_ICON,icon$);	
 			}
+			locator.setProperty( Locator.LOCATOR_ICON_CONTAINER, Locator.LOCATOR_ICON_CONTAINER_CLASS);
+	    	locator.setProperty( Locator.LOCATOR_ICON_CLASS, getClass().getName());
+	    	locator.setProperty( Locator.LOCATOR_ICON_FILE, "person.png");
 			return Locator.toString(locator);
 			}catch(Exception e){
 	        Logger.getLogger(getClass().getName()).severe(e.toString());
@@ -128,14 +132,9 @@ public class JPersonEditor extends JFieldsEditor {
 	}
 
 	@Override
-	public String getCategoryIcon() {
-		if(entihome$!=null)	{
-			Entigrator entigrator=console.getEntigrator(entihome$);
+	public String getCategoryIcon(Entigrator entigrator) {
 		    return ExtensionHandler.loadIcon(entigrator,PersonHandler.EXTENSION_KEY, "person.png");
-		
-	}
-		return null;
-	}
+		}
 
 	@Override
 	public String getCategoryTitle() {
@@ -163,12 +162,12 @@ public class JPersonEditor extends JFieldsEditor {
 	    String editorLocator$=textEditor.getLocator();
 	    editorLocator$=Locator.append(editorLocator$, JTextEditor.TEXT, "Person"+Identity.key().substring(0,4));
 	    editorLocator$=Locator.append(editorLocator$,Locator.LOCATOR_TITLE,"Person entity");
-	    if(entihome$!=null){
-		Entigrator entigrator=console.getEntigrator(entihome$);
-	    String icon$=ExtensionHandler.loadIcon(entigrator,PersonHandler.EXTENSION_KEY, "person.png");
-	    if(icon$!=null)
-	    	editorLocator$=Locator.append(editorLocator$,Locator.LOCATOR_ICON,icon$);
-	    }
+	  //  if(entihome$!=null){
+		//Entigrator entigrator=console.getEntigrator(entihome$);
+	  //  String icon$=ExtensionHandler.loadIcon(entigrator,PersonHandler.EXTENSION_KEY, "person.png");
+	   // if(icon$!=null)
+	   // 	editorLocator$=Locator.append(editorLocator$,Locator.LOCATOR_ICON,icon$);
+	   // }
 	    JPersonEditor pe=new JPersonEditor();
 	    String peLocator$=pe.getLocator();
 	    Properties responseLocator=Locator.toProperties(peLocator$);
@@ -350,4 +349,14 @@ public class JPersonEditor extends JFieldsEditor {
 			}
 			return this;
 	}
+	@Override
+	public String getFacetOpenItem() {
+		// TODO Auto-generated method stub
+		return JPersonFacetOpenItem.class.getName();
+	}
+	@Override
+	public String getFacetIcon() {
+		
+		return "person.png";
+	}	
 }

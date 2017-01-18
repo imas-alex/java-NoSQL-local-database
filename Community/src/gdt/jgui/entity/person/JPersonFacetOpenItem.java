@@ -20,10 +20,13 @@ package gdt.jgui.entity.person;
 import java.util.Properties;
 import java.util.logging.Logger;
 import javax.swing.JPopupMenu;
+import javax.swing.tree.DefaultMutableTreeNode;
+
 import gdt.data.entity.BaseHandler;
 import gdt.data.entity.EntityHandler;
 import gdt.data.entity.FacetHandler;
 import gdt.data.entity.PersonHandler;
+import gdt.data.entity.PhoneHandler;
 import gdt.data.entity.facet.ExtensionHandler;
 import gdt.data.grain.Locator;
 import gdt.data.store.Entigrator;
@@ -57,12 +60,17 @@ public String getLocator(){
 	if(entihome$!=null){
 		locator.setProperty(Entigrator.ENTIHOME,entihome$);
 		locator.setProperty(Locator.LOCATOR_CHECKABLE,Locator.LOCATOR_TRUE);
-	Entigrator entigrator=console.getEntigrator(entihome$);
+	/*
+		Entigrator entigrator=console.getEntigrator(entihome$);
     String icon$=ExtensionHandler.loadIcon(entigrator,PersonHandler.EXTENSION_KEY, "person.png");
     if(icon$!=null)
     	locator.setProperty(Locator.LOCATOR_ICON,icon$);
+    	*/
 	}
-    
+	locator.setProperty(Locator.LOCATOR_ICON_CONTAINER,Locator.LOCATOR_ICON_CONTAINER_CLASS);
+	locator.setProperty(Locator.LOCATOR_ICON_CLASS,getClass().getName());
+	locator.setProperty(Locator.LOCATOR_ICON_FILE,"person.png");
+	locator.setProperty(Locator.LOCATOR_ICON_LOCATION,PersonHandler.EXTENSION_KEY);
 	return Locator.toString(locator);
 }
 
@@ -76,12 +84,9 @@ public String getFacetName() {
 	return "Person";
 }
 @Override
-public String getFacetIcon() {
-	if(entihome$!=null){
-		Entigrator entigrator=console.getEntigrator(entihome$);
+public String getFacetIcon(Entigrator entigrator) {
 		return ExtensionHandler.loadIcon(entigrator,PersonHandler.EXTENSION_KEY, "person.png");
-	}
-	return null;
+	
 }
 @Override
 public void removeFacet() {
@@ -140,5 +145,13 @@ public JPopupMenu getPopupMenu(final String digestLocator$) {
 public void response(JMainConsole console, String locator$) {
 	//System.out.println("JPersonFacetOpenItem:responce:locator="+locator$);
 	super.response(console,locator$);
+}
+@Override
+public String getFacetIconName() {
+	return "person.png";
+}
+@Override
+public DefaultMutableTreeNode[] getDigest(Entigrator entigrator,String locator$) {
+	return null;
 }
 }

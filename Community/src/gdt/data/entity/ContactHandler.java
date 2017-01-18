@@ -30,12 +30,13 @@ public class ContactHandler extends FacetHandler{
 private Logger LOGGER=Logger.getLogger(ContactHandler.class.getName());
 String entihome$;
 String entityKey$;
+boolean debug=true;
 public final static String CONTACT="contact";
 
 	@Override
 	public String instantiate( String locator$) {
 		try{
-		Properties locator=Locator.toProperties(locator$);
+	     	Properties locator=Locator.toProperties(locator$);
 		entihome$=locator.getProperty(Entigrator.ENTIHOME);
 		entityKey$=locator.getProperty(EntityHandler.ENTITY_KEY);
 		if(entityKey$!=null)
@@ -56,6 +57,12 @@ public final static String CONTACT="contact";
 	public boolean isApplied(Entigrator entigrator, String locator$) {
 		try{
 //		System.out.println("ContactHandler:isApplied:locator="+locator$);
+			if(debug	){
+		    	 System.out.println("ContactHandler:isApplied:locator="+locator$);
+		    	 if(entigrator==null)
+		    		 System.out.println("ContactHandler:isApplied:entigrator is NULL");
+			}
+			
 			Properties locator=Locator.toProperties(locator$);
 			entityKey$=locator.getProperty(EntityHandler.ENTITY_KEY);
 			boolean result=false;

@@ -32,20 +32,25 @@ import gdt.data.entity.facet.ExtensionHandler;
 import gdt.data.grain.Locator;
 import gdt.data.grain.Sack;
 import gdt.data.store.Entigrator;
+import gdt.jgui.base.JBaseNavigator;
 import gdt.jgui.console.JConsoleHandler;
 import gdt.jgui.console.JContext;
 import gdt.jgui.console.JFacetOpenItem;
 import gdt.jgui.console.JMainConsole;
 import gdt.jgui.console.JRequester;
+import gdt.jgui.console.WContext;
+import gdt.jgui.console.WUtils;
 import gdt.jgui.entity.JEntityDigestDisplay;
 import gdt.jgui.entity.JEntityFacetPanel;
+import gdt.jgui.tool.JEntityEditor;
 import gdt.jgui.tool.JTextEditor;
 
-public class JPhoneFacetOpenItem extends JFacetOpenItem implements JRequester{
+public class JPhoneFacetOpenItem extends JFacetOpenItem implements JRequester,WContext{
 
 	private static final long serialVersionUID = 1L;
 	private Logger LOGGER=Logger.getLogger(PhoneHandler.class.getName());
 	String phone$;
+	boolean debug=true;
 	public JPhoneFacetOpenItem(){
 		super();
 	}
@@ -86,13 +91,13 @@ public class JPhoneFacetOpenItem extends JFacetOpenItem implements JRequester{
 		// locator.setProperty(FACET_RENDERER_LOCATOR, facetRenderer$);
 			if(entityKey$!=null)
 			locator.setProperty(EntityHandler.ENTITY_KEY,entityKey$);
-		if(entihome$!=null){
+		
+			if(entihome$!=null)
 			locator.setProperty(Entigrator.ENTIHOME,entihome$);
-			Entigrator entigrator=console.getEntigrator(entihome$);
-			String icon$=ExtensionHandler.loadIcon(entigrator, PhoneHandler.EXTENSION_KEY, "phone.png");
-		    if(icon$!=null)
-		    	locator.setProperty(Locator.LOCATOR_ICON,icon$);
-		}
+			locator.setProperty(Locator.LOCATOR_ICON_CONTAINER,Locator.LOCATOR_ICON_CONTAINER_CLASS);
+			locator.setProperty(Locator.LOCATOR_ICON_CLASS,getClass().getName());
+			locator.setProperty(Locator.LOCATOR_ICON_FILE,"phone.png");
+			locator.setProperty(Locator.LOCATOR_ICON_LOCATION,PhoneHandler.EXTENSION_KEY);
 		locator$=Locator.toString(locator);
 		 return locator$;
 			}catch(Exception e){
@@ -160,12 +165,9 @@ public class JPhoneFacetOpenItem extends JFacetOpenItem implements JRequester{
 		return "Phone";
 	}
 	@Override
-	public String getFacetIcon() {
-		if(entihome$!=null){
-			Entigrator entigrator=console.getEntigrator(entihome$);
+	public String getFacetIcon(Entigrator entigrator) {
 			return ExtensionHandler.loadIcon(entigrator,PhoneHandler.EXTENSION_KEY, "phone.png");
-		}
-		return null;
+		
 	}
 	@Override
 	public void removeFacet() {
@@ -226,13 +228,18 @@ public class JPhoneFacetOpenItem extends JFacetOpenItem implements JRequester{
 		return JPhoneEditor.class.getName();
 	}
 	@Override
-	public DefaultMutableTreeNode[] getDigest() {
+	public DefaultMutableTreeNode[] getDigest(Entigrator entigrator,String locator$) {
 		try{
-			Entigrator entigrator=console.getEntigrator(entihome$);
+			//Entigrator entigrator=console.getEntigrator(entihome$);
+			entityKey$=Locator.getProperty(locator$,EntityHandler.ENTITY_KEY);
 			Sack entity =entigrator.getEntityAtKey(entityKey$);
 			String phone$=entity.getProperty("phone");
-			String locator$=getLocator();
 			locator$=Locator.append(locator$, Locator.LOCATOR_TITLE, phone$);
+			locator$=Locator.append(locator$,Locator.LOCATOR_ICON_CONTAINER,Locator.LOCATOR_ICON_CONTAINER_CLASS);
+			locator$=Locator.append(locator$,Locator.LOCATOR_ICON_CLASS,getClass().getName());
+			locator$=Locator.append(locator$,Locator.LOCATOR_ICON_FILE,"phone.png");
+		
+			//locator$=Locator.append(locator$, Locator.LOCATOR_ICON,getFacetIcon(entigrator));
 			DefaultMutableTreeNode phoneNode=new DefaultMutableTreeNode();
 			phoneNode.setUserObject(locator$);
 			return new DefaultMutableTreeNode[]{phoneNode};
@@ -279,5 +286,73 @@ public class JPhoneFacetOpenItem extends JFacetOpenItem implements JRequester{
 				}
 			    });
 		return popup;
+	}
+
+	@Override
+	public String getFacetIconName() {
+		// TODO Auto-generated method stub
+		return "phone.png";
+	}
+
+	@Override
+	public String getWebConsole(Entigrator arg0, String arg1) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public String getWebView(Entigrator entigrator, String locator$) {
+		try{
+		if(debug)
+			System.out.println("JPhoneFacetOpenItem:locator="+locator$);
+		Properties locator=Locator.toProperties(locator$);
+		String webHome$=locator.getProperty(WContext.WEB_HOME);
+		String entityLabel$=locator.getProperty(EntityHandler.ENTITY_LABEL);
+		String entityKey$=entigrator.indx_keyAtLabel(entityLabel$);
+		if(entityLabel$!=null)
+		entityLabel$=entityLabel$.replaceAll("&quot;", "\"");
+		String webRequester$=locator.getProperty(WContext.WEB_REQUESTER);
+		Sack entity=entigrator.getEntityAtKey(entityKey$);
+		String text$=entity.getProperty("phone");
+		StringBuffer sb=new StringBuffer();
+		sb.append("<!DOCTYPE html PUBLIC \"-//W3C//DTD HTML 4.01//EN\" \"http://www.w3.org/TR/html4/strict.dtd\">");
+		sb.append("<html>");
+		sb.append("<head>");
+		sb.append(WUtils.getMenuBarScript());
+		sb.append(WUtils.getMenuBarStyle());
+		sb.append("</head>");
+	    sb.append("<body onload=\"onLoad()\">");
+	    sb.append("<ul class=\"menu_list\">");
+	    sb.append("<li class=\"menu_item\"><a id=\"back\">Back</a></li>");
+	    sb.append("<li class=\"menu_item\"><a href=\""+webHome$+"\">Home</a></li>");
+	    String navLocator$=Locator.append(locator$, BaseHandler.HANDLER_CLASS, JBaseNavigator.class.getName());
+	    navLocator$=Locator.append(navLocator$, Entigrator.ENTIHOME, entigrator.getEntihome());
+	    String navUrl$=webHome$+"?"+WContext.WEB_LOCATOR+"="+Base64.encodeBase64URLSafeString(navLocator$.getBytes());
+	    sb.append("<li class=\"menu_item\"><a href=\""+navUrl$+"\">Base</a></li>");
+	    sb.append("</ul>");
+	    sb.append("<table><tr><td>Base:</td><td><strong>");
+	    sb.append(entigrator.getBaseName());
+	    sb.append("</strong></td></tr><tr><td>Entity: </td><td><strong>");
+	    sb.append(entityLabel$);
+	    sb.append("</strong></td></tr>");
+	    sb.append("</strong></td></tr><tr><td>Facet: </td><td><strong>");
+	    sb.append("Phone");
+	    sb.append("</strong></td></tr>");
+	    sb.append("<tr><td>phone:</td></tr>");
+	    sb.append("</table>");
+	    sb.append(text$);
+	    sb.append("<script>");
+	    sb.append("function onLoad() {");
+	    sb.append("initBack(\""+this.getClass().getName()+"\",\""+webRequester$+"\");");
+	    sb.append("}");
+	    sb.append("window.localStorage.setItem(\""+this.getClass().getName()+"\",\""+Base64.encodeBase64URLSafeString(locator$.getBytes())+"\");");
+	    sb.append("</script>");
+	    sb.append("</body>");
+	    sb.append("</html>");
+	    return sb.toString();
+	}catch(Exception e){
+		Logger.getLogger(JEntityEditor.class.getName()).severe(e.toString());	
+	}
+	return null;
 	}
 }
