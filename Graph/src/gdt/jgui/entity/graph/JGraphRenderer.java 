@@ -18,8 +18,6 @@ package gdt.jgui.entity.graph;
  */
 import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.Component;
-import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Graphics2D;
@@ -27,7 +25,6 @@ import java.awt.GridLayout;
 import java.awt.Image;
 import java.awt.Paint;
 import java.awt.Point;
-import java.awt.geom.Point2D;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
@@ -45,12 +42,8 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Objects;
 import java.util.Properties;
-import java.util.Set;
 import java.util.Stack;
 import java.util.Timer;
 import java.util.logging.Logger;
@@ -58,20 +51,16 @@ import java.util.logging.Logger;
 import javax.imageio.ImageIO;
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
-import javax.swing.DefaultComboBoxModel;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
-import javax.swing.JComponent;
 import javax.swing.JFileChooser;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
 import javax.swing.event.MenuEvent;
 import javax.swing.event.MenuListener;
 import javax.swing.event.PopupMenuEvent;
@@ -83,9 +72,7 @@ import org.apache.commons.collections15.functors.ConstantTransformer;
 import edu.uci.ics.jung.algorithms.layout.AbstractLayout;
 import edu.uci.ics.jung.algorithms.layout.FRLayout;
 import edu.uci.ics.jung.algorithms.layout.GraphElementAccessor;
-import edu.uci.ics.jung.algorithms.layout.KKLayout;
 import edu.uci.ics.jung.algorithms.layout.Layout;
-import edu.uci.ics.jung.algorithms.layout.SpringLayout2;
 import edu.uci.ics.jung.algorithms.layout.util.RandomLocationTransformer;
 import edu.uci.ics.jung.graph.DirectedSparseGraph;
 import edu.uci.ics.jung.graph.Graph;
@@ -170,8 +157,8 @@ public class JGraphRenderer extends JPanel implements JContext , JRequester
 	public static final String SHOWN_NODES_LABELS="shown nodes labels";
 	public static String SELECTED_BOND_KEY="selected bond key";
 	public static String SELECTED_EDGE_LABEL="selected edge label";
-  // int n=-1;
-  // int b=-1;
+   int n=-1;
+   int b=-1;
   private JPopupMenu popup;
     String requesterResponseLocator$;
   
@@ -179,8 +166,8 @@ public class JGraphRenderer extends JPanel implements JContext , JRequester
     private VisualizationViewer<Number,Number> vv = null;
     String[] scope;
    // MousePopupListener mouseListener;
-    Stack<Core[]>undo;
-    
+    Stack<String[]>undo;
+
 //private AbstractLayout<Number,Number> layout = null;
 
     Timer timer;
@@ -188,20 +175,13 @@ public class JGraphRenderer extends JPanel implements JContext , JRequester
     static boolean debug=true;
 
     protected JButton switchLayout;
-    
+
     public static final int EDGE_LENGTH = 100;
     Integer v_prev = null;
     Map<String,Number> v;//=new HashMap<String,Number>();
     Map<Number,String> e;
-    Map<Number,Bond> b;
-    Map<Core[],String> filter;
     final ScalingControl scaler = new CrossoverScalingControl();
     final DefaultModalGraphMouse<Number,Number> graphMouse = new DefaultModalGraphMouse<Number,Number>();
-    FRLayout<Number, Number> layout;
-    //KKLayout<Number, Number> layout;
-   // final SpringLayout2 <Number, Number> layout;
-    final Map<Number,String> vLabels = new HashMap<Number,String>();
-    String edge$;
     //String message$;
 /**
  * The default constructor
@@ -210,11 +190,10 @@ public class JGraphRenderer extends JPanel implements JContext , JRequester
   	{
   	    super();
   	    setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
-  	    undo=new Stack<Core[]>();
+  	    undo=new Stack<String[]>();
   	  v=new HashMap<String,Number>();
   	 e=new HashMap<Number,String>();
-  	 b=new HashMap<Number,Bond>();    
-  	filter=new HashMap<Core[],String>();    
+  	    
   	}
     /**
      * Response on call from the other context.
@@ -224,7 +203,7 @@ public class JGraphRenderer extends JPanel implements JContext , JRequester
 	@Override
 	public void response(JMainConsole console, String locator$) {
    if (debug)
-		System.out.println("JGraphrenderer:response:"+locator$);
+		System.out.println("JGraphrenderer:response:"+Locator.remove(locator$,Locator.LOCATOR_ICON ));
 		try{
 			Properties locator=Locator.toProperties(locator$);
 			String action$=locator.getProperty(JRequester.REQUESTER_ACTION);
@@ -331,42 +310,32 @@ public class JGraphRenderer extends JPanel implements JContext , JRequester
 					 undoItem.addActionListener(new ActionListener() {
 						@Override
 						public void actionPerformed(ActionEvent e) {
-						undoPop();
-						// visualize(console.getEntigrator(entihome$),scope);
-						//	init();
+							scope=undo.pop();
+						 visualize(console.getEntigrator(entihome$),scope);
 							   }
 					});
 					menu.add(undoItem);
+					JMenuItem  resetItem = new JMenuItem("Reset");
+					   resetItem.addActionListener(new ActionListener() {
+							@Override
+							public void actionPerformed(ActionEvent e) {
+								while(!undo.isEmpty())
+								   scope=undo.pop();
+								 visualize(console.getEntigrator(entihome$),scope);
+							}
+						} );
+					   menu.add(resetItem);
 					}
-					//if(undo.size()>0){   
-						JMenuItem  resetItem = new JMenuItem("Reset");
-						   resetItem.addActionListener(new ActionListener() {
-								@Override
-								public void actionPerformed(ActionEvent e) {
-									while(!undo.isEmpty())
-									  undo.pop();
-									edge$=null;
-									filter.clear();
-									Entigrator entigrator=console.getEntigrator(entihome$);
-									   Sack graph=entigrator.getEntityAtKey(entityKey$);
-									   if(graph!=null){
-										   graph.removeElement("node");
-										   entigrator.replace(graph);
-									   }
-									   init();
-								
-								}
-							} );
-						   menu.add(resetItem);
-					//}
-					   JMenuItem  unmarkItem = new JMenuItem("Unmark all");
-							   unmarkItem.addActionListener(new ActionListener() {
-									@Override
-									public void actionPerformed(ActionEvent e) {
-									unmarkAll();
-									}
-								} );
-							   menu.add(unmarkItem);
+					/*
+					JMenuItem  unmarkItem = new JMenuItem("Unmark all");
+				    unmarkItem.addActionListener(new ActionListener() {
+					   @Override
+					   public void actionPerformed(ActionEvent e) {
+								unmarkAll();
+					   }	
+								});
+					 menu.add(unmarkItem);
+					 */
 					   JMenuItem  expandItem = new JMenuItem("Expand");
 						   expandItem.addActionListener(new ActionListener() {
 								@Override
@@ -374,24 +343,13 @@ public class JGraphRenderer extends JPanel implements JContext , JRequester
 									//markSelectedNode();
 									//expand();
 									Entigrator entigrator=console.getEntigrator(entihome$);
-									
-									undoPush();
+									undo.push(scope);
 									scope=NodeHandler.getScopeExpandedNodeKeys(entigrator, null, scope);
-									visualize(entigrator,scope,null);
+									visualize(entigrator,scope);
 									
 								}
 						} );
-						   JMenuItem  relocateItem = new JMenuItem("Relocate");
-						   relocateItem.addActionListener(new ActionListener() {
-								@Override
-								public void actionPerformed(ActionEvent e) {
-									Entigrator entigrator=console.getEntigrator(entihome$);
-									undoPush();
-									visualize(entigrator,scope,null);
-									
-								}
-						} );
-						   menu.add(relocateItem);
+						   menu.add(expandItem);
 						   menu.addSeparator();
 						   JMenuItem  zoomItem = new JMenuItem("Zoom +");
 						   zoomItem.addActionListener(new ActionListener() {
@@ -408,26 +366,7 @@ public class JGraphRenderer extends JPanel implements JContext , JRequester
 									 scaler.scale(vv, 1/1.1f, vv.getCenter());
 								}
 						} );
-						   
 						   menu.add(unzoomItem);
-						 if(hasSelectedNodes()){  
-						   JMenuItem  lensItem = new JMenuItem("Lens");
-						   lensItem.addActionListener(new ActionListener() {
-								@Override
-								public void actionPerformed(ActionEvent e) {
-									 lens();
-								}
-						} );
-						   menu.add(lensItem);
-						   JMenuItem  hideItem = new JMenuItem("Cut");
-						   hideItem.addActionListener(new ActionListener() {
-								@Override
-								public void actionPerformed(ActionEvent e) {
-									 hideNodes();
-								}
-						} );
-						   menu.add(hideItem);
-						 }
 						   menu.addSeparator();
 						   JMenuItem  transItem = new JMenuItem("Transforming");
 						   transItem.addActionListener(new ActionListener() {
@@ -451,45 +390,18 @@ public class JGraphRenderer extends JPanel implements JContext , JRequester
 				  		@Override
 				  		public void actionPerformed(ActionEvent e) {
 				  			try{
-				  				Entigrator entigrator=console.getEntigrator(entihome$);
-				  				Sack entity=entigrator.getEntityAtKey(entityKey$);
-				  				if(!"graph".equals(entity.getProperty("entity")))
-				  					return;
-				  				if(scope==null)
-				  					return;
-				  			    if(entity.existsElement("node"))
-				  			    		entity.removeElement("node");
-				  			    entity.createElement("node");
-				  				Collection <Number>vc=graph.getVertices();
-				  				//final PickedState<Number> pickedState = vv.getPickedVertexState();
-				  				Layout layout=vv.getModel().getGraphLayout();
-								Point2D point;
-								ArrayList<Point2D>pl=new ArrayList<Point2D>();
-								Map<Point2D,Number>lm=new HashMap<Point2D,Number>();
-				  			    for( Number n:vc){
-				  					point=(Point2D)layout.transform(n);
-				  					pl.add(point);
-				  					lm.put(point, n);
-				  				    //System.out.println("JGraphRenderer:visualize:save n="+n+" point="+point);
-				  				    //entity.putElementItem("node", new Core(String.valueOf(point.getX()),vLabels.get(n),String.valueOf(point.getY())));
-				  					 
-				  				}
-				  			  System.out.println("JGraphRenderer:visualize:pl="+pl.size());
-				  			    double minX=5000;
-				  			    double minY=5000;
-				  			  for(Point2D p:pl){
-				  				  if(p.getX()<minX)
-				  					  minX=p.getX();
-				  				if(p.getY()<minY)
-				  				  minY=p.getY();
-				  			  }
-				  			  minX=minX-20;
-				  			minY=minY-20;
-				  			 for(Point2D p:pl){
-				  				entity.putElementItem("node", new Core(String.valueOf(p.getX()-minX),vLabels.get(lm.get(p)),String.valueOf(p.getY()-minY)));
-				  			 }
-				             entigrator.replace(entity);  				
-				  			
+				  				JTextEditor te=new JTextEditor();
+								String teLocator$=te.getLocator();
+								teLocator$=Locator.append(teLocator$, Entigrator.ENTIHOME, entihome$);
+								teLocator$=Locator.append(teLocator$, JTextEditor.TEXT,"New view"+Identity.key().substring(0,4));
+								locator$=getLocator();
+								//if(action$!=null)
+								locator$=Locator.append(locator$, BaseHandler.HANDLER_METHOD, "response");
+								locator$=Locator.append(locator$,JRequester.REQUESTER_ACTION , JGraphViews.ACTION_SAVE_VIEW);
+								String requesterResponceLocator$=Locator.compressText(locator$);
+								teLocator$=Locator.append(teLocator$,JRequester.REQUESTER_RESPONSE_LOCATOR,requesterResponceLocator$);
+								JConsoleHandler.execute(console,teLocator$);
+				  				
 				  			}catch(Exception ee){
 				  				System.out.println("JGraphViews:getContextMenu:new:"+ee.toString());
 				  			}
@@ -564,20 +476,14 @@ public class JGraphRenderer extends JPanel implements JContext , JRequester
 				locator.setProperty(EntityHandler.ENTITY_KEY,entityKey$);
 			if(entihome$!=null){
 				locator.setProperty(Entigrator.ENTIHOME,entihome$);
-				
+				if(entihome$!=null){
 					locator.setProperty(Entigrator.ENTIHOME,entihome$);
-			//		Entigrator entigrator=console.getEntigrator(entihome$);
-			//	String icon$=ExtensionHandler.loadIcon(entigrator, GraphHandler.EXTENSION_KEY,"map.png");
-			//	if(icon$!=null)
-			//	    	locator.setProperty(Locator.LOCATOR_ICON,icon$);
-				
-				
+					Entigrator entigrator=console.getEntigrator(entihome$);
+				String icon$=ExtensionHandler.loadIcon(entigrator, GraphHandler.EXTENSION_KEY,"map.png");
+				if(icon$!=null)
+				    	locator.setProperty(Locator.LOCATOR_ICON,icon$);
+				}
 			}
-			locator.setProperty( Locator.LOCATOR_ICON_CONTAINER, Locator.LOCATOR_ICON_CONTAINER_CLASS);
-			locator.setProperty( Locator.LOCATOR_ICON_CLASS, getClass().getName());
-			locator.setProperty( Locator.LOCATOR_ICON_FILE, "map.png");
-			locator.setProperty( Locator.LOCATOR_ICON_CLASS_LOCATION,EdgeHandler.EXTENSION_KEY);
-		
 			if(entityLabel$!=null)
 				locator.setProperty(EntityHandler.ENTITY_LABEL,entityLabel$);
 			return Locator.toString(locator);
@@ -617,9 +523,9 @@ public class JGraphRenderer extends JPanel implements JContext , JRequester
 	   		    locator=new Properties();
    	   		 locator.setProperty(Locator.LOCATOR_TITLE, "Graph");
    	  	      locator.setProperty(Entigrator.ENTIHOME,entihome$);
-   	  //	String icon$=ExtensionHandler.loadIcon(entigrator, GraphHandler.EXTENSION_KEY,"graph.png");
-   	  //	if(icon$!=null)
-	   // 	locator.setProperty(Locator.LOCATOR_ICON,icon$);
+   	  	String icon$=ExtensionHandler.loadIcon(entigrator, GraphHandler.EXTENSION_KEY,"graph.png");
+   	  	if(icon$!=null)
+	    	locator.setProperty(Locator.LOCATOR_ICON,icon$);
    	 //System.out.println("JGraphRenderer:instantiate:action="+action$);
    	  	if(JGraphViews.ACTION_SHOW_VIEW.equals(action$)){
    	  	//System.out.println("JGraphRenderer:instantiate:show view");
@@ -628,6 +534,9 @@ public class JGraphRenderer extends JPanel implements JContext , JRequester
    	  	    	 Sack viewComponent=entigrator.getEntityAtKey(viewComponentKey$);
    	  		title$=viewComponent.getElementItemAt("views", viewKey$); 
    	  	     Core[]ca=viewComponent.elementGet(viewKey$);
+   	  	  //   if(graphEntity.existsElement("node.select"))
+   	  	//    graphEntity.createElement("node.select");
+   	  	//graphEntity.elementReplace("node.select", ca);
    	  	entigrator.save(graphEntity);
    	  	     }catch(Exception ee){
    	  	    	 Logger.getLogger(JGraphRenderer.class.getName()).info(ee.toString()); 
@@ -686,8 +595,34 @@ public class JGraphRenderer extends JPanel implements JContext , JRequester
 		
 	}
 	
+private void displayGraph(){
+	try{
+		//System.out.println("JGraphRenderer:displayGraph:BEGIN");
+		//init2();
+		init();
+		revalidate();
+		repaint();
+    
+	}catch(Exception e){
+		LOGGER.severe(e.toString());
+	}
+}
 
-
+private void reset(){
+	try{
+		 Entigrator entigrator=console.getEntigrator(entihome$);
+		 Sack graphEntity=entigrator.getEntityAtKey(entityKey$);
+		 graphEntity.removeElement("node.select");
+		 GraphHandler.undoReset(console, locator$);
+		 entigrator.save(graphEntity);
+		 //init2();
+		 init();
+			revalidate();
+			repaint();
+	}catch(Exception e){
+		LOGGER.severe(e.toString());
+	}
+}
 private void pickOut(int v){
 	try{
 		Entigrator entigrator=console.getEntigrator(entihome$);
@@ -771,54 +706,37 @@ private void expand(int v){
 		LOGGER.severe(e.toString());
 	}
 }
-private void hideNodes(){
-	if(scope==null)
-		return;
-	
-	Entigrator entigrator=console.getEntigrator(entihome$);
-	PickedState<Number> pickedState = vv.getPickedVertexState();
-	Set<Number>ns=pickedState.getPicked();
-	if(ns.isEmpty())
-		return;
-	undoPush();
-	if(debug){
-		System.out.println("JGraphRenderer:hideNodes:selected="+ns.size());
-	}
-	//ArrayList<String>nl=new ArrayList<String>();
-	
-	//Bond bond;
-	ArrayList<String> nkl=new ArrayList<String>();
-	boolean skip;
-	//String nodeKey$=null;
-	for(int i=0;i<scope.length;i++){
-		    skip=false;
-	       for(Number n:ns){
-	    	   if(i==(int)n)
-	    		   skip=true;
-	       }
-	       if(!skip)
-	    	   nkl.add(scope[i]);
-	}
-
-	scope=nkl.toArray(new String[0]);
-	visualize(entigrator,scope,null);
-	relocate();
-	repaint();
-}
-private void entity(int n){
+private void hideItem(int v){
+	//System.out.println("JGraphRenderer:hide:v="+v);
 	try{
-		 if(scope==null)
-			 return;
-		 String scope$=Locator.toString(scope);
-		 console.cache.put(entityKey$,scope$);
-		 //String nodeKey$=scope[n];
-		 JEntityFacetPanel fp=new JEntityFacetPanel();
-		 String fp$=fp.getLocator();
-		fp$=Locator.append(fp$, Entigrator.ENTIHOME, entihome$);
-		fp$=Locator.append(fp$, EntityHandler.ENTITY_KEY,scope[n] );
-		JConsoleHandler.execute(console, fp$);
-			 
-			 /*
+		GraphHandler.undoPush(console, locator$); 
+		 Entigrator entigrator=console.getEntigrator(entihome$);
+		 Sack graphEntity=entigrator.getEntityAtKey(entityKey$);
+		 String node$=graphEntity.getElementItemAtValue("vertex", String.valueOf(v));
+		 Core[] na=graphEntity.elementGet("node");
+		 if(!graphEntity.existsElement("node.select")){
+			 graphEntity.createElement("node.select");
+			 na=graphEntity.elementGet("node");
+		 }else{
+			 na=graphEntity.elementGet("node.select");
+			 graphEntity.clearElement("node.select");
+		 }
+		for(Core n:na){
+			 if(!node$.equals(n.name))
+				 graphEntity.putElementItem("node.select", new Core(null,n.name,null));
+		 }
+		 entigrator.save(graphEntity);
+		 //init2();
+		 init();
+			revalidate();
+			repaint();
+	}catch(Exception e){
+		LOGGER.severe(e.toString());
+	}
+}
+private void entity(int v){
+	try{
+		 
 		Entigrator entigrator=console.getEntigrator(entihome$);
 		Sack graphEntity=entigrator.getEntityAtKey(entityKey$);
 		Core[]ca=graphEntity.elementGet("vertex");
@@ -829,112 +747,47 @@ private void entity(int n){
 				String fp$=fp.getLocator();
 				fp$=Locator.append(fp$, Entigrator.ENTIHOME, entihome$);
 				fp$=Locator.append(fp$, EntityHandler.ENTITY_KEY, c.name);
-				if(scope!=null){
-					
-				}
-					
 				JConsoleHandler.execute(console, fp$);
 			}
-			*/
 	}catch(Exception e){
 		LOGGER.severe(e.toString());
 	}
-	
 }
 private void init(){
 	if(debug)
 	System.out.println("JGraphRenderer:init:entity key="+entityKey$+" entihome="+entihome$);
 	
 	removeAll();
-	//filter.clear();
+		
 	 Entigrator entigrator=console.getEntigrator(entihome$);
 	 Sack graphEntity=entigrator.getEntityAtKey(entityKey$);
-	 if(graphEntity!=null&&"graph".equals(graphEntity.getProperty("entity"))){
-	 Core [] nodes=graphEntity.elementGet("node");
-	 String nodeKey$;
-	 ArrayList<String>nkl=new ArrayList<String>();
-	 if(nodes!=null){
-		 Map<String,Number>ln=new HashMap<String,Number>();
-		 for (int i = 0; i <nodes.length; i++){
-			 ln.put(nodes[i].name,i);
-			 nodeKey$=entigrator.indx_keyAtLabel(nodes[i].name);
-			 if(!nkl.contains(nodeKey$))
-				 nkl.add(nodeKey$);
-		 }
-		 scope=nkl.toArray(new String[0]);
-		 visualize(entigrator,scope,null);
-		 relocate(nodes,ln);
-         repaint();	
-         return;
-	 }else{
-		 Core[] ca=graphEntity.elementGet("jbookmark");
-		 if(ca==null)
-			 return;
+	 if(graphEntity==null)
 		 if(debug)
-				System.out.println("JGraphRenderer:init:ca="+ca.length);
-		 
-		 for (int i = 0; i <ca.length; i++){
-			 try{
-			 nodeKey$=Locator.getProperty(ca[i].value, EntityHandler.ENTITY_KEY);
-			 if(!nkl.contains(nodeKey$))
-				 nkl.add(nodeKey$);
-			 }catch(Exception ee){
-				 Logger.getLogger(getClass().getName()).info(ee.toString());
-			 }
-		 }
-		 scope=NodeHandler.getScopeExpandedNodeKeys(entigrator, null,nkl.toArray(new String[0]));
-		 visualize(entigrator,scope,null);	 
-	 }
-	String scope$=console.cache.get(entityKey$);
-	if(scope$!=null){
-		 scope=NodeHandler.getExpandedNodeKeys(entigrator,null, Locator.toArray(scope$));
-		 visualize(entigrator,scope,null);
+				System.out.println("JGraphRenderer:init:cannot get graph entity.");
+ 
+	 Core[] ca=graphEntity.elementGet("jbookmark");
+	 if(ca==null)
 		 return;
-	}
- }
+	 if(debug)
+			System.out.println("JGraphRenderer:init:ca="+ca.length);
+	 ArrayList<String>nkl=new ArrayList<String>();
+	 String nodeKey$;
+	 for (int i = 0; i <ca.length; i++){
+		 try{
+		 nodeKey$=Locator.getProperty(ca[i].value, EntityHandler.ENTITY_KEY);
+		 if(!nkl.contains(nkl))
+			 nkl.add(nodeKey$);
+		 }catch(Exception ee){
+			 Logger.getLogger(getClass().getName()).info(ee.toString());
+		 }
+	 }
+//	 String[] nka=NodeHandler.getScopeExpandedNodeKeys(entigrator, null,scope); 		 
+//	 scope=nka;
+	 //scope=nkl.toArray(new String[0]);
+	 scope=NodeHandler.getScopeExpandedNodeKeys(entigrator, null,nkl.toArray(new String[0]));
+	 visualize(entigrator,scope);
 }
-private void relocate(){
-	Entigrator entigrator=console.getEntigrator(entihome$);
-	if(undo.isEmpty())
-		return;
-	Core[] nla=undo.peek();
-	Map <String,Number>ln=new HashMap<String,Number>();
-	//Set<String> keys=v.keySet();
-	String nodeLabel$;
-	//for(String s:keys){
-		for(String s:scope){
-		   nodeLabel$=entigrator.indx_getLabel(s);
-		   ln.put(nodeLabel$,v.get(s));
-	}
-    visualize(entigrator,scope,edge$);
-	relocate(nla, ln);
-}
-private void relocate(final Core[] nodes,Map<String,Number>ln){
-	try{
-		if(nodes==null)
-			return;
-		Layout layout=vv.getGraphLayout();
-		//Dimension d=layout.getSize();
-		//float offsetX=d.width/2;
-		//float offsetY=d.height/2;
-		//System.out.println("JGraphRenderer:relocate:layout dimension="+d);
-		Number n;
-		for(Core node:nodes){
-		    	float x=Float.parseFloat(node.type);//+offsetX;
-		    	float y=Float.parseFloat(node.value);//+offsetY;
-		    	n=ln.get(node.name);
-		    	//System.out.println("JGraphRenderer:relocate:label="+node.name+" number="+n+" x="+x+" y="+y);
-		    	Point2D point=new Point2D.Float(x,y);
-		        layout.setLocation(n, point);
-		    }
-		
-		  vv.repaint();
-	}catch(Exception e){
-		Logger.getLogger(getClass().getName()).severe(e.toString());
-	}
-	
-}
-public  void visualize(Entigrator entigrator,final String[] scope ,String edgeKey$){
+public  void visualize(Entigrator entigrator,String[] scope){
 	if(scope==null)
 		return;
 	if(debug)
@@ -948,13 +801,14 @@ public  void visualize(Entigrator entigrator,final String[] scope ,String edgeKe
 	 String icon$;
 	 byte[] bar;
 	 ImageIcon icon;
-	 //final Map<Number,String> vLabels = new HashMap<Number,String>();
+	 final Map<Number,String> vLabels = new HashMap<Number,String>();
 	 Map<Number,Icon> iconMap = new HashMap<Number,Icon>();
+	 
+	 
 	 String vLabel$;
+	
 	 for (int i = 0; i <scope.length; i++) {
 		 vLabel$=entigrator.indx_getLabel(scope[i]);
-		 if(debug)
-				System.out.println("JGraphRenderer:visualize:node label="+vLabel$+" i="+i);
 		// if(!ll.contains(vLabel$))
 		//	 ll.add(vLabel$);
 		 vLabels.put(i, vLabel$);
@@ -970,11 +824,7 @@ public  void visualize(Entigrator entigrator,final String[] scope ,String edgeKe
 	 }
 	 if(debug)
 		 System.out.println("JGraphRenderer:visualize:expanded nodes="+scope.length);
-	 Bond[] ba;//=NodeHandler.getScopeBonds(entigrator, scope);
-	 if(edgeKey$==null)
-		 ba=NodeHandler.getScopeBonds(entigrator, scope);
-	 else
-		 ba=NodeHandler.getScopeBonds(entigrator, scope,edgeKey$);
+	 Bond[] ba=NodeHandler.getScopeBonds(entigrator, scope);
 	 if(debug)
 		 System.out.println("JGraphRenderer:visualize: bonds="+ba.length);
 	 Number in;
@@ -984,10 +834,6 @@ public  void visualize(Entigrator entigrator,final String[] scope ,String edgeKe
 	 ArrayList<String>el=new ArrayList<String>();
 	 String edgeLabel$;
 		 for(int j=0;j<ba.length;j++){
-			 //if(debug)
-			//	 System.out.println("JGraphRenderer:visualize:add edge  by keys out="+ba[j].outNodeKey$+ " in="+ba[j].inNodeKey$);
-			    if(edge$!=null&&!edge$.equals(ba[j].edgeKey$))
-			    	continue;
 			     out=v.get(ba[j].outNodeKey$);
 			     vLabel$=entigrator.indx_getLabel(ba[j].outNodeKey$);
 			     if(!ll.contains(vLabel$))
@@ -996,22 +842,20 @@ public  void visualize(Entigrator entigrator,final String[] scope ,String edgeKe
 			     vLabel$=entigrator.indx_getLabel(ba[j].inNodeKey$);
 			     if(!ll.contains(vLabel$))
 			    	 ll.add(vLabel$);
-			     edgeLabel$=entigrator.indx_getLabel(ba[j].edgeKey$);
-				 if(!el.contains(edgeLabel$))
-					 el.add(edgeLabel$);
-			     e.put(j,edgeLabel$);
+			     e.put(j,entigrator.indx_getLabel(ba[j].edgeKey$ ));
+				 
 				 if(!ekl.contains(ba[j].edgeKey$))
 					 ekl.add(ba[j].edgeKey$);
-				// System.out.println("JGraphRenderer:visualize:add edge out="+out+ " in="+in+" number="+j);
-				 b.put(j, ba[j]);
-				 graph.addEdge(j, out, in, EdgeType.DIRECTED);
+				 edgeLabel$=entigrator.indx_getLabel(ba[j].edgeKey$);
+				 if(!el.contains(edgeLabel$))
+					 el.add(edgeLabel$);
+				 graph.addEdge(j++, out, in, EdgeType.DIRECTED);
 		 	}
 	Collections.sort(el);	 
 	 if(debug)
 			 System.out.println("JGraphRenderer:visualize: ekl="+ekl.size());
 	 
-    layout = new FRLayout<Number, Number>(graph);
-	// layout = new KKLayout<Number, Number>(graph);
+    final FRLayout<Number, Number> layout = new FRLayout<Number, Number>(graph);
     layout.setMaxIterations(500);
     layout.setInitializer(new RandomLocationTransformer<Number>(new Dimension(400,400), 0));
     vv =  new VisualizationViewer<Number, Number>(layout, new Dimension(400,400));
@@ -1023,7 +867,7 @@ public  void visualize(Entigrator entigrator,final String[] scope ,String edgeKe
         final Transformer<Number,String> vertexStringerImpl = 
                 new VertexStringerImpl<Number,String>(vLabels);
             vv.getRenderContext().setVertexLabelTransformer(vertexStringerImpl);
-            vv.getRenderContext().setVertexLabelRenderer(new VertexLabelRenderer(Color.cyan));
+            vv.getRenderContext().setVertexLabelRenderer(new DefaultVertexLabelRenderer(Color.cyan));
             vv.getRenderContext().setEdgeLabelRenderer(new DefaultEdgeLabelRenderer(Color.cyan));
             final DemoVertexIconShapeTransformer<Number> vertexIconShapeTransformer =
                     new DemoVertexIconShapeTransformer<Number>(new EllipseVertexShapeTransformer<Number>());
@@ -1051,9 +895,10 @@ public  void visualize(Entigrator entigrator,final String[] scope ,String edgeKe
                 });
                 final GraphZoomScrollPane panel = new GraphZoomScrollPane(vv);
                 add(panel);
+                
+               
                 vv.setGraphMouse(graphMouse);
                 vv.addKeyListener(graphMouse.getModeKeyListener());
-           
                 MousePopupListener mpl=new MousePopupListener();
                 vv.addMouseListener(mpl);
                 JPanel controls = new JPanel();
@@ -1080,40 +925,124 @@ public  void visualize(Entigrator entigrator,final String[] scope ,String edgeKe
 						}
 					}
                 });
-                JButton nodeMenu=new JButton("Node");
-                nodeMenu.addActionListener(new ActionListener() { 
+               /*
+                JButton showMenu=new JButton("Menu");
+               
+                showMenu.addActionListener(new ActionListener() { 
                 	  public void actionPerformed(ActionEvent e) { 
-                		   
-                		  final String nodeLabel$=(String)nodesBox.getSelectedItem();
-                		  int cnt=vLabels.size();
-                		  Entigrator entigrator=console.getEntigrator(entihome$);
-						String nodeKey$=entigrator.indx_keyAtLabel(nodeLabel$);
-						
-                		  final JPopupMenu	popup=getNodeMenu(nodeKey$);
-                		
-  				      popup.show((JComponent)e.getSource(),0,0);
-                		  } 
-                		} );
+                		    final String nodeLabel$=(String)nodesBox.getSelectedItem();
+                		    
+                		  	popup = new JPopupMenu();
+    				        popup.addPopupMenuListener(new PopupMenuListener(){
+    				        			@Override
+    				        			public void popupMenuWillBecomeVisible(PopupMenuEvent e) {
+    				        				if(n>-1){
+    				        				JMenuItem pickOutItem=new JMenuItem("Pick out");
+    				        				   popup.add(pickOutItem);
+    				        				   pickOutItem.setHorizontalTextPosition(JMenuItem.RIGHT);
+    				        				   pickOutItem.addActionListener(new ActionListener() {
+    				        						@Override
+    				        						public void actionPerformed(ActionEvent e) {
+    				        							try{
+    				        								
+    				        								Entigrator entigrator=console.getEntigrator(entihome$);
+    				        								String nodeKey$=entigrator.indx_keyAtLabel(nodeLabel);
+    				        								String[] rna=NodeHandler.getRelatedNodeKeys(entigrator, nodeKey$);
+    				        									ArrayList<String>nkl=new ArrayList<String>();	
+    				        									for(String s:rna)
+    				        										if(!nkl.contains(s))
+    				        											nkl.add(s);
+    				        									if(scope!=null){
+    				        										undo.push(scope);
+    				        									}
+    				        									scope=nkl.toArray(new String[0]);
+    				        									visualize(entigrator,scope);
+    				        							}catch(Exception ee){
+    				        								Logger.getLogger(getClass().getName()).info(ee.toString());
+    				        							}
+    				        						}
+    				        					    });
+    				        				   JMenuItem expandItem=new JMenuItem("Expand");
+    				        				   popup.add(expandItem);
+    				        				   expandItem.setHorizontalTextPosition(JMenuItem.RIGHT);
+    				        				   expandItem.addActionListener(new ActionListener() {
+    				        						@Override
+    				        						public void actionPerformed(ActionEvent e) {
+    				        							try{
+    				        								String nodeKey$=scope[n];
+    				        								Entigrator entigrator=console.getEntigrator(entihome$);
+    				        								String[] rna=NodeHandler.getRelatedNodeKeys(entigrator, nodeKey$);
+    				        								if(rna!=null){
+    				        									ArrayList<String>nkl=new ArrayList<String>(Arrays.asList(scope));	
+    				        									for(String s:rna)
+    				        										if(!nkl.contains(s))
+    				        											nkl.add(s);
+    				        									for(String s:scope)
+    				        										if(!nkl.contains(s))
+    				        											nkl.add(s);
+    				        									if(scope!=null)
+    				        										undo.push(scope);
+    				        									scope=nkl.toArray(new String[0]);
+    				        									visualize(entigrator,scope);
+    				        								}
+
+    				        							}catch(Exception ee){
+    				        								Logger.getLogger(getClass().getName()).info(ee.toString());
+    				        							}
+    				        						}
+    				        					    });
+    				        				   JMenuItem entityItem=new JMenuItem("Entity");
+    				        				   popup.add(entityItem);
+    				        				   entityItem.setHorizontalTextPosition(JMenuItem.RIGHT);
+    				        				   entityItem.addActionListener(new ActionListener() {
+    				        						@Override
+    				        						public void actionPerformed(ActionEvent e) {
+    				        							try{
+    				        								entity(n);
+    				        							}catch(Exception ee){
+    				        								Logger.getLogger(getClass().getName()).info(ee.toString());
+    				        							}
+    				        						}
+    				        					    });
+    				        				   JMenuItem hideItem=new JMenuItem("Hide");
+    				        				   popup.add(hideItem);
+    				        				   hideItem.setHorizontalTextPosition(JMenuItem.RIGHT);
+    				        				   hideItem.addActionListener(new ActionListener() {
+    				        						@Override
+    				        						public void actionPerformed(ActionEvent e) {
+    				        							try{
+    				        								hideItem(n);
+    				        								//entity(v);
+    				        							}catch(Exception ee){
+    				        								Logger.getLogger(getClass().getName()).info(ee.toString());
+    				        							}
+    				        						}
+    				        					    });
+    				        				}
+    				        				Number n=vLabels.get(nodeLabel$);
+    				        				popup.show(vv,layout.getX(n), layout.getY(n));
+    							 }
+                           
+    				       }); 
+               	*/	
                 JPanel nodePanel = new JPanel();
                 nodePanel.setBorder(BorderFactory.createTitledBorder("Node"));
                 nodePanel.setLayout(new BoxLayout(nodePanel, BoxLayout.X_AXIS));
                 nodePanel.add(nodesBox);
-                nodePanel.add(nodeMenu);
+               // nodePanel.add(showMenu);
                 controls.add(nodePanel);
            
-                final JComboBox <String>edgesBox =new JComboBox<String>(el.toArray(new String[0]));
+                JComboBox <String>edgesBox =new JComboBox<String>(el.toArray(new String[0]));
                 edgesBox.addItemListener(new ItemListener() {
 					@Override
 					public void itemStateChanged(ItemEvent ie) {
 						if(ItemEvent.SELECTED==ie.getStateChange()){
-						//  System.out.println("JGraphRenderer:edges box item="+ie.getItem());
+						  System.out.println("JGraphRenderer:edges box item="+ie.getItem());
 						  Entigrator entigrator=console.getEntigrator(entihome$);
 						  //String edgeKey$=entigrator.indx_keyAtLabel((String)ie.getItem());
 						  Collection <Number>vc=graph.getEdges();
-						  if(vc.size()>1)
-							  edge$=null;
 						  for( Number n:vc){
-							  //System.out.println("JGraphRenderer:edge number="+n+ " key="+e.get(n));
+							  System.out.println("JGraphRenderer:edge number="+n+ " key="+e.get(n));
 							    if(ie.getItem().equals(e.get(n)))
 								vv.getPickedEdgeState().pick(n, true);
 							    else
@@ -1122,231 +1051,84 @@ public  void visualize(Entigrator entigrator,final String[] scope ,String edgeKe
 						}
 					}
                 });
-                JButton edgeMenu=new JButton("Edge");
-                edgeMenu.addActionListener(new ActionListener() { 
-                	  public void actionPerformed(ActionEvent e) { 
-                		   
-                		  final String edgeLabel$=(String)edgesBox.getSelectedItem();
-                		  Entigrator entigrator=console.getEntigrator(entihome$);
-                		 // Set<String> labels=v.keySet();
-                		  ArrayList <String>nl=new ArrayList<String>();
-                		  for(String s:scope)
-                			  nl.add(entigrator.indx_getLabel(s));
-                		  String[] nodeLabels=nl.toArray(new String[0]);
-                		//  if(debug)
-                		//	  System.out.println("JGraphRenderer:labels="+nodeLabels.length); 
-                		  String[] scopeLabels=EdgeHandler.filterNodesAtEdge(entigrator, nodeLabels, edgeLabel$);
-                		  if(scopeLabels==null||scopeLabels.length<1)
-                			  return;
-                		  undoPush();
-                		 nl.clear();
-                		 for(String s:scopeLabels)
-                		   nl.add(entigrator.indx_keyAtLabel(s));
-                		  JGraphRenderer.this.scope=nl.toArray(new String[0]);
-                		  edge$= entigrator.indx_keyAtLabel(edgeLabel$);
-                		  visualize(entigrator,nl.toArray(new String[0]),edge$);
-                		  edgesBox.setModel(new DefaultComboBoxModel<String>(new String[]{edgeLabel$}));
-                		 
-                		  // revalidate();
-          				  repaint();
-                		  } 
-                		} );
                 JPanel edgesPanel = new JPanel();
                 edgesPanel.setBorder(BorderFactory.createTitledBorder("Edge"));
                 edgesPanel.setLayout(new BoxLayout(edgesPanel, BoxLayout.X_AXIS));
                 edgesPanel.add(edgesBox);
-                if(edgesBox.getModel().getSize()>1)
-                   edgesPanel.add(edgeMenu);
                 controls.add(edgesPanel);
                 add(controls, BorderLayout.SOUTH);
                 revalidate();
 				repaint();
 }
-private JPopupMenu getEdgeMenu(final Number n){
-	  final JPopupMenu	popup = new JPopupMenu();
-	  popup.addPopupMenuListener(new PopupMenuListener(){
-			@Override
-		public void popupMenuWillBecomeVisible(PopupMenuEvent ev1) {
-			JMenuItem edgeItem=new JMenuItem("Edge");
-			   popup.add(edgeItem);
-			   edgeItem.setHorizontalTextPosition(JMenuItem.RIGHT);
-			   edgeItem.addActionListener(new ActionListener() {
-					@Override
-					public void actionPerformed(ActionEvent ev2) {
-						try{
-						Entigrator entigrator=console.getEntigrator(entihome$);
-						String edgeKey$=entigrator.indx_keyAtLabel(e.get(n));
-						JEntityFacetPanel fp=new JEntityFacetPanel();
-						String fp$=fp.getLocator();
-						fp$=Locator.append(fp$, Entigrator.ENTIHOME, entihome$);
-						fp$=Locator.append(fp$, EntityHandler.ENTITY_KEY, edgeKey$);
-						JConsoleHandler.execute(console,fp$);
-						}catch(Exception ee){
-							Logger.getLogger(getClass().getName()).info(ee.toString());
-						}
-					}
-				    });
-			   JMenuItem detailsItem=new JMenuItem("Details");
-			   popup.add(detailsItem);
-			   detailsItem.setHorizontalTextPosition(JMenuItem.RIGHT);
-			   detailsItem.addActionListener(new ActionListener() {
-					@Override
-					public void actionPerformed(ActionEvent e) {
-						try{
-					       displayDetails(n);
-						}catch(Exception ee){
-							Logger.getLogger(getClass().getName()).info(ee.toString());
-						}
-					}
-				    });
-				
-		}
 
-		@Override
-		public void popupMenuWillBecomeInvisible(PopupMenuEvent e) {}
-
-		@Override
-		public void popupMenuCanceled(PopupMenuEvent e) {}
-});
-  return popup;
+private boolean hasSelectedNode(){
+/*
+	try{
+	Entigrator entigrator=console.getEntigrator(entihome$);
+	Sack graphEntity=entigrator.getEntityAtKey(entityKey$);
+	String label$=(String)searchBox.getSelectedItem();
+	String nodeKey$=entigrator.indx_keyAtLabel(label$);
+	if(graphEntity.getElementItem("vertex", nodeKey$)!=null)
+		return true;
+	}catch(Exception e){
+	}
+	*/
+	return false;
 }
-  
-  
-private JPopupMenu getNodeMenu(final String nodeKey$){
-	  final JPopupMenu	popup = new JPopupMenu();
-    popup.addPopupMenuListener(new PopupMenuListener(){
-		@Override
-		public void popupMenuWillBecomeVisible(PopupMenuEvent e) {
-			   JMenuItem pickOutItem=new JMenuItem("Relations");
-			   popup.add(pickOutItem);
-			   pickOutItem.setHorizontalTextPosition(JMenuItem.RIGHT);
-			   pickOutItem.addActionListener(new ActionListener() {
-					@Override
-					public void actionPerformed(ActionEvent e) {
-						try{
-							Entigrator entigrator=console.getEntigrator(entihome$);
-							//String nodeKey$=entigrator.indx_keyAtLabel(nodeLabel$);
-							String[] rna=NodeHandler.getRelatedNodeKeys(entigrator, nodeKey$);
-								ArrayList<String>nkl=new ArrayList<String>();	
-								for(String s:rna)
-									if(!nkl.contains(s))
-										nkl.add(s);
-								
-									undoPush();
-								edge$=null;
-								visualize(entigrator,nkl.toArray(new String[0]),null);
-						}catch(Exception ee){
-							Logger.getLogger(getClass().getName()).info(ee.toString());
-						}
-						
+private void markSelectedNode(){
+	/*
+	try{
+	Entigrator entigrator=console.getEntigrator(entihome$);
+	Sack graphEntity=entigrator.getEntityAtKey(entityKey$);
+	String label$=(String)searchBox.getSelectedItem();
+	String nodeKey$=entigrator.indx_keyAtLabel(label$);
+	String vertexNumber$=graphEntity.getElementItemAt("vertex", nodeKey$);
+	vv.getPickedVertexState().pick(Integer.valueOf(vertexNumber$), true);
+	}catch(Exception e){
+	}
+	*/
+}
+private void layoutVertices(){
+	try{
+	//System.out.println("JGraphRenderer:layoutVertices:BEGIN");
+		Entigrator entigrator=console.getEntigrator(entihome$);
+		Sack graphEntity=entigrator.getEntityAtKey(entityKey$);
+		Core [] ca=graphEntity.elementGet("vertex");
+		if(ca==null)
+			return;
+		int vertexId;
+		final ObservableCachingLayout<Number, Number> layout =(ObservableCachingLayout< Number,Number>)vv.getGraphLayout();
+	   	Collection <Number>vc=graph.getVertices();
+        Core nodePointer;
+        String nodeKey$;
+        int nodeX;
+        int nodeY;
+		for(Core c:ca){
+			try{
+			vertexId=Integer.parseInt(c.value);
+			for( Number n:vc)
+				if(vertexId==n.intValue())
+			    {
+					try{
+					nodeKey$=graphEntity.getElementItemAtValue("vertex",String.valueOf(vertexId) );
+				   	nodePointer=graphEntity.getElementItem("node.select",nodeKey$);
+		            if(nodePointer==null||nodePointer.type==null||nodePointer.value==null
+		            	||"null".equals(nodePointer.type)||	"null".equals(nodePointer.value))
+		            	continue;
+				   	nodeX=Integer.parseInt(nodePointer.type);
+				   	nodeY=Integer.parseInt(nodePointer.value);
+				    layout.setLocation(n, new  Point(nodeX,nodeY));
+					}catch(Exception eee){
+						Logger.getLogger(JGraphRenderer.class.getName()).info(eee.toString()+": "+c.name);
 					}
-				    });
-			   JMenuItem expandItem=new JMenuItem("Expand");
-			   popup.add(expandItem);
-			   expandItem.setHorizontalTextPosition(JMenuItem.RIGHT);
-			   expandItem.addActionListener(new ActionListener() {
-					@Override
-					public void actionPerformed(ActionEvent e) {
-						
-						try{
-							Entigrator entigrator=console.getEntigrator(entihome$);
-							undoPush();
-							edge$=null;
-							String[] eka=NodeHandler.getRelatedNodeKeys(entigrator, nodeKey$);
-							ArrayList<String>nkl=new ArrayList<String>();
-							if(eka!=null)
-								for(String s:eka)
-									nkl.add(s);
-							if(scope!=null)
-								for(String s:scope)
-									nkl.add(s);
-							scope=nkl.toArray(new String[0]);
-							visualize(entigrator, scope,null);
-							Core[] nla=undo.peek();
-							Map <String,Number>ln=new HashMap<String,Number>();
-							Set<String> keys=v.keySet();
-							String nodeLabel$;
-							for(String s:keys){
-								nodeLabel$=entigrator.indx_getLabel(s);
-								ln.put(nodeLabel$,v.get(s));
-							}
-						
-							relocate(nla, ln);
-							vv.repaint();
-						}catch(Exception ee){
-							Logger.getLogger(getClass().getName()).info(ee.toString());
-						}
-						
-					}
-				    }); 
-			   JMenuItem networkItem=new JMenuItem("Network");
-			   popup.add(networkItem);
-			   networkItem.setHorizontalTextPosition(JMenuItem.RIGHT);
-			   networkItem.addActionListener(new ActionListener() {
-					@Override
-					public void actionPerformed(ActionEvent e) {
-						
-						try{
-							Entigrator entigrator=console.getEntigrator(entihome$);
-							undoPush();
-							edge$=null;
-						    scope=NodeHandler.getNetwordNodeKeys(entigrator, nodeKey$);
-							visualize(entigrator, scope,null);
-						}catch(Exception ee){
-							Logger.getLogger(getClass().getName()).info(ee.toString());
-						}
-						
-					}
-				    }); 
-			   JMenuItem cutItem=new JMenuItem("Cut");
-			   popup.add(cutItem);
-			   cutItem.setHorizontalTextPosition(JMenuItem.RIGHT);
-			   cutItem.addActionListener(new ActionListener() {
-					@Override
-					public void actionPerformed(ActionEvent e) {
-						ArrayList<String> nkl=new ArrayList<String>();
-						for(int i=0;i<scope.length;i++){
-							if(nodeKey$!=scope[i])
-						    	   nkl.add(scope[i]);
-						}
-						undoPush();
-						scope=nkl.toArray(new String[0]);
-						Entigrator entigrator=console.getEntigrator(entihome$);
-						visualize(entigrator,scope,null);
-						relocate();
-						repaint();
-					}
-				    }); 
-			   //popup.addSeparator();
-			   JMenuItem entityItem=new JMenuItem("Entity");
-			   popup.add(entityItem);
-			   entityItem.setHorizontalTextPosition(JMenuItem.RIGHT);
-			   entityItem.addActionListener(new ActionListener() {
-					@Override
-					public void actionPerformed(ActionEvent e) {
-						try{
-							Entigrator entigrator=console.getEntigrator(entihome$);
-							String nodeLabel$=entigrator.indx_getLabel(nodeKey$);
-							 for(int i=0;i<vLabels.size();i++)
-	                			  if(nodeLabel$.equals(vLabels.get(i))){
-							         entity(i);
-	                			  }
-						}catch(Exception ee){
-							Logger.getLogger(getClass().getName()).info(ee.toString());
-						}
-					}
-				    });  
-		//end 	popupMenuWillBecomeVisible
+			    }
+			}catch(Exception ee){
+				Logger.getLogger(JGraphRenderer.class.getName()).info(ee.toString()+": "+c.name);
+			}
 		}
-
-		@Override
-		public void popupMenuWillBecomeInvisible(PopupMenuEvent e) {}
-
-		@Override
-		public void popupMenuCanceled(PopupMenuEvent e) {}
-}); 
-return popup;	///  
-
+	}catch(Exception e){
+		Logger.getLogger(JGraphRenderer.class.getName()).severe(e.toString());
+	}
 }
 
 private void unmarkAll(){
@@ -1357,46 +1139,85 @@ private void unmarkAll(){
 	for( Number n:ec)
 		vv.getPickedEdgeState().pick(n, false);
 }
-private void openEdge(int n){
+private void openEdge(int b){
 	try{
 		//System.out.println("JGraphRenderer:openEdge:b="+b);
 		Entigrator entigrator=console.getEntigrator(entihome$);
-		String edgeKey$=entigrator.indx_keyAtLabel(e.get(n));
+		Sack graphEntity=entigrator.getEntityAtKey(entityKey$);
+		
+		String bondKey$=graphEntity.getElementItemAtValue("edge", String.valueOf(b));
+		Core core=graphEntity.getElementItem("edge", bondKey$);
+		ArrayList<String>el=new ArrayList<String>();
+		String v1v2$=core.type;
+		//System.out.println("JGraphRenderer:openEdge:v1v2="+v1v2$);
+		Core[] ca=graphEntity.elementGet("edge");
+		String edgeKey$;
+		for(Core c:ca )
+			if(v1v2$.equals(c.type)){
+				edgeKey$=graphEntity.getElementItemAt("edge.entity",c.name);
+				el.add(entigrator.indx_getLabel(edgeKey$));
+			}
+		String[] sa=el.toArray(new String[0]);
+		if(sa.length==1){
 			JEntityFacetPanel fp=new JEntityFacetPanel();
 			String fp$=fp.getLocator();
 			fp$=Locator.append(fp$, Entigrator.ENTIHOME, entihome$);
-			fp$=Locator.append(fp$, EntityHandler.ENTITY_KEY, edgeKey$);
+			fp$=Locator.append(fp$, EntityHandler.ENTITY_KEY, entigrator.indx_keyAtLabel(sa[0]));
 			JConsoleHandler.execute(console,fp$);
-		
+			return;
+		}
+		JEntitiesPanel jep=new JEntitiesPanel();
+		String jepLocator$=jep.getLocator();
+		String entitiesList$=Locator.toString(sa);
+		   jepLocator$=Locator.append(jepLocator$, Entigrator.ENTIHOME, entihome$);
+		   jepLocator$=Locator.append(jepLocator$,EntityHandler.ENTITY_LIST,entitiesList$);
+		   jepLocator$=Locator.append(jepLocator$,EntityHandler.ENTITY_KEY,entityKey$);
+		   JConsoleHandler.execute(console, jepLocator$);
+		 
 	}catch(Exception e){
 		Logger.getLogger(JGraphRenderer.class.getName()).severe(e.toString());
 	}
 	
 }
-private void displayDetails(Number n){
+private void displayDetails(int b){
 	try{
 //		System.out.println("JGraphRenderer:displayDetails:b="+b);
 		Entigrator entigrator=console.getEntigrator(entihome$);
-		Bond bond=b.get(n);
-		
-		Sack edge=entigrator.getEntityAtKey(bond.edgeKey$);
+		Sack graphEntity=entigrator.getEntityAtKey(entityKey$);
+		String bondKey$=graphEntity.getElementItemAtValue("edge", String.valueOf(b));
+		Core core=graphEntity.getElementItem("edge", bondKey$);
+		ArrayList<String>el=new ArrayList<String>();
+		String v1v2$=core.type;
+//		System.out.println("JGraphRenderer:displayDetails:v1v2="+v1v2$);
+		Core[] ca=graphEntity.elementGet("edge");
+		String edgeKey$;
+		ArrayList<String>bl=new ArrayList<String>();
+		for(Core c:ca )
+			if(v1v2$.equals(c.type)){
+				edgeKey$=graphEntity.getElementItemAt("edge.entity",c.name);
+				el.add(edgeKey$);
+				bl.add(c.name);
+			}
+		Sack edge;
+        String[] sa=el.toArray(new String[0]);
 		ArrayList<String>sl=new ArrayList<String>();
-		Core[] ca=edge.elementGet("detail");
-		if(ca==null)
-			return;
-		for(Core c:ca){
-			if(bond.bondKey$.equals(c.type))
-   		   sl.add(entigrator.indx_getLabel(c.value));
+		for(String s:sa){
+			edge=entigrator.getEntityAtKey(s);
+			ca=edge.elementGet("detail");
+		   if(ca==null)
+			  continue;
+		   for(Core c:ca)
+		       for(String bk:bl){
+		    	   if(bk.equals(c.type))
+		    		   sl.add(entigrator.indx_getLabel(c.value));
 		}
-		if(sl.size()<1)
-			return;
-		Collections.sort(sl);
-		String[] sa=sl.toArray(new String[0]);
-		String sa$=Locator.toString(sa);
+		}
+		 Collections.sort(sl);	   
+		  String entitiesList$=Locator.toString(sl.toArray(new String[0]));
 		   JEntitiesPanel jep=new JEntitiesPanel();
 		   String jepLocator$=jep.getLocator();
 		   jepLocator$=Locator.append(jepLocator$, Entigrator.ENTIHOME, entihome$);
-		   jepLocator$=Locator.append(jepLocator$,EntityHandler.ENTITY_LIST,sa$);
+		   jepLocator$=Locator.append(jepLocator$,EntityHandler.ENTITY_LIST,entitiesList$);
 		   jepLocator$=Locator.append(jepLocator$,EntityHandler.ENTITY_KEY,entityKey$);
 		   JConsoleHandler.execute(console, jepLocator$);
 		
@@ -1434,6 +1255,7 @@ private void saveAsPicture(){
 		Logger.getLogger(JGraphRenderer.class.getName()).severe(e.toString());
 	}
 }
+/*
 class MousePopupListener extends MouseAdapter {
 	  boolean isPopup=false;
 		public void mousePressed(MouseEvent e) {
@@ -1448,12 +1270,13 @@ class MousePopupListener extends MouseAdapter {
 	    public void mouseClicked(MouseEvent e) {
 	    	if(!isPopup)
 	    		return;
-	    	    final VisualizationViewer vv =(VisualizationViewer)e.getSource();
+	    	final VisualizationViewer<Number,Number> vv =
+	                (VisualizationViewer<Number,Number>)e.getSource();
 	            final Layout layout = vv.getGraphLayout();
-	            //final Graph graph = layout.getGraph();
+	            final Graph graph = layout.getGraph();
 	            final Point2D p = e.getPoint();
-	            int n=-1;
-	            //int b=-1;
+	             n=-1;
+	             b=-1;
 	            final Point2D ivp = p;
 	            GraphElementAccessor pickSupport = vv.getPickSupport();
 	            if(pickSupport != null) {
@@ -1462,22 +1285,149 @@ class MousePopupListener extends MouseAdapter {
 	                if(vertex!=null){
 	                	//System.out.println("JGraphRenderer:MousePopupListener:vertex="+vertex);
 	                	n=((Integer)vertex).intValue();
-	                	String nodeKey$=scope[n];
-	                	popup=getNodeMenu(nodeKey$);
-	                	popup.show(JGraphRenderer.this,(int)p.getX(),(int)p.getY());
-	                	//n=((Integer)vertex).intValue();
 	                }
 	                if(edge!=null){
 	                	//System.out.println("JGraphRenderer:MousePopupListener:edge="+edge);
-	                	n=((Integer)edge).intValue();
-	                	//String nodeKey$=scope[n];
-	                	popup=getEdgeMenu(n);
-	                	popup.show(JGraphRenderer.this,(int)p.getX(),(int)p.getY());
+	                	b=((Integer)edge).intValue();	
 	                }
-	            
+	                popup = new JPopupMenu();
+	        		popup.addPopupMenuListener(new PopupMenuListener(){
+	        			@Override
+	        		//
+	        			
+	        			public void popupMenuWillBecomeVisible(PopupMenuEvent e) {
+	        			/*
+	        				if(n>-1){
+	        				JMenuItem pickOutItem=new JMenuItem("Pick out");
+	        				   popup.add(pickOutItem);
+	        				   pickOutItem.setHorizontalTextPosition(JMenuItem.RIGHT);
+	        				   pickOutItem.addActionListener(new ActionListener() {
+	        						@Override
+	        						public void actionPerformed(ActionEvent e) {
+	        							try{
+	        								String nodeKey$=scope[n];
+	        								Entigrator entigrator=console.getEntigrator(entihome$);
+	        								
+	        								String[] rna=NodeHandler.getRelatedNodeKeys(entigrator, nodeKey$);
+	        									ArrayList<String>nkl=new ArrayList<String>();	
+	        									for(String s:rna)
+	        										if(!nkl.contains(s))
+	        											nkl.add(s);
+	        									if(scope!=null){
+	        										undo.push(scope);
+	        									}
+	        									scope=nkl.toArray(new String[0]);
+	        							//	scope=new String[]{nodeKey$};
+	        									visualize(entigrator,scope);
+	        							}catch(Exception ee){
+	        								Logger.getLogger(getClass().getName()).info(ee.toString());
+	        							}
+	        						}
+	        					    });
+	        				   JMenuItem expandItem=new JMenuItem("Expand");
+	        				   popup.add(expandItem);
+	        				   expandItem.setHorizontalTextPosition(JMenuItem.RIGHT);
+	        				   expandItem.addActionListener(new ActionListener() {
+	        						@Override
+	        						public void actionPerformed(ActionEvent e) {
+	        							try{
+	        								String nodeKey$=scope[n];
+	        								Entigrator entigrator=console.getEntigrator(entihome$);
+	        								String[] rna=NodeHandler.getRelatedNodeKeys(entigrator, nodeKey$);
+	        								if(rna!=null){
+	        									ArrayList<String>nkl=new ArrayList<String>(Arrays.asList(scope));	
+	        									for(String s:rna)
+	        										if(!nkl.contains(s))
+	        											nkl.add(s);
+	        									for(String s:scope)
+	        										if(!nkl.contains(s))
+	        											nkl.add(s);
+	        									if(scope!=null)
+	        										undo.push(scope);
+	        									scope=nkl.toArray(new String[0]);
+	        									visualize(entigrator,scope);
+	        								}
+
+	        							}catch(Exception ee){
+	        								Logger.getLogger(getClass().getName()).info(ee.toString());
+	        							}
+	        						}
+	        					    });
+	        				   JMenuItem entityItem=new JMenuItem("Entity");
+	        				   popup.add(entityItem);
+	        				   entityItem.setHorizontalTextPosition(JMenuItem.RIGHT);
+	        				   entityItem.addActionListener(new ActionListener() {
+	        						@Override
+	        						public void actionPerformed(ActionEvent e) {
+	        							try{
+	        								entity(n);
+	        							}catch(Exception ee){
+	        								Logger.getLogger(getClass().getName()).info(ee.toString());
+	        							}
+	        						}
+	        					    });
+	        				   JMenuItem hideItem=new JMenuItem("Hide");
+	        				   popup.add(hideItem);
+	        				   hideItem.setHorizontalTextPosition(JMenuItem.RIGHT);
+	        				   hideItem.addActionListener(new ActionListener() {
+	        						@Override
+	        						public void actionPerformed(ActionEvent e) {
+	        							try{
+	        								hideItem(n);
+	        								//entity(v);
+	        							}catch(Exception ee){
+	        								Logger.getLogger(getClass().getName()).info(ee.toString());
+	        							}
+	        						}
+	        					    });
+	        				}
+	        				if(b>-1){
+	        					JMenuItem edgeItem=new JMenuItem("Edge");
+		        				   popup.add(edgeItem);
+		        				   edgeItem.setHorizontalTextPosition(JMenuItem.RIGHT);
+		        				   edgeItem.addActionListener(new ActionListener() {
+		        						@Override
+		        						public void actionPerformed(ActionEvent e) {
+		        							try{
+		        						       openEdge(b);
+		        							}catch(Exception ee){
+		        								Logger.getLogger(getClass().getName()).info(ee.toString());
+		        							}
+		        						}
+		        					    });
+		        				   
+		        				   JMenuItem detailsItem=new JMenuItem("Details");
+		        				   popup.add(detailsItem);
+		        				   detailsItem.setHorizontalTextPosition(JMenuItem.RIGHT);
+		        				   detailsItem.addActionListener(new ActionListener() {
+		        						@Override
+		        						public void actionPerformed(ActionEvent e) {
+		        							try{
+		        						       displayDetails(b);
+		        							}catch(Exception ee){
+		        								Logger.getLogger(getClass().getName()).info(ee.toString());
+		        							}
+		        						}
+		        					    });
+		        				   
+	        					}
+	        				*/
+	        			}
+	        		
+	        			@Override
+	        			public void popupMenuWillBecomeInvisible(PopupMenuEvent e) {
+	        				// TODO Auto-generated method stub
+	        			}
+	        			@Override
+	        			public void popupMenuCanceled(PopupMenuEvent e) {
+	        				// TODO Auto-generated method stub
+	        			}
+	        		});
+	           
+	           
 	            }
-	    	
 	    }
+	    
 	    public void mouseReleased(MouseEvent e) {
 	    	
 	    	if(!isPopup)
@@ -1485,33 +1435,10 @@ class MousePopupListener extends MouseAdapter {
 			    	  isPopup=true;
 	    		//System.out.println("JGraphRenderer:MousePopupListener:is Popup");
 	    	}
-	   }
-
-class VertexLabelRenderer extends DefaultVertexLabelRenderer {
-	public VertexLabelRenderer(Color pickedVertexLabelColor) {
-		super(pickedVertexLabelColor);
-	}
-	@Override
-	 public <V> Component getVertexLabelRendererComponent(JComponent vv, Object value,
-	            Font font, boolean isSelected, V vertex) {
-
-		super.setForeground(vv.getForeground());
-	        if(isSelected){
-	        	//System.out.println("JGraphRenderer:VertexLabelRenderer: font="+font+" vertex="+vertex+" selected="+isSelected);
-	        	setForeground(pickedVertexLabelColor);
-	        }
-	        super.setBackground(vv.getBackground());
-	        if(font == null)
-        	font=vv.getFont();
-        	if(isSelected)
-	        		font=font.deriveFont(Font.BOLD | Font.ITALIC);
-            setFont(font);
-	        setIcon(null);
-	        setBorder(noFocusBorder);
-	        setValue(value); 
-	        return this;
-	    }
-}
+	    	
+	            }  
+                
+*/
 
 @Override
 public void activate() {
@@ -1687,7 +1614,7 @@ public String getWebView(Entigrator entigrator, String locator$) {
 			if(nodeLabel$!=null){
 				// sb.append(getRelations(entigrator,entityKey$,nodeLabel$));
 				sb.append(getGraph(getRelations(entigrator,  nodeLabel$)));
-				//sb.append(getGraph(getScopeExpansion(entigrator,  nodeLabel$,shownLabels$)));
+				 
 			}
 	    }
 	    if(ACTION_NETWORK_RELATIONS.equals(action$)){
@@ -1722,7 +1649,7 @@ public String getWebView(Entigrator entigrator, String locator$) {
 	    	//String nodeLabel$=locator.getProperty(SELECTED_NODE_LABEL);
 	    	// shownLabels$=locator.getProperty(SHOWN_NODES_LABELS);
 	    	if(debug)
-				System.out.println("JGraphRenderer:network:selected selection="+nodeLabel$+" nodes="+shownLabels$);
+				System.out.println("JGraphRenderer:expansion:selected selection="+nodeLabel$+" nodes="+shownLabels$);
 				// sb.append(getRelations(entigrator,entityKey$,nodeLabel$));
 				sb.append(getGraph(getNetwork(entigrator, nodeLabel$,shownLabels$)));
 				 
@@ -2049,7 +1976,7 @@ private static String getExpansion(Entigrator entigrator, String nodeLabel$,Stri
 			 scope[i]=entigrator.indx_keyAtLabel(sna[i]);
 		 }
 			if(debug)
-				 System.out.println("JGraphRenderer:getExpansion:scope="+scope.length);
+				 System.out.println("JGraphRenderer:getExpansion:scope"+scope.length);
 
 		 String[] eka=NodeHandler.getExpandedNodeKeys(entigrator, nodeKey$, scope);
 		 return getDatasets(entigrator,eka);
@@ -2113,7 +2040,7 @@ private static String getNetwork(Entigrator entigrator, String nodeLabel$,String
 			 scope[i]=entigrator.indx_keyAtLabel(sna[i]);
 		 }
 			if(debug)
-				 System.out.println("JGraphRenderer:getNetwork:scope="+scope.length);
+				 System.out.println("JGraphRenderer:getExpansion:scope"+scope.length);
 
 		 String[] eka=NodeHandler.getNetwordNodeKeys(entigrator, nodeKey$, scope);
 		 return getDatasets(entigrator,eka);
@@ -2318,98 +2245,8 @@ try{
 }
 return null;
 }
-private void undoPush(){
-	Collection <Number>vc=graph.getVertices();
-		//final PickedState<Number> pickedState = vv.getPickedVertexState();
-	Layout layout=vv.getModel().getGraphLayout();
-	Point2D point;
-	ArrayList<Point2D>pl=new ArrayList<Point2D>();
-	Map<Point2D,Number>lm=new HashMap<Point2D,Number>();
-	    for( Number n:vc){
-			point=(Point2D)layout.transform(n);
-			pl.add(point);
-			lm.put(point, n);
-		}
-	    double minX=5000;
-	    double minY=5000;
-	  for(Point2D p:pl){
-		  if(p.getX()<minX)
-			  minX=p.getX();
-		if(p.getY()<minY)
-		  minY=p.getX();
-	  }
-	  minX=minX-20;
-	 minY=minY-20;
-	 ArrayList<Core>cl= new ArrayList<Core>();
-	 for(Point2D p:pl){
-		cl.add( new Core(String.valueOf(p.getX()-minX),vLabels.get(lm.get(p)),String.valueOf(p.getY()-minY)));
-	 }
-	 Core[] ca=cl.toArray(new Core[0]);
-	 //Integer hc=new Integer( ca.hashCode());
-	 undo.push(ca);
-	 if(edge$!=null)
-	 filter.put(ca, edge$);
+
 }
-private void undoPop(){
-	if(debug)
-		System.out.println("JGraphRenderer:undoPop:undosize="+undo.size());
-	edge$=null;
-	if(undo.isEmpty())
-		return;
-	 Core[] nodes=undo.pop();
-	 edge$=filter.get(nodes);
-	 Entigrator entigrator=console.getEntigrator(entihome$);
-	 String nodeKey$;
-	 ArrayList<String>nkl=new ArrayList<String>();
-	 if(nodes!=null){
-		 Map<String,Number>ln=new HashMap<String,Number>();
-		 for (int i = 0; i <nodes.length; i++){
-			 ln.put(nodes[i].name,i);
-			 nodeKey$=entigrator.indx_keyAtLabel(nodes[i].name);
-			 if(!nkl.contains(nodeKey$))
-				 nkl.add(nodeKey$);
-		 }
-		 scope=nkl.toArray(new String[0]);
-		 visualize(entigrator,scope,null);
-		 relocate(nodes,ln);
-         repaint();	
-        // return;
-	 }
-}
-public static <T, E> T getKeyByValue(Map<T, E> map, E value) {
-    for (Entry<T, E> entry : map.entrySet()) {
-        if (Objects.equals(value, entry.getValue())) {
-            return entry.getKey();
-        }
-    }
-    return null;
-}
-private boolean hasSelectedNodes(){
-	//undoPush();
-	Entigrator entigrator=console.getEntigrator(entihome$);
-	PickedState<Number> pickedState = vv.getPickedVertexState();
-	Set<Number>ns=pickedState.getPicked();
-	if(!ns.isEmpty())
-		return true;
-	else
-		return false;
-}
-private void lens(){
-	
-	Entigrator entigrator=console.getEntigrator(entihome$);
-	PickedState<Number> pickedState = vv.getPickedVertexState();
-	Set<Number>ns=pickedState.getPicked();
-	if(ns.isEmpty())
-		return;
-	//Bond bond;
-	undoPush();
-	ArrayList<String> nkl=new ArrayList<String>();
-	for(Number n:ns){
-		nkl.add(scope[(int)n]);
-	}
-	scope=NodeHandler.getScopeExpandedNodeKeys(entigrator, null,nkl.toArray(new String[0]));
-	visualize(entigrator,scope,null);
-}
-}
+
 
 

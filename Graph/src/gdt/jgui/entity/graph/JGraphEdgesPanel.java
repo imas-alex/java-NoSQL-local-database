@@ -31,6 +31,7 @@ import javax.swing.event.MenuEvent;
 import javax.swing.event.MenuListener;
 
 import gdt.data.entity.BaseHandler;
+import gdt.data.entity.BondDetailHandler;
 import gdt.data.entity.EdgeHandler;
 import gdt.data.entity.EntityHandler;
 import gdt.data.entity.GraphHandler;
@@ -47,6 +48,7 @@ import gdt.jgui.console.JItemsListPanel;
 import gdt.jgui.console.JMainConsole;
 import gdt.jgui.console.ReloadDialog;
 import gdt.jgui.entity.JEntityFacetPanel;
+import gdt.jgui.entity.edge.JEdgeEditor;
 /**
  * This context displays a list of edges included in the graph. 
  * @author imasa
@@ -88,11 +90,15 @@ public class JGraphEdgesPanel extends JItemsListPanel{
 				locator.setProperty(EntityHandler.ENTITY_KEY,entityKey$);
 			if(entihome$!=null){
 				locator.setProperty(Entigrator.ENTIHOME,entihome$);
-			Entigrator entigrator=console.getEntigrator(entihome$);
-			String icon$= ExtensionHandler.loadIcon(entigrator, EdgeHandler.EXTENSION_KEY,"edge.png");
-			    if(icon$!=null)
-			    	locator.setProperty(Locator.LOCATOR_ICON,icon$);
+			//Entigrator entigrator=console.getEntigrator(entihome$);
+			//String icon$= ExtensionHandler.loadIcon(entigrator, EdgeHandler.EXTENSION_KEY,"edge.png");
+			 //   if(icon$!=null)
+			  //  	locator.setProperty(Locator.LOCATOR_ICON,icon$);
 			}
+			locator.setProperty( Locator.LOCATOR_ICON_CONTAINER, Locator.LOCATOR_ICON_CONTAINER_CLASS);
+			locator.setProperty( Locator.LOCATOR_ICON_CLASS, JEdgeEditor.class.getName());
+			locator.setProperty( Locator.LOCATOR_ICON_FILE, "edge.png");
+			locator.setProperty( Locator.LOCATOR_ICON_CLASS_LOCATION,GraphHandler.EXTENSION_KEY);
 			return Locator.toString(locator);
 			}catch(Exception e){
 	        Logger.getLogger(getClass().getName()).severe(e.toString());
@@ -139,9 +145,9 @@ public JContext instantiate(JMainConsole console, String locator$) {
 			   String emLocator$=em.getLocator();
 			   emLocator$=Locator.append(emLocator$,Locator.LOCATOR_CHECKABLE, Locator.LOCATOR_TRUE);
 			   emLocator$=Locator.append(emLocator$,Locator.LOCATOR_TITLE,entigrator.indx_getLabel(s));
-			   edgeIcon$=entigrator.readIconFromIcons(entigrator.ent_getIconAtKey(s));
-			   if(edgeIcon$!=null)
-				   emLocator$=Locator.append(emLocator$,Locator.LOCATOR_ICON,edgeIcon$);
+			  // edgeIcon$=entigrator.readIconFromIcons(entigrator.ent_getIconAtKey(s));
+			  // if(edgeIcon$!=null)
+				//   emLocator$=Locator.append(emLocator$,Locator.LOCATOR_ICON,edgeIcon$);
 			   itemPanel=new JItemPanel(console,emLocator$);
 			   ipl.add(itemPanel);
 			

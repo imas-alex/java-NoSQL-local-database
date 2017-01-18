@@ -95,14 +95,17 @@ public String getLocator(){
 		locator.setProperty(EntityHandler.ENTITY_KEY,entityKey$);
 	if(entihome$!=null){
 		locator.setProperty(Entigrator.ENTIHOME,entihome$);
-		Entigrator entigrator=console.getEntigrator(entihome$);
-	 icon$=ExtensionHandler.loadIcon(entigrator, GraphHandler.EXTENSION_KEY,"graph.png");
-	if(icon$!=null)
-	    	locator.setProperty(Locator.LOCATOR_ICON,icon$);
+	//	Entigrator entigrator=console.getEntigrator(entihome$);
+	// icon$=ExtensionHandler.loadIcon(entigrator, GraphHandler.EXTENSION_KEY,"graph.png");
+	//if(icon$!=null)
+	 //   	locator.setProperty(Locator.LOCATOR_ICON,icon$);
 	}
     if(entihome$!=null){   
  	locator.setProperty(Locator.LOCATOR_CHECKABLE,Locator.LOCATOR_TRUE);
 	    }
+    locator.setProperty(Locator.LOCATOR_ICON_CONTAINER,Locator.LOCATOR_ICON_CONTAINER_CLASS);
+	locator.setProperty(Locator.LOCATOR_ICON_CLASS,getClass().getName());
+	locator.setProperty(Locator.LOCATOR_ICON_FILE,"graph.png");
 	return Locator.toString(locator);
 }
 /**
@@ -146,7 +149,8 @@ public void removeFacet() {
 @Override
 public void openFacet(JMainConsole console,String locator$) {
 	try{
-	//	System.out.println("JAddressFacetOpenItem:openFacet:locator="+locator$);
+	  
+		//	System.out.println("JAddressFacetOpenItem:openFacet:locator="+locator$);
 		Properties locator=Locator.toProperties(locator$);
 		String entihome$=locator.getProperty(Entigrator.ENTIHOME);
 		String entityKey$=locator.getProperty(EntityHandler.ENTITY_KEY);
@@ -239,6 +243,8 @@ public String getFacetIconName() {
 @Override
 public String getWebView(Entigrator entigrator, String locator$) {
       try{
+    	 if(debug)
+    		 System.out.println("JGraphFacetOpenItem:getWebView:locator="+locator$);
     	  Properties locator=Locator.toProperties(locator$);
     	  String entityKey$=locator.getProperty(EntityHandler.ENTITY_KEY);
     	  String entityLabel$=locator.getProperty(EntityHandler.ENTITY_LABEL);
@@ -248,14 +254,23 @@ public String getWebView(Entigrator entigrator, String locator$) {
     		  entityKey$=entigrator.indx_keyAtLabel(entityLabel$);
     	  if(entityLabel$==null&&entityKey$!=null)
     		  entityLabel$=entigrator.indx_getLabel(entityKey$);
+    	  if(debug)
+     		 System.out.println("JGraphFacetOpenItem:getWebView:graph key="+entityKey$+" label="+entityLabel$);
+     	
     	  Sack graph=entigrator.getEntityAtKey(entityKey$);
     	  ArrayList<String>ll=new ArrayList<String>();
-    	  Core[] ca=graph.elementGet("node");
+    	  Core[] ca=graph.elementGet("jbookmark");
     	  if(ca!=null)
     		  for(Core c:ca)
-    			  ll.add(c.value);
+    			  ll.add(c.type);
     	  String[] sa=ll.toArray(new String[0]);
+    	  if(debug)
+      		 System.out.println("JGraphFacetOpenItem:getWebView:sa="+sa.length);
+      	
     	  String nodes$=Locator.toString(sa);
+    	  if(debug)
+       		 System.out.println("JGraphFacetOpenItem:getWebView:nodes="+nodes$);
+       	
     	  JGraphRenderer gr=new JGraphRenderer();
     	  String grLocator$=gr.getLocator();
     	  Properties grLocator=Locator.toProperties(grLocator$);
@@ -266,7 +281,10 @@ public String getWebView(Entigrator entigrator, String locator$) {
     	  grLocator.setProperty(EntityHandler.ENTITY_KEY,entityKey$);
     	  grLocator.setProperty(EntityHandler.ENTITY_LABEL,entityLabel$);
     	  grLocator.setProperty(JGraphRenderer.SHOWN_NODES_LABELS,nodes$);
-    	  grLocator.setProperty(JRequester.REQUESTER_ACTION,JGraphRenderer.ACTION_EXPAND);
+    	  grLocator.setProperty(JRequester.REQUESTER_ACTION,JGraphRenderer.ACTION_SCOPE_RELATIONS);
+    	  if(debug)
+     		 System.out.println("JGraphFacetOpenItem:getWebView:graph locator="+Locator.toString(grLocator));
+     	 
     	  return gr.getWebView(entigrator, Locator.toString(grLocator));
       }catch(Exception e){
     	  

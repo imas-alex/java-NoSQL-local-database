@@ -243,8 +243,7 @@ public static String[] filterNodesAtEdge(Entigrator entigrator, String[] nodeLab
 	try{
 		if(debug)
 			System.out.println("EdgeHandler:filterNodesAtEdge: nodes="+nodeLabels.length+" edge="+edgeLabel$);
-		if(nodeLabels==null)
-			return null;
+		
 		if(edgeLabel$==null)
 			return nodeLabels;
 		 ArrayList<String>sl=new ArrayList<String>();
@@ -253,15 +252,20 @@ public static String[] filterNodesAtEdge(Entigrator entigrator, String[] nodeLab
 		String edgeKey$=entigrator.indx_keyAtLabel(edgeLabel$);
 		Sack edge=entigrator.getEntity(edgeKey$);
 		Core[] ca=edge.elementGet("bond");
+		if(debug)
+			System.out.println("EdgeHandler:filterNodesAtEdge: bonds="+ca.length);
+		
 		String nodeKey$;
 		boolean out;
 		boolean in;
 		for(String n:nodeLabels){
+			
 			nodeKey$=entigrator.indx_keyAtLabel(n);
+			if(debug)
+				System.out.println("EdgeHandler:filterNodesAtEdge: node label="+n+" key="+nodeKey$);
+		
 			if(nodeKey$==null)
 				continue;
-			//if(debug)
-			//	System.out.println("EdgeHandler:filterNodesAtEdge: node key="+nodeKey$);
 			out=false;
 			in=false;
 			for(Core c:ca){
@@ -271,11 +275,12 @@ public static String[] filterNodesAtEdge(Entigrator entigrator, String[] nodeLab
 					break;
 				}
 				if(c.value.equals(nodeKey$)){
-					//in=true;
-				//if(out&&in){
+					in=true;
 					sl.add(nodeKey$);
 					break;
 				}
+				//if(out&&in)
+				
 			}
 		 
 		}

@@ -66,13 +66,10 @@ public class JNodeEditor extends JFieldsEditor {
 			if(entityKey$!=null)
 				locator.setProperty(EntityHandler.ENTITY_KEY,entityKey$);
 			if(entihome$!=null){
-				locator.setProperty(Entigrator.ENTIHOME,entihome$);
-			Entigrator entigrator=console.getEntigrator(entihome$);
-			String icon$=ExtensionHandler.loadIcon(entigrator, GraphHandler.EXTENSION_KEY,"graph.png");
-				// String icon$=Support.readHandlerIcon(JNodeEditor.class, "node.png");
-			    if(icon$!=null)
-			    	locator.setProperty(Locator.LOCATOR_ICON,icon$);
-			}
+				}
+			locator.setProperty(Locator.LOCATOR_ICON_CONTAINER,Locator.LOCATOR_ICON_CONTAINER_CLASS);
+				locator.setProperty(Locator.LOCATOR_ICON_CLASS,getClass().getName());
+				locator.setProperty(Locator.LOCATOR_ICON_FILE,"node.png");
 			return Locator.toString(locator);
 			}catch(Exception e){
 	        Logger.getLogger(getClass().getName()).severe(e.toString());
@@ -104,7 +101,8 @@ public class JNodeEditor extends JFieldsEditor {
 	@Override
 	public String getCategoryIcon(Entigrator entigrator) {
 		
-		return ExtensionHandler.loadIcon(entigrator,EdgeHandler.EXTENSION_KEY,"node.png"); 
+		return ExtensionHandler.loadIcon(entigrator,EdgeHandler.EXTENSION_KEY,"node.png");
+		
 
 	}
 
@@ -112,7 +110,11 @@ public class JNodeEditor extends JFieldsEditor {
 	public String getCategoryTitle() {
 		return "Nodes";
 	}
-	
+	@Override
+	public String getFacetIcon() {
+		
+		return "node.png";
+	}
 	@Override
 	public void reindex(JMainConsole console, Entigrator entigrator, Sack entity) {
 		 try{
@@ -148,10 +150,10 @@ public class JNodeEditor extends JFieldsEditor {
 	    entihome$=Locator.getProperty(locator$,Entigrator.ENTIHOME );
 	    if(entihome$!=null){
 	      responseLocator.setProperty(Entigrator.ENTIHOME,entihome$);
-	      Entigrator entigrator=console.getEntigrator(entihome$);
-	      String icon$=ExtensionHandler.loadIcon(entigrator,NodeHandler.EXTENSION_KEY, "node.png");
+	     // Entigrator entigrator=console.getEntigrator(entihome$);
+	     // String icon$=ExtensionHandler.loadIcon(entigrator,NodeHandler.EXTENSION_KEY, "node.png");
 	    		  //Support.readHandlerIcon(getClass(), "node.png");
-		    editorLocator$=Locator.append(editorLocator$,Locator.LOCATOR_ICON,icon$);
+		  //  editorLocator$=Locator.append(editorLocator$,Locator.LOCATOR_ICON,icon$);
 		    
 	    }
 	    else

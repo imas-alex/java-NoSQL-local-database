@@ -82,12 +82,16 @@ public class JBondDetailPanel extends JEntitiesPanel {
 		    locator.setProperty(JContext.CONTEXT_TYPE,getType());
 		    if(entihome$!=null&&console!=null){
 		       locator.setProperty(Entigrator.ENTIHOME,entihome$);
-		       Entigrator entigrator=console.getEntigrator(entihome$);
-		       String icon$=ExtensionHandler.loadIcon(entigrator, BondDetailHandler.EXTENSION_KEY, "detail.png");
-		       if(icon$!=null)
-			    	locator.setProperty(Locator.LOCATOR_ICON,icon$);
+		     //  Entigrator entigrator=console.getEntigrator(entihome$);
+		     //  String icon$=ExtensionHandler.loadIcon(entigrator, BondDetailHandler.EXTENSION_KEY, "detail.png");
+		     //  if(icon$!=null)
+			  //  	locator.setProperty(Locator.LOCATOR_ICON,icon$);
 		        	   
 		    }
+		    locator.setProperty( Locator.LOCATOR_ICON_CONTAINER, Locator.LOCATOR_ICON_CONTAINER_CLASS);
+			locator.setProperty( Locator.LOCATOR_ICON_CLASS, getClass().getName());
+			locator.setProperty( Locator.LOCATOR_ICON_FILE, "detail.png");
+			locator.setProperty( Locator.LOCATOR_ICON_CLASS_LOCATION,BondDetailHandler.EXTENSION_KEY);
 		    if(entityKey$!=null)
 			       locator.setProperty(EntityHandler.ENTITY_KEY,entityKey$);
 		   locator.setProperty(Locator.LOCATOR_TITLE, getTitle());

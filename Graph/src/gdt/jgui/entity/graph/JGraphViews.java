@@ -29,6 +29,7 @@ import javax.swing.JPopupMenu;
 import javax.swing.event.MenuEvent;
 import javax.swing.event.MenuListener;
 import gdt.data.entity.BaseHandler;
+import gdt.data.entity.EdgeHandler;
 import gdt.data.entity.EntityHandler;
 import gdt.data.entity.GraphHandler;
 import gdt.data.entity.facet.ExtensionHandler;
@@ -88,6 +89,7 @@ public class JGraphViews extends JItemsListPanel implements JRequester{
 			  
 			if(entihome$!=null){
 				locator.setProperty(Entigrator.ENTIHOME,entihome$);
+				/*
 				if(console!=null){
 				Entigrator entigrator=console.getEntigrator(entihome$);
 			
@@ -95,8 +97,13 @@ public class JGraphViews extends JItemsListPanel implements JRequester{
 				    if(icon$!=null)
 				    	locator.setProperty(Locator.LOCATOR_ICON,icon$);
 				}
+				*/
 			}
-			
+			locator.setProperty( Locator.LOCATOR_ICON_CONTAINER, Locator.LOCATOR_ICON_CONTAINER_CLASS);
+			locator.setProperty( Locator.LOCATOR_ICON_CLASS, getClass().getName());
+			locator.setProperty( Locator.LOCATOR_ICON_FILE, "views.png");
+			locator.setProperty( Locator.LOCATOR_ICON_CLASS_LOCATION,GraphHandler.EXTENSION_KEY);
+		
 			if(viewComponentKey$!=null)
 					locator.setProperty(VIEW_COMPONENT_KEY,viewComponentKey$);
 			
@@ -238,11 +245,11 @@ public class JGraphViews extends JItemsListPanel implements JRequester{
 					      JItemPanel[] ipa=JGraphViews.this.getItems();
 					      String ipLocator$;
 					      Entigrator entigrator=console.getEntigrator(entihome$);
-					      String icon$=ExtensionHandler.loadIcon(entigrator, GraphHandler.EXTENSION_KEY,"map.png");
+					     // String icon$=ExtensionHandler.loadIcon(entigrator, GraphHandler.EXTENSION_KEY,"map.png");
 					      for(JItemPanel ip:ipa){
 					    	  ipLocator$=ip.getLocator(); 
-							if(icon$!=null)
-									ipLocator$=Locator.append(ipLocator$,Locator.LOCATOR_ICON,icon$);
+							//if(icon$!=null)
+							//		ipLocator$=Locator.append(ipLocator$,Locator.LOCATOR_ICON,icon$);
 							console.getRecents().put( Locator.getProperty(ipLocator$,Locator.LOCATOR_TITLE),ipLocator$);
 					      }
 						}

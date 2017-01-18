@@ -50,6 +50,7 @@ import gdt.jgui.entity.JEntityFacetPanel;
 import gdt.jgui.entity.JEntityPrimaryMenu;
 import gdt.jgui.entity.JReferenceEntry;
 import gdt.jgui.entity.bonddetail.JBondDetailPanel;
+import gdt.jgui.entity.bookmark.JBookmarksFacetOpenItem;
 import gdt.jgui.entity.graph.JGraphRenderer;
 import gdt.jgui.tool.JTextEditor;
 
@@ -155,12 +156,16 @@ public JBondsPanel() {
 		    locator.setProperty(JItemsListPanel.POSITION,String.valueOf(getPosition()));
 		    if(entihome$!=null){
 		       locator.setProperty(Entigrator.ENTIHOME,entihome$);
-				Entigrator entigrator=console.getEntigrator(entihome$);
-				String  icon$= ExtensionHandler.loadIcon(entigrator,EdgeHandler.EXTENSION_KEY,"bond.png");
-			    locator.setProperty(Locator.LOCATOR_TITLE, getTitle());
-			    if(icon$!=null)
-			    	locator.setProperty(Locator.LOCATOR_ICON,icon$);
+				//Entigrator entigrator=console.getEntigrator(entihome$);
+				//String  icon$= ExtensionHandler.loadIcon(entigrator,EdgeHandler.EXTENSION_KEY,"bond.png");
+			    //locator.setProperty(Locator.LOCATOR_TITLE, getTitle());
+			    //if(icon$!=null)
+			    //	locator.setProperty(Locator.LOCATOR_ICON,icon$);
 		    }
+		    locator.setProperty( Locator.LOCATOR_ICON_CONTAINER, Locator.LOCATOR_ICON_CONTAINER_CLASS);
+			locator.setProperty( Locator.LOCATOR_ICON_CLASS, getClass().getName());
+			locator.setProperty( Locator.LOCATOR_ICON_FILE, "bond.png");
+			locator.setProperty( Locator.LOCATOR_ICON_CLASS_LOCATION,BondDetailHandler.EXTENSION_KEY);
 		    if(entityKey$!=null)
 			       locator.setProperty(EntityHandler.ENTITY_KEY,entityKey$);
 		    if(entityLabel$!=null)
@@ -691,6 +696,7 @@ return menu;
 	@Override
 	public String addIconToLocator(String locator$) {
 		//String icon$=Support.readHandlerIcon(JBondsPanel.class, "edge.png");
+		/*
 		try{
 		Entigrator entigrator=console.getEntigrator(entihome$);
 		String icon$=ExtensionHandler.loadIcon(entigrator, EdgeHandler.EXTENSION_KEY, "edge.png");
@@ -699,6 +705,7 @@ return menu;
 		}catch(Exception e){
 			Logger.getLogger(getClass().getName()).severe(e.toString());
 		}
+		*/
 	    	return locator$;
 	}
 	/**
@@ -825,10 +832,10 @@ return menu;
 	    entihome$=Locator.getProperty(locator$,Entigrator.ENTIHOME );
 	    if(entihome$!=null){
 	      responseLocator.setProperty(Entigrator.ENTIHOME,entihome$);
-	      Entigrator entigrator=console.getEntigrator(entihome$);
-	      String icon$=ExtensionHandler.loadIcon(entigrator, EdgeHandler.EXTENSION_KEY, "edge.png");
-	      if(icon$!=null)
-	      editorLocator$=Locator.append(editorLocator$,Locator.LOCATOR_ICON,icon$);
+	     // Entigrator entigrator=console.getEntigrator(entihome$);
+	     // String icon$=ExtensionHandler.loadIcon(entigrator, EdgeHandler.EXTENSION_KEY, "edge.png");
+	     // if(icon$!=null)
+	     // editorLocator$=Locator.append(editorLocator$,Locator.LOCATOR_ICON,icon$);
 	    }
 	   responseLocator.setProperty(BaseHandler.HANDLER_CLASS,JBondsPanel.class.getName());
 		responseLocator.setProperty(BaseHandler.HANDLER_METHOD,"response");
@@ -1033,7 +1040,11 @@ public void activate() {
 
 @Override
 public String getFacetOpenItem() {
-	// TODO Auto-generated method stub
-	return null;
+	return JEdgeFacetOpenItem.class.getName();
+}
+@Override
+public String getFacetIcon() {
+	
+	return "bonds.png";
 }
 }

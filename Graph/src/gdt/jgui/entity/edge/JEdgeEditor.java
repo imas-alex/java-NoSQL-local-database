@@ -24,6 +24,7 @@ import java.util.logging.Logger;
 import javax.swing.JMenuItem;
 import gdt.data.entity.EdgeHandler;
 import gdt.data.entity.BaseHandler;
+import gdt.data.entity.BondDetailHandler;
 import gdt.data.entity.EntityHandler;
 import gdt.data.entity.facet.ExtensionHandler;
 import gdt.data.entity.facet.FieldsHandler;
@@ -79,11 +80,15 @@ public class JEdgeEditor extends JFieldsEditor {
 				locator.setProperty(EntityHandler.ENTITY_KEY,entityKey$);
 			if(entihome$!=null){
 				locator.setProperty(Entigrator.ENTIHOME,entihome$);
-			Entigrator entigrator=console.getEntigrator(entihome$);
-			String icon$= ExtensionHandler.loadIcon(entigrator, EdgeHandler.EXTENSION_KEY,"edge.png");
-			    if(icon$!=null)
-			    	locator.setProperty(Locator.LOCATOR_ICON,icon$);
+			//Entigrator entigrator=console.getEntigrator(entihome$);
+			//String icon$= ExtensionHandler.loadIcon(entigrator, EdgeHandler.EXTENSION_KEY,"edge.png");
+			 //   if(icon$!=null)
+			  //  	locator.setProperty(Locator.LOCATOR_ICON,icon$);
 			}
+			locator.setProperty( Locator.LOCATOR_ICON_CONTAINER, Locator.LOCATOR_ICON_CONTAINER_CLASS);
+			locator.setProperty( Locator.LOCATOR_ICON_CLASS, getClass().getName());
+			locator.setProperty( Locator.LOCATOR_ICON_FILE, "edge.png");
+			locator.setProperty( Locator.LOCATOR_ICON_CLASS_LOCATION,EdgeHandler.EXTENSION_KEY);
 			return Locator.toString(locator);
 			}catch(Exception e){
 	        Logger.getLogger(getClass().getName()).severe(e.toString());
@@ -155,10 +160,10 @@ public class JEdgeEditor extends JFieldsEditor {
 	    entihome$=Locator.getProperty(locator$,Entigrator.ENTIHOME );
 	    if(entihome$!=null){
 	      responseLocator.setProperty(Entigrator.ENTIHOME,entihome$);
-	     Entigrator entigrator=console.getEntigrator(entihome$);
-	      String icon$=ExtensionHandler.loadIcon(entigrator, EdgeHandler.EXTENSION_KEY, "edge.png");
-		  if(icon$!=null)
-	      editorLocator$=Locator.append(editorLocator$,Locator.LOCATOR_ICON,icon$);
+	    // Entigrator entigrator=console.getEntigrator(entihome$);
+	     // String icon$=ExtensionHandler.loadIcon(entigrator, EdgeHandler.EXTENSION_KEY, "edge.png");
+		 // if(icon$!=null)
+	     // editorLocator$=Locator.append(editorLocator$,Locator.LOCATOR_ICON,icon$);
 	    }
 	    //else
 	    //	System.out.println("JNodeEditor:newEntity:entihome is null");	
@@ -177,7 +182,7 @@ public class JEdgeEditor extends JFieldsEditor {
 
 	@Override
 	public void response(JMainConsole console, String locator$) {
-		System.out.println("JEdgeEditor:response:"+Locator.remove(locator$,Locator.LOCATOR_ICON ));
+	//	System.out.println("JEdgeEditor:response:"+Locator.remove(locator$,Locator.LOCATOR_ICON ));
 		try{
 			Properties locator=Locator.toProperties(locator$);
 			String action$=locator.getProperty(JRequester.REQUESTER_ACTION);

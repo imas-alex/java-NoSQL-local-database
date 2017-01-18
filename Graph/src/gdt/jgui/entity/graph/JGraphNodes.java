@@ -30,7 +30,7 @@ import javax.swing.JOptionPane;
 import javax.swing.event.MenuEvent;
 import javax.swing.event.MenuListener;
 import gdt.data.entity.BaseHandler;
-
+import gdt.data.entity.BondDetailHandler;
 import gdt.data.entity.EntityHandler;
 import gdt.data.entity.GraphHandler;
 import gdt.data.entity.NodeHandler;
@@ -71,10 +71,14 @@ public class JGraphNodes extends JEntitiesPanel{
 			String locator$=super.getLocator();
 					if(entihome$!=null){
 						Entigrator entigrator=console.getEntigrator(entihome$);
-					String icon$=ExtensionHandler.loadIcon(entigrator, GraphHandler.EXTENSION_KEY,"node.png");
-					if(icon$!=null)
-					    	locator$=Locator.append(locator$, Locator.LOCATOR_ICON,icon$);
+					//String icon$=ExtensionHandler.loadIcon(entigrator, GraphHandler.EXTENSION_KEY,"node.png");
+					//if(icon$!=null)
+					 //   	locator$=Locator.append(locator$, Locator.LOCATOR_ICON,icon$);
 					}
+					locator$=Locator.append(locator$, Locator.LOCATOR_ICON_CONTAINER, Locator.LOCATOR_ICON_CONTAINER_CLASS);
+					locator$=Locator.append(locator$, Locator.LOCATOR_ICON_CLASS, getClass().getName());
+					locator$=Locator.append(locator$, Locator.LOCATOR_ICON_FILE, "graph.png");
+					locator$=Locator.append(locator$, Locator.LOCATOR_ICON_CLASS_LOCATION,BondDetailHandler.EXTENSION_KEY);
 					locator$=Locator.append(locator$,BaseHandler.HANDLER_CLASS,JGraphNodes.class.getName());
 					locator$=Locator.append(locator$,BaseHandler.HANDLER_LOCATION,GraphHandler.EXTENSION_KEY);
 					return locator$; 
@@ -95,22 +99,12 @@ public class JGraphNodes extends JEntitiesPanel{
 				this. console=console;
 				this.locator$=locator$;
 				 Properties locator=Locator.toProperties(locator$);
-				 //list$=locator.getProperty(EntityHandler.ENTITY_LIST);
 				 entityKey$=locator.getProperty(EntityHandler.ENTITY_KEY);
 				 entihome$=locator.getProperty(Entigrator.ENTIHOME);
-				 Entigrator  entigrator=console.getEntigrator(entihome$);
-				 entity=entigrator.getEntityAtKey(entityKey$);
-				
-				// System.out.println("JGraphNodes:instantiate:GRAPH");
-				// graph.print();
-				 String[] sa=entity.elementList("node");
+				 JItemPanel[] ipl= listNodes();
+				 if(ipl!=null)
+	        	   putItems(ipl);
 				 
-				 if(sa!=null){
-					list$=Locator.toString(sa);
-					locator$=Locator.append(locator$,EntityHandler.ENTITY_LIST ,list$);
-				 JItemPanel[] ipl= listNodes( );
-	        	 putItems(ipl);
-				 }
 	        	return this;
 	        }catch(Exception e){
 	        
@@ -278,8 +272,8 @@ public class JGraphNodes extends JEntitiesPanel{
 			  			gr$=Locator.append(gr$, Entigrator.ENTIHOME, entihome$);
 			  			gr$=Locator.append(gr$, EntityHandler.ENTITY_KEY, entityKey$);
 			  			Entigrator entigrator=console.getEntigrator(entihome$);
-			  			String icon$=ExtensionHandler.loadIcon(entigrator, GraphHandler.EXTENSION_KEY, "map.png");
-			  			gr$=Locator.append(gr$,Locator.LOCATOR_ICON,icon$);
+			  			//String icon$=ExtensionHandler.loadIcon(entigrator, GraphHandler.EXTENSION_KEY, "map.png");
+			  			//gr$=Locator.append(gr$,Locator.LOCATOR_ICON,icon$);
 			  			JConsoleHandler.execute(console, gr$);
 			  			   }
 			  	});
@@ -354,38 +348,16 @@ public class JGraphNodes extends JEntitiesPanel{
 		 */ 
   public  JItemPanel[] listNodes(){
 		try{
-		//	System.out.println("JGraphNode:listNodes:BEGIN"); 
 			Entigrator entigrator=console.getEntigrator(entihome$);
 			Sack graph=entigrator.getEntityAtKey(entityKey$);
-			//graph.print();
-			ArrayList<JItemPanel>ipl=new ArrayList<JItemPanel>();
-			   JItemPanel itemPanel;
-			   Core[] ca=graph.elementGet("node");
-			   String nodeIcon$;
-			   JEntityFacetPanel em=new JEntityFacetPanel();
-			   String emLocator$=em.getLocator();
-		   for(Core c:ca){
-			   try{
-			//	   System.out.println("JGraphNode:listNodes:node key="+c.name);   
-			
-			   emLocator$=Locator.append(emLocator$,Locator.LOCATOR_CHECKABLE, Locator.LOCATOR_TRUE);
-			   if(graph.getElementItem("node.select", c.name)!=null)
-				   emLocator$=Locator.append(emLocator$,Locator.LOCATOR_CHECKED, Locator.LOCATOR_TRUE);
-			   emLocator$=Locator.append(emLocator$,Locator.LOCATOR_TITLE,c.value);
-			   emLocator$=Locator.append(emLocator$,Entigrator.ENTIHOME , entihome$);
-			   emLocator$=Locator.append(emLocator$,EntityHandler.ENTITY_KEY ,c.name);
-			   nodeIcon$=entigrator.readIconFromIcons(c.type);
-			   if(nodeIcon$!=null)
-				   emLocator$=Locator.append(emLocator$,Locator.LOCATOR_ICON,nodeIcon$);
-			   itemPanel=new JItemPanel(console,emLocator$);
-			   ipl.add(itemPanel);
-			   }catch(Exception ee){
-				   Logger.getLogger(JGraphNodes.class.getName()).info(ee.toString());
-			   }
-		   }
-		   Collections.sort(ipl,new ItemPanelComparator());
-		   JItemPanel[] ipa=ipl.toArray(new JItemPanel[0]);
-		   return ipa;
+			String[] la=graph.elementList("node");
+			if(la==null)
+				return null;
+			String list$=Locator.toString(la);
+			Properties locator=new Properties();
+			locator.setProperty(Entigrator.ENTIHOME, entihome$);
+			locator.setProperty(EntityHandler.ENTITY_LIST,list$);
+			return JEntitiesPanel.listEntitiesAtList(console, Locator.toString(locator));
 		}catch(Exception e) {
       	Logger.getLogger(JGraphNodes.class.getName()).severe(e.toString());
           return null;

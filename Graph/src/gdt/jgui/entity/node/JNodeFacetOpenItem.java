@@ -77,11 +77,14 @@ public String getLocator(){
 		locator.setProperty(EntityHandler.ENTITY_KEY,entityKey$);
 	if(entihome$!=null){
 		locator.setProperty(Entigrator.ENTIHOME,entihome$);
-		Entigrator entigrator=console.getEntigrator(entihome$);
+		//Entigrator entigrator=console.getEntigrator(entihome$);
 	// String icon$=Support.readHandlerIcon(JNodeEditor.class, "node.png");
-	String icon$=ExtensionHandler.loadIcon(entigrator, NodeHandler.EXTENSION_KEY, "node.png");
-    if(icon$!=null)
-    	locator.setProperty(Locator.LOCATOR_ICON,icon$);
+	//String icon$=ExtensionHandler.loadIcon(entigrator, NodeHandler.EXTENSION_KEY, "node.png");
+    //if(icon$!=null)
+		locator.setProperty(Locator.LOCATOR_ICON_CONTAINER,Locator.LOCATOR_ICON_CONTAINER_CLASS);
+		locator.setProperty(Locator.LOCATOR_ICON_CLASS,getClass().getName());
+		locator.setProperty(Locator.LOCATOR_ICON_FILE,"node.png");
+			locator.setProperty(Locator.LOCATOR_ICON_LOCATION,NodeHandler.EXTENSION_KEY);	
 	locator.setProperty(Locator.LOCATOR_CHECKABLE,Locator.LOCATOR_TRUE);
 	}
     

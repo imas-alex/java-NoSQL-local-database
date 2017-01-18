@@ -286,7 +286,7 @@ public static String[] getExpandedNodeKeys(Entigrator entigrator, String nodeKey
 public static String[] getScopeExpandedNodeKeys(Entigrator entigrator, String nodeKey$,String[] scope){
 	try{
 		if(debug)
-			 System.out.println("NodeHandler:getExpandedScopeNodeKeys:node="+entigrator.indx_getLabel(nodeKey$));
+			 System.out.println("NodeHandler:getScopeExpandedNodeKeys:node="+entigrator.indx_getLabel(nodeKey$));
 		
 		String[] ra=null;	
 		
@@ -295,7 +295,7 @@ public static String[] getScopeExpandedNodeKeys(Entigrator entigrator, String no
 		 ra=getRelatedNodeKeys(entigrator, nodeKey$);
 		  if(ra!=null){
 			 if(debug)
-				 System.out.println("NodeHandler:getExpandedScopeNodeKeys:relations="+ra.length);
+				 System.out.println("NodeHandler:getScopeExpandedNodeKeys:relations="+ra.length);
 	         for(String s:ra)
 	        	 if(!sl.contains(s))
 	        	  sl.add(s);
@@ -303,7 +303,7 @@ public static String[] getScopeExpandedNodeKeys(Entigrator entigrator, String no
 		}
 		if(scope!=null){
 			if(debug)
-				 System.out.println("NodeHandler:getExpandedScopeNodeKeys:scope="+scope.length);
+				 System.out.println("NodeHandler:getScopeExpandedNodeKeys:scope="+scope.length);
 			
 			for(String s:scope){
 	        	 if(!sl.contains(s))
@@ -316,7 +316,7 @@ public static String[] getScopeExpandedNodeKeys(Entigrator entigrator, String no
 	         }
 		}
 		 if(debug)
-			 System.out.println("NodeHandler:getExpandedScopeNodeKeys:all="+sl.size());
+			 System.out.println("NodeHandler:getScopeExpandedNodeKeys:all="+sl.size());
 	
 		 return sl.toArray(new String[0]);
 	}catch(Exception e){
@@ -381,7 +381,7 @@ public static Bond[] getScopeBonds(Entigrator entigrator, String[] scope){
 		 if(scope==null)
 			 return null;
 		 if(debug)
-			 System.out.println("NodeHandler:getScopeBondes:scope="+scope.length);
+			 System.out.println("NodeHandler:getScopeBonds:scope="+scope.length);
 		 Sack node;
 		 Core[] ca;
 		 ArrayList<String>sl=new ArrayList<String>(Arrays.asList(scope));
@@ -389,6 +389,9 @@ public static Bond[] getScopeBonds(Entigrator entigrator, String[] scope){
 		 ArrayList<String>kl=new ArrayList<String>();
 		 Bond b;
          for(String s:scope){
+        	 if(debug)
+    			 System.out.println("NodeHandler:getScopeBonds:node key="+s);
+    		 
 	        	 node=entigrator.getEntityAtKey(s);
 	        	 
 	        	 if(node==null)
@@ -408,12 +411,56 @@ public static Bond[] getScopeBonds(Entigrator entigrator, String[] scope){
 	        	 }
 	         }
          if(debug)
-			 System.out.println("NodeHandler:getScopeBondes:bons="+bl.size());
+			 System.out.println("NodeHandler:getScopeBondes:bonds="+bl.size());
         return bl.toArray(new Bond[0]);
 	}catch(Exception e){
 		Logger.getLogger(NodeHandler.class.getName()).severe(e.toString());	
 	}
 	return null;
 }
+public static Bond[] getScopeBonds(Entigrator entigrator, String[] scope,String edgeKey$){
+	try{
+		 if(scope==null)
+			 return null;
+		 if(debug)
+			 System.out.println("NodeHandler:getScopeBonds:scope="+scope.length);
+		 Sack node;
+		 Core[] ca;
+		 ArrayList<String>sl=new ArrayList<String>(Arrays.asList(scope));
+		 ArrayList<Bond>bl=new ArrayList<Bond>();
+		 ArrayList<String>kl=new ArrayList<String>();
+		 Bond b;
+         for(String s:scope){
+        	 if(debug)
+    			 System.out.println("NodeHandler:getScopeBonds:node key="+s);
+    		 
+	        	 node=entigrator.getEntityAtKey(s);
+	        	 
+	        	 if(node==null)
+	        		 continue;
+	        	// if(debug)
+	    		//	 System.out.println("NodeHandler:getScopeBondes:node label="+node.getProperty("label")+" key="+s);
+	        	 ca=node.elementGet("bond");
+	        	 if(ca==null)
+	        		 continue;
+	        	 for(Core c:ca){
+	        		 if(sl.contains(c.type)&&sl.contains(c.value))
+	        		 if(!kl.contains(c.name))
+	        		    if(edgeKey$.equals(node.getElementItemAt("edge", c.name))){
+	   	        	      kl.add(c.name);
+	   	        	         b=new Bond(c.value,c.type,c.name,edgeKey$);
+	   	        	  bl.add(b);
+	        		 }
+	        	 }
+	         }
+         if(debug)
+			 System.out.println("NodeHandler:getScopeBondes:bonds="+bl.size());
+        return bl.toArray(new Bond[0]);
+	}catch(Exception e){
+		Logger.getLogger(NodeHandler.class.getName()).severe(e.toString());	
+	}
+	return null;
+}
+
 }
 

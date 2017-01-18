@@ -87,11 +87,14 @@ public String getLocator(){
 		locator.setProperty(EntityHandler.ENTITY_KEY,entityKey$);
 	if(entihome$!=null){
 		locator.setProperty(Entigrator.ENTIHOME,entihome$);
-		Entigrator entigrator=console.getEntigrator(entihome$);
+		//Entigrator entigrator=console.getEntigrator(entihome$);
 	 //String icon$=Support.readHandlerIcon(JBondsPanel.class, "edge.png");
-		String icon$=ExtensionHandler.loadIcon(entigrator, EdgeHandler.EXTENSION_KEY, "bond.png");
-    if(icon$!=null)
-    	locator.setProperty(Locator.LOCATOR_ICON,icon$);
+		//String icon$=ExtensionHandler.loadIcon(entigrator, EdgeHandler.EXTENSION_KEY, "bond.png");
+    //if(icon$!=null)
+    //	locator.setProperty(Locator.LOCATOR_ICON,icon$);
+		 locator.setProperty(Locator.LOCATOR_ICON_CONTAINER,Locator.LOCATOR_ICON_CONTAINER_CLASS);
+			locator.setProperty(Locator.LOCATOR_ICON_CLASS,getClass().getName());
+			locator.setProperty(Locator.LOCATOR_ICON_FILE,"bond.png");
     locator.setProperty(Locator.LOCATOR_CHECKABLE,Locator.LOCATOR_TRUE);
 	}
     
@@ -307,7 +310,7 @@ private static String getItem(String icon$, String url$, String title$,String fo
     
 	String iconTerm$="<img src=\"data:image/png;base64,"+WUtils.scaleIcon(icon$)+
 			  "\" width=\"24\" height=\"24\" alt=\""+title$+"\">";
-	foiLocator$=Locator.remove(foiLocator$, Locator.LOCATOR_ICON);
+	//foiLocator$=Locator.remove(foiLocator$, Locator.LOCATOR_ICON);
 	foiLocator$=Locator.append(foiLocator$,WContext.WEB_HOME, url$);
 	foiLocator$=Locator.append(foiLocator$,WContext.WEB_REQUESTER, JBondDetailFacetOpenItem.class.getName());
 	  return iconTerm$+"<a href=\""+url$+"?"+WContext.WEB_LOCATOR+"="+Base64.encodeBase64URLSafeString(foiLocator$.getBytes())+"\" >"+" "+title$+"</a>";
@@ -325,6 +328,7 @@ private  static String[] listWebItems(Entigrator entigrator,String webHome$,Stri
     String itemTitle$;
     String itemKey$;
     String foiItem$;
+    String foiLocator$;
       ArrayList<String>sl=new ArrayList<String>();
     Sack item;
 	   for(String s:sa){
@@ -333,14 +337,17 @@ private  static String[] listWebItems(Entigrator entigrator,String webHome$,Stri
 				   		System.out.println("JBondDetailFacetOpenItem:listWebItems:s0"+s);
 			   itemKey$=entigrator.indx_keyAtLabel(s);
 			   item=entigrator.getEntityAtKey(itemKey$);
-			   itemIcon$=entigrator.getEntityIcon(item);
-					   //entigrator.readIconFromIcons(itemKey$);
-			   itemTitle$=s;
+			   //itemIcon$=entigrator.getEntityIcon(item);
+			   foiLocator$=EntityHandler.getEntityLocatorAtKey(entigrator, itemKey$);	   
+			   /*
 			   foiLocator.setProperty(EntityHandler.ENTITY_KEY,itemKey$);
 			   foiLocator.setProperty(EntityHandler.ENTITY_LABEL,s);
 			   foiLocator.setProperty(Locator.LOCATOR_TITLE,s);
-			   foiItem$=getItem(itemIcon$, webHome$,itemTitle$,Locator.toString(foiLocator));
-			   sl.add(getItem(itemIcon$, webHome$, s,Locator.toString(foiLocator))); 
+			   */
+			   itemIcon$=JConsoleHandler.getIcon(entigrator, foiLocator$);
+			   //foiLocator$=Locator.toString(foiLocator);
+			   //foiItem$=getItem(itemIcon$, webHome$,s,);
+			   sl.add(getItem(itemIcon$, webHome$, s,foiLocator$)); 
 		   }catch(Exception ee){
 			   Logger.getLogger(JBondDetailFacetOpenItem.class.getName()).info(ee.toString());
 		   }
