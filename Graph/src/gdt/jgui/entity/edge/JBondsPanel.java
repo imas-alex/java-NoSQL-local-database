@@ -138,6 +138,7 @@ String selectMode$=SELECT_MODE_OUT;
 String message$;
 Sack entity;
 boolean ignoreOutdate=false;
+static boolean debug=true;
 /**
  * The default constructor.
  */
@@ -191,6 +192,7 @@ public JContext instantiate(JMainConsole console, String locator$) {
 			//System.out.println("JBondsPanel:instantiate:BEGIN");
 			 this.console=console;
 			 this.locator$=locator$;
+			 panel.removeAll();
 			 Properties locator=Locator.toProperties(locator$);
 			 entityKey$=locator.getProperty(EntityHandler.ENTITY_KEY);
 			 entihome$=locator.getProperty(Entigrator.ENTIHOME);
@@ -246,7 +248,7 @@ private JItemPanel[] getItems(JMainConsole console,Sack entity){
 		ArrayList<JBondItem>ipl=new ArrayList<JBondItem>();
 		Core[] ca=entity.elementGet("bond");
 		if(ca!=null){
-			ca=Core.sortAtType(ca);
+			//ca=Core.sortAtType(ca);
 			JBondItem ip;
 			String ipLocator$;
 			Properties ipLocator;
@@ -267,8 +269,6 @@ private JItemPanel[] getItems(JMainConsole console,Sack entity){
 				  try{
 					 outLabel$=null;
 					 inLabel$=null;
-					  
-					 // ipLocator=new Properties();
 					  ipLocator.setProperty(Entigrator.ENTIHOME, entihome$);
 					  
 					  ipLocator.setProperty(EntityHandler.ENTITY_KEY, entityKey$);
@@ -302,7 +302,6 @@ private JItemPanel[] getItems(JMainConsole console,Sack entity){
 					  ipLocator.setProperty(Locator.LOCATOR_CHECKABLE, Locator.LOCATOR_TRUE);
 					  ipLocator$=Locator.toString(ipLocator);
 					  ip=new JBondItem(console,ipLocator$); 
-
 					  ipl.add(ip);	  
 					   }catch(Exception ee){
 						   Logger.getLogger(JBondsPanel.class.getName()).info(ee.toString());
@@ -310,7 +309,6 @@ private JItemPanel[] getItems(JMainConsole console,Sack entity){
 			}
 		}
 		Collections.sort(ipl,new ItemPanelComparator());
-		
 		return ipl.toArray(new JBondItem[0]);
 	}catch(Exception e){
         Logger.getLogger(JBondsPanel.class.getName()).severe(e.toString());
@@ -401,6 +399,22 @@ menu.addMenuListener(new MenuListener(){
 			 menu.add(mi);
 	 menu.addSeparator();
 	 }
+	 JMenuItem graphItem = new JMenuItem("Graph");
+		graphItem.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+			   JGraphRenderer gr=new JGraphRenderer();
+			   String grLocator$=gr.getLocator();
+			   Properties grLocator=Locator.toProperties(grLocator$);
+			   if(debug)
+				   System.out.println("JGraphEditor:graph menu item:entity key="+entityKey$+" entihome="+entihome$);
+			   grLocator.setProperty(Entigrator.ENTIHOME,entihome$);
+			   grLocator.setProperty(EntityHandler.ENTITY_KEY,entityKey$);
+			   JConsoleHandler.execute(console, Locator.toString(grLocator));
+			  // grLocator.setProperty(JRequester.REQUESTER_ACTION,JGraphRenderer.ACTION_SHOW_VIEW);
+			}
+		} );
+		menu.add(graphItem);
 	 if(hasSelectedItems()){
 	JMenuItem deleteItem = new JMenuItem("Delete");
 	 deleteItem.addActionListener(new ActionListener() {
@@ -411,14 +425,23 @@ menu.addMenuListener(new MenuListener(){
 				        JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
 			   if (response == JOptionPane.YES_OPTION) {
 				  String[] sa=JBondsPanel.this.listSelectedItems();
-				  if(sa==null)
+				  if(sa==null){
+					  if(debug)
+						  System.out.println("JBondsPanel:delete:no selected bonds.");
 					  return;
+				  }
+				  if(debug)
+					  System.out.println("JBondsPanel:delete:selected ="+sa.length);  
 				for(String s:sa){
-				//	System.out.println("JBondsPanel:delete:s="+s);
+				if(debug)	
+					System.out.println("JBondsPanel:delete:s="+s);
 					if(isGraphEntity())
 						removeBondEntry(s);
-					else if(isEdgeEntity())
+					else if(isEdgeEntity()){
+						if(debug)	
+							System.out.println("JBondsPanel:delete:edge entity detected");
 					   removeBond(console,s);
+					}
 					else if(isDetailEntity()){
 						System.out.println("JBondsPanel:delete detail:");
 						Entigrator entigrator=console.getEntigrator(entihome$);
@@ -458,25 +481,30 @@ menu.addMenuListener(new MenuListener(){
 	newItem.addActionListener(new ActionListener() {
 		@Override
 		public void actionPerformed(ActionEvent e) {
+			JNewBond nb=new JNewBond();
+			String nbLocator$=nb.getLocator();
+			nbLocator$=Locator.append(nbLocator$, Entigrator.ENTIHOME, entihome$);
+			nbLocator$=Locator.append(nbLocator$, EntityHandler.ENTITY_KEY, entityKey$);
+			if(debug)
+				System.out.println("JBondsPanel:new:nb locator="+nbLocator$);
+			JConsoleHandler.execute(console, nbLocator$);
 			//System.out.println("JBondsPanel:new:"+locator$);
-			
+			/*
 			Entigrator entigrator=console.getEntigrator(entihome$);	
 			entity=entigrator.getEntityAtKey(entityKey$);
 			if(!entity.existsElement("bond"))
 					entity.createElement("bond");
 			String bondKey$=Identity.key();
 			entity.putElementItem("bond", new Core(null,bondKey$,null));
-		//	String icon$=Support.readHandlerIcon(JEntitiesPanel.class, "globe.png");
-		    entigrator.save(entity);
-		   // JBondsPanel.this.getPanel().removeAll();
+
+		    entigrator.replace(entity);
 		    close();
 		    JBondsPanel bp=new JBondsPanel();
 			String bpLocator$=bp.getLocator();
 			bpLocator$=Locator.append(bpLocator$, Entigrator.ENTIHOME, entihome$);
 			bpLocator$=Locator.append(bpLocator$,EntityHandler.ENTITY_KEY,entityKey$);
-			//bpLocator$=Locator.append(bpLocator$, BaseHandler.HANDLER_METHOD,"instantiate");
 			JConsoleHandler.execute(console, bpLocator$);
-		
+		*/
 		}
 	} );
 	menu.add(newItem);
@@ -857,6 +885,8 @@ return menu;
  */	
 private static void removeBond(JMainConsole console,String locator$){
 	try{
+		if(debug)	
+			System.out.println("JBondsPanel:remove bond:locator="+locator$);
 		Properties locator=Locator.toProperties(locator$);
 		String edgeKey$=locator.getProperty(EntityHandler.ENTITY_KEY);
 		String nodeInKey$=locator.getProperty(BOND_IN_NODE_KEY);

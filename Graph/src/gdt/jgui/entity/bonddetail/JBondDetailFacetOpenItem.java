@@ -334,19 +334,12 @@ private  static String[] listWebItems(Entigrator entigrator,String webHome$,Stri
 	   for(String s:sa){
 		   try{
 			   if(debug)
-				   		System.out.println("JBondDetailFacetOpenItem:listWebItems:s0"+s);
+				   		System.out.println("JBondDetailFacetOpenItem:listWebItems:s="+s);
 			   itemKey$=entigrator.indx_keyAtLabel(s);
 			   item=entigrator.getEntityAtKey(itemKey$);
-			   //itemIcon$=entigrator.getEntityIcon(item);
-			   foiLocator$=EntityHandler.getEntityLocatorAtKey(entigrator, itemKey$);	   
-			   /*
-			   foiLocator.setProperty(EntityHandler.ENTITY_KEY,itemKey$);
-			   foiLocator.setProperty(EntityHandler.ENTITY_LABEL,s);
-			   foiLocator.setProperty(Locator.LOCATOR_TITLE,s);
-			   */
+			   foiLocator$=EntityHandler.getEntityLocatorAtKey(entigrator, itemKey$);
+			   foiLocator$=Locator.append(foiLocator$, BaseHandler.HANDLER_CLASS, JEntityFacetPanel.class.getName());
 			   itemIcon$=JConsoleHandler.getIcon(entigrator, foiLocator$);
-			   //foiLocator$=Locator.toString(foiLocator);
-			   //foiItem$=getItem(itemIcon$, webHome$,s,);
 			   sl.add(getItem(itemIcon$, webHome$, s,foiLocator$)); 
 		   }catch(Exception ee){
 			   Logger.getLogger(JBondDetailFacetOpenItem.class.getName()).info(ee.toString());

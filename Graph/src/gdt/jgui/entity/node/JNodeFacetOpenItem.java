@@ -75,7 +75,7 @@ public String getLocator(){
 	locator.setProperty(FACET_HANDLER_CLASS,NodeHandler.class.getName());
 	if(entityKey$!=null)
 		locator.setProperty(EntityHandler.ENTITY_KEY,entityKey$);
-	if(entihome$!=null){
+	if(entihome$!=null)
 		locator.setProperty(Entigrator.ENTIHOME,entihome$);
 		//Entigrator entigrator=console.getEntigrator(entihome$);
 	// String icon$=Support.readHandlerIcon(JNodeEditor.class, "node.png");
@@ -84,9 +84,9 @@ public String getLocator(){
 		locator.setProperty(Locator.LOCATOR_ICON_CONTAINER,Locator.LOCATOR_ICON_CONTAINER_CLASS);
 		locator.setProperty(Locator.LOCATOR_ICON_CLASS,getClass().getName());
 		locator.setProperty(Locator.LOCATOR_ICON_FILE,"node.png");
-			locator.setProperty(Locator.LOCATOR_ICON_LOCATION,NodeHandler.EXTENSION_KEY);	
+		locator.setProperty(Locator.LOCATOR_ICON_LOCATION,NodeHandler.EXTENSION_KEY);	
 	locator.setProperty(Locator.LOCATOR_CHECKABLE,Locator.LOCATOR_TRUE);
-	}
+	
     
 	return Locator.toString(locator);
 }
@@ -193,7 +193,6 @@ public void removeFacet() {
 }
 @Override
 public String getFacetIconName() {
-	// TODO Auto-generated method stub
 	return "node.png";
 }
 @Override

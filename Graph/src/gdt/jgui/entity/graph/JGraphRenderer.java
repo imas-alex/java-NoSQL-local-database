@@ -453,8 +453,8 @@ public class JGraphRenderer extends JPanel implements JContext , JRequester
 				  			try{
 				  				Entigrator entigrator=console.getEntigrator(entihome$);
 				  				Sack entity=entigrator.getEntityAtKey(entityKey$);
-				  				if(!"graph".equals(entity.getProperty("entity")))
-				  					return;
+				  				//if(!"graph".equals(entity.getProperty("entity")))
+				  				//	return;
 				  				if(scope==null)
 				  					return;
 				  			    if(entity.existsElement("node"))
@@ -671,7 +671,8 @@ public class JGraphRenderer extends JPanel implements JContext , JRequester
  * Complete facet.
  */
 	@Override
-	public void close() {Entigrator entigrator=console.getEntigrator(entihome$);
+	public void close() {
+		//Entigrator entigrator=console.getEntigrator(entihome$);
 	
 		
 	}
@@ -688,89 +689,6 @@ public class JGraphRenderer extends JPanel implements JContext , JRequester
 	
 
 
-private void pickOut(int v){
-	try{
-		Entigrator entigrator=console.getEntigrator(entihome$);
-		 Sack graphEntity=entigrator.getEntityAtKey(entityKey$);
-		 if(graphEntity.existsElement("node.select"))
-			 graphEntity.clearElement("node.select");
-			 
-		 entigrator.save(graphEntity);
-		 expand(v);
-	}catch(Exception e){
-		LOGGER.severe(e.toString());
-	}
-}
-private void pickOut(){
-	Collection <Number>vc=graph.getVertices();
-	final PickedState<Number> pickedState = vv.getPickedVertexState();
-	for( Number n:vc){
-		 if (pickedState.isPicked(n))
-		    pickOut( n.intValue());
-	}
-}
-private void expand(){
-	
-	try{
-		Collection <Number>vc=graph.getVertices();
-	//	System.out.println("JGraphRenderer:expand:vc="+vc.size());
-	final PickedState<Number> pickedState = vv.getPickedVertexState();
-	for( Number n:vc){
-		 if (pickedState.isPicked(n))
-		    expand( n.intValue());
-	}
-	}catch(Exception e){
-		LOGGER.severe(e.toString());	
-	}
-}
-private void expand(int v){
-//	System.out.println("JGraphRenderer:expand:v="+v);
-	try{
-		GraphHandler.undoPush(console, locator$); 
-		 Entigrator entigrator=console.getEntigrator(entihome$);
-		 Sack graphEntity=entigrator.getEntityAtKey(entityKey$);
-		 String node$=graphEntity.getElementItemAtValue("vertex", String.valueOf(v));
-		 if(!graphEntity.existsElement("node.select"))
-			 graphEntity.createElement("node.select");
-		 graphEntity.putElementItem("node.select", new Core(null,node$,null));
-		 Core[] ca=graphEntity.elementGet("bond");
-				    ArrayList<String>nbl=new ArrayList<String>();
-						for(Core c:ca){
-							if(c.value.equals(node$))
-								if(!nbl.contains(c.type))
-									nbl.add(c.type);
-							if(c.type.equals(node$))
-								if(!nbl.contains(c.value))
-										nbl.add(c.value);
-						}
-		  Core nodeCore;
-		  String icon$;
-		  String label$;
-		  boolean rebuild=false;
-		  for(String nb:nbl){
-		           		graphEntity.putElementItem("node.select", new Core(null,nb,null));
-		           	    nodeCore= graphEntity.getElementItem("node", nb);
-		           	    if(nodeCore==null){
-		           	    	label$=entigrator.indx_getLabel(nb);
-		           	    	icon$=entigrator.ent_getIconAtKey(nb);
-		           	    	if(label$!=null&&icon$!=null){
-		           	    		graphEntity.putElementItem("node", new Core(icon$,nb,label$));
-		           	    		rebuild=true;
-		           	    	}
-		           	    }
-		           	} 
-		 entigrator.save(graphEntity);
-		 if(rebuild)
-			// rebuild();
-		 NodeHandler.rebuild(entigrator, entityKey$);
-		 //init2();
-		init();
-			revalidate();
-			repaint();
-	}catch(Exception e){
-		LOGGER.severe(e.toString());
-	}
-}
 private void hideNodes(){
 	if(scope==null)
 		return;
@@ -849,10 +767,10 @@ private void init(){
 	//filter.clear();
 	 Entigrator entigrator=console.getEntigrator(entihome$);
 	 Sack graphEntity=entigrator.getEntityAtKey(entityKey$);
-	 if(graphEntity!=null&&"graph".equals(graphEntity.getProperty("entity"))){
 	 Core [] nodes=graphEntity.elementGet("node");
 	 String nodeKey$;
 	 ArrayList<String>nkl=new ArrayList<String>();
+	 
 	 if(nodes!=null){
 		 Map<String,Number>ln=new HashMap<String,Number>();
 		 for (int i = 0; i <nodes.length; i++){
@@ -866,7 +784,27 @@ private void init(){
 		 relocate(nodes,ln);
          repaint();	
          return;
-	 }else{
+	 }
+	 if(graphEntity!=null&&"graph".equals(graphEntity.getProperty("entity"))){
+	/*
+     Core [] nodes=graphEntity.elementGet("node");
+	 String nodeKey$;
+	 ArrayList<String>nkl=new ArrayList<String>();
+	 
+	 if(nodes!=null){
+		 Map<String,Number>ln=new HashMap<String,Number>();
+		 for (int i = 0; i <nodes.length; i++){
+			 ln.put(nodes[i].name,i);
+			 nodeKey$=entigrator.indx_keyAtLabel(nodes[i].name);
+			 if(!nkl.contains(nodeKey$))
+				 nkl.add(nodeKey$);
+		 }
+		 scope=nkl.toArray(new String[0]);
+		 visualize(entigrator,scope,null);
+		 relocate(nodes,ln);
+         repaint();	
+         return;
+	 }else*/
 		 Core[] ca=graphEntity.elementGet("jbookmark");
 		 if(ca==null)
 			 return;
@@ -884,14 +822,56 @@ private void init(){
 		 }
 		 scope=NodeHandler.getScopeExpandedNodeKeys(entigrator, null,nkl.toArray(new String[0]));
 		 visualize(entigrator,scope,null);	 
-	 }
-	String scope$=console.cache.get(entityKey$);
-	if(scope$!=null){
-		 scope=NodeHandler.getExpandedNodeKeys(entigrator,null, Locator.toArray(scope$));
-		 visualize(entigrator,scope,null);
 		 return;
-	}
  }
+ if(graphEntity!=null&&(graphEntity.getProperty("node")!=null))
+		 //||(graphEntity!=null&&"edge".equals(graphEntity.getProperty("entity"))))
+ {
+		 Core[] ca=graphEntity.elementGet("bond");
+		 if(ca==null)
+			 return;
+		 ArrayList<String>sl=new ArrayList<String>();
+		 for(Core c:ca){
+			 if(c.type!=null&&!sl.contains(c.type))
+				 sl.add(c.type);
+			 if(c.value!=null&&!sl.contains(c.value))
+				 sl.add(c.value);
+		 }
+		 scope=NodeHandler.getScopeExpandedNodeKeys(entigrator, null,sl.toArray(new String[0]));
+		 visualize(entigrator,scope,null);	 
+		 return; 
+ }
+ 
+ if(graphEntity!=null&&"edge".equals(graphEntity.getProperty("entity"))){
+	 Core[] ca=graphEntity.elementGet("bond");
+	 if(ca==null)
+		 return;
+	 ArrayList<String>sl=new ArrayList<String>();
+	 for(Core c:ca){
+		 if(c.type!=null&&!sl.contains(c.type))
+			 sl.add(c.type);
+		 if(c.value!=null&&!sl.contains(c.value))
+			 sl.add(c.value);
+	 }
+	 ArrayList<String>nl=new ArrayList<String>();
+	 for(String s:sl)
+		  nl.add(entigrator.indx_getLabel(s));
+	  String[] nodeLabels=nl.toArray(new String[0]);
+	//  if(debug)
+	//	  System.out.println("JGraphRenderer:labels="+nodeLabels.length); 
+	  String[] scopeLabels=EdgeHandler.filterNodesAtEdge(entigrator, nodeLabels, graphEntity.getProperty("label"));
+	  if(scopeLabels==null||scopeLabels.length<1)
+		  return;
+	 nl.clear();
+	 for(String s:scopeLabels)
+	   nl.add(entigrator.indx_keyAtLabel(s));
+	  JGraphRenderer.this.scope=nl.toArray(new String[0]);
+	  visualize(entigrator,nl.toArray(new String[0]),entityKey$);
+	 //scope=NodeHandler.getScopeExpandedNodeKeys(entigrator, null,sl.toArray(new String[0]));
+	 //visualize(entigrator,scope,null);	 
+	 return;
+} 
+
 }
 private void relocate(){
 	Entigrator entigrator=console.getEntigrator(entihome$);

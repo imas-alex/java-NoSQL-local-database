@@ -22,14 +22,14 @@ import gdt.data.entity.BaseHandler;
 import gdt.data.entity.EdgeHandler;
 import gdt.data.entity.EntityHandler;
 import gdt.data.entity.FacetHandler;
-import gdt.data.entity.GraphHandler;
+
 import gdt.data.entity.NodeHandler;
-import gdt.data.entity.facet.ExtensionHandler;
+
 import gdt.data.grain.Core;
 import gdt.data.grain.Identity;
 import gdt.data.grain.Locator;
 import gdt.data.grain.Sack;
-import gdt.data.grain.Support;
+
 import gdt.data.store.Entigrator;
 import gdt.jgui.console.JConsoleHandler;
 import gdt.jgui.console.JContext;
@@ -38,7 +38,7 @@ import gdt.jgui.console.JFacetOpenItem;
 import gdt.jgui.console.JMainConsole;
 import gdt.jgui.console.JRequester;
 import gdt.jgui.entity.JEntityFacetPanel;
-import gdt.jgui.entity.fields.JFieldsFacetOpenItem;
+
 import gdt.jgui.tool.JTextEditor;
 public class JNodeFacetAddItem extends JFacetAddItem{
 	private static final long serialVersionUID = 1L;
@@ -46,13 +46,13 @@ public class JNodeFacetAddItem extends JFacetAddItem{
 	private Logger LOGGER=Logger.getLogger(JNodeFacetAddItem.class.getName());
     String entityLabel$;
     public JNodeFacetAddItem(){
-		super();
+		//super();
 	}
 @Override
 public String getLocator(){
 	Properties locator=new Properties();
 	locator.setProperty(Locator.LOCATOR_TITLE,"Node");
-	locator.setProperty(BaseHandler.HANDLER_CLASS,JFacetAddItem.class.getName());
+	locator.setProperty(BaseHandler.HANDLER_CLASS,JNodeFacetAddItem.class.getName());
 	locator.setProperty(BaseHandler.HANDLER_SCOPE,JConsoleHandler.CONSOLE_SCOPE);
 	locator.setProperty(BaseHandler.HANDLER_METHOD,METHOD_ADD_COMPONENT);
 	locator.setProperty(BaseHandler.HANDLER_LOCATION,NodeHandler.EXTENSION_KEY);
