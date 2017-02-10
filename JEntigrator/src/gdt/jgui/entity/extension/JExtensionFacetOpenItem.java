@@ -41,8 +41,12 @@ public class JExtensionFacetOpenItem extends JFolderFacetOpenItem{
 	 * @return the facet icon string.
 	 */
 	@Override
-	public String getFacetIcon() {
+	public String getFacetIcon(Entigrator entigrator) {
 		return Support.readHandlerIcon(null,getClass(), "facet.png");
+	}
+	@Override
+	public String getFacetIconName() {
+		return "file.png";
 	}
 	/**
 	 * Get the facet renderer class name.
@@ -70,11 +74,13 @@ public class JExtensionFacetOpenItem extends JFolderFacetOpenItem{
 			locator.setProperty(EntityHandler.ENTITY_KEY,entityKey$);
 		if(entihome$!=null)
 			locator.setProperty(Entigrator.ENTIHOME,entihome$);
-		 String icon$=Support.readHandlerIcon(null,JExtensionRenderer.class, "facet.png");
-		    if(icon$!=null)
-		    	locator.setProperty(Locator.LOCATOR_ICON,icon$);
+		// String icon$=Support.readHandlerIcon(null,JExtensionRenderer.class, "facet.png");
+		 //   if(icon$!=null)
+		  //  	locator.setProperty(Locator.LOCATOR_ICON,icon$);
 	 	locator.setProperty(Locator.LOCATOR_CHECKABLE,Locator.LOCATOR_FALSE);
-		   
+	 	locator.setProperty(Locator.LOCATOR_ICON_CONTAINER,Locator.LOCATOR_ICON_CONTAINER_CLASS);
+		locator.setProperty(Locator.LOCATOR_ICON_CLASS,getClass().getName());
+		locator.setProperty(Locator.LOCATOR_ICON_FILE,"extension.png");   
 		return Locator.toString(locator);
 	}
 	/**
@@ -93,4 +99,5 @@ public class JExtensionFacetOpenItem extends JFolderFacetOpenItem{
 	public void openFacet(JMainConsole console, String locator$) {
 		super.openFacet(console, locator$);
 	}
+	
 }

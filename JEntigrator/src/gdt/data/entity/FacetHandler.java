@@ -65,6 +65,7 @@ public abstract class FacetHandler {
      * Get the class name of the facet handler.  
      * @return  the class name of the facet handler..
      */	
+    
     public abstract String getClassName();
     /**
      * Adapt the clone of the entity. 
@@ -83,7 +84,7 @@ public abstract class FacetHandler {
       */	 
      /**
       * Complete migration after paste the entity from another database   
-      * 
+      * @param entigrator  the entigrator. 
       */	
      public abstract void completeMigration(Entigrator entigrator);
      /**

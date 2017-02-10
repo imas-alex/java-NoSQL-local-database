@@ -29,6 +29,7 @@ import gdt.jgui.console.JMainConsole;
 import gdt.jgui.console.JRequester;
 import gdt.jgui.console.ReloadDialog;
 import gdt.jgui.entity.JEntitiesPanel;
+import gdt.jgui.entity.JEntityPrimaryMenu;
 import gdt.jgui.entity.fields.JFieldsEditor;
 
 import javax.swing.JPanel;
@@ -135,8 +136,11 @@ public JIconSelector() {
 		       locator.setProperty(EntityHandler.ENTITY_KEY,entityKey$);
 	    if(entityLabel$!=null)
 		       locator.setProperty(EntityHandler.ENTITY_LABEL,entityLabel$);
-	    String icon$=Support.readHandlerIcon(null,JEntitiesPanel.class,"icon.png" );
-	      locator.setProperty(Locator.LOCATOR_ICON,icon$);
+	   // String icon$=Support.readHandlerIcon(null,JEntitiesPanel.class,"icon.png" );
+	    //  locator.setProperty(Locator.LOCATOR_ICON,icon$);
+	    locator.setProperty(Locator.LOCATOR_ICON_CONTAINER,Locator.LOCATOR_ICON_CONTAINER_CLASS);
+	   	locator.setProperty(Locator.LOCATOR_ICON_CLASS,JEntityPrimaryMenu.class.getName());
+	   	locator.setProperty(Locator.LOCATOR_ICON_FILE,"icon.png"); 
 	   locator.setProperty(BaseHandler.HANDLER_CLASS,JIconSelector.class.getName());
 	   return Locator.toString(locator);
 	

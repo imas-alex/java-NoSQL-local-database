@@ -17,14 +17,16 @@ package gdt.jgui.entity.bookmark;
     along with JEntigrator.  If not, see <http://www.gnu.org/licenses/>.
  */
 import java.awt.Desktop;
-import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Hashtable;
 import java.util.Properties;
 import java.util.logging.Logger;
-import javax.swing.ImageIcon;
+
+import javax.activation.MimetypesFileTypeMap;
 import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
 import javax.swing.tree.DefaultMutableTreeNode;
@@ -38,14 +40,19 @@ import gdt.data.grain.Locator;
 import gdt.data.grain.Sack;
 import gdt.data.grain.Support;
 import gdt.data.store.Entigrator;
+import gdt.jgui.base.JBaseNavigator;
+import gdt.jgui.base.JBasesPanel;
 import gdt.jgui.console.JConsoleHandler;
 import gdt.jgui.console.JContext;
 import gdt.jgui.console.JFacetOpenItem;
 import gdt.jgui.console.JMainConsole;
 import gdt.jgui.console.JRequester;
+import gdt.jgui.console.WContext;
+import gdt.jgui.console.WUtils;
 import gdt.jgui.entity.JEntitiesPanel;
 import gdt.jgui.entity.JEntityDigestDisplay;
 import gdt.jgui.entity.JEntityFacetPanel;
+import gdt.jgui.entity.folder.JFileOpenItem;
 import gdt.jgui.entity.folder.JFolderPanel;
 /**
  * This class represents the bookmarks facet item in the list
@@ -53,8 +60,9 @@ import gdt.jgui.entity.folder.JFolderPanel;
  * @author imasa
  *
  */
-public class JBookmarksFacetOpenItem extends JFacetOpenItem implements JRequester {
-/**
+public class JBookmarksFacetOpenItem extends JFacetOpenItem implements JRequester,WContext {
+static boolean debug=false;
+	/**
  * The default constructor.
  */
 	public JBookmarksFacetOpenItem(){
@@ -76,13 +84,15 @@ public class JBookmarksFacetOpenItem extends JFacetOpenItem implements JRequeste
 		locator.setProperty(FACET_HANDLER_CLASS,BookmarksHandler.class.getName());
 		if(entityKey$!=null)
 			locator.setProperty(EntityHandler.ENTITY_KEY,entityKey$);
-		if(entihome$!=null)
+		if(entihome$!=null){
 			locator.setProperty(Entigrator.ENTIHOME,entihome$);
-		 String icon$=Support.readHandlerIcon(null,JEntitiesPanel.class, "bookmark.png");
-		    if(icon$!=null)
-		    	locator.setProperty(Locator.LOCATOR_ICON,icon$);
-		    if(entihome$!=null)   
-	 	locator.setProperty(Locator.LOCATOR_CHECKABLE,Locator.LOCATOR_TRUE);
+			locator.setProperty(Locator.LOCATOR_CHECKABLE,Locator.LOCATOR_TRUE);
+		}
+		locator.setProperty(Locator.LOCATOR_ICON_CONTAINER,Locator.LOCATOR_ICON_CONTAINER_CLASS);
+		locator.setProperty(Locator.LOCATOR_ICON_CLASS,getClass().getName());
+		locator.setProperty(Locator.LOCATOR_ICON_FILE,"bookmark.png");
+  
+	 	
 		return Locator.toString(locator);
 	}
 /**
@@ -92,14 +102,12 @@ public class JBookmarksFacetOpenItem extends JFacetOpenItem implements JRequeste
  */
 	@Override
 	public void response(JMainConsole console, String locator$) {
-		//System.out.println("JBookmarksFacetItem:response:FACET locator:"+locator$);
 		try{
 			Properties locator=Locator.toProperties(locator$);
 			String requesterAction$=locator.getProperty(JRequester.REQUESTER_ACTION);
 			String requesterResponseLocator$=locator.getProperty(JRequester.REQUESTER_RESPONSE_LOCATOR);
 			byte[] 	ba=Base64.decodeBase64(requesterResponseLocator$);
 			String responseLocator$=new String(ba,"UTF-8");
-			//System.out.println("JWebsetFacetItem:response:response locator="+responseLocator$);
 			locator=Locator.toProperties(responseLocator$);
 			entihome$=locator.getProperty(Entigrator.ENTIHOME);
 			entityKey$=locator.getProperty(EntityHandler.ENTITY_KEY);
@@ -134,7 +142,6 @@ public class JBookmarksFacetOpenItem extends JFacetOpenItem implements JRequeste
 	@Override
 	public boolean isRemovable() {
 		try{
-			//System.out.println("JBookmarkFacetOpenItem:isRemovable.locator="+locator$);
 			entihome$=Locator.getProperty(locator$, Entigrator.ENTIHOME);
 			entityKey$=Locator.getProperty(locator$,EntityHandler.ENTITY_KEY);
 			Entigrator entigrator=console.getEntigrator(entihome$);
@@ -160,7 +167,7 @@ public class JBookmarksFacetOpenItem extends JFacetOpenItem implements JRequeste
 	 * @return the facet icon string.
 	 */
 	@Override
-	public String getFacetIcon() {
+	public String getFacetIcon(Entigrator entigrator) {
 		return Support.readHandlerIcon(null,JEntitiesPanel.class, "bookmark.png");
 	}
 /**
@@ -169,8 +176,7 @@ public class JBookmarksFacetOpenItem extends JFacetOpenItem implements JRequeste
  */
 	@Override
 	public String getFacetRenderer() {
-		// TODO Auto-generated method stub
-		return null;
+		return JBookmarksEditor.class.getName();
 	}
 	/**
 	 * Remove the facet from the entity.
@@ -201,6 +207,7 @@ public class JBookmarksFacetOpenItem extends JFacetOpenItem implements JRequeste
 			Properties locator=Locator.toProperties(locator$);
 			String entihome$=locator.getProperty(Entigrator.ENTIHOME);
 			String entityKey$=locator.getProperty(EntityHandler.ENTITY_KEY);
+			//JBookmarksFacetOpenItem bookmarksEditor=new JBookmarksFacetOpenItem();
 			JBookmarksEditor bookmarksEditor=new JBookmarksEditor();
 			String beLocator$=bookmarksEditor.getLocator();
 			beLocator$=Locator.append(beLocator$, Entigrator.ENTIHOME, entihome$);
@@ -216,13 +223,14 @@ public class JBookmarksFacetOpenItem extends JFacetOpenItem implements JRequeste
  * @return the children nodes of the facet node.
  */
 	@Override
-	public DefaultMutableTreeNode[] getDigest() {
+	public DefaultMutableTreeNode[] getDigest(Entigrator entigrator,String locator$) {
 		try{
 //			System.out.println("JBookmarksFacetOpenItem:getDigest:locator="+locator$);
 			Properties locator=Locator.toProperties(locator$);
-			entihome$=locator.getProperty(Entigrator.ENTIHOME);
+			//entihome$=locator.getProperty(Entigrator.ENTIHOME);
+			//entihome$=entigrator.getEntihome();
 			entityKey$=locator.getProperty(EntityHandler.ENTITY_KEY);
-			Entigrator entigrator=console.getEntigrator(entihome$);
+			//Entigrator entigrator=console.getEntigrator(entihome$);
 			Sack entity=entigrator.getEntityAtKey(entityKey$);
 			Core[]ca=entity.elementGet("jbookmark");
 			if(ca==null)
@@ -234,6 +242,11 @@ public class JBookmarksFacetOpenItem extends JFacetOpenItem implements JRequeste
 				bookmarkNode=new DefaultMutableTreeNode();
 				itemLocator$=aCa.value;
 				itemLocator$=Locator.append(itemLocator$, BaseHandler.HANDLER_CLASS, getClass().getName());
+				/*
+				itemLocator$=Locator.append(itemLocator$,Locator.LOCATOR_ICON_CONTAINER,Locator.LOCATOR_ICON_CONTAINER_CLASS);
+				itemLocator$=Locator.append(itemLocator$,Locator.LOCATOR_ICON_CLASS,getClass().getName());
+				itemLocator$=Locator.append(itemLocator$,Locator.LOCATOR_ICON_FILE,"bookmark.png");
+			*/
 				bookmarkNode.setUserObject(itemLocator$);
 				nl.add(bookmarkNode);
 			}
@@ -284,7 +297,7 @@ public class JBookmarksFacetOpenItem extends JFacetOpenItem implements JRequeste
 					   }
 					   if(JEntityDigestDisplay.LOCATOR_FACET_COMPONENT.equals(type$)){
 						   String entityKey$=locator.getProperty(EntityHandler.ENTITY_KEY);
-						   JBookmarksEditor be=new JBookmarksEditor();
+						   JBookmarksFacetOpenItem be=new JBookmarksFacetOpenItem();
 						   String beLocator$=be.getLocator();
 						   beLocator$=Locator.append(beLocator$, Entigrator.ENTIHOME, entihome$);
 						   beLocator$=Locator.append(beLocator$, EntityHandler.ENTITY_KEY, entityKey$);
@@ -305,4 +318,156 @@ public class JBookmarksFacetOpenItem extends JFacetOpenItem implements JRequeste
 			    });
 		return popup;
 	}
+@Override
+public String getFacetIconName() {
+	return "bookmark.png";
+}
+@Override
+public String getWebView(Entigrator entigrator, String locator$) {
+	try{
+		Properties locator=Locator.toProperties(locator$);
+		String webHome$=locator.getProperty(WContext.WEB_HOME);
+		String entityLabel$=locator.getProperty(EntityHandler.ENTITY_LABEL);
+		String webRequester$=locator.getProperty(WContext.WEB_REQUESTER);
+		if(debug)
+		System.out.println("JBookmarksFacetOpenItem:web home="+webHome$+ " web requester="+webRequester$);
+		 entityKey$=entigrator.indx_keyAtLabel(entityLabel$);
+		    Sack entity=entigrator.getEntityAtKey(entityKey$);
+	        Core[]	ca=entity.elementGet("jbookmark");
+		StringBuffer sb=new StringBuffer();
+		sb.append("<!DOCTYPE html PUBLIC \"-//W3C//DTD HTML 4.01//EN\" \"http://www.w3.org/TR/html4/strict.dtd\">");
+		sb.append("<html>");
+		sb.append("<head>");
+		
+		sb.append(WUtils.getMenuBarScript());
+		sb.append(WUtils.getMenuBarStyle());
+	    sb.append("</head>");
+	    sb.append("<body onload=\"onLoad()\" >");
+	    sb.append("<ul class=\"menu_list\">");
+	    sb.append("<li class=\"menu_item\"><a id=\"back\">Back</a></li>");
+	    sb.append("<li class=\"menu_item\"><a href=\""+webHome$+"\">Home</a></li>");
+	    String navLocator$=Locator.append(locator$, BaseHandler.HANDLER_CLASS, JBaseNavigator.class.getName());
+	    navLocator$=Locator.append(navLocator$, Entigrator.ENTIHOME, entigrator.getEntihome());
+	    String navUrl$=webHome$+"?"+WContext.WEB_LOCATOR+"="+Base64.encodeBase64URLSafeString(navLocator$.getBytes());
+	    sb.append("<li class=\"menu_item\"><a href=\""+navUrl$+"\">Base</a></li>");
+	    if(hasMultipleImages(ca)){
+	    	String shLocator$=Locator.append(locator$, BaseHandler.HANDLER_CLASS, JFileOpenItem.class.getName());
+		    shLocator$=Locator.append(shLocator$, Entigrator.ENTIHOME, entigrator.getEntihome());
+		    shLocator$=Locator.append(shLocator$, EntityHandler.ENTITY_KEY, entityKey$);
+		    shLocator$=Locator.append(shLocator$, WContext.WEB_REQUESTER, this.getClass().getName());
+		    shLocator$=Locator.append(shLocator$,FACET_HANDLER_CLASS,BookmarksHandler.class.getName());
+		    String shUrl$=webHome$+"?"+WContext.WEB_LOCATOR+"="+Base64.encodeBase64URLSafeString(shLocator$.getBytes());
+	    	sb.append("<li class=\"menu_item\"><a href=\""+shUrl$+"\">Slideshow</a></li>");
+	    }
+	    sb.append("<li class=\"menu_item\"><a href=\""+webHome$.replace("entry", WContext.ABOUT)+"\">About</a></li>");
+	    sb.append("</ul>");
+	    sb.append("<table><tr><td>Base:</td><td><strong>");
+	    sb.append(entigrator.getBaseName());
+	    sb.append("</strong></td></tr><tr><td>Entity: </td><td><strong>");
+	    sb.append(entityLabel$);
+	    sb.append("</strong></td></tr>");
+	    sb.append("<tr><td>Facet: </td><td><strong>Bookmarks</strong></td></tr>");
+	    sb.append("</table>");
+	   
+        if(ca!=null){
+        	sb.append("<script>");
+        	String foiTitle$;
+        	String foiLocator$;
+        	String foiIcon$;
+        	Properties foiLocator;
+        	  Hashtable<String,String> tab=new Hashtable<String,String>();
+            ArrayList <String>sl=new ArrayList<String>();
+            String foiItem$;
+            JEntityFacetPanel facetPanel=new JEntityFacetPanel();
+            String facetPanelType$=facetPanel.getType();
+            String foiType$;
+            for(Core c:ca){
+        		try{
+        		foiLocator$=c.value;
+        		if(debug)
+            		System.out.println("JBookmarksFacetOpenItem:getWebView: bm locator="+foiLocator$);
+        		foiTitle$=c.type;
+        		foiLocator=Locator.toProperties(foiLocator$);
+                foiType$=foiLocator.getProperty(JContext.CONTEXT_TYPE);
+                foiIcon$=JConsoleHandler.getIcon(entigrator,c.value);
+                if(debug)
+            		System.out.println("JBookmarksFacetOpenItem:getWebView: foiType="+foiType$+" facet panel type="+facetPanelType$);
+        		
+                if(facetPanelType$.equals(foiType$)){
+                	if(debug)
+                		System.out.println("JBookmarksFacetOpenItem:getWebView: make facet panel locator");
+            	
+                	foiLocator.setProperty(BaseHandler.HANDLER_CLASS,JEntityFacetPanel.class.getName());
+                	foiLocator.setProperty(Entigrator.ENTIHOME,entigrator.getEntihome());
+                	foiLocator.setProperty(EntityHandler.ENTITY_LABEL,foiTitle$);
+                	if(debug)
+                	System.out.println("JBookmarksFacetOpenItem:getWebView:foi locator(prop)="+foiLocator);
+                	sb.append("window.localStorage.setItem(\"back."+JEntityFacetPanel.class.getName()+"\",\""+this.getClass().getName()+"\");");
+                }
+               
+ 			   if(debug)
+ 			      System.out.println("JBookmarksFacetOpenItem:getWebView: foiLocator="+Locator.toString(foiLocator));
+			foiItem$=getItem(foiIcon$, webHome$,foiTitle$,Locator.toString(foiLocator));
+ 			sl.add(foiTitle$);
+ 			tab.put(foiTitle$, foiItem$);
+        	  }catch(Exception ee){
+        		  System.out.println("JBookmarksFacetOpenItem:getWebView:"+ee.toString());
+        	  }
+        	}
+            
+            sb.append("</script>");
+            Collections.sort(sl);
+            for(String s:sl)
+            	sb.append(tab.get(s)+"<br>");
+            	
+        }
+        sb.append("<script>");
+      
+	    
+	    sb.append("function onLoad() {");
+	    sb.append("initBack(\""+this.getClass().getName()+"\",\""+webRequester$+"\");");
+	    sb.append("}");
+	    
+	    sb.append("window.localStorage.setItem(\""+this.getClass().getName()+"\",\""+Base64.encodeBase64URLSafeString(locator$.getBytes())+"\");");
+	 	    sb.append("</script>");
+	    sb.append("</body>");
+	    sb.append("</html>");
+	    return sb.toString();
+	}catch(Exception e){
+		Logger.getLogger(JBasesPanel.class.getName()).severe(e.toString());	
+	}
+	return null;
+}
+private boolean hasMultipleImages(Core[] ca){
+	if(ca==null)
+		return false;
+	int i=0;
+	MimetypesFileTypeMap mimetypesFileTypeMap = new MimetypesFileTypeMap();
+	mimetypesFileTypeMap.addMimeTypes("image png tif jpg jpeg bmp gif tiff"); 
+	String fname$;
+	 
+	for(Core c:ca){
+		fname$=Locator.getProperty(c.value, JFolderPanel.FILE_NAME);
+		if(fname$!=null)
+		if("image".equalsIgnoreCase(mimetypesFileTypeMap.getContentType(fname$)))
+				return true;
+	}
+	
+	 
+		return false;
+}
+@Override
+public String getWebConsole(Entigrator entigrator, String locator$) {
+	return null;
+}
+private String getItem(String icon$, String url$, String title$,String foiLocator$){
+	if(debug)
+			System.out.println("JBookmarksFacetOpenItem:getItem: locator="+foiLocator$);
+  
+	String iconTerm$="<img src=\"data:image/png;base64,"+icon$+
+			  "\" width=\"24\" height=\"24\" alt=\""+title$+"\">";
+	foiLocator$=Locator.append(foiLocator$,WContext.WEB_HOME, url$);
+	foiLocator$=Locator.append(foiLocator$,WContext.WEB_REQUESTER, this.getClass().getName());
+	  return iconTerm$+"<a href=\""+url$+"?"+WContext.WEB_LOCATOR+"="+Base64.encodeBase64URLSafeString(foiLocator$.getBytes())+"\" >"+" "+title$+"</a>";
+}
 }

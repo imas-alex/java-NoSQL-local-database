@@ -38,9 +38,12 @@ public class JExtensionRenderer extends gdt.jgui.entity.folder.JFolderPanel{
 				locator.setProperty(EntityHandler.ENTITY_KEY,entityKey$);
 			if(entihome$!=null)
 				locator.setProperty(Entigrator.ENTIHOME,entihome$);
-			 String icon$=Support.readHandlerIcon(null,getClass(), "facet.png");
-			    if(icon$!=null)
-			    	locator.setProperty(Locator.LOCATOR_ICON,icon$);
+			// String icon$=Support.readHandlerIcon(null,getClass(), "facet.png");
+			 //   if(icon$!=null)
+			  //
+			locator.setProperty(Locator.LOCATOR_ICON_CONTAINER,Locator.LOCATOR_ICON_CONTAINER_CLASS);
+			locator.setProperty(Locator.LOCATOR_ICON_CLASS,getClass().getName());
+			locator.setProperty(Locator.LOCATOR_ICON_FILE,"extension.png");   
 			return Locator.toString(locator);
 			}catch(Exception e){
 	        LOGGER.severe(e.toString());
@@ -68,7 +71,7 @@ public class JExtensionRenderer extends gdt.jgui.entity.folder.JFolderPanel{
 	 * @return the icon string.
 	 */
 	@Override
-	public String getCategoryIcon() {
+	public String getCategoryIcon(Entigrator entigrator) {
 		
 		return Support.readHandlerIcon(null,getClass(), "facet.png");
 	}
@@ -87,5 +90,10 @@ public class JExtensionRenderer extends gdt.jgui.entity.folder.JFolderPanel{
 	@Override
 	public String newEntity(JMainConsole console, String locator$) {
 	 		return null;
+	}
+	@Override
+	public String getFacetIcon() {
+		
+		return "extension.png";
 	}
 }

@@ -17,6 +17,8 @@ package gdt.jgui.console;
     along with JEntigrator.  If not, see <http://www.gnu.org/licenses/>.
  */
 import gdt.data.grain.Locator;
+import gdt.data.store.Entigrator;
+
 import javax.swing.JPanel;
 import javax.swing.BoxLayout;
 import javax.swing.JCheckBox;
@@ -58,6 +60,8 @@ public class JItemPanel extends JPanel {
 	protected JLabel title ;
 	protected Timer timer	;
 	protected JPopupMenu popup;
+	
+	
 /**
  * The constructor.
  * @param console the main console.
@@ -87,7 +91,11 @@ public class JItemPanel extends JPanel {
 	        	 title.addMouseListener(new MousePopupListener());
 	      		title.setAlignmentX(Component.LEFT_ALIGNMENT);
 	      		add(title,BorderLayout.WEST );
-	          icon$=locator.getProperty(Locator.LOCATOR_ICON);
+	          //icon$=locator.getProperty(Locator.LOCATOR_ICON);
+	      		String entihome$=locator.getProperty(Entigrator.ENTIHOME);
+	      		Entigrator entigrator=console.getEntigrator(entihome$);
+	      		//icon$=entigrator.getIcon(locator$);
+	      		icon$=JConsoleHandler.getIcon(entigrator,locator$);
 	          if(icon$!=null){
 	        	  byte[] ba=Base64.decodeBase64(icon$);
 	        	  ImageIcon icon = new ImageIcon(ba);
@@ -122,6 +130,10 @@ public class JItemPanel extends JPanel {
 		super();
 		setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
 		setAlignmentX(Component.LEFT_ALIGNMENT);
+		title = new JLabel(title$, JLabel.LEFT);
+		 title.addMouseListener(new JItemPanel.MousePopupListener());
+  		title.setAlignmentX(Component.LEFT_ALIGNMENT);
+  		add(title,BorderLayout.WEST );
 	}
 	/**
 	 * Create the item panel.
@@ -151,9 +163,12 @@ public class JItemPanel extends JPanel {
 	        	 title.addMouseListener(new MousePopupListener());
 	      		title.setAlignmentX(Component.LEFT_ALIGNMENT);
 	      		add(title,BorderLayout.WEST );
-	          icon$=locator.getProperty(Locator.LOCATOR_ICON);
-	          
-	          if(icon$!=null){
+	          //icon$=locator.getProperty(Locator.LOCATOR_ICON);
+	      	  String	entihome$=locator.getProperty(Entigrator.ENTIHOME);	
+	          Entigrator entigrator=console.getEntigrator(entihome$);
+	      	  //icon$=entigrator.getIcon(locator$);
+	      	 icon$=JConsoleHandler.getIcon(entigrator,locator$);
+	      	  if(icon$!=null){
 	        	  byte[] ba=Base64.decodeBase64(icon$);
 	        	  ImageIcon icon = new ImageIcon(ba);
 	        	  Image image= icon.getImage().getScaledInstance(24, 24, 0);
@@ -163,6 +178,19 @@ public class JItemPanel extends JPanel {
 	          }else
 		        	  LOGGER.info("title is null");
 	       	}catch(Exception e){
+			LOGGER.severe(e.toString());
+		}
+		return this;
+	}
+	public JItemPanel instantiate(Entigrator entigrator,String locator$){
+		try{
+			//this.console=console;
+			this.locator$=locator$;
+			this.removeAll();
+			title$=Locator.getProperty(locator$,Locator.LOCATOR_TITLE);
+            icon$=JConsoleHandler.getIcon(entigrator,locator$);
+	       
+	}catch(Exception e){
 			LOGGER.severe(e.toString());
 		}
 		return this;
@@ -220,7 +248,8 @@ public void setChecked(boolean checked){
 		checkbox.setSelected(checked);
 }
 public void resetIcon(){
-	 if(icon$!=null){
+	try{
+	if(icon$!=null){
    	  byte[] ba=Base64.decodeBase64(icon$);
    	  ImageIcon icon = new ImageIcon(ba);
    	  Image image= icon.getImage().getScaledInstance(24, 24, 0);
@@ -229,6 +258,9 @@ public void resetIcon(){
    	  title.repaint();
    	  title.revalidate();
      }
+	}catch(Exception e){
+		Logger.getLogger(getClass().getName()).severe(e.toString());
+	}
 }
 @Override
 public boolean equals(Object v) {
@@ -247,7 +279,7 @@ public boolean equals(Object v) {
 public void setPopupMenu(JPopupMenu popup){
 	this.popup=popup;
 }
-class MousePopupListener extends MouseAdapter {
+public class MousePopupListener extends MouseAdapter {
   boolean isPopup=false;
 	public void mousePressed(MouseEvent e) {
 	//	System.out.println("ItemPanel:MousePopupListener:mouse pressed");

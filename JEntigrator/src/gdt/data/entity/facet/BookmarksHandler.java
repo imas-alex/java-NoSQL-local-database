@@ -54,7 +54,7 @@ public class BookmarksHandler extends FacetHandler{
 						if(!entity.existsElement("fhandler"))
 							entity.createElement("fhandler");
 							entity.putElementItem("fhandler", new Core(null,getClass().getName(),null));
-							entigrator.save(entity);
+							entigrator.replace(entity);
 					}
 	            result=true;
 				}

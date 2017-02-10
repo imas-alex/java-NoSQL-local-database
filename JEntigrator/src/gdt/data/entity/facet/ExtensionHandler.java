@@ -35,11 +35,12 @@ import org.apache.commons.codec.binary.Base64;
 
 import gdt.data.entity.EntityHandler;
 import gdt.data.entity.FacetHandler;
-
+import gdt.data.grain.Core;
 import gdt.data.grain.Locator;
 import gdt.data.grain.Sack;
 import gdt.data.store.Entigrator;
 import gdt.data.store.FileExpert;
+import gdt.jgui.console.JFacetOpenItem;
 /**
 * Contains methods to process an extension entity.
 * @author  Alexander Imas
@@ -58,7 +59,7 @@ private Logger LOGGER=Logger.getLogger(ExtensionHandler.class.getName());
  *  @param locator$ entity's locator 
  * @return true if applied false otherwise.
  */	
-
+static boolean debug=false;
 	@Override
 	public boolean isApplied(Entigrator entigrator, String locator$) {
 		try{
@@ -113,64 +114,81 @@ private Logger LOGGER=Logger.getLogger(ExtensionHandler.class.getName());
 	
 	public static Object loadHandlerInstance(Entigrator entigrator,String extension$,String handlerClass$){
 		try{
-		//System.out.println("ExtensionHandler:loadHandlerInstance:extension="+extension$+" handler="+handlerClass$);
-		
-		
+		if(debug)
+			System.out.println("ExtensionHandler:loadHandlerInstance:extension="+extension$+" handler="+handlerClass$);
 		Object obj=null;
-		Class<?>cls=entigrator.getClass(handlerClass$);
-	if(cls==null){
-		//	System.out.println("ExtensionHandler:loadHandlerInstance:1");
 		Sack extension=entigrator.getEntityAtKey(extension$);
 			String lib$=extension.getElementItemAt("field", "lib");
 			String jar$="jar:file:" +entigrator.getEntihome()+"/"+extension$+"/"+lib$+"!/";
+			if(debug)
+				System.out.println("ExtensionHandler:loadHandlerInstance:jar="+jar$);
 			ArrayList <URL> urll=new ArrayList<URL>();
 			urll.add(new URL(jar$));
-			
 			String[]sa=extension.elementListNoSorted("external");
 			if(sa!=null){
 				File file; 
 				for(String s:sa){
+					if(debug)
+						System.out.println("ExtensionHandler:loadHandlerInstance:s="+s);
+					
 					file=new File(entigrator.getEntihome()+"/"+extension$+"/"+s);
 					if(file.exists())
 						urll.add(new URL("jar:file:"+file.getPath()+"!/"));
 				}
 			}
 			URL[] urls=urll.toArray(new URL[0]);
-			URLClassLoader cl = URLClassLoader.newInstance(urls);
+			Core c=null;
+			String super$=null;
+			String facetHandler$;
+			//facet handler
+			c=extension.getElementItem("content.fhandler", handlerClass$);
+			if(c!=null)
+				super$=c.type;
+			if(super$==null){
+				facetHandler$=extension.getElementItemAtValue("content.jrenderer", handlerClass$);
+				if(facetHandler$!=null)
+				   super$=extension.getElementItem("content.jrenderer",facetHandler$).type;
+			}	
+			if(super$==null)
+				super$=extension.getElementItemAt("content.super", handlerClass$);
+			if(debug)
+				System.out.println("ExtensionHandler:loadHandlerInstance: handler="+handlerClass$+" super="+super$);
+		
 			
-		//	Class<?>cls=entigrator.getClass(handlerClass$);
-			
-					cls=cl.loadClass(handlerClass$);
-					
-			        if(cls==null){
-			        	System.out.println("ExtensionHandler:loadHandlerInstance:cannot load class ="+handlerClass$);
-			            return null;	
-			        }else{
-			        	//	System.out.println("ExtensionHandler:loadHandlerInstance:found class ="+handlerClass$);
-			        		entigrator.putClass(handlerClass$, cls);
-			        	}
-			        
+			URLClassLoader cl;
+			if(super$==null||"null".equals(super$))
+				cl= new URLClassLoader(urls);
+			else{
+				Class sh=Class.forName(super$);
+				ClassLoader shLoader=sh.getClassLoader();
+				cl= new URLClassLoader(urls,shLoader);
 			}
 			
+			Class cls=cl.loadClass(handlerClass$);
+			//cl.close();
+			if(debug)
+				System.out.println("ExtensionHandler:loadHandlerInstance:2");
+			if(cls==null)
+				if(debug)
+					System.out.println("ExtensionHandler:loadHandlerInstance:cannot load class="+handlerClass$);
+
 			try{
 				
 				Constructor[] ctors = cls.getDeclaredConstructors();
-			//	System.out.println("ExtensionHandler:loadHandlerInstance:ctors="+ctors.length);
 				Constructor ctor = null;
 				for (int i = 0; i < ctors.length; i++) {
 				    ctor = ctors[i];
 				    if (ctor.getGenericParameterTypes().length == 0)
 					break;
 				}
+				if(debug)
+					System.out.println("ExtensionHandler:loadHandlerInstance:constructor="+ctor.toGenericString());
 				ctor.setAccessible(true);
 		 	    obj = ctor.newInstance();
-				
 			}catch(java.lang.NoClassDefFoundError ee){
 				System.out.println("ExtensionHandler:loadHandlerInstance:"+ee.toString());
 				return null;
 			}
-			//if(obj!=null)
-	//	      System.out.println("ExtensionHandler:loadHandlerInstance:obj="+obj.getClass().getName());
 		    return obj;
 		}catch(Exception e){
 			Logger.getLogger(ExtensionHandler.class.getName()).severe(e.toString());
@@ -181,27 +199,48 @@ private Logger LOGGER=Logger.getLogger(ExtensionHandler.class.getName());
 	
 	private static FacetHandler[] listExtensionHandlers( Entigrator entigrator,String extension$){
 		try{
-		//	System.out.println("ExtesionHandler:listExtensionHandlers:extension="+extension$);
-			Sack extension=entigrator.getEntityAtKey(extension$);
+		
+		Sack extension=entigrator.getEntityAtKey(extension$);
 		String lib$=extension.getElementItemAt("field", "lib");
-		String[] sa=extension.elementList("content.fhandler");
-		if(sa==null)
+		if(debug)
+			System.out.println("ExtesionHandler:listExtensionHandlers:extension="+extension.getProperty("label")+" jar="+lib$);
+			
+		Core[] ca=extension.elementGet("content.fhandler");
+		if(ca==null)
 			return null;
 		
 		ArrayList<FacetHandler>fl=new ArrayList<FacetHandler>();
 		FacetHandler fh;
-		Class<?> cls;
+		Class<?> cls=null;
 		String jar$="jar:file:" +entigrator.getEntihome()+"/"+extension$+"/"+lib$+"!/";
 		URL[] urls = { new URL(jar$) };
-		URLClassLoader cl = URLClassLoader.newInstance(urls);
-		for(String aSa:sa){
+		//if(debug)
+		//System.out.println("ExtensionHandler:listExtensionHandlers:this jar="+entigrator.getClass().getProtectionDomain().getCodeSource().getLocation().toURI().getPath());
+		Class sh=null;
+		ClassLoader shLoader;
+		URLClassLoader cl;
+		for(Core c:ca){
 			try{
-			cls=(Class)entigrator.getHandler(aSa);	
-	//			System.out.println("ExtesionHandler:listExtensionHandlers:jar="+jar$);
-			if(cls==null){
-			   cls=cl.loadClass(aSa);
-			   entigrator.putHandler(aSa, cls);
-			}
+				if(debug)
+					System.out.println("ExtensionHandler:listExtensionHandlers:facet handler="+c.name);				
+			
+				 if(c.type==null||"null".equals(c.type))
+					 cl= new URLClassLoader(urls);
+				 else{
+				 sh=Class.forName(c.type);
+				 shLoader=sh.getClassLoader();
+				 cl= new URLClassLoader(urls,shLoader);
+				 if(debug)
+						System.out.println("ExtensionHandler:listExtensionHandlers:super class ="+c.type);
+				 }
+			  try{
+				cls=cl.loadClass(c.name);
+			  }catch(java.lang.ClassNotFoundException ee ){
+				  if(debug)
+					  System.out.println("ExtensionHandler:listExtensionHandlers:"+ee.toString());
+				   continue; 
+			  }
+			   entigrator.putHandler(c.name, cls);
 			fh=(FacetHandler)cls.newInstance();
 			fl.add(fh);
 			}catch(Exception ee){
@@ -216,12 +255,15 @@ private Logger LOGGER=Logger.getLogger(ExtensionHandler.class.getName());
 	}
 	public static String loadIcon(Entigrator entigrator,String extension$,String resource$){
 		try{
-			
-	//System.out.println("ExtensionHandler:loadIcon:extension="+extension$+" handler="+handlerClass$);
+	if(debug)		
+	System.out.println("ExtensionHandler:loadIcon:extension="+extension$+" resource="+resource$);
 			Sack extension=entigrator.getEntityAtKey(extension$);
 			String lib$=extension.getElementItemAt("field", "lib");
 			String jar$=entigrator.getEntihome()+"/"+extension$+"/"+lib$;
-	//		System.out.println("ExtensionHandler:loadIcon:jar="+jar$);
+			if(new File(entigrator.getEntihome()+"/"+extension$+"/res.jar").exists())
+				jar$=entigrator.getEntihome()+"/"+extension$+"/res.jar";
+	if(debug)		
+			System.out.println("ExtensionHandler:loadIcon:jar="+jar$);
 			  ZipFile zf = new ZipFile(jar$);
 			    Enumeration<? extends ZipEntry> entries = zf.entries();
 			    ZipEntry ze;
@@ -230,10 +272,12 @@ private Logger LOGGER=Logger.getLogger(ExtensionHandler.class.getName());
 			      try{
 			    	ze = entries.nextElement();
 			      sa=ze.getName().split("/");
-		//	      System.out.println("ExtensionHandler:loadIcon:zip entry="+sa[sa.length-1]);
+			     if(debug) 
+			      System.out.println("ExtensionHandler:loadIcon:zip entry="+sa[sa.length-1]+" resource="+resource$);
 			      if(resource$.equals(sa[sa.length-1])){
 			    	  InputStream is=zf.getInputStream(ze);
-		//	    	  System.out.println("ExtensionHandler:loadIcon:input stream="+is.toString());
+			    	  if(debug)
+			    	  System.out.println("ExtensionHandler:loadIcon:input stream="+is.toString());
 						ByteArrayOutputStream bos = new ByteArrayOutputStream();
 				            byte[] b = new byte[1024];
 				            int bytesRead = 0;

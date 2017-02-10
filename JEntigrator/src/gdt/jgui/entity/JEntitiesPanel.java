@@ -22,6 +22,7 @@ import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Hashtable;
 import java.util.Properties;
 import java.util.logging.Logger;
 import javax.swing.JMenu;
@@ -32,11 +33,16 @@ import javax.swing.event.MenuListener;
 import org.apache.commons.codec.binary.Base64;
 import gdt.data.entity.BaseHandler;
 import gdt.data.entity.EntityHandler;
+import gdt.data.entity.FacetHandler;
+import gdt.data.grain.Core;
 import gdt.data.grain.Locator;
 import gdt.data.grain.Sack;
 import gdt.data.grain.Support;
 import gdt.data.store.Entigrator;
+import gdt.jgui.base.JBaseNavigator;
+import gdt.jgui.base.JBasesPanel;
 import gdt.jgui.base.JCategoryPanel;
+import gdt.jgui.base.JDesignPanel;
 import gdt.jgui.console.JConsoleHandler;
 import gdt.jgui.console.JContext;
 import gdt.jgui.console.JFacetRenderer;
@@ -44,13 +50,15 @@ import gdt.jgui.console.JItemPanel;
 import gdt.jgui.console.JItemsListPanel;
 import gdt.jgui.console.JMainConsole;
 import gdt.jgui.console.ReloadDialog;
+import gdt.jgui.console.WContext;
+import gdt.jgui.console.WUtils;
 /**
  * Displays the list of entities.
  * @author imasa
  *
  */
 
-public class JEntitiesPanel extends JItemsListPanel {
+public class JEntitiesPanel extends JItemsListPanel implements WContext {
 	private static final long serialVersionUID = 1L;
 	
 	
@@ -99,7 +107,11 @@ public class JEntitiesPanel extends JItemsListPanel {
 		menu.addMenuListener(new MenuListener(){
 			@Override
 			public void menuSelected(MenuEvent e) {
+				try{
 				menu.removeAll();
+				}catch(Exception ee){
+					System.out.println("JEntitiesPanel:getConextMenu:"+ee.toString());
+				}
 				if(mia!=null)
 					 for(JMenuItem mi:mia)
 					try{
@@ -205,8 +217,12 @@ public class JEntitiesPanel extends JItemsListPanel {
 				        	//locator$=getLocator();
 			        	  apLocator$=Locator.append(apLocator$,Entigrator.ENTIHOME,entihome$);
 						  apLocator$=Locator.append(apLocator$, EntityHandler.ENTITY_LIST,Locator.toString(ea));
-					      String icon$=Support.readHandlerIcon(null,JEntityPrimaryMenu.class, "archive.png");
-					      apLocator$=Locator.append(apLocator$, Locator.LOCATOR_ICON,icon$);
+					      //String icon$=Support.readHandlerIcon(null,JEntityPrimaryMenu.class, "archive.png");
+					      //apLocator$=Locator.append(apLocator$, Locator.LOCATOR_ICON,icon$);
+						  apLocator$=Locator.append(apLocator$,Locator.LOCATOR_ICON_CONTAINER,Locator.LOCATOR_ICON_CONTAINER_CLASS);
+						  apLocator$=Locator.append(apLocator$,Locator.LOCATOR_ICON_CLASS,JEntityPrimaryMenu.class.getName());
+						  apLocator$=Locator.append(apLocator$,Locator.LOCATOR_ICON_FILE,"archive.png.png");
+					
 						  JConsoleHandler.execute(console, apLocator$);
 							}
 					} );
@@ -305,19 +321,24 @@ public class JEntitiesPanel extends JItemsListPanel {
 		    if(entityKey$!=null)
 			       locator.setProperty(EntityHandler.ENTITY_KEY,entityKey$);
 		    locator.setProperty(JItemsListPanel.POSITION,String.valueOf(getPosition()));
-		    String icon$=Support.readHandlerIcon(null,JEntitiesPanel.class, "entities.png");
+		   // String icon$=Support.readHandlerIcon(null,JEntitiesPanel.class, "entities.png");
+		    locator.setProperty(Locator.LOCATOR_ICON_CONTAINER,Locator.LOCATOR_ICON_CONTAINER_CLASS);
+			locator.setProperty(Locator.LOCATOR_ICON_CLASS,getClass().getName());
+			//locator.setProperty(Locator.LOCATOR_ICON_FILE,"bookmark.png");
 		    if(containerKey$!=null){
 			       locator.setProperty(EntityHandler.ENTITY_CONTAINER,containerKey$);
-			       icon$=Support.readHandlerIcon(null,JEntitiesPanel.class, "clip.png");
+			       //icon$=Support.readHandlerIcon(null,JEntitiesPanel.class, "clip.png");
+			       locator.setProperty(Locator.LOCATOR_ICON_FILE,"clip.png");
 		    }
 		    if(componentKey$!=null){
 			       locator.setProperty(EntityHandler.ENTITY_COMPONENT,componentKey$);
-			       icon$=Support.readHandlerIcon(null,JEntitiesPanel.class, "box.png");
+			       //icon$=Support.readHandlerIcon(null,JEntitiesPanel.class, "box.png");
+			       locator.setProperty(Locator.LOCATOR_ICON_FILE,"box.png");
 		    }
 		    
     	    locator.setProperty(Locator.LOCATOR_TITLE, getTitle());
-		    if(icon$!=null)
-		    	locator.setProperty(Locator.LOCATOR_ICON,icon$);
+		    //if(icon$!=null)
+		    //	locator.setProperty(Locator.LOCATOR_ICON,icon$);
 		    locator.setProperty(BaseHandler.HANDLER_SCOPE,JConsoleHandler.CONSOLE_SCOPE);
 		    locator.setProperty(BaseHandler.HANDLER_CLASS,JEntitiesPanel.class.getName());
 			if(list$!=null)
@@ -347,7 +368,7 @@ public class JEntitiesPanel extends JItemsListPanel {
         	 saveId$=entigrator.store_saveId();
         	
         	
-			 JItemPanel[] ipl= listEntitiesAtLabelList( console,locator$);
+			 JItemPanel[] ipl= listEntitiesAtList( console,locator$);
         	 putItems(ipl);
         	 try{
         		 pos=Integer.parseInt(locator.getProperty(POSITION));
@@ -393,7 +414,7 @@ public String getTitle() {
 	public String getType() {
 		return "Entities";
 	}
-	public static JItemPanel[] listEntitiesAtLabelList(JMainConsole console,String locator$){
+	public static JItemPanel[] listEntitiesAtList(JMainConsole console,String locator$){
 		try{
 			   Properties locator=Locator.toProperties(locator$);
 			   String list$=locator.getProperty(EntityHandler.ENTITY_LIST);
@@ -410,30 +431,59 @@ public String getTitle() {
 			   JItemPanel itemPanel;
 			   String entityLocator$;
 			   int i=0;
+			   String entityKey$;
 		   for(String aLa:la){
 			   try{
 			if(debug)
 				   System.out.println("JEntitiesPanel: listEntitiesAtLabelList:aLa="+aLa);	   
-			   entityLocator$=EntityHandler.getEntityLocator(entigrator, aLa);
+			      entityLocator$=EntityHandler.getEntityLocatorAtLabel(entigrator, aLa);
+			   if(entityLocator$==null){
+			       entityLocator$=EntityHandler.getEntityLocatorAtKey(entigrator, aLa);
+			       entityKey$=aLa;
+			   }else
+				   entityKey$=entigrator.indx_keyAtLabel(aLa);
 		  if(debug)   
 			   System.out.println("JEntitiesPanel: listEntitiesAtLabelList:locator="+entityLocator$);	
-			   if(entityLocator$==null)
-				   entityLocator$=EntityHandler.getEntityLocatorAtKey(entigrator, aLa);
-			   if(entityLocator$==null)
-				   continue;
 			   entityLocator$=Locator.append(entityLocator$,Entigrator.ENTIHOME , entihome$);
 			   entityLocator$=Locator.append(entityLocator$,Locator.LOCATOR_CHECKABLE , Locator.LOCATOR_TRUE);
-			  // if("No label".equals(Locator.getProperty(entityLocator$, Locator.LOCATOR_TITLE)))
-				//   continue;
 			   JEntityFacetPanel em=new JEntityFacetPanel();
 			   entityLocator$=Locator.append(entityLocator$, JFacetRenderer.ONLY_ITEM, Locator.LOCATOR_TRUE);
 			   em.instantiate(console, entityLocator$);
-			   
 			   String emLocator$=em.getLocator();
-			   emLocator$=Locator.append(emLocator$,Locator.LOCATOR_CHECKABLE, Locator.LOCATOR_TRUE);
-			   emLocator$=Locator.append(emLocator$,POSITION, String.valueOf(i++));
-			   
-			   itemPanel=new JItemPanel(console,emLocator$);
+			   Properties emLocator=Locator.toProperties(emLocator$);
+			   emLocator.setProperty(Locator.LOCATOR_CHECKABLE, Locator.LOCATOR_TRUE);
+			   emLocator.setProperty(POSITION, String.valueOf(i++));
+			   String iconFile$=entigrator.ent_getIconAtKey(entityKey$);
+			   if(iconFile$!=null&&!"sack.gif".equals(iconFile$)&&!"null".equals(iconFile$)){
+			   emLocator.setProperty(Locator.LOCATOR_ICON_CONTAINER,Locator.LOCATOR_ICON_CONTAINER_ICONS);
+			   emLocator.setProperty(Locator.LOCATOR_ICON_FILE,iconFile$);
+			   }else{
+					String type$=entigrator.getEntityType(entityKey$);
+					if(debug)   
+						   System.out.println("JEntitiesPanel: listEntitiesAtLabelList:entity type="+type$);	
+					boolean found=false;	
+					FacetHandler[] fha=BaseHandler.listAllHandlers(entigrator);
+			    	   for(FacetHandler fh:fha){
+			    		if(debug)   
+							   System.out.println("JEntitiesPanel: listEntitiesAtLabelList:handler type="+fh.getType());	
+						
+			    		if(type$.equals(fh.getType())){
+			    			 JFacetRenderer facetRenderer=JConsoleHandler.getFacetRenderer(entigrator, fh.getClass().getName());
+			    			 emLocator.setProperty(Locator.LOCATOR_ICON_CONTAINER,Locator.LOCATOR_ICON_CONTAINER_CLASS);
+			    			 emLocator.setProperty(Locator.LOCATOR_ICON_CLASS,facetRenderer.getClass().getName());
+			    			 emLocator.setProperty(Locator.LOCATOR_ICON_FILE,facetRenderer.getFacetIcon());
+			    			 found=true;
+			    			 break;
+			    		}
+			    	   }
+			    	   if(!found){
+			    		 emLocator.setProperty(Locator.LOCATOR_ICON_CONTAINER,Locator.LOCATOR_ICON_CONTAINER_CLASS);
+			    		 emLocator.setProperty(Locator.LOCATOR_ICON_CLASS,JEntitiesPanel.class.getName());
+			    		 emLocator.setProperty(Locator.LOCATOR_ICON_FILE,"facet.png");
+			    		
+			    	   }
+			   }
+			   itemPanel=new JItemPanel(console,Locator.toString(emLocator));
 			   ipl.add(itemPanel);
 			   }catch(Exception ee){
 				   Logger.getLogger(JEntitiesPanel.class.getName()).info(ee.toString());
@@ -566,7 +616,128 @@ public String getTitle() {
 		
 	}
 
-	
-	
+	@Override
+	public String getWebView(Entigrator entigrator, String locator$) {
+		try{
+			if(debug)
+				System.out.println("JEntitesPanel:BEGIN:locator="+locator$);
+				
+			Properties locator=Locator.toProperties(locator$);
+			String webHome$=locator.getProperty(WContext.WEB_HOME);
+			String webRequester$=locator.getProperty(WContext.WEB_REQUESTER);
+			String mode$=locator.getProperty(JDesignPanel.MODE);
+			String propertyName$=locator.getProperty(JDesignPanel.PROPERTY_NAME);
+			String propertyValue$=locator.getProperty(JDesignPanel.PROPERTY_VALUE);
+			if(debug)
+			System.out.println("JEntitiesPanel:web home="+webHome$+ " web requester="+webRequester$);
+			// String icon$=Support.readHandlerIcon(null,JBaseNavigator.class, "base.png");
+			StringBuffer sb=new StringBuffer();
+			sb.append("<!DOCTYPE html PUBLIC \"-//W3C//DTD HTML 4.01//EN\" \"http://www.w3.org/TR/html4/strict.dtd\">");
+			sb.append("<html>");
+			sb.append("<head>");
+			sb.append(WUtils.getMenuBarScript());
+			sb.append(WUtils.getMenuBarStyle());
+		    sb.append("</head>");
+		    sb.append("<body onload=\"onLoad()\" >");
+		    sb.append("<ul class=\"menu_list\">");
+		    sb.append("<li class=\"menu_item\"><a id=\"back\">Back</a></li>");
+		    sb.append("<li class=\"menu_item\"><a href=\""+webHome$+"\">Home</a></li>");
+		    String navLocator$=Locator.append(locator$, BaseHandler.HANDLER_CLASS, JBaseNavigator.class.getName());
+		    navLocator$=Locator.append(navLocator$, Entigrator.ENTIHOME, entigrator.getEntihome());
+		    String navUrl$=webHome$+"?"+WContext.WEB_LOCATOR+"="+Base64.encodeBase64URLSafeString(navLocator$.getBytes());
+		    sb.append("<li class=\"menu_item\"><a href=\""+navUrl$+"\">Base</a></li>");
+		    sb.append("<li class=\"menu_item\"><a href=\""+webHome$.replace("entry", WContext.ABOUT)+"\">About</a></li>");
+		    sb.append("</ul>");
+		    sb.append("<table><tr><td>Base:</td><td><strong>");
+		    sb.append(entigrator.getBaseName());
+		    sb.append("</strong></td></tr>");
+		    sb.append("<tr><td>Property:</td><td><strong>");
+		    	    sb.append(propertyName$);
+		    	    sb.append("</strong></td></tr>");
+		    sb.append("</table>");
+		    String [] sa=null;
+		    if(JDesignPanel.PROPERTY_MODE.equals(mode$))
+		    	sa=entigrator.indx_listEntitiesAtPropertyName(propertyName$);
+		    if(JDesignPanel.VALUE_MODE.equals(mode$))
+		    	sa=entigrator.indx_listEntities(propertyName$,propertyValue$);
+		    if(sa!=null){
+		    String[] ia=listWebItems(entigrator,webHome$,sa);
+		    if(ia!=null)
+		    	for(String i:ia)
+		    	sb.append(i+"<br>");
+		    }	  
+	        sb.append("<script>");
+	      
+		    
+		    sb.append("function onLoad() {");
+		    sb.append("initBack(\""+this.getClass().getName()+"\",\""+webRequester$+"\");");
+		    sb.append("}");
+		    sb.append("window.localStorage.setItem(\""+this.getClass().getName()+"\",\""+Base64.encodeBase64URLSafeString(locator$.getBytes())+"\");");
+		    
+	 	    sb.append("</script>");
+		    sb.append("</body>");
+		    sb.append("</html>");
+		    return sb.toString();
+		}catch(Exception e){
+			Logger.getLogger(JBasesPanel.class.getName()).severe(e.toString());	
+		}
+		return null;
+	}
+
+	@Override
+	public String getWebConsole(Entigrator entigrator, String locator$) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	private  static String[] listWebItems(Entigrator entigrator,String webHome$,String[] sa){
+		try{
+			
+	    Properties foiLocator=new Properties();   
+	   	foiLocator.setProperty(BaseHandler.HANDLER_CLASS,JEntityFacetPanel.class.getName());
+    	foiLocator.setProperty(Entigrator.ENTIHOME,entigrator.getEntihome());
+    	
+	    ArrayList<String>tl=new ArrayList<String>();
+	    String entityLocator$;
+	    String entityIcon$;
+	    String foiItem$;
+	    String entityLabel$;
+	    Hashtable<String,String> tab=new Hashtable<String,String>();
+		   for(String s:sa){
+			   try{
+				   //if(debug)
+				//	   		System.out.println("JEntitiesPanelPanel:listCategoryMembers:c type="+c.type+" name="+c.name+" value="+c.value);
+				   entityLocator$=EntityHandler.getEntityLocatorAtKey(entigrator, s);
+				   entityLabel$=Locator.getProperty(entityLocator$,EntityHandler.ENTITY_LABEL); 
+				   entityIcon$=JConsoleHandler.getIcon(entigrator, entityLocator$);
+				   entityLocator$=Locator.append(entityLocator$,BaseHandler.HANDLER_CLASS, JEntityFacetPanel.class.getName());
+				   entityLocator$=Locator.append(entityLocator$,Entigrator.ENTIHOME, entigrator.getEntihome());
+				   foiItem$=getItem(entityIcon$, webHome$,entityLabel$,entityLocator$);
+                   tl.add(entityLabel$);
+                   tab.put(entityLabel$,foiItem$);
+			   }catch(Exception ee){
+				   Logger.getLogger(JCategoryPanel.class.getName()).info(ee.toString());
+			   }
+		   }
+		   Collections.sort(tl);
+		   ArrayList<String>sl=new ArrayList<String>();
+		   for(String s:tl)
+			   sl.add(tab.get(s));
+		   return sl.toArray(new String[0]);
+		}catch(Exception e) {
+        	Logger.getLogger(JEntitiesPanel.class.getName()).severe(e.toString());
+            return null;
+        }
+	}
+	private static String getItem(String icon$, String url$, String title$,String foiLocator$){
+		if(debug)
+				System.out.println("JBookmarksFacetOpenItem:getItem: locator="+foiLocator$);
+	    
+		String iconTerm$="<img src=\"data:image/png;base64,"+WUtils.scaleIcon(icon$)+
+				  "\" width=\"24\" height=\"24\" alt=\""+title$+"\">";
+		foiLocator$=Locator.append(foiLocator$,WContext.WEB_HOME, url$);
+		foiLocator$=Locator.append(foiLocator$,WContext.WEB_REQUESTER, JCategoryPanel.class.getName());
+		  return iconTerm$+"<a href=\""+url$+"?"+WContext.WEB_LOCATOR+"="+Base64.encodeBase64URLSafeString(foiLocator$.getBytes())+"\" >"+" "+title$+"</a>";
+	}	
 	
 }

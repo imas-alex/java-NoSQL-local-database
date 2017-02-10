@@ -68,9 +68,14 @@ public String getLocator(){
 		locator.setProperty(EntityHandler.ENTITY_KEY,entityKey$);
 	if(entihome$!=null)
 		locator.setProperty(Entigrator.ENTIHOME,entihome$);
-	 String icon$=Support.readHandlerIcon(null,getClass(), "procedure.png");
+	/*
+	String icon$=Support.readHandlerIcon(null,getClass(), "procedure.png");
     if(icon$!=null)
     	locator.setProperty(Locator.LOCATOR_ICON,icon$);
+    	*/
+	locator.setProperty(Locator.LOCATOR_ICON_CONTAINER,Locator.LOCATOR_ICON_CONTAINER_CLASS);
+	locator.setProperty(Locator.LOCATOR_ICON_CLASS,getClass().getName());
+	locator.setProperty(Locator.LOCATOR_ICON_FILE,"procedure.png");
     if(entihome$!=null){   
  	locator.setProperty(Locator.LOCATOR_CHECKABLE,Locator.LOCATOR_TRUE);
 	    }
@@ -125,7 +130,7 @@ public String getFacetName() {
  * @return the facet icon string.
  */
 @Override
-public String getFacetIcon() {
+public String getFacetIcon(Entigrator entigrator) {
 	return Support.readHandlerIcon(null,getClass(), "procedure.png");
 }
 /**
@@ -187,7 +192,7 @@ public String getFacetRenderer() {
  * @return  null.
  */
 @Override
-public DefaultMutableTreeNode[] getDigest() {
+public DefaultMutableTreeNode[] getDigest(Entigrator entigrator,String locator$) {
 	return null;
 }
 /**
@@ -205,5 +210,9 @@ public FacetHandler getFacetHandler() {
 @Override
 public JPopupMenu getPopupMenu(final String digestLocator$) {
 return null;
+}
+@Override
+public String getFacetIconName() {
+	return "procedure.png";
 }
 }

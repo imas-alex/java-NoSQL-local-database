@@ -21,6 +21,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.net.URI;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Hashtable;
 import java.util.Properties;
 import java.util.logging.Logger;
 import javax.swing.JMenuItem;
@@ -30,17 +32,22 @@ import org.apache.commons.codec.binary.Base64;
 import gdt.data.entity.BaseHandler;
 import gdt.data.entity.EntityHandler;
 import gdt.data.entity.FacetHandler;
+import gdt.data.entity.facet.BookmarksHandler;
 import gdt.data.entity.facet.WebsetHandler;
 import gdt.data.grain.Core;
 import gdt.data.grain.Locator;
 import gdt.data.grain.Sack;
 import gdt.data.grain.Support;
 import gdt.data.store.Entigrator;
+import gdt.jgui.base.JBaseNavigator;
+import gdt.jgui.base.JBasesPanel;
 import gdt.jgui.console.JConsoleHandler;
 import gdt.jgui.console.JContext;
 import gdt.jgui.console.JFacetOpenItem;
 import gdt.jgui.console.JMainConsole;
 import gdt.jgui.console.JRequester;
+import gdt.jgui.console.WContext;
+import gdt.jgui.console.WUtils;
 import gdt.jgui.entity.JEntitiesPanel;
 import gdt.jgui.entity.JEntityDigestDisplay;
 import gdt.jgui.entity.JEntityFacetPanel;
@@ -51,11 +58,12 @@ import gdt.jgui.entity.folder.JFileOpenItem;
  * @author imasa
  *
  */
-public class JWebsetFacetOpenItem extends JFacetOpenItem implements JRequester {
+public class JWebsetFacetOpenItem extends JFacetOpenItem implements JRequester,WContext {
 	private static final long serialVersionUID = 1L;
 	private static final String NODE_TYPE_WEB_NAME = "node type web name";
 	private static final String NODE_TYPE_WEB_ADDRESS = "node type web address";
-	private static final String LOCATOR_TYPE_WEB_ADDRESS = "locator type web address";
+	public static final String LOCATOR_TYPE_WEB_ADDRESS = "locator type web address";
+	boolean  debug=false;
 /**
  * The default constructor.
  */
@@ -139,7 +147,7 @@ public class JWebsetFacetOpenItem extends JFacetOpenItem implements JRequester {
 	 * @return the facet icon string.
 	 */
 	@Override
-	public String getFacetIcon() {
+	public String getFacetIcon(Entigrator entigrator) {
 		return Support.readHandlerIcon(null,JEntitiesPanel.class, "globe.png");
 	}
 	/**
@@ -160,9 +168,14 @@ public class JWebsetFacetOpenItem extends JFacetOpenItem implements JRequester {
 			locator.setProperty(EntityHandler.ENTITY_KEY,entityKey$);
 		if(entihome$!=null)
 			locator.setProperty(Entigrator.ENTIHOME,entihome$);
-		 String icon$=Support.readHandlerIcon(null,JEntitiesPanel.class, "globe.png");
+		/*
+		String icon$=Support.readHandlerIcon(null,JEntitiesPanel.class, "globe.png");
 		    if(icon$!=null)
 		    	locator.setProperty(Locator.LOCATOR_ICON,icon$);
+		    	*/
+		locator.setProperty(Locator.LOCATOR_ICON_CONTAINER,Locator.LOCATOR_ICON_CONTAINER_CLASS);
+		locator.setProperty(Locator.LOCATOR_ICON_CLASS,getClass().getName());
+		locator.setProperty(Locator.LOCATOR_ICON_FILE,"globe.png");
 		    if(entihome$!=null)   
 	 	locator.setProperty(Locator.LOCATOR_CHECKABLE,Locator.LOCATOR_TRUE);
 		return Locator.toString(locator);
@@ -173,8 +186,7 @@ public class JWebsetFacetOpenItem extends JFacetOpenItem implements JRequester {
 	@Override
 	
 	public String getFacetRenderer() {
-		// TODO Auto-generated method stub
-		return null;
+		return JWeblinkEditor.class.getName();
 	}
 	/**
 	 * Remove the facet from the entity.
@@ -224,34 +236,45 @@ public class JWebsetFacetOpenItem extends JFacetOpenItem implements JRequester {
 	 * @return the children nodes of the facet node.
 	 */
 	@Override
-	public DefaultMutableTreeNode[] getDigest() {
+	public DefaultMutableTreeNode[] getDigest(Entigrator entigrator,String locator$) {
 		try{
 	//		System.out.println("JWebsetFacetOpenItem:getDigest:locator="+locator$);
 			Properties locator=Locator.toProperties(locator$);
-			entihome$=locator.getProperty(Entigrator.ENTIHOME);
+			//entihome$=locator.getProperty(Entigrator.ENTIHOME);
+			entihome$=entigrator.getEntihome();
 			entityKey$=locator.getProperty(EntityHandler.ENTITY_KEY);
-			Entigrator entigrator=console.getEntigrator(entihome$);
+			//Entigrator entigrator=console.getEntigrator(entihome$);
 			Sack entity=entigrator.getEntityAtKey(entityKey$);
 			Core[]ca=entity.elementGet("web");
 			if(ca==null)
 				return null;
 			DefaultMutableTreeNode nameNode;
 			DefaultMutableTreeNode valueNode;
-			String locator$=getLocator();
+			//String locator$=getLocator();
 			String nameLocator$;
 			String valueLocator$;
 			String nameIcon$;//=icon$=Support.readHandlerIcon(JEntitiesPanel.class, "text.png");
-			String valueIcon$=Support.readHandlerIcon(null,JEntitiesPanel.class, "equal.png");
+			//String valueIcon$=Support.readHandlerIcon(null,JEntitiesPanel.class, "equal.png");
 			ArrayList<DefaultMutableTreeNode>nl=new ArrayList<DefaultMutableTreeNode>();
 			for(Core aCa:ca){
 				nameNode=new DefaultMutableTreeNode();
-				nameLocator$=Locator.append(locator$, Locator.LOCATOR_TITLE,aCa.type);
+				
+				nameLocator$=Locator.append(locator$, Locator.LOCATOR_TITLE,aCa.type+" > "+aCa.value);
 				nameLocator$=Locator.append(nameLocator$, Locator.LOCATOR_TYPE,JWeblinksPanel.WEB_LINK_NAME);
 				nameLocator$=Locator.append(nameLocator$,JWeblinksPanel.WEB_LINK_NAME,aCa.type);
 				nameLocator$=Locator.append(nameLocator$,JWeblinksPanel.WEB_LINK_KEY,aCa.name);
 				nameIcon$=entity.getElementItemAt("web.icon", aCa.name);
-				if(nameIcon$!=null)
-				 nameLocator$=Locator.append(nameLocator$,Locator.LOCATOR_ICON,nameIcon$);
+				
+				//if(nameIcon$!=null){
+				 //nameLocator$=Locator.append(nameLocator$,Locator.LOCATOR_ICON,nameIcon$);
+					nameLocator$=Locator.append(nameLocator$,Locator.LOCATOR_ICON_CONTAINER,Locator.LOCATOR_ICON_CONTAINER_ENTITY);
+					nameLocator$=Locator.append(nameLocator$,Locator.LOCATOR_ICON_ELEMENT,"web.icon");
+					nameLocator$=Locator.append(nameLocator$,Locator.LOCATOR_ICON_CORE,aCa.name);
+					nameLocator$=Locator.append(nameLocator$,Locator.LOCATOR_ICON_FIELD,Locator.LOCATOR_ICON_FIELD_VALUE);
+					nameLocator$=Locator.append(nameLocator$,Locator.LOCATOR_ICON_ENTITY_KEY,entityKey$);
+					
+				//}
+				
 				nameLocator$=Locator.append(nameLocator$,JEntityDigestDisplay.NODE_TYPE,NODE_TYPE_WEB_NAME);
 				if(entihome$!=null)
 					nameLocator$=Locator.append(nameLocator$,Entigrator.ENTIHOME,entihome$);
@@ -260,13 +283,19 @@ public class JWebsetFacetOpenItem extends JFacetOpenItem implements JRequester {
 					nameLocator$=Locator.append(nameLocator$,EntityHandler.ENTITY_KEY,entityKey$);
 			
 				nameNode.setUserObject(nameLocator$);
+				/*
 				valueNode=new DefaultMutableTreeNode();
 				valueLocator$=Locator.append(locator$, Locator.LOCATOR_TITLE,aCa.value);
 				valueLocator$=Locator.append(valueLocator$,JWeblinksPanel.WEB_LINK_NAME,aCa.type);
 				valueLocator$=Locator.append(valueLocator$,JWeblinksPanel.WEB_LINK_URL,aCa.value);
 				valueLocator$=Locator.append(valueLocator$,JWeblinksPanel.WEB_LINK_KEY,aCa.name);
 				valueLocator$=Locator.append(valueLocator$, Locator.LOCATOR_TYPE,LOCATOR_TYPE_WEB_ADDRESS);
-				valueLocator$=Locator.append(valueLocator$,Locator.LOCATOR_ICON,valueIcon$);
+				
+				//valueLocator$=Locator.append(valueLocator$,Locator.LOCATOR_ICON,valueIcon$);
+				valueLocator$=Locator.append(valueLocator$,Locator.LOCATOR_ICON_CONTAINER,Locator.LOCATOR_ICON_CONTAINER_CLASS);
+				valueLocator$=Locator.append(valueLocator$,Locator.LOCATOR_ICON_CLASS,JEntitiesPanel.class.getName());
+				valueLocator$=Locator.append(valueLocator$,Locator.LOCATOR_ICON_FILE,"equal.png");
+			
 				valueLocator$=Locator.append(valueLocator$,JEntityDigestDisplay.NODE_TYPE,NODE_TYPE_WEB_ADDRESS);
 				if(entihome$!=null)
 					valueLocator$=Locator.append(valueLocator$,Entigrator.ENTIHOME,entihome$);
@@ -277,6 +306,7 @@ public class JWebsetFacetOpenItem extends JFacetOpenItem implements JRequester {
 				valueNode.setUserObject(valueLocator$);
 //				System.out.println("JFieldsFacetOpenItem:getDigest:VALUE locator="+valueLocator$);
 				nameNode.add(valueNode);
+				*/
 				nl.add(nameNode);
 			}
 			return nl.toArray(new DefaultMutableTreeNode[0]);
@@ -358,5 +388,124 @@ public class JWebsetFacetOpenItem extends JFacetOpenItem implements JRequester {
 			    });
 		return popup;
 	}
-
+	@Override
+	public String getFacetIconName() {
+		return "globe.png";
+	}
+	@Override
+	public String getWebView(Entigrator entigrator, String locator$) {
+		try{
+			if(debug)
+				System.out.println("JWebsetFacetOpenItem:locator="+locator$);
+			StringBuffer sb=new StringBuffer();
+			sb.append("<!DOCTYPE html PUBLIC \"-//W3C//DTD HTML 4.01//EN\" \"http://www.w3.org/TR/html4/strict.dtd\">");
+			sb.append("<html>");
+			Properties locator=Locator.toProperties(locator$);
+			String type$=locator.getProperty(Locator.LOCATOR_TYPE);
+			
+			if(JWeblinksPanel.LOCATOR_TYPE_WEB_LINK.equals(type$)){
+				
+				String url$=locator.getProperty(JWeblinksPanel.WEB_LINK_URL);
+				if(debug)
+					System.out.println("JWebsetFacetOpenItem:url="+url$);
+				
+				sb.append("<body>");
+				sb.append("<script>");
+				sb.append("window.location.assign(\""+url$+"\");");
+				sb.append("</script>");
+				sb.append("</body>");
+				sb.append("</html>");
+				return sb.toString();
+			}
+			String webHome$=locator.getProperty(WContext.WEB_HOME);
+			String entityLabel$=locator.getProperty(EntityHandler.ENTITY_LABEL);
+			String webRequester$=locator.getProperty(WContext.WEB_REQUESTER);
+			if(debug)
+			System.out.println("JWebsetFacetOpenItem:locator="+locator$);
+			entityKey$=entigrator.indx_keyAtLabel(entityLabel$);
+			Sack entity=entigrator.getEntityAtKey(entityKey$);
+			if(debug)
+				System.out.println("JWebsetFacetOpenItem:entity key="+entityKey$);
+			
+		     Core[]	ca=entity.elementGet("web");
+			
+			
+			
+			sb.append("<head>");
+			sb.append(WUtils.getMenuBarScript());
+			sb.append(WUtils.getMenuBarStyle());
+		    sb.append("</head>");
+		    sb.append("<body onload=\"onLoad()\" >");
+		    sb.append("<ul class=\"menu_list\">");
+		    sb.append("<li class=\"menu_item\"><a id=\"back\">Back</a></li>");
+		    sb.append("<li class=\"menu_item\"><a href=\""+webHome$+"\">Home</a></li>");
+		    String navLocator$=Locator.append(locator$, BaseHandler.HANDLER_CLASS, JBaseNavigator.class.getName());
+		    navLocator$=Locator.append(navLocator$, Entigrator.ENTIHOME, entigrator.getEntihome());
+		    String navUrl$=webHome$+"?"+WContext.WEB_LOCATOR+"="+Base64.encodeBase64URLSafeString(navLocator$.getBytes());
+		    sb.append("<li class=\"menu_item\"><a href=\""+navUrl$+"\">Base</a></li>");
+		    sb.append("<li class=\"menu_item\"><a href=\""+webHome$.replace("entry", WContext.ABOUT)+"\">About</a></li>");
+		    sb.append("</ul>");
+		    sb.append("<table><tr><td>Base:</td><td><strong>");
+		    sb.append(entigrator.getBaseName());
+		    sb.append("</strong></td></tr><tr><td>Entity: </td><td><strong>");
+		    sb.append(entityLabel$);
+		    sb.append("</strong></td></tr>");
+		    sb.append("<tr><td>Facet: </td><td><strong>Web links</strong></td></tr>");
+		    sb.append("</table>");
+		   
+	        if(ca!=null){
+	        	//sb.append("<script>");
+	        	
+	        	Hashtable<String,String> tab=new Hashtable<String,String>();
+	            ArrayList <String>sl=new ArrayList<String>();
+	            for(Core c:ca){
+  	 			     sl.add(c.type);
+	 			     tab.put(c.type, c.name);
+	        		}
+	            Collections.sort(sl);
+	            String item$;
+	            for(String s:sl){
+	            	item$=getItem(entity,tab.get(s));
+	            	if(item$!=null)
+	            		sb.append(item$);
+	                
+	            }	
+	            //sb.append("</script>");
+	        }
+	        sb.append("<script>");
+	      
+		    
+		    sb.append("function onLoad() {");
+		    sb.append("initBack(\""+this.getClass().getName()+"\",\""+webRequester$+"\");");
+		    sb.append("}");
+		    
+		    sb.append("window.localStorage.setItem(\""+this.getClass().getName()+"\",\""+Base64.encodeBase64URLSafeString(locator$.getBytes())+"\");");
+		 	    sb.append("</script>");
+		    sb.append("</body>");
+		    sb.append("</html>");
+		    return sb.toString();
+		}catch(Exception e){
+			Logger.getLogger(JBasesPanel.class.getName()).severe(e.toString());	
+		}
+		return null;
+	}
+	@Override
+	public String getWebConsole(Entigrator entigrator, String locator$) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+private String getItem(Sack entity, String itemKey$){
+	try{
+	Core c=entity.getElementItem("web", itemKey$);
+	String title$=c.type;
+	String url$=c.value;
+	String icon$=entity.getElementItemAt("web.icon", itemKey$);
+	 String iconTerm$="<br><img src=\"data:image/png;base64,"+icon$+
+			  "\" width=\"24\" height=\"24\" alt=\""+title$+"\">";
+	  return iconTerm$+"<a href=\""+url$+"\" >"+" "+title$+"</a>";
+	}catch(Exception e){
+		Logger.getLogger(JWebsetFacetOpenItem.class.getName()).severe(e.toString());
+	}
+	return null;
+}
 }

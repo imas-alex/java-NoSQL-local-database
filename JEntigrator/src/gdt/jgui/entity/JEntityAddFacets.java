@@ -127,8 +127,12 @@ public JEntityAddFacets() {
 	       locator.setProperty(Locator.LOCATOR_TITLE, getTitle());
 		   locator.setProperty(BaseHandler.HANDLER_SCOPE,JConsoleHandler.CONSOLE_SCOPE);
 		   locator.setProperty(BaseHandler.HANDLER_CLASS,JEntityAddFacets.class.getName());
-		   String icon$=Support.readHandlerIcon(null,getClass(), "facet.png");
-		   locator.setProperty(Locator.LOCATOR_ICON,icon$);
+		   locator.setProperty(Locator.LOCATOR_ICON_CONTAINER,Locator.LOCATOR_ICON_CONTAINER_CLASS);
+		   locator.setProperty(Locator.LOCATOR_ICON_CLASS,getClass().getName());
+			locator$=Locator.append(locator$,Locator.LOCATOR_ICON_FILE,"facet.png");
+		
+		   // String icon$=Support.readHandlerIcon(null,getClass(), "facet.png");
+		   //locator.setProperty(Locator.LOCATOR_ICON,icon$);
 		   return Locator.toString(locator);
 	}
 	/**
@@ -189,6 +193,7 @@ private JFacetAddItem[] getAllFacetAddItems(){
 		itemLocator$=Locator.append(itemLocator$,EntityHandler.ENTITY_KEY ,entityKey$);
 		itemLocator$=folderItem.markAppliedUncheckable(console, itemLocator$);
 		websetItem.instantiate(console, itemLocator$);
+		
 		fail.add(websetItem);
 
 		//bookmarks
@@ -214,34 +219,48 @@ private JFacetAddItem[] getAllFacetAddItems(){
 		for(String aSa:sa){
 			try{
 				extension=entigrator.getEntityAtKey(aSa);
+				if(debug)
 				System.out.println("JEntityAddFacets:getAllFacetAddItems:extension="+extension.getProperty("label"));
 				Core[] ca=extension.elementGet("content.jfacet");
 				//String extension$;
 				String facetAddClass$;
-				String icon$;
+				//String icon$;
 				String iconResource$;
+				Properties itemLocator;
 				if(ca!=null)
 					for(Core aCa:ca){
 						try{
 						facetAddItemClass$=aCa.type;
-						addItem=(JFacetAddItem)ExtensionHandler.loadHandlerInstance(entigrator, aSa, facetAddItemClass$);
-						facetAddClass$=addItem.getFacetAddClass();
+						if(facetAddItemClass$==null||"null".equals(facetAddItemClass$))
+							continue;
+						if(debug)
+							System.out.println("JEntityAddFacets:getAllFacetAddItems:try add item = "+aCa.type);;
 						
+						addItem=(JFacetAddItem)ExtensionHandler.loadHandlerInstance(entigrator, aSa, facetAddItemClass$);
+						
+						facetAddClass$=addItem.getFacetAddClass();
 						itemLocator$=addItem.getLocator();
-						System.out.println("JEntityAddFacets:getAllFacetAddItems:item locator="+itemLocator$);
-						itemLocator$=Locator.append(itemLocator$,Entigrator.ENTIHOME ,entihome$);
-						itemLocator$=Locator.append(itemLocator$,EntityHandler.ENTITY_KEY ,entityKey$);
-						itemLocator$=Locator.append(itemLocator$,BaseHandler.HANDLER_LOCATION ,aSa);
-						itemLocator$=Locator.append(itemLocator$,BaseHandler.HANDLER_CLASS ,facetAddClass$);
+						itemLocator=Locator.toProperties(itemLocator$);
+						
+						itemLocator.setProperty(Entigrator.ENTIHOME ,entihome$);
+						itemLocator.setProperty(EntityHandler.ENTITY_KEY ,entityKey$);
+						itemLocator.setProperty(BaseHandler.HANDLER_LOCATION ,aSa);
+						itemLocator.setProperty(BaseHandler.HANDLER_CLASS ,facetAddClass$);
 						//itemLocator$=addItem.markAppliedUncheckable(console, itemLocator$);
 						iconResource$=addItem.getIconResource();
 						if(iconResource$!=null){
-							icon$=ExtensionHandler.loadIcon(entigrator, aSa, iconResource$);
-							if(icon$!=null)
-								itemLocator$=Locator.append(itemLocator$,Locator.LOCATOR_ICON,icon$);
+							itemLocator.setProperty(Locator.LOCATOR_ICON_CONTAINER,Locator.LOCATOR_ICON_CONTAINER_CLASS);
+							itemLocator.setProperty(Locator.LOCATOR_ICON_CLASS,facetAddClass$);
+							itemLocator.setProperty(Locator.LOCATOR_ICON_FILE,addItem.getIconResource());
+							itemLocator.setProperty(Locator.LOCATOR_ICON_LOCATION,aSa);
+							//icon$=ExtensionHandler.loadIcon(entigrator, aSa, iconResource$);
+							//if(icon$!=null)
+							//	itemLocator$=Locator.append(itemLocator$,Locator.LOCATOR_ICON,icon$);
+							
 						}
-						System.out.println("JEntityAddFacets:getAllFacetAddItems:item="+addItem.getClass().getName());
-						addItem.instantiate(console, itemLocator$);
+						if(debug)
+						System.out.println("JEntityAddFacets:getAllFacetAddItems:item locator="+addItem.getClass().getName());
+						addItem.instantiate(console, Locator.toString(itemLocator));
 						fail.add(addItem);
 						}catch(Exception eee){
 							LOGGER.info(eee.toString());
@@ -255,12 +274,13 @@ private JFacetAddItem[] getAllFacetAddItems(){
 		System.out.println("JEntityAddFacets:getAllFacetAddItems:mo extensions found");	
 	Collections.sort(fail,new ItemPanelComparator());
 	JFacetAddItem[]faia=fail.toArray(new JFacetAddItem[0]);
-	/*
+	if(debug)
 	for(JFacetAddItem fai:faia){
 	 	if(fai!=null)
-		System.out.println("EntityAddFacets:getAllFacetAddItems:fai="+fai.getTitle());
+		System.out.println("EntityAddFacets:getAllFacetAddItems:fai="+fai.getClass().getName()+" title="+fai.getTitle()+" locator="+fai.getLocator());
 	}
-	*/
+	
+	
 	return faia;
 	}catch(Exception e){
 		LOGGER.severe(e.toString());

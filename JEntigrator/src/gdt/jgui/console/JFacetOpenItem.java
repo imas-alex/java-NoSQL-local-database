@@ -83,6 +83,7 @@ public static JFacetOpenItem getFacetOpenItemInstance(JMainConsole console,Strin
 			 facetOpenItem=(JFacetOpenItem)Class.forName(handler$).newInstance(); 
 		else
 			facetOpenItem= (JFacetOpenItem)ExtensionHandler.loadHandlerInstance(entigrator, extension$, handler$);
+		//facetOpenItem.console=console;
 		Properties  foiLocator=Locator.toProperties(facetOpenItem.getLocator());
 		foiLocator.setProperty(Entigrator.ENTIHOME, entihome$);
 		foiLocator.setProperty(EntityHandler.ENTITY_KEY, entityKey$);
@@ -91,20 +92,15 @@ public static JFacetOpenItem getFacetOpenItemInstance(JMainConsole console,Strin
 		  
 		}
   		
-  		
-  		facetOpenItem.instantiate(console, Locator.toString(foiLocator));
-  	//	System.out.println("JFacetOpenItem:getFacetOpenItemInstance:handler="+handler$);
-  		facetOpenItem.entihome$=entihome$;
-  		facetOpenItem.icon$=facetOpenItem.getFacetIcon();
-  		if(facetOpenItem.icon$!=null)
-  		  foiLocator.setProperty(Locator.LOCATOR_ICON, facetOpenItem.icon$);
-  		if(facetOpenItem.isRemovable())
-  			 foiLocator.setProperty(Locator.LOCATOR_CHECKABLE, Locator.LOCATOR_TRUE);
-  		else
-  			 foiLocator.setProperty(Locator.LOCATOR_CHECKABLE, Locator.LOCATOR_FALSE);
-  		facetOpenItem.instantiate(console, Locator.toString(foiLocator));
-	 		//System.out.println("JFacetOpenItem:getFacetOpenItemInstance:icon="+facetOpenItem.icon$);
-  		return facetOpenItem;
+		String iconFile$=facetOpenItem.getFacetIconName();
+		foiLocator.setProperty(Locator.LOCATOR_ICON_CONTAINER,Locator.LOCATOR_ICON_CONTAINER_CLASS);
+		foiLocator.setProperty(Locator.LOCATOR_ICON_CLASS,handler$);
+		foiLocator.setProperty(Locator.LOCATOR_ICON_FILE,iconFile$);
+		if(debug)
+			System.out.println("JFacetOpenItem:getFacetOpenItemInstance:foi locator="+Locator.toString(foiLocator));
+		
+		facetOpenItem.instantiate(console, Locator.toString(foiLocator));
+		 return facetOpenItem;
 		}catch(Exception e){
 			Logger.getLogger(JFacetAddItem.class.getName()).severe(e.toString());
 			//e.printStackTrace();
@@ -124,9 +120,16 @@ public abstract boolean isRemovable();
 public abstract String getFacetName();
 /**
  * Get facet icon.
+ * @param entigrator the entigrator.
  * @return the icon bitmap encoded as Base64 string.
  */
-public abstract String getFacetIcon();
+public abstract String getFacetIcon(Entigrator entigrator);
+/**
+ * Get facet icon name.
+
+ * @return the icon file name.
+ */
+public abstract String getFacetIconName();
 /**
  * Get facet renderer class name.
  * @return the class name of the facet renderer.
@@ -145,12 +148,14 @@ public abstract void removeFacet();
 public abstract void openFacet(JMainConsole console,String locator$);
 /**
  * Get a facet node for the digest view.
+ * @param entigrator the entigrator.
+ * @param entityKey$ the entity key.
  * @return the facet node.
  */
-public abstract DefaultMutableTreeNode[] getDigest();
+public abstract DefaultMutableTreeNode[] getDigest(Entigrator entigrator,String entityKey$);
 /**
- * Get facet handler class name.
- * @return the facet handler class name.
+ * Get facet handler .
+ * @return the facet handler .
  */
 public abstract FacetHandler getFacetHandler();
 /**

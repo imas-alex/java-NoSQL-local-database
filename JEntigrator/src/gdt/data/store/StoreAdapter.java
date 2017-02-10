@@ -18,7 +18,7 @@ public class StoreAdapter {
 	private final Logger LOGGER= Logger.getLogger(getClass().getName());
 	
 	Sack quickMap;
-	Sack headers;
+//	Sack headers;
 	Sack storeState;
 	Entigrator entigrator;
 	int delay=1000;
@@ -362,14 +362,23 @@ public Sack ent_assignIcon(Sack entity, String icon$) {
 	return entity;
 }
 public String indx_getLabel(String key$) {
-	
+	try{
 		//System.out.println("StroreAdapter:indx_getLabel:key="+key$);
 		if(key$==null)
 			return null;
-		Core key=quickMap.getElementItem("key", key$);
-		if(key!=null)
-			return key.type;
+		String header$=entigrator.getEntihome()+"/"+StoreAdapter.HEADERS+"/"+key$;
+	    Sack header=Sack.parseXML(header$);
+	    String label$=header.getElementItem("key", key$).type;
+		if(label$!=null){
+	    Core key=quickMap.getElementItem("key", key$);
+	    key.type=label$;
+		quickMap.putElementItem("key", key);
+		}
 		
+			return label$;
+	}catch(Exception e){
+		 LOGGER.severe(":indx_getLabel:"+e.toString());
+	}
       return null;
    }
 public String ent_getIconAtKey(String key$) {
@@ -395,7 +404,8 @@ public String ent_getIconAtKey(String key$) {
                 	header.saveXML(entigrator.getEntihome() +"/"+HEADERS+"/"+key$);
                 	map_insert(header);
              	}
-            	return icon$;
+             	if(new File(entigrator.getEntihome() + "/" + Entigrator.ICONS+"/"+icon$ ).exists())
+            	    return icon$;
             }
 
    	  }catch(Exception e){

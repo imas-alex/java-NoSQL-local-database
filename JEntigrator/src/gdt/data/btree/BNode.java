@@ -17,7 +17,7 @@ package gdt.data.btree;
     along with JEntigrator.  If not, see <http://www.gnu.org/licenses/>.
  */
  
-import java.lang.reflect.Array;
+
 import java.util.Stack;
 /**
 * A node within B-tree. It contains an array of BValues.
@@ -67,28 +67,7 @@ public class BNode {
         this.bTree = bTree;
         s = new Stack<BValue>();
     }
-/* 
- // Only to test BTree separately.
-    public static void main(String[] args) {
-        BNode node = new BNode();
-        for (int i = 0; i < 100; i++) {
-            node.put(String.valueOf(i), i);
-        }
-    }
-*/
   
-    private static boolean nameStored(Stack <String>s, String name) {
-        if (name == null)
-            return true;
-        int cnt = s.size();
-        for (int i = 0; i < cnt; i++) {
-            if (s.get(i) == null)
-                continue;
-            if (name.compareTo((String) s.get(i)) == 0)
-                return true;
-        }
-        return false;
-    }
    
     private static int compare(String arg, String sample) {
         if (arg == null && sample == null)
@@ -273,7 +252,6 @@ public class BNode {
             last_ = cnt + depth + 1;
             values[cnt] = bValue;
             while (!s.isEmpty()) {
-                //     System.out.println(values[cnt+depth-1].key);
                 values[cnt + depth--] = s.pop();
             }
             return ;
@@ -307,7 +285,7 @@ public class BNode {
         int intStatus = interval.getStatus(key);
         switch (intStatus) {
             case 3: {
-                // System.out.println("BNode:remove:line 242:key="+key+" case 3");
+               
                 if (values[interval.top].containsNode())
                     return ((BNode) values[interval.top].value).remove(key);
                 else {
@@ -315,8 +293,6 @@ public class BNode {
                     System.arraycopy(values, interval.top + 1, values, interval.top, last_ - interval.top);
                     last_--;
                     if (interval.top == 0) {
-                        //System.out.println("Parent node:"+parentNode.toString());
-                        //  System.out.println("Parent node:"+parentNode.toString());
                         updateParent(oldKey);
                         if (parent != null)
                             parent.remove(key);
@@ -328,13 +304,13 @@ public class BNode {
                 }
             }
             case 4: {
-                //System.out.println("BNode:remove:line 242:key="+key+" case 4");
+               
                 if (values[interval.bottom] == null)
                     return null;
                 if (values[interval.bottom].containsNode())
                     return ((BNode) values[interval.bottom].value).remove(key);
                 else {
-                   // Object ret = values[interval.bottom].value;
+               
                     System.arraycopy(values, interval.bottom + 1, values, interval.bottom, last_ - interval.bottom);
                     last_--;
                     if (parent != null)
@@ -344,20 +320,16 @@ public class BNode {
                 }
             }
             case 5: {
-                //System.out.println("BNode:remove:line 242:key="+key+" case 5");
                 return removeFromParent(key);
             }
             case 6: {
-                //  System.out.println("BNode:remove:line 242:key="+key+" case 6");
                 if (values[interval.top].containsNode())
                     return ((BNode) values[interval.top].value).remove(key);
                 else
                     return null;
             }
             case 8: {
-                //System.out.println("BNode:remove:line 242:key="+key+" case 8");
                 if (values[interval.top].containsNode()) {
-                    //System.out.println();
                     return ((BNode) values[interval.top].value).delete(key);
                 } else
                     return null;
@@ -369,7 +341,6 @@ public class BNode {
     BNode delete(String key) {
         if (key == null)
             return null;
-       // BNode curParent = parent;
         if (parent != null)
             parent.cutParent();
         Interval interval = getInterval(key);
@@ -385,16 +356,12 @@ public class BNode {
                     System.arraycopy(values, interval.top + 1, values, interval.top, last_ - interval.top);
                     last_--;
                     if (interval.top == 0) {
-                        //System.out.println("Parent node:"+parentNode.toString());
-                        //  System.out.println("Parent node:"+parentNode.toString());
                         updateParent(oldKey);
                         if (parent != null)
                             parent.remove(key);
 
                         if (parent != null)
                             parent.remove(key);
-                        // if(parent!=null)
-                        //   parent.cutParent();
                         return parent;
                     }
                 }
@@ -405,7 +372,6 @@ public class BNode {
                 if (values[interval.bottom].containsNode())
                     return ((BNode) values[interval.bottom].value).remove(key);
                 else {
-                    //Object ret = values[interval.bottom].value;
                     System.arraycopy(values, interval.bottom + 1, values, interval.bottom, last_ - interval.bottom);
                     last_--;
                     if (parent != null)
@@ -421,7 +387,6 @@ public class BNode {
                     return null;
             case 8:
                 if (values[interval.top].containsNode()) {
-                    //System.out.println();
                     return ((BNode) values[interval.top].value).remove(key);
                 } else
                     return null;
@@ -475,8 +440,6 @@ public class BNode {
         Interval interval = new Interval(0, size - 1);
         int cnt = 0;
         while (interval.divide(key))
-            // if(cnt>10)
-            //    System.out.println(String.valueOf(cnt));
             if (cnt++ > 10000)
                 return null;
         return interval;
@@ -494,14 +457,12 @@ public class BNode {
     private BNode split() {
         if (last_ < splitLevel)
             return this;
-//root
+
         if (parent == null) {
             BNode newParent = new BNode(null, bTree);
             parent = newParent;
             bTree.root = parent;
             newParent.parent = null;
-            //boolean leaf = false;
-
         }
         BValue link = new BValue(values[0].key, this);
         link.noLeaf();
@@ -610,15 +571,12 @@ public class BNode {
         if (parent.last_ + last_ + threshold > splitLevel)
             return null;
         if (last_ > -1) {
-            //noinspection ConstantConditions
             if (values == null || values[last_] == null || values[last_].key == null || values[last_].value == null)
                 return null;
-            //System.out.println("Last:"+values[last_].toString());
             String key$ = values[last_].key;
             Object value = values[last_].value;
             values[last_] = null;
             last_--;
-            //System.out.println("Key="+values[0].key +" Value:"+values[0].toString());
             bTree.put(key$, value);
             if (last_ > -1)
                 return merge();
@@ -630,7 +588,6 @@ public class BNode {
     private BNode updateParent(String oldKey) {
         if (parent == null || parent == this)
             return null;
-        // System.out.println("Update key:"+toString());
         Interval interval = parent.getInterval(oldKey);
         if (interval == null)
             return null;
@@ -654,7 +611,6 @@ public class BNode {
     private BNode removeFromParent(String oldKey) {
         if (parent == null || parent == this)
             return null;
-        //  System.out.println("Update key:"+toString());
         Interval interval = parent.getInterval(oldKey);
         if (interval == null)
             return null;
@@ -667,7 +623,6 @@ public class BNode {
             index = interval.bottom;
         if (index == -1)
             return null;
-//    bTree.removeJnode(parent.values[index]);
         System.arraycopy(parent.values, index + 1, parent.values, index, parent.last_ - index);
         return null;
     }
@@ -733,36 +688,7 @@ public class BNode {
             return error;
         }
 
-        int getStatusLike(String key) {
-            if (key == null)
-                return error;
-            if (values[top] == null)
-                return empty;
-
-            int topStatus = like(values[top].key, key);
-
-            if (topStatus == 0)
-                return equalTop;
-            if (topStatus == 2)
-                return above;
-            if (values[bottom] == null && bottom < top + 2)
-                return betweenFinishNull;
-            if (values[bottom] == null)
-                return betweenNull;
-            int bottomStatus = like(values[bottom].key, key);
-            if (bottomStatus == 0)
-                return equalBottom;
-            if (bottomStatus == 1)
-                return below;
-            if (bottomStatus == 2) {
-                if (bottom - top == 1)
-                    return betweenFinish;
-                else
-                    return between;
-            }
-            return error;
-        }
-
+       
         public boolean divide(String key) {
             if (top >= bottom - 1)
                 return false;

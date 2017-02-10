@@ -79,6 +79,46 @@ public class Core {
         }
         return null;
     }
+    public static Core[] sortAtIntType(Core[] ca) {
+        if (ca == null)
+            return null;
+        Core c;
+        boolean greater;
+        for (int i = ca.length; --i >= 0; ) {
+            boolean flipped = false;
+            for (int j = 0; j < i; j++) {
+                greater = false;
+                if (ca[j].type == null)
+                    ca[j].type = "0";
+                if (ca[j + 1].type == null)
+                    ca[j + 1].type = "0";
+                if (ca[j].type.equals("0")) {
+                    //greater = false;
+                    continue;
+                }
+                if (ca[j + 1].type.equals("null")) {
+                    //greater = true;
+                    continue;
+                }
+                //if (ca[j].type.compareToIgnoreCase(ca[j + 1].type) > 0)
+                int a=0;
+                int b=0;
+                try{ a=Integer.parseInt(ca[j].type);}catch( NumberFormatException e){}
+                try{ b=Integer.parseInt(ca[j+1].type);}catch( NumberFormatException e){}
+                if(a> b)
+                    greater = true;
+                if (greater) {
+                    c = ca[j];
+                    ca[j] = ca[j + 1];
+                    ca[j + 1] = c;
+                    flipped = true;
+                }
+            }
+            if (!flipped)
+                return ca;
+        }
+        return null;
+    }
     /**
 	 * Sort array of cores by value 
 	 *  @param ca array of cores 

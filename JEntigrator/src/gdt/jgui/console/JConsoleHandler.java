@@ -17,6 +17,8 @@ package gdt.jgui.console;
     along with JEntigrator.  If not, see <http://www.gnu.org/licenses/>.
  */
 import gdt.data.entity.BaseHandler;
+import gdt.data.entity.EntityHandler;
+import gdt.data.entity.FacetHandler;
 import gdt.data.entity.facet.BookmarksHandler;
 import gdt.data.entity.facet.ExtensionHandler;
 import gdt.data.entity.facet.FieldsHandler;
@@ -31,22 +33,36 @@ import gdt.data.grain.Sack;
 import gdt.data.grain.Support;
 import gdt.data.store.Entigrator;
 import gdt.jgui.base.JBaseNavigator;
+import gdt.jgui.base.JBasesPanel;
 import gdt.jgui.entity.bookmark.JBookmarksEditor;
 import gdt.jgui.entity.extension.JExtensionRenderer;
 import gdt.jgui.entity.fields.JFieldsEditor;
+import gdt.jgui.entity.folder.JFileOpenItem;
 import gdt.jgui.entity.folder.JFolderPanel;
 import gdt.jgui.entity.index.JIndexPanel;
 import gdt.jgui.entity.procedure.JProcedurePanel;
 import gdt.jgui.entity.query.JQueryPanel;
 import gdt.jgui.entity.webset.JWeblinkEditor;
 
+import java.awt.Color;
+import java.awt.Graphics2D;
+import java.awt.Image;
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Properties;
 import java.util.logging.Logger;
+
+import javax.imageio.ImageIO;
+import javax.swing.JPanel;
+
+import org.apache.commons.codec.binary.Base64;
 /**
  *  This class serves as a dispatcher for creating 
  *  different contexts.
@@ -57,7 +73,7 @@ public class JConsoleHandler {
 	 * Indicates that an execute request must be handled by this class. 
 	 */
 	public final static String CONSOLE_SCOPE="console scope";
-	final static boolean debug=false;
+	final static boolean debug=true;
 	/**
 	 * Execute a handle request.
 	 *  @param console the main console
@@ -67,14 +83,18 @@ public class JConsoleHandler {
 		public static String execute(JMainConsole console,String locator$){
         try{
      if(debug)   	
-    	 System.out.println("ConsoleHandler:execute:locator="+Locator.remove(locator$, Locator.LOCATOR_ICON));	
+    	 System.out.println("JConsoleHandler:execute:locator="+locator$);	
        	 Properties locator=Locator.toProperties(locator$);
        	 String handlerScope$=locator.getProperty(BaseHandler.HANDLER_SCOPE);
        	String handlerClass$=locator.getProperty(BaseHandler.HANDLER_CLASS);
         String method$=locator.getProperty(BaseHandler.HANDLER_METHOD);
         String entihome$=locator.getProperty(Entigrator.ENTIHOME);
+        if(debug)   	
+       	 System.out.println("JConsoleHandler:execute:entihome="+entihome$);	
+           
         String extension$=locator.getProperty(BaseHandler.HANDLER_LOCATION);
-        //System.out.println("ConsoleHandler:execute:handler="+handlerClass$+" method="+method$+" entihome="+entihome$);
+        if(debug)
+        System.out.println("ConsoleHandler:execute:handler="+handlerClass$+" method="+method$+" entihome="+entihome$+" extension="+extension$);
        if(CONSOLE_SCOPE.equals(handlerScope$)){
     	   if(JTrackPanel.class.getName().equals(handlerClass$)){
     		   JTrackPanel trackPanel=new JTrackPanel(console);
@@ -155,7 +175,11 @@ public class JConsoleHandler {
 		   String baseLocator$=baseNavigator.getLocator();
 		   String icon$=Support.readHandlerIcon(null,JConsoleHandler.class, "base.png");
 		    if(icon$!=null)
-		    	baseLocator$=Locator.append(baseLocator$,Locator.LOCATOR_ICON,icon$);
+		    	//baseLocator$=Locator.append(baseLocator$,Locator.LOCATOR_ICON,icon$);
+		    	baseLocator$=Locator.append(baseLocator$,Locator.LOCATOR_ICON_CONTAINER,Locator.LOCATOR_ICON_CONTAINER_CLASS);
+		    baseLocator$=Locator.append(baseLocator$,Locator.LOCATOR_ICON_CLASS,JBasesPanel.class.getName());
+		    baseLocator$=Locator.append(baseLocator$,Locator.LOCATOR_ICON_FILE,"base.png");
+		    
 		//    System.out.println("ConsoleHandler:listBases:icon="+icon$);
 		    for(String aSa:sa){
 			   baseLocator$=Locator.append(baseLocator$, Entigrator.ENTIHOME, aSa);
@@ -227,6 +251,30 @@ public static JFacetRenderer getFacetRenderer(Entigrator entigrator,String fhand
 		}
 		return null;
 }
+public static JFacetRenderer getExtensionFacetRenderer(Entigrator entigrator,String fhandler$,String extension$){
+//	  System.out.println("JConsoleHandler:getFacetRenderer:handler="+fhandler$);	
+	try{
+			Sack extension=entigrator.getEntityAtKey(extension$);
+	//		System.out.println("ConsoleHandler:getFacetRenderer:extension="+extension.getProperty("label"));
+			Core[]ca=extension.elementGet("content.jfacet");
+			if(ca==null)
+				return null;
+			for(Core aCa:ca)
+				     if(aCa.name.equals(fhandler$)){
+		//		    System.out.println("ConsoleHandler:getFacetRenderer:aca.value="+aCa.value);	 
+				    	 JFacetOpenItem facetOpenItem=(JFacetOpenItem)getHandlerInstance(entigrator,aCa.value);
+					String facetRenderer$= facetOpenItem.getFacetRenderer();
+					if(debug)
+					System.out.println("JConsoleHandler:getFacetRenderer:facet renderer="+facetRenderer$);	 
+						return (JFacetRenderer)ExtensionHandler.loadHandlerInstance( entigrator,extension.getKey(), facetRenderer$);
+				}
+			}catch(Exception e){
+				Logger.getLogger(JConsoleHandler.class.getName()).severe(e.toString());
+				}
+	return null;    
+		}
+		
+
 /**
  * Get instance of the facet handler.
  *  @param entigrator the entigrator
@@ -240,6 +288,9 @@ try{
 	if(handlerClass$==null||"null".equals(handlerClass$)){
 		System.out.println("ConsoleHandler:getHandlerInstance:argument null");
 		return null;
+	}
+	if(handlerClass$.equals(JBasesPanel.class.getName())){
+		return new JBasesPanel();
 	}
 	
 	try{
@@ -269,7 +320,7 @@ try{
 		System.out.println("ConsoleHandler:getHandlerInstance:embedded class not found");
 	String[]sa=entigrator.indx_listEntities("entity", "extension");
 	if(sa==null){
-		System.out.println("ConsoleHandler:getHandlerInstance:no extensions");
+		System.out.println("ConsoleHandler:getHandlerInstance:no extensions:"+entigrator.getEntihome());
 		return null;
 	}
 	Sack extension;
@@ -296,9 +347,10 @@ try{
 		if(ca!=null)
 			for(Core aCa:ca){
 				if(debug)
-				System.out.println("ConsoleHandler:getHandlerInstance:jfacet: type="+aCa.type+" name="+aCa.name+" value="+aCa.value);	
+				System.out.println("ConsoleHandler:getHandlerInstance: check jfacet: type="+aCa.type+" name="+aCa.name+" value="+aCa.value);	
 				if(handlerClass$.equals(aCa.type)||handlerClass$.equals(aCa.value)||handlerClass$.equals(aCa.name)){
-						Object obj= ExtensionHandler.loadHandlerInstance( entigrator,extension.getKey(), handlerClass$);
+						
+					Object obj= ExtensionHandler.loadHandlerInstance( entigrator,extension.getKey(), handlerClass$);
 						return obj;
 				}
 			}
@@ -306,13 +358,44 @@ try{
 		if(ca!=null)
 			for(Core aCa:ca){
 				if(debug)
-				System.out.println("ConsoleHandler:getHandlerInstance:jrenderer: type="+aCa.type+" name="+aCa.name+" value="+aCa.value);	
+				System.out.println("JConsoleHandler:getHandlerInstance:jrenderer: type="+aCa.type+" name="+aCa.name+" value="+aCa.value);	
 				if(handlerClass$.equals(aCa.value)){
+					if(debug)
+						System.out.println("JConsoleHandler:getHandlerInstance:try instantiate jrenderer: type="+aCa.type+" name="+aCa.name+" value="+aCa.value);	
+						
 					Object obj= ExtensionHandler.loadHandlerInstance( entigrator,extension.getKey(), handlerClass$);
-					if(obj!=null)
+					if(obj!=null){
+						if(debug)
+							System.out.println("JConsoleHandler:getHandlerInstance:got jrenderer instance: type="+aCa.type+" name="+aCa.name+" value="+aCa.value);	
+						
 						entigrator.putHandler(handlerClass$, obj);
+					}
 					return obj;
-				}
+				}else
+					if(debug)
+						System.out.println("JConsoleHandler:getHandlerInstance:unknown handler="+handlerClass$);	
+					
+			}
+		ca=extension.elementGet("content.super");
+		if(ca!=null)
+			for(Core aCa:ca){
+				if(debug)
+				System.out.println("JConsoleHandler:getHandlerInstance:super:  handler="+aCa.name+" super="+aCa.value);	
+				if(handlerClass$.equals(aCa.name)){
+					if(debug)
+						System.out.println("JConsoleHandler:getHandlerInstance:try instantiate at super:  handler="+aCa.name+" super="+aCa.value);	
+						
+					Object obj= ExtensionHandler.loadHandlerInstance( entigrator,extension.getKey(), handlerClass$);
+					if(obj!=null){
+						if(debug)
+							System.out.println("JConsoleHandler:getHandlerInstance:got jrenderer instance: handler="+aCa.name+" super="+aCa.value);	
+						entigrator.putHandler(handlerClass$, obj);
+					}
+					return obj;
+				}else
+					if(debug)
+						System.out.println("JConsoleHandler:getHandlerInstance:unknown handler="+handlerClass$);	
+					
 			}
 		}
 	    }
@@ -324,6 +407,9 @@ try{
 }
 public static Object getHandlerInstance(Entigrator entigrator,String handlerClass$,String extension$){
 try{
+	if(debug)
+		System.out.println("ConsoleHandler:getHandlerInstance:handler class="+handlerClass$ +" extension="+extension$);
+		
 	Object 	handler=entigrator.getHandler(handlerClass$);
 	if(handler!=null)
 		return handler;
@@ -364,7 +450,10 @@ try{
 				if(debug)
 				System.out.println("ConsoleHandler:getHandlerInstance:jfacet: type="+aCa.type+" name="+aCa.name+" value="+aCa.value);	
 				if(handlerClass$.equals(aCa.type)||handlerClass$.equals(aCa.value)||handlerClass$.equals(aCa.name)){
-						Object obj= ExtensionHandler.loadHandlerInstance( entigrator,extension.getKey(), handlerClass$);
+					if(debug)
+						System.out.println("ConsoleHandler:getHandlerInstance:handler="+handlerClass$+" extension="+extension$);	
+								
+					Object obj= ExtensionHandler.loadHandlerInstance( entigrator,extension$, handlerClass$);
 						if(obj!=null)
 							entigrator.putHandler(handlerClass$, obj);
 						return obj;
@@ -404,5 +493,134 @@ public static class TitleComparator implements Comparator<JItemPanel>{
     		return 0;
     	}
     }
+}
+public static String getIcon(Entigrator entigrator,String locator$){
+try{
+    //System.out.println("JConsoleHandler:getIcon:locator="+locator$);		
+		 Properties locator=Locator.toProperties(locator$);
+		String contextType$=locator.getProperty(JContext.CONTEXT_TYPE);
+		if(contextType$!=null){
+		JBasesPanel bp=new JBasesPanel(); 
+		if(contextType$.equals(bp.getType())){
+			return Support.readHandlerIcon(null,JBasesPanel.class , "bases.png");
+		}
+		}
+		 String fileName$=locator.getProperty(JFolderPanel.FILE_NAME);
+		 String filePath$=locator.getProperty(JFolderPanel.FILE_PATH);
+		if(debug)
+			System.out.println("JConsoleHandler:getIcon:file path="+filePath$);
+		 if(fileName$!=null){
+			 for (final String ext : JFileOpenItem.IMAGE_EXTENSIONS) {
+	                if (fileName$.toLowerCase().endsWith("." + ext)) {
+	                	BufferedImage img =ImageIO.read(new File(filePath$));	
+	                	BufferedImage newImage = new BufferedImage(24, 24, BufferedImage.TYPE_INT_RGB);
+	                	Graphics2D g = newImage.createGraphics();
+	                	g.setColor(Color.WHITE);
+	                    g.fillRect(0, 0, 24, 24);
+	                	g.drawImage(img, 0, 0, 24, 24, null);
+	                	g.dispose();
+	                	Image im =img.getScaledInstance( 24, 24,  java.awt.Image.SCALE_SMOOTH ) ;  
+	                     ByteArrayOutputStream b =new ByteArrayOutputStream();
+	    	            ImageIO.write(newImage, "png", b );
+	    		            b.close();
+	    		 		byte[]	ba = b.toByteArray();
+	    		       return  Base64.encodeBase64String(ba);
+	                }
+			 }
+				return Support.readHandlerIcon(entigrator, JFileOpenItem.class, "file.png");
+             }
+		 String iconFile$=locator.getProperty(Locator.LOCATOR_ICON_FILE);
+		 if(iconFile$!=null&&!"null".equals(iconFile$)){
+		 if(Locator.LOCATOR_ICON_CONTAINER_ICONS.equals(locator.getProperty(Locator.LOCATOR_ICON_CONTAINER))){
+        String extension$=locator.getProperty(Locator.LOCATOR_ICON_LOCATION);
+		  if(extension$==null)
+		  {	 
+			  
+			  String path$ = entigrator.getEntihome() + "/" + Entigrator.ICONS+"/"+iconFile$;
+			  if(new File(path$).exists()){
+				 FileInputStream is=new FileInputStream(path$);
+		         ByteArrayOutputStream bos = new ByteArrayOutputStream();
+		            byte[] b = new byte[1024];
+		            int bytesRead = 0;
+		            while ((bytesRead = is.read(b)) != -1) {
+		               bos.write(b, 0, bytesRead);
+		            }
+		            byte[] ba = bos.toByteArray();
+		            is.close();
+		           return Base64.encodeBase64String(ba);
+			  }else{
+				  String entityKey$=locator.getProperty(EntityHandler.ENTITY_KEY);
+				  if(entityKey$!=null){
+					  String entityType$=entigrator.getEntityType(entityKey$);
+					  FacetHandler fh=BaseHandler.getHandler(entigrator, entityType$);
+					  JFacetRenderer facetRenderer=getFacetRenderer(entigrator, fh.getClass().getName()); 
+   					  return  Support.readHandlerIcon(entigrator, facetRenderer.getClass(), facetRenderer.getFacetIcon());
+				
+				  }
+			  }
+		  }else{
+			 return  ExtensionHandler.loadIcon(entigrator, extension$, iconFile$);
+		  }
+			 }
+		
+		 if(Locator.LOCATOR_ICON_CONTAINER_CLASS.equals(locator.getProperty(Locator.LOCATOR_ICON_CONTAINER))){
+			
+			 String iconHandler$=locator.getProperty(Locator.LOCATOR_ICON_CLASS);
+			 Class iconHandler=JConsoleHandler.getHandlerInstance(entigrator, iconHandler$).getClass();
+			 String iconLocation$=locator.getProperty(Locator.LOCATOR_ICON_CLASS_LOCATION);
+			if(iconLocation$==null)
+				return Support.readHandlerIcon(entigrator, iconHandler, iconFile$);
+			else
+				return ExtensionHandler.loadIcon(entigrator, iconLocation$, iconFile$);
+		 }
+		
+		 }
+		 String entityKey$=locator.getProperty(EntityHandler.ENTITY_KEY);
+		 
+		 if(Locator.LOCATOR_ICON_CONTAINER_ENTITY.equals(locator.getProperty(Locator.LOCATOR_ICON_CONTAINER))){
+			// String entityKey$=locator.getProperty(Locator.LOCATOR_ICON_ENTITY_KEY);
+			
+			
+			 Sack entity=entigrator.getEntityAtKey(entityKey$);
+			 String element$=locator.getProperty(Locator.LOCATOR_ICON_ELEMENT);
+			 String core$=locator.getProperty(Locator.LOCATOR_ICON_CORE);
+			 String field$=locator.getProperty(Locator.LOCATOR_ICON_FIELD);
+			 Core core=entity.getElementItem(element$, core$);
+			 if(Locator.LOCATOR_ICON_FIELD_VALUE.equals(field$))
+				 return core.value;
+			 if(Locator.LOCATOR_ICON_FIELD_TYPE.equals(field$))
+				 return core.type;
+			 return null;
+		 }
+		 if(entityKey$!=null){
+			 String entityType$=entigrator.getEntityType(entityKey$);
+			 FacetHandler fh=BaseHandler.getHandler(entigrator, entityType$);
+			 if(fh!=null){
+				 JFacetRenderer facetRenderer=getFacetRenderer(entigrator, fh.getClass().getName()); 
+			 
+				return  Support.readHandlerIcon(entigrator, facetRenderer.getClass(), facetRenderer.getFacetIcon());
+			 }
+			 }
+		 /*
+		 String iconField$=locator.getProperty(Locator.LOCATOR_ICON_FIELD);
+		 if(iconField$!=null){
+			// String entityKey$=locator.getProperty(EntityHandler.ENTITY_KEY);	
+			 Sack entity=getEntityAtKey(entityKey$);
+			 String element$=locator.getProperty(Locator.LOCATOR_ICON_ELEMENT);
+			 String item$=locator.getProperty(Locator.LOCATOR_ICON_CORE);
+			 Core core=entity.getElementItem(element$, item$);
+			 if(Locator.LOCATOR_ICON_FIELD_VALUE.equals(iconField$))
+				 return core.value;
+			 if(Locator.LOCATOR_ICON_FIELD_TYPE.equals(iconField$))
+				 return core.type;
+			 
+				 
+		 }
+		 */
+		 return null;
+	 }catch(Exception e){
+		 Logger.getLogger(JConsoleHandler.class.getName()).severe(e.toString());
+	 }
+	 return null;
 }
 }

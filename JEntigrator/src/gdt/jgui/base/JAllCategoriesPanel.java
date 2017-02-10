@@ -25,18 +25,24 @@ import java.util.logging.Logger;
 
 import javax.swing.JMenu;
 
+import org.apache.commons.codec.binary.Base64;
+
 import gdt.data.entity.BaseHandler;
+import gdt.data.entity.EntityHandler;
 import gdt.data.entity.FacetHandler;
 import gdt.data.grain.Locator;
 import gdt.data.grain.Support;
 import gdt.data.store.Entigrator;
 import gdt.jgui.console.JConsoleHandler;
 import gdt.jgui.console.JContext;
+import gdt.jgui.console.JFacetOpenItem;
 import gdt.jgui.console.JFacetRenderer;
 import gdt.jgui.console.JItemPanel;
 import gdt.jgui.console.JItemsListPanel;
 import gdt.jgui.console.JMainConsole;
 import gdt.jgui.console.ReloadDialog;
+import gdt.jgui.console.WContext;
+import gdt.jgui.console.WUtils;
 /**
 * This context displays a list of all categories (types of entities).   
 * @author  Alexander Imas
@@ -45,7 +51,7 @@ import gdt.jgui.console.ReloadDialog;
 */
 
 
-public class JAllCategoriesPanel extends JItemsListPanel {
+public class JAllCategoriesPanel extends JItemsListPanel implements WContext {
 String entihome$;
 Hashtable<String,JItemPanel> items;
 	private static final long serialVersionUID = 1L;
@@ -70,11 +76,15 @@ Hashtable<String,JItemPanel> items;
 	    locator.setProperty(Locator.LOCATOR_TITLE, getTitle());
 	    if(entihome$!=null)
 	    locator.setProperty(Entigrator.ENTIHOME,entihome$);
-	
+	    locator.setProperty(Locator.LOCATOR_ICON_CONTAINER, Locator.LOCATOR_ICON_CONTAINER_CLASS);
+	    locator.setProperty(Locator.LOCATOR_ICON_CLASS,getClass().getName());
+	    locator.setProperty(Locator.LOCATOR_ICON_FILE, "category.png"); 
+	   /*
 	    String icon$=Support.readHandlerIcon(null,JAllCategoriesPanel.class, "category.png");
 	    //System.out.println("JAllCategoriesPanel:getLocator:icon="+icon$);
 	    if(icon$!=null)
 	    	locator.setProperty(Locator.LOCATOR_ICON,icon$);
+	    	*/
 		    locator.setProperty(Locator.LOCATOR_TITLE, getTitle());
 	    locator.setProperty(BaseHandler.HANDLER_SCOPE,JConsoleHandler.CONSOLE_SCOPE);
 	    locator.setProperty(BaseHandler.HANDLER_CLASS,getClass().getName());
@@ -87,6 +97,7 @@ Hashtable<String,JItemPanel> items;
 	 *  @param locator$ the locator string.
 	 * @return the context.
 	 */		
+	
 	@Override
 	public JContext instantiate(JMainConsole console, String locator$) {
       
@@ -132,12 +143,19 @@ Hashtable<String,JItemPanel> items;
 			  cpLocator$=Locator.toString(cpLocator);
 			  if(debug)
 			 System.out.println("AllCategoriesPanel:instantiate:category panel(begin)="+cpLocator$);		 
-				
+			  cpLocator.setProperty(JFacetRenderer.ONLY_ITEM,Locator.LOCATOR_TRUE);
 			  cp.instantiate(console, cpLocator$);
+			  
 			  if(debug)
 			  System.out.println("AllCategoriesPanel:instantiate:finish category panel(finish)="+cpLocator$); 
 			  cpLocator$=cp.getLocator();
-			  cpLocator$=Locator.append(cpLocator$, JCategoryPanel.LIST_MEMBERS,Locator.LOCATOR_TRUE);
+			  cpLocator$=Locator.append(cpLocator$,Locator.LOCATOR_ICON_CONTAINER,Locator.LOCATOR_ICON_CONTAINER_CLASS);
+			  cpLocator$=Locator.append(cpLocator$,Locator.LOCATOR_ICON_CLASS,facetRenderer.getClass().getName());
+			  cpLocator$=Locator.append(cpLocator$,Locator.LOCATOR_ICON_FILE,facetRenderer.getFacetIcon());
+			  String handlerLocation$=Locator.getProperty(fh.getLocator(),BaseHandler.HANDLER_LOCATION);
+			  if(handlerLocation$!=null)
+				  cpLocator$=Locator.append(cpLocator$,Locator.LOCATOR_ICON_CLASS_LOCATION,handlerLocation$);
+	//		  cpLocator$=Locator.append(cpLocator$, JCategoryPanel.LIST_MEMBERS,Locator.LOCATOR_TRUE);
 //			  if(debug)
 	//			  System.out.println("AllCategoriesPanel:instantiate:category panel(2)="+cpLocator$);		 
 			  
@@ -255,5 +273,109 @@ Hashtable<String,JItemPanel> items;
 			}
 		
 		
+	}
+	@Override
+	public String getWebView(Entigrator entigrator, String locator$) {
+		try{
+			if(debug)
+				System.out.println("JAllCategoriesPanel:BEGIN:locator="+locator$);
+				
+			Properties locator=Locator.toProperties(locator$);
+			String webHome$=locator.getProperty(WContext.WEB_HOME);
+			String webRequester$=locator.getProperty(WContext.WEB_REQUESTER);
+			if(debug)
+			System.out.println("JAllCategoriesPanel:web home="+webHome$+ " web requester="+webRequester$);
+			// String icon$=Support.readHandlerIcon(null,JBaseNavigator.class, "base.png");
+			StringBuffer sb=new StringBuffer();
+			sb.append("<!DOCTYPE html PUBLIC \"-//W3C//DTD HTML 4.01//EN\" \"http://www.w3.org/TR/html4/strict.dtd\">");
+			sb.append("<html>");
+			sb.append("<head>");
+			sb.append(WUtils.getMenuBarScript());
+			sb.append(WUtils.getMenuBarStyle());
+		    sb.append("</head>");
+		    sb.append("<body onload=\"onLoad()\" >");
+		    sb.append("<ul class=\"menu_list\">");
+		    sb.append("<li class=\"menu_item\"><a id=\"back\">Back</a></li>");
+		    sb.append("<li class=\"menu_item\"><a href=\""+webHome$+"\">Home</a></li>");
+		    String navLocator$=Locator.append(locator$, BaseHandler.HANDLER_CLASS, JBaseNavigator.class.getName());
+		    navLocator$=Locator.append(navLocator$, Entigrator.ENTIHOME, entigrator.getEntihome());
+		    String navUrl$=webHome$+"?"+WContext.WEB_LOCATOR+"="+Base64.encodeBase64URLSafeString(navLocator$.getBytes());
+		    sb.append("<li class=\"menu_item\"><a href=\""+navUrl$+"\">Base</a></li>");
+		    sb.append("<li class=\"menu_item\"><a href=\""+webHome$.replace("entry", WContext.ABOUT)+"\">About</a></li>");
+		    sb.append("</ul>");
+		    sb.append("<table><tr><td>Base:</td><td><strong>");
+		    sb.append(entigrator.getBaseName());
+		    sb.append("</strong></td></tr>");
+		    sb.append("<tr><td>Context:</td><td><strong>");
+		    	    sb.append("All categories");
+		    	    sb.append("</strong></td></tr>");
+		    sb.append("</table>");
+		    FacetHandler[] fha=BaseHandler.listAllHandlers(entigrator);
+			 if(fha!=null){
+				 JFacetRenderer facetRenderer;
+				 String fHandler$;
+				 String fIcon$;
+				 String fTitle$;
+				 Properties fLocator=new Properties();
+				 fLocator.setProperty(Entigrator.ENTIHOME, entigrator.getEntihome());
+				 fLocator.setProperty(WContext.WEB_HOME, webHome$);
+				 fLocator.setProperty(WContext.WEB_REQUESTER,getClass().getName());
+				 ArrayList<String> sl=new ArrayList<String>();
+				 Hashtable <String,String>tab=new Hashtable<String,String>();
+				 String item$;
+				 for(FacetHandler fh:fha){
+					 try{
+				       fHandler$=fh.getClassName();
+				       if(debug) 
+				    	   System.out.println("JAllCategoriesPanel:getWebView:facet handler="+fh.getClass().getName());		 
+				       facetRenderer=JConsoleHandler.getFacetRenderer(entigrator, fh.getClass().getName());
+                   	   fTitle$=facetRenderer.getCategoryTitle();
+                   	   fIcon$=facetRenderer.getCategoryIcon(entigrator);
+                   	  // fLocator.setProperty(BaseHandler.HANDLER_CLASS,facetRenderer.getFacetOpenItem());
+                   	   fLocator.setProperty(BaseHandler.HANDLER_CLASS,JCategoryPanel.class.getName());
+                   	   fLocator.setProperty(JCategoryPanel.CATEGORY_TITLE,facetRenderer.getCategoryTitle());
+                   	   //fLocator.setProperty(JCategoryPanel.CATEGORY_TITLE,facetRenderer.getCategoryTitle());
+                   	   fLocator.setProperty(EntityHandler.ENTITY_TYPE,facetRenderer.getEntityType());
+                   	   fLocator.setProperty(JCategoryPanel.RENDERER,facetRenderer.getClass().getName());
+                   	   
+                   	   item$=getItem(fTitle$,fIcon$,webHome$,Locator.toString(fLocator));
+                   	   if(!sl.contains(fTitle$))
+                   	        sl.add(fTitle$);
+                   	   tab.put(fTitle$, item$);
+                   	   //sb.append(getItem(fTitle$,fIcon$,webHome$,Locator.toString(fLocator))+"<br>");
+					 }catch(Exception ee){
+						 Logger.getLogger(JAllCategoriesPanel.class.getName()).info(ee.toString());
+					 }
+				 }
+				 Collections.sort(sl);
+				 for(String s:sl)
+					 sb.append(tab.get(s)+"<br>");
+			 }
+		    sb.append("<script>");
+	        sb.append("function onLoad() {");
+		    sb.append("initBack(\""+this.getClass().getName()+"\",\""+webRequester$+"\");");
+		    sb.append("}");
+		    sb.append("window.localStorage.setItem(\""+this.getClass().getName()+"\",\""+Base64.encodeBase64URLSafeString(locator$.getBytes())+"\");");
+		    
+	 	    sb.append("</script>");
+		    sb.append("</body>");
+		    sb.append("</html>");
+		    return sb.toString();
+		}catch(Exception e){
+			Logger.getLogger(JBasesPanel.class.getName()).severe(e.toString());	
+		}
+		return null;
+	}
+	@Override
+	public String getWebConsole(Entigrator entigrator, String locator$) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	private String getItem(String fTitle$,String fIcon$, String webHome$,String locator$ ){
+		  locator$=Locator.append(locator$,Entigrator.ENTIHOME, entihome$);
+		  
+		  String iconTerm$="<img src=\"data:image/png;base64,"+WUtils.scaleIcon(fIcon$)+
+				  "\" width=\"24\" height=\"24\" alt=\""+fTitle$+"\">";
+		  return iconTerm$+"<a href=\""+webHome$+"?"+WContext.WEB_LOCATOR+"="+Base64.encodeBase64URLSafeString(locator$.getBytes())+"\" >"+" "+fTitle$+"</a>";
 	}
 }

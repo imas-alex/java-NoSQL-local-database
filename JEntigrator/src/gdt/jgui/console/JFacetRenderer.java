@@ -47,13 +47,16 @@ public interface JFacetRenderer extends JContext {
   /**
    * Get the category icon associated with the renderer encoded
    * into Base64 string.
+   * @param entigrator the entigrator.
    * @return the icon string.
    */
-  public String getCategoryIcon();
+  public String getCategoryIcon(Entigrator entigrator);
   /**
    * Get category title associated with the given entity type.
    * @return the category string.
    */
+  //public String getCategoryIcon(Entigrator entigrator);
+  public String getFacetIcon();
   public String getCategoryTitle();
   /**
    * Adapt facet-relevant parameters of the clone after entity cloning. 
@@ -90,4 +93,5 @@ public interface JFacetRenderer extends JContext {
    * @return the new entity.
    */
   public String newEntity(JMainConsole console,String locator$);
+  public String getFacetOpenItem();
 }

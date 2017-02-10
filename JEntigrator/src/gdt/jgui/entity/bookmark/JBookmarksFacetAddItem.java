@@ -27,7 +27,6 @@ import gdt.data.grain.Core;
 import gdt.data.grain.Identity;
 import gdt.data.grain.Locator;
 import gdt.data.grain.Sack;
-import gdt.data.grain.Support;
 import gdt.data.store.Entigrator;
 import gdt.jgui.console.JConsoleHandler;
 import gdt.jgui.console.JContext;
@@ -37,7 +36,6 @@ import gdt.jgui.console.JMainConsole;
 import gdt.jgui.console.JRequester;
 import gdt.jgui.entity.JEntitiesPanel;
 import gdt.jgui.entity.JEntityFacetPanel;
-import gdt.jgui.entity.fields.JFieldsFacetOpenItem;
 import gdt.jgui.tool.JTextEditor;
 /**
  * This class represents the bookmarks facet in the list
@@ -65,9 +63,9 @@ public class JBookmarksFacetAddItem extends JFacetAddItem{
 			locator.setProperty(EntityHandler.ENTITY_KEY,entityKey$);
 		if(entihome$!=null)
 			locator.setProperty(Entigrator.ENTIHOME,entihome$);
-		 icon$=Support.readHandlerIcon(null,JEntitiesPanel.class, "bookmark.png");
-		if(icon$!=null)
-		    	locator.setProperty(Locator.LOCATOR_ICON,icon$);
+		 locator.setProperty(Locator.LOCATOR_ICON_CONTAINER,Locator.LOCATOR_ICON_CONTAINER_CLASS);
+			locator.setProperty(Locator.LOCATOR_ICON_CLASS,getClass().getName());
+			locator.setProperty(Locator.LOCATOR_ICON_FILE,"bookmark.png");
 		 locator$=Locator.toString(locator);
 		locator.setProperty(Locator.LOCATOR_CHECKABLE,Locator.LOCATOR_TRUE);
 		 return Locator.toString(locator);
@@ -79,7 +77,6 @@ public class JBookmarksFacetAddItem extends JFacetAddItem{
 	 */
 	@Override
 	public void response(JMainConsole console, String locator$) {
-//		System.out.println("JWebsetFacetAddItem:response:locator:"+locator$);
 		try{
 			Properties locator=Locator.toProperties(locator$);
 			String entihome$=locator.getProperty(Entigrator.ENTIHOME);
@@ -117,8 +114,8 @@ public class JBookmarksFacetAddItem extends JFacetAddItem{
 	
 	public void addFacet(JMainConsole console, String locator$) {
 		try{
-			//   System.out.println("JWebsetFacetAddItem:addFacet:locator:"+locator$);
-			   Properties locator=Locator.toProperties(locator$);
+			
+			Properties locator=Locator.toProperties(locator$);
 			   String entihome$=locator.getProperty(Entigrator.ENTIHOME);
 			   String entityKey$=locator.getProperty(EntityHandler.ENTITY_KEY);
 			   Entigrator entigrator=console.getEntigrator(entihome$);
@@ -154,6 +151,9 @@ public class JBookmarksFacetAddItem extends JFacetAddItem{
 		    editorLocator$=Locator.append(editorLocator$, JTextEditor.TEXT, label$+".bookmark."+Identity.key().substring(0,4));
 		    editorLocator$=Locator.append(editorLocator$,Locator.LOCATOR_TITLE,"Component label");
 		    editorLocator$=Locator.append(editorLocator$,JTextEditor.TEXT_TITLE,"Add bookmarks component");
+		    if(entihome$!=null)
+		    	 editorLocator$=Locator.append(editorLocator$,Entigrator.ENTIHOME,entihome$);	
+		  
 		    String responseLocator$=getLocator();
 		    responseLocator$=Locator.append(responseLocator$, BaseHandler.HANDLER_METHOD, "response");
 		    responseLocator$=Locator.append(responseLocator$, Entigrator.ENTIHOME, entihome$);

@@ -73,12 +73,14 @@ import gdt.jgui.console.JContext;
 import gdt.jgui.console.JFacetRenderer;
 import gdt.jgui.console.JMainConsole;
 import gdt.jgui.console.JRequester;
+import gdt.jgui.console.WContext;
 import gdt.jgui.entity.JEntitiesPanel;
 import gdt.jgui.entity.JEntityFacetPanel;
 import gdt.jgui.entity.JEntityPrimaryMenu;
 import gdt.jgui.entity.JReferenceEntry;
 import gdt.jgui.entity.folder.JFolderFacetAddItem;
 import gdt.jgui.entity.folder.JFolderFacetOpenItem;
+import gdt.jgui.entity.index.JIndexPanel;
 import gdt.jgui.tool.JTextEditor;
 /**
  * This class represents the query context
@@ -103,7 +105,7 @@ public class JQueryPanel extends JPanel implements JFacetRenderer,JRequester{
 	protected String entityLabel$;
 	protected JMainConsole console;
 	private JMenu menu;
-	boolean debug=false;
+	static boolean debug=false;
 	/**
 	 * The default constructor.
 	 */
@@ -368,7 +370,7 @@ public class JQueryPanel extends JPanel implements JFacetRenderer,JRequester{
 						public void actionPerformed(ActionEvent e) {
 							Entigrator entigrator=console.getEntigrator(entihome$);
 							Sack query=entigrator.getEntityAtKey(entityKey$);
-							entigrator.save(query);
+							entigrator.saveNative(query);
 							console.back();
 						}
 					} );
@@ -384,12 +386,20 @@ public class JQueryPanel extends JPanel implements JFacetRenderer,JRequester{
 			});
 			 return menu;
 		 }
-private String[] select(){
+	private String[] select(){
+		Entigrator entigrator=console.getEntigrator(entihome$);
+		Sack query=entigrator.getEntity(entityKey$);
+		return select( entigrator,query);
+		
+	}
+	public static String[] select(Entigrator entigrator,Sack query){
 		try{
 			  
-			Entigrator entigrator=console.getEntigrator(entihome$);
-			Sack query=entigrator.getEntityAtKey(entityKey$);
+			//Entigrator entigrator=console.getEntigrator(entihome$);
+			//Sack query=entigrator.getEntityAtKey(entityKey$);
 			//String queryClass$=query.getElementItemAt("parameter", "query.class");
+			String entihome$=entigrator.getEntihome();
+			String entityKey$=query.getKey();
 			File queryHome=new File(entihome$+"/"+entityKey$);
 			URL url = queryHome.toURI().toURL();
 		    URL[] urls = new URL[]{url};
@@ -397,9 +407,8 @@ private String[] select(){
 		    URLClassLoader cl = new URLClassLoader(urls,parentLoader);
 		  Class<?> cls = cl.loadClass(entityKey$);
 		  Object obj=cls.newInstance();
-		 // Method method = obj.getClass().getDeclaredMethod("select",JMainConsole.class,String.class);
-		  Method method = obj.getClass().getDeclaredMethod("select",JMainConsole.class,String.class);
- 	      Object value=method.invoke(obj,console,entihome$);
+		  Method method = obj.getClass().getDeclaredMethod("select",Entigrator.class);
+ 	      Object value=method.invoke(obj,entigrator);
  	     
  	      String[] sa=(String[])value;
  	      String []ea=query.elementList("exclude");
@@ -445,8 +454,9 @@ private String[] select(){
 				locator.setProperty(Entigrator.ENTIHOME,entihome$);
 			if(entityLabel$!=null)
 				locator.setProperty(EntityHandler.ENTITY_LABEL,entityLabel$);
-			String icon$=Support.readHandlerIcon(null,JEntitiesPanel.class, "query.png");
-	    	locator.setProperty(Locator.LOCATOR_ICON,icon$);
+			//String icon$=Support.readHandlerIcon(null,JEntitiesPanel.class, "query.png");
+	    	//locator.setProperty(Locator.LOCATOR_ICON,icon$);
+			
 			return Locator.toString(locator);
 			}catch(Exception e){
 	        Logger.getLogger(getClass().getName()).severe(e.toString());
@@ -538,10 +548,12 @@ private String[] select(){
 	 */
 	@Override
 	public String addIconToLocator(String locator$) {
+		/*
 		String icon$=Support.readHandlerIcon(null,JEntitiesPanel.class, "query.png");
 	    if(icon$!=null)
 	    	return Locator.append(locator$, Locator.LOCATOR_ICON,icon$);
 	    else
+	    	*/
 	    	return locator$;
 	}
 	/**
@@ -565,7 +577,7 @@ private String[] select(){
 	 * @return the icon string.
 	 */
 	@Override
-	public String getCategoryIcon() {
+	public String getCategoryIcon(Entigrator entigrator) {
 		return Support.readHandlerIcon(null,JEntitiesPanel.class, "query.png");
 	}
 	/**
@@ -857,6 +869,8 @@ private void initItemValueSelector(){
 }
 private void addHeader(){
 	 try{
+		 if(debug)
+			 System.out.println("JQueryPanel:addHeader:BEGIN");
 		 Entigrator entigrator=console.getEntigrator(entihome$);
 		 Sack query=entigrator.getEntityAtKey(entityKey$);
 		 String headerKey$=Identity.key();
@@ -869,7 +883,7 @@ private void addHeader(){
 	    ca=query.elementGet("header.element");
 	    query.putElementItem("header.element", new Core(String.valueOf(ca.length),headerKey$,(String)elementComboBox.getSelectedItem()));
 	    orderColumns();
-		entigrator.save(query); 
+		entigrator.replace(query); 
 		showHeader();
 		showContent();
 	 }catch(Exception e){
@@ -970,11 +984,11 @@ private void showHeader(){
 		    	try{
 		    	int col = table.columnAtPoint(e.getPoint());
 		    	String col$=String.valueOf(col);
-		    	String itemName$ = table.getColumnName(col);
+		//    	String itemName$ = table.getColumnName(col);
 	            
 	//	       System.out.println("Column index=" + col+" item="+ itemName$);
 		        String element$=null;
-		        String field$=null;
+		  //      String field$=null;
 		        Entigrator entigrator=console.getEntigrator(entihome$);
 		        Sack query=entigrator.getEntityAtKey(entityKey$);
 		        Core[] ca=query.elementGet("header.element");
@@ -1004,7 +1018,7 @@ private void showHeader(){
 		LOGGER.severe(e.toString());
 	}
 }
-private String[] getRow(Sack entity,Sack query,int num){
+private static String[] getRow(Sack entity,Sack query,int num){
 	try{	
 	//	 System.out.println("JQuerypanel:getRow:num="+num);
 		Core[]ca=query.elementGet("header.item");
@@ -1059,7 +1073,7 @@ private String[] getRow(Sack entity,Sack query,int num){
 		// System.out.println("JQuerypanel:getRow:FINISH");
 		 return sva;
 	    }catch(Exception e ){
-	LOGGER.severe(e.toString());
+	Logger.getLogger(JQueryPanel.class.getName()).severe(e.toString());
 }
 	return null;
 }
@@ -1078,15 +1092,9 @@ private void showContent(){
     		    System.out.println("JQueryPanel:showContent:cannot get  label for key="+s);
     		 continue;
     	 }
-    	
-    	// if(debug)
- 		   // System.out.println("JQueryPanel:showContent:label="+label$+" key="+s);
-    	 
- 		
     	 sl.add(label$);
      }
-     
-     Collections.sort(sl);
+     Collections.sort(sl,new SortIgnoreCase());
      Sack entity;
      String entity$;
      String[] row;
@@ -1311,5 +1319,125 @@ private void reset(){
 public void activate() {
 	// TODO Auto-generated method stub
 	
+}
+public static String getViewItems(Entigrator entigrator,String locator$){
+	try{
+		//	System.out.println("IndexPanel.instantiate:locator="+locator$);
+			
+			Properties locator=Locator.toProperties(locator$);
+			String entityLabel$=locator.getProperty(EntityHandler.ENTITY_LABEL);
+			String entityKey$=entigrator.indx_keyAtLabel(entityLabel$);
+			String webHome$=locator.getProperty(WContext.WEB_HOME);
+			String webRequester$=locator.getProperty(WContext.WEB_REQUESTER);
+	        Sack  query=entigrator.getEntityAtKey(entityKey$);
+			 StringBuffer sb=new StringBuffer();
+			 sb.append("<table style=\"text-align: left;  background-color: transparent;\"  border=\"1\" cellpadding=\"2\" cellspacing=\"2\">");
+			 sb.append(getWebHeader(query));
+			 sb.append(getWebItems(entigrator,query));
+	         sb.append("</table>"); 
+			return sb.toString(); 
+		}catch(Exception e){
+	        Logger.getLogger(JQueryPanel.class.getName()).severe(e.toString());
+		}
+		return null;
+}
+private static String getWebHeader(Sack query){
+	try{
+		Core[] ca=query.elementGet("header.item");
+		ArrayList<String>sl=new ArrayList<String>();
+		StringBuffer sb=new StringBuffer();
+		sb.append("<tr>");
+		sb.append("<td><strong>number</strong></td><td><strong>label</strong></td>");
+		for(Core c:ca)
+			if(!"number".equals(c.value)&&!"label".equals(c.value)){
+				sl.add(c.value);
+			}
+		Collections.sort(sl,new SortIgnoreCase());
+		for(String s:sl){
+			sb.append("<td><strong>"+s+"</strong></td>");
+		}
+		sb.append("</tr>");
+		return sb.toString();
+	}catch(Exception e){
+		 Logger.getLogger(JQueryPanel.class.getName()).severe(e.toString());
+	}
+	return null;
+}
+public static String getWebItems(Entigrator entigrator,Sack query){
+	try{
+		String[] sa=select(entigrator,query);
+	     ArrayList <String>sl=new ArrayList<String>();
+	     String label$;
+	     for(String s:sa){
+	    	 label$=entigrator.indx_getLabel(s);
+	    	 if(label$==null){
+	    		 if(debug)
+	    		    System.out.println("JQueryPanel:showContent:cannot get  label for key="+s);
+	    		 continue;
+	    	 }
+	    	 sl.add(label$);
+	     }
+	     Collections.sort(sl,new SortIgnoreCase());
+	     Sack entity;
+	     String entity$;
+	     StringBuffer sb=new StringBuffer();
+	     int num=0;
+	     String row$;
+	     for(String s:sl){
+	    	// System.out.println("JQueryPanel:showContent:label="+s);
+	    	 entity$=entigrator.indx_keyAtLabel(s);
+	    	 entity=entigrator.getEntityAtKey(entity$);
+	    	 if(entity==null){
+	    		 System.out.println("JQueryPanel:showContent:cannot get entity="+entity$);
+	    		 continue;
+	    	 }
+         	 row$=getWebItem(entity, query, num++);
+         	 if(debug)
+         	 System.out.println("JQueryPanel:getWebItems:row="+row$);
+         	 sb.append(row$);
+	     }
+	     return sb.toString();
+	}catch(Exception e){
+		 Logger.getLogger(JQueryPanel.class.getName()).severe(e.toString());
+	}
+	return null;
+}
+public static class SortIgnoreCase implements Comparator<Object> {
+    public int compare(Object o1, Object o2) {
+        String s1 = (String) o1;
+        String s2 = (String) o2;
+        return s1.toLowerCase().compareTo(s2.toLowerCase());
+    }
+}
+private static String getWebItem(Sack entity,Sack query,int num){
+	String[] sa=getRow(entity,query, num);
+	if(sa==null)
+		return null;
+	StringBuffer sb=new StringBuffer();
+	sb.append("<tr>");
+	//for(String s:sa){
+	for(int i=0;i<sa.length;i++){
+		if(sa[i].startsWith("http://")||sa[i].startsWith("https://"))
+			sb.append("<td><a href=\""+sa[i]+"\">"+sa[i]+"</a></td>");
+		else{
+		if(i==1)
+			sb.append("<td  onclick=\"labelClick('"+sa[i]+"')\" style=\"text-decoration:underline;\"><strong>"+sa[i]+"</strong></td>");
+		else
+			sb.append("<td>"+sa[i]+"</td>");
+		}
+	}
+	sb.append("</tr>");
+	return sb.toString();
+}
+
+@Override
+public String getFacetOpenItem() {
+	// TODO Auto-generated method stub
+	return JQueryFacetOpenItem.class.getName();
+}
+@Override
+public String getFacetIcon() {
+	// TODO Auto-generated method stub
+	return "query.png";
 }
 }

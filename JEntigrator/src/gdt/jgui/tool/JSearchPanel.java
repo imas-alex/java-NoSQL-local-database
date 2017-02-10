@@ -21,9 +21,13 @@ import gdt.data.entity.EntityHandler;
 import gdt.data.grain.Locator;
 import gdt.data.grain.Support;
 import gdt.data.store.Entigrator;
+import gdt.jgui.base.JBaseNavigator;
+import gdt.jgui.base.JBasesPanel;
 import gdt.jgui.console.JConsoleHandler;
 import gdt.jgui.console.JContext;
 import gdt.jgui.console.JMainConsole;
+import gdt.jgui.console.WContext;
+import gdt.jgui.console.WUtils;
 import gdt.jgui.entity.JEntitiesPanel;
 import gdt.jgui.entity.JEntityFacetPanel;
 import gdt.jgui.entity.JEntityPrimaryMenu;
@@ -34,12 +38,16 @@ import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.event.MenuEvent;
 import javax.swing.event.MenuListener;
+
+import org.apache.commons.codec.binary.Base64;
+
 import java.awt.GridBagLayout;
 import java.awt.GridBagConstraints;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Properties;
 import java.util.logging.Logger;
 /**
@@ -47,13 +55,15 @@ import java.util.logging.Logger;
  * @author imasa
  *
  */
-public class JSearchPanel extends JPanel implements JContext {
+public class JSearchPanel extends JPanel implements JContext,WContext {
 private static final long serialVersionUID = 1L;
+private static String INPUT="input";
 String entihome$;
 JMainConsole console;
 AutocompleteJComboBox comboBox;
 JMenuItem openItem;
 JMenuItem listItem;
+static boolean debug=false;
 /**
  * The default constructor.
  */
@@ -87,8 +97,11 @@ JMenuItem listItem;
 			       locator.setProperty(Entigrator.ENTIHOME,entihome$);
 		   locator.setProperty(BaseHandler.HANDLER_SCOPE,JConsoleHandler.CONSOLE_SCOPE);
 		   locator.setProperty(BaseHandler.HANDLER_CLASS,getClass().getName());
-		   String icon$=Support.readHandlerIcon(null,JEntityPrimaryMenu.class, "search.png");
-		   locator.setProperty( Locator.LOCATOR_ICON,icon$);
+		  // String icon$=Support.readHandlerIcon(null,JEntityPrimaryMenu.class, "search.png");
+		  // locator.setProperty( Locator.LOCATOR_ICON,icon$);
+		   locator.setProperty(Locator.LOCATOR_ICON_CONTAINER,Locator.LOCATOR_ICON_CONTAINER_CLASS);
+		   	locator.setProperty(Locator.LOCATOR_ICON_CLASS,JEntityPrimaryMenu.class.getName());
+		   	locator.setProperty(Locator.LOCATOR_ICON_FILE,"search.png"); 
 		   return Locator.toString(locator);
 		}
 		@Override
@@ -240,5 +253,128 @@ public JMenu getContextMenu() {
 @Override
 public void activate() {
 	JConsoleHandler.execute(console, getLocator());
+}
+@Override
+public String getWebView(Entigrator entigrator, String locator$) {
+	try{
+		if(debug)
+			System.out.println("JSearchPanel:BEGIN:locator="+locator$);
+			
+		Properties locator=Locator.toProperties(locator$);
+		String webHome$=locator.getProperty(WContext.WEB_HOME);
+		String webRequester$=locator.getProperty(WContext.WEB_REQUESTER);
+		String input$=locator.getProperty(INPUT);
+		if(debug)
+		System.out.println("JSearchPanel:input="+input$+" web home="+webHome$+ " web requester="+webRequester$);
+		// String icon$=Support.readHandlerIcon(null,JBaseNavigator.class, "base.png");
+		StringBuffer sb=new StringBuffer();
+		sb.append("<!DOCTYPE html PUBLIC \"-//W3C//DTD HTML 4.01//EN\" \"http://www.w3.org/TR/html4/strict.dtd\">");
+		sb.append("<html>");
+		sb.append("<head>");
+		sb.append(WUtils.getJquery(entigrator));
+		//sb.append(WUtils.getJqueryUtilities(entigrator));
+		sb.append(WUtils.getMenuBarScript());
+		sb.append(WUtils.getMenuBarStyle());
+	    sb.append("</head>");
+	    sb.append("<body onload=\"onLoad()\" >");
+	    sb.append("<ul class=\"menu_list\">");
+	    sb.append("<li class=\"menu_item\"><a id=\"back\">Back</a></li>");
+	    sb.append("<li class=\"menu_item\"><a href=\""+webHome$+"\">Home</a></li>");
+	    String navLocator$=Locator.append(locator$, BaseHandler.HANDLER_CLASS, JBaseNavigator.class.getName());
+	    navLocator$=Locator.append(navLocator$, Entigrator.ENTIHOME, entigrator.getEntihome());
+	    String navUrl$=webHome$+"?"+WContext.WEB_LOCATOR+"="+Base64.encodeBase64URLSafeString(navLocator$.getBytes());
+	    sb.append("<li class=\"menu_item\"><a href=\""+navUrl$+"\">Base</a></li>");
+	    sb.append("<li class=\"menu_item\"><a href=\""+webHome$.replace("entry", WContext.ABOUT)+"\">About</a></li>");
+	    sb.append("</ul>");
+	    sb.append("<table><tr><td>Base:</td><td><strong>");
+	    sb.append(entigrator.getBaseName());
+	    sb.append("</strong></td></tr>");
+	    sb.append("<tr><td>Context:</td><td><strong>");
+	    	    sb.append("Search for label");
+	    	    sb.append("</strong></td></tr>");
+	    sb.append("</table>");
+	    sb.append("<table>");
+	    sb.append("<tr>");
+	    sb.append("<td>Label:</td>");
+	    sb.append("<td><input type=\"text\" id=\"label\"  onchange=\"updateSelector()\" ></td>");
+	    sb.append("</tr>");
+	   
+	    int cnt=0;
+	   
+	    if(input$!=null){
+	    	String[] la=entigrator.indx_listAllLabels();
+	    	ArrayList<String>sl=new ArrayList<String>();
+	    	for(String s:la){
+	    		if(s.toLowerCase().contains(input$.toLowerCase()))
+	    			sl.add(s);
+	    	}
+	    	Collections.sort(sl);
+	    	cnt=sl.size();
+	    	sb.append("<tr>");
+	    	if(cnt==1)
+	    	 sb.append("<td> <button onclick=\"openEntity()\">Open:</button> </td>");
+	    	else
+	    		sb.append("<td></td>");
+	    	if(cnt>0){
+	    	sb.append("<td><select id=\"selector\" size=\""+1+"\" onchange=\"openEntity()\">");
+	    	for(String s:sl){
+	    		if(debug)
+	    			System.out.println("JSearchPanel:option=="+s);
+	    		s=s.replaceAll("\"", "&quot;");
+            	s=s.replaceAll("'", "&#39;");
+	    	sb.append("<option value=\""+s+"\">"+s+"</option>");
+	    	}
+	    	sb.append("</select></td>");
+	    	}
+	    	else
+	    		 sb.append("<td></td>");
+	    }
+	    sb.append("</tr></table>");
+	    sb.append("<script>");
+	    sb.append("function updateSelector() {");
+	    sb.append(" var input = document.getElementById(\"label\").value;");
+	    sb.append(" var locator=\""+locator$+"\";");
+	    sb.append("locator=appendProperty(locator,\""+INPUT+"\",input);");
+	    String urlHeader$=webHome$+"?"+WContext.WEB_LOCATOR+"=";
+	    sb.append("var url=\""+urlHeader$+"\"+window.btoa(locator);");
+	    sb.append("window.location.assign(url);");
+	    sb.append("}");
+	    
+	    sb.append("function openEntity() {");
+	    sb.append("var locator =\""+locator$+"\";");
+	    sb.append("var entityLabel = document.getElementById(\"selector\").value;");
+	    sb.append("locator=appendProperty(locator,\""+EntityHandler.ENTITY_LABEL+"\",entityLabel);");
+	    sb.append("locator=appendProperty(locator,\""+BaseHandler.HANDLER_CLASS+"\",\""+JEntityFacetPanel.class.getName()+"\");");
+	    sb.append("locator=appendProperty(locator,\""+WContext.WEB_REQUESTER+"\",\""+this.getClass().getName()+"\");");
+	   
+	    sb.append("var url=\""+urlHeader$+"\"+window.btoa(locator);");
+	    sb.append("window.localStorage.setItem(\"back."+JEntityFacetPanel.class.getName()+"\",\""+this.getClass().getName()+"\");");
+	    sb.append("window.location.assign(url);");
+	    sb.append("}");
+	    
+	    //sb.append("<script>");
+      
+	    
+	    sb.append("function onLoad() {");
+	    sb.append("initBack(\""+this.getClass().getName()+"\",\""+webRequester$+"\");");
+	    if(input$!=null)
+	    	sb.append("document.getElementById(\"label\").value=\""+input$+"\";");
+	        
+	    sb.append("}");
+	    sb.append("window.localStorage.setItem(\""+this.getClass().getName()+"\",\""+Base64.encodeBase64URLSafeString(locator$.getBytes())+"\");");
+	    
+ 	    sb.append("</script>");
+	    sb.append("</body>");
+	    sb.append("</html>");
+	    return sb.toString();
+	}catch(Exception e){
+		Logger.getLogger(JBasesPanel.class.getName()).severe(e.toString());	
+	}
+	return null;
+}
+@Override
+public String getWebConsole(Entigrator entigrator, String locator$) {
+	// TODO Auto-generated method stub
+	return null;
 }
 }

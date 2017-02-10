@@ -27,6 +27,7 @@ import gdt.data.grain.Locator;
 import gdt.data.grain.Sack;
 import gdt.data.grain.Support;
 import gdt.data.store.Entigrator;
+import gdt.jgui.console.JConsoleHandler;
 /**
 * This class contains methods to process entities
 * @author  Alexander Imas
@@ -100,7 +101,7 @@ public static boolean isForeignEntity(String entihome$,String entityLocator$){
  *  @param label$ the label of the entity.
  * @return the locator string if success ,null otherwise.
  */	 
-public static String getEntityLocator( Entigrator entigrator, String label$){
+public static String getEntityLocatorAtLabel( Entigrator entigrator, String label$){
 	try{
 		//System.out.println("Entityhandler:getEntityLocator:label="+label$);
 		String entityKey$=entigrator.indx_keyAtLabel(label$);
@@ -135,11 +136,25 @@ public static String getEntityLocatorAtKey( Entigrator entigrator, String entity
 	    String entityType$=entigrator.getEntityType(entityKey$);
 	    if(entityType$!=null)
 	    	locator.setProperty(ENTITY_TYPE,entityType$);
+	   
 	    String iconFile$=entigrator.ent_getIconAtKey(entityKey$);
-	    String icon$=entigrator.readIconFromIcons(iconFile$);
-	    if(icon$!=null)
-	    	locator.setProperty(Locator.LOCATOR_ICON,icon$);
-//		System.out.println("EntityHandler:getEntityLocator:locator="+Locator.toString(locator));
+	    if(iconFile$!=null){
+	    locator.setProperty(Locator.LOCATOR_ICON_CONTAINER, Locator.LOCATOR_ICON_CONTAINER_ICONS);
+	    locator.setProperty(Locator.LOCATOR_ICON_FILE, iconFile$);
+	    }
+	    /*
+	    else{
+	    	
+	    	String type$=entigrator.getEntityType(entityKey$);
+	    	FacetHandler[] fha=BaseHandler.listAllHandlers(entigrator);
+	    	for(FacetHandler fh:fha)
+	    		if(type$.equals(fh.getType())){
+	    			 JFacetRenderer facetRenderer=JConsoleHandler.getFacetRenderer(entigrator, fh.getClass().getName());
+	    		}
+	    	
+	    	*/
+	    	    
+
 	    return Locator.toString(locator);
 	}catch(Exception e){
 		Logger.getLogger(EntityHandler.class.getName()).severe(e.toString());
@@ -170,11 +185,19 @@ public static String getEntityLocator( Entigrator entigrator, Sack entity){
     String entityType$=entity.getProperty("entity");
     if(entityType$!=null)
     	locator.setProperty(ENTITY_TYPE,entityType$);
-    String icon$=entigrator.readEntityIcon(entity);
+  /*
+    String icon$=entigrator.getEntityIcon(entity);
     if(icon$!=null)
     	locator.setProperty(Locator.LOCATOR_ICON,icon$);
+    	*/
+    String iconFile$=entity.getAttributeAt("icon");
+    if(iconFile$!=null){
+	    locator.setProperty(Locator.LOCATOR_ICON_CONTAINER, Locator.LOCATOR_ICON_CONTAINER_ICONS);
+	    locator.setProperty(Locator.LOCATOR_ICON_FILE, iconFile$);
+    }
 	return Locator.toString(locator);
 }
+/*
 public static String getEntityLocator( String entihome$,String entityKey$,String entityLabel$,String icon$){
 	System.out.println("EntityHandler:getEntityLocator:at entity="+entityLabel$);
 	Properties locator=new Properties();
@@ -191,6 +214,7 @@ public static String getEntityLocator( String entihome$,String entityKey$,String
     	locator.setProperty(Locator.LOCATOR_ICON,icon$);
 	return Locator.toString(locator);
 }
+*/
 public static void completeMigration (Entigrator entigrator, String entityKey$, FacetHandler[] fha){
 	try{
 		String locator$;

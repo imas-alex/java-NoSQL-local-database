@@ -54,12 +54,17 @@ import gdt.data.grain.Sack;
 import gdt.data.grain.Support;
 import gdt.data.store.Entigrator;
 import gdt.data.store.FileExpert;
+import gdt.jgui.base.JBaseNavigator;
+import gdt.jgui.base.JBasesPanel;
 import gdt.jgui.console.JConsoleHandler;
 import gdt.jgui.console.JContext;
+import gdt.jgui.console.WContext;
+import gdt.jgui.console.WUtils;
 import gdt.jgui.console.JFacetRenderer;
 import gdt.jgui.console.JItemsListPanel;
 import gdt.jgui.console.JMainConsole;
 import gdt.jgui.console.JRequester;
+import gdt.jgui.entity.JEntityFacetPanel;
 import gdt.jgui.entity.JEntityPrimaryMenu;
 import gdt.jgui.entity.JReferenceEntry;
 import gdt.jgui.tool.JTextEditor;
@@ -70,7 +75,7 @@ import gdt.jgui.tool.JTextEditor;
  * @author imasa.
  *
  */
-public class JFolderPanel extends JItemsListPanel implements JFacetRenderer,JRequester,ClipboardOwner{
+public class JFolderPanel extends JItemsListPanel implements JFacetRenderer,JRequester,ClipboardOwner,WContext{
 	
 	private static final long serialVersionUID = 1L;
 	protected Logger LOGGER=Logger.getLogger(getClass().getName());
@@ -99,6 +104,7 @@ public class JFolderPanel extends JItemsListPanel implements JFacetRenderer,JReq
 	protected JMenuItem[] mia;
 	String message$;
 	Sack entity;
+	boolean debug=true;
 /**
  * The default constructor.	
  */
@@ -123,9 +129,12 @@ public class JFolderPanel extends JItemsListPanel implements JFacetRenderer,JReq
 				locator.setProperty(EntityHandler.ENTITY_KEY,entityKey$);
 			if(entihome$!=null)
 				locator.setProperty(Entigrator.ENTIHOME,entihome$);
-			 String icon$=Support.readHandlerIcon(null,getClass(), "folder.png");
-			    if(icon$!=null)
-			    	locator.setProperty(Locator.LOCATOR_ICON,icon$);
+			 //String icon$=Support.readHandlerIcon(null,getClass(), "folder.png");
+			  //  if(icon$!=null)
+			   // 	locator.setProperty(Locator.LOCATOR_ICON,icon$);
+			locator.setProperty(Locator.LOCATOR_ICON_CONTAINER,Locator.LOCATOR_ICON_CONTAINER_CLASS);
+	    	locator.setProperty(Locator.LOCATOR_ICON_CLASS,getClass().getName());
+	    	locator.setProperty(Locator.LOCATOR_ICON_FILE,"folder.png"); 
 			return Locator.toString(locator);
 			}catch(Exception e){
 	        LOGGER.severe(e.toString());
@@ -181,12 +190,13 @@ public class JFolderPanel extends JItemsListPanel implements JFacetRenderer,JReq
 					fileLocator.setProperty(FILE_PATH, f.getPath());
 					fileLocator.setProperty(Locator.LOCATOR_TYPE, LOCATOR_TYPE_FILE);
 					fileLocator.setProperty(Locator.LOCATOR_CHECKABLE,Locator.LOCATOR_TRUE);
+					locator.setProperty(Locator.LOCATOR_ICON_CONTAINER,Locator.LOCATOR_ICON_CONTAINER_ENTITY);
+			    	//locator.setProperty(Locator.LOCATOR_ICON_CLASS,getClass().getName());
+			    	 
 					if(f.isFile())
-					icon$=Support.readHandlerIcon(null,getClass(), "file.png");
+						locator.setProperty(Locator.LOCATOR_ICON_FILE,"file.png");
 					else
-						icon$=Support.readHandlerIcon(null,getClass(), "folder.png");
-					fileLocator.setProperty(Locator.LOCATOR_ICON, icon$);
-					
+						locator.setProperty(Locator.LOCATOR_ICON_FILE,"folder.png");
 					fileLocator.setProperty(BaseHandler.HANDLER_CLASS,getClass().getName());
 					fileLocator.setProperty(BaseHandler.HANDLER_METHOD,"openFile");
 					fileOpenItem.instantiate(console, Locator.toString(fileLocator));
@@ -344,7 +354,7 @@ public class JFolderPanel extends JItemsListPanel implements JFacetRenderer,JReq
 	 * @return the category icon string. 
 	 */
 	@Override
-	public String getCategoryIcon() {
+	public String getCategoryIcon(Entigrator entigrator) {
 		return Support.readHandlerIcon(null,getClass(), "folder.png");
 	}
 	/**
@@ -820,6 +830,125 @@ public JMenu getContextMenu() {
 	public void activate() {
 		// TODO Auto-generated method stub
 		
+	}
+	@Override
+	public String getWebView(Entigrator entigrator, String locator$) {
+		try{
+			Properties locator=Locator.toProperties(locator$);
+			String webHome$=locator.getProperty(WContext.WEB_HOME);
+			entityKey$=locator.getProperty(EntityHandler.ENTITY_KEY);
+			String entityLabel$=locator.getProperty(EntityHandler.ENTITY_LABEL);
+			if(entityLabel$==null&&entityKey$!=null)
+				entityLabel$=entigrator.indx_getLabel(entityKey$);
+			String webRequester$=locator.getProperty(WContext.WEB_REQUESTER);
+			String filePath$=locator.getProperty(JFolderPanel.FILE_PATH);
+			String method$=locator.getProperty(BaseHandler.HANDLER_METHOD);
+			String fname$=null;
+			File file=null;
+			if(filePath$!=null){
+				file=new File(filePath$);
+				fname$=file.getName();
+				if(debug)
+					System.out.println("JFolderPanel:getWebView:file name="+fname$+" path="+filePath$+" method="+method$);
+			}
+			if(debug)
+			System.out.println("JFolderPanel:web home="+webHome$+ " web requester="+webRequester$);
+			StringBuffer sb=new StringBuffer();
+			
+			sb.append("<!DOCTYPE html PUBLIC \"-//W3C//DTD HTML 4.01//EN\" \"http://www.w3.org/TR/html4/strict.dtd\">");
+			sb.append("<html>");
+			sb.append("<head>");
+			
+			sb.append(WUtils.getMenuBarScript());
+			sb.append(WUtils.getMenuBarStyle());
+		    sb.append("</head>");
+		    sb.append("<body onload=\"onLoad()\" >");
+		    sb.append("<ul class=\"menu_list\">");
+		    sb.append("<li class=\"menu_item\"><a id=\"back\">Back</a></li>");
+		    sb.append("<li class=\"menu_item\"><a href=\""+webHome$+"\">Home</a></li>");
+		    String navLocator$=Locator.append(locator$, BaseHandler.HANDLER_CLASS, JBaseNavigator.class.getName());
+		    navLocator$=Locator.append(navLocator$, Entigrator.ENTIHOME, entigrator.getEntihome());
+		    String navUrl$=webHome$+"?"+WContext.WEB_LOCATOR+"="+Base64.encodeBase64URLSafeString(navLocator$.getBytes());
+		    sb.append("<li class=\"menu_item\"><a href=\""+navUrl$+"\">Navigate</a></li>");
+		    sb.append("<li class=\"menu_item\"><a href=\""+webHome$.replace("entry", WContext.ABOUT)+"\">About</a></li>");
+		    sb.append("</ul>");
+		    sb.append("<table><tr><td>Base:</td><td><strong>");
+		    sb.append(entigrator.getBaseName());
+		    sb.append("</strong></td></tr><tr><td>Folder: </td><td><strong>");
+		    sb.append(entityLabel$);
+		    sb.append("</strong></td></tr>");
+		    if(fname$!=null)
+		      {
+		    sb.append("<tr><td>File</td><td><strong>");
+		    sb.append(fname$);
+		    sb.append("</strong></td></tr>");
+		    }
+		    sb.append("<tr>");
+		    sb.append("<td><button onclick=\"openFile()\">Open</button></td>");
+		    sb.append("<td><button onclick=\"download()\">Download</button></td>");
+		    //sb.append("<td><button onclick=\"slideshow()\">Slideshow</button></td>");
+		    sb.append("</tr>");
+		    sb.append("</table>");
+		    		//+ "</tr></table><h3>File</h3>");
+		    if(entityKey$==null)
+		    	entityKey$=entigrator.indx_keyAtLabel(entityLabel$);
+		  
+	        sb.append("<script>");
+		    
+		    sb.append("function onLoad() {");
+		    sb.append("initBack(\""+this.getClass().getName()+"\",\""+webRequester$+"\");");
+		    sb.append("}");
+		    sb.append("window.localStorage.setItem(\""+this.getClass().getName()+"\",\""+Base64.encodeBase64URLSafeString(locator$.getBytes())+"\");");
+		    sb.append("function openFile() {");
+		    Properties openLocator=new Properties();
+        	openLocator.setProperty(Entigrator.ENTIHOME,entigrator.getEntihome());
+        	openLocator.setProperty(FILE_PATH,filePath$);
+        	openLocator.setProperty(WContext.PAGE_METHOD,WContext.PAGE_METHOD_OPEN);
+        	String url$=webHome$+"?"+WContext.WEB_LOCATOR+"="+Base64.encodeBase64URLSafeString(Locator.toString(openLocator).getBytes());
+        	if(debug)
+        		System.out.println("JFolderpanel:getWebView:url="+url$);
+        	sb.append("var url=\""+url$+"\";");
+        	sb.append("console.log('url='+url);");
+        	sb.append("window.location.href=url;");
+        	//sb.append("window.location(url);");
+        	sb.append("}");
+		    sb.append("function download() {");
+		    Properties downloadLocator=new Properties();
+        	downloadLocator.setProperty(Entigrator.ENTIHOME,entigrator.getEntihome());
+        	downloadLocator.setProperty(FILE_PATH,filePath$);
+        	downloadLocator.setProperty(WContext.PAGE_METHOD,WContext.PAGE_METHOD_DOWNLOAD);
+        	url$=webHome$+"?"+WContext.WEB_LOCATOR+"="+Base64.encodeBase64URLSafeString(Locator.toString(downloadLocator).getBytes());
+        	if(debug)
+        		System.out.println("JFolderpanel:getWebView:url="+url$);
+        	sb.append("var url=\""+url$+"\";");
+        	sb.append("console.log('url='+url);");
+        	sb.append("window.location.href=url;");
+		    sb.append("}");
+		    sb.append("function slideshow() {");
+		    sb.append("}");
+		 	sb.append("</script>");
+		    sb.append("</body>");
+		    sb.append("</html>");
+		    return sb.toString();
+		}catch(Exception e){
+			Logger.getLogger(JBasesPanel.class.getName()).severe(e.toString());	
+		}
+		return null;
+	}
+	@Override
+	public String getWebConsole(Entigrator entigrator, String locator$) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	@Override
+	public String getFacetOpenItem() {
+		// TODO Auto-generated method stub
+		return JFolderFacetOpenItem.class.getName();
+	}
+	@Override
+	public String getFacetIcon() {
+
+		return "folder.png";
 	}
 	
 }

@@ -53,6 +53,7 @@ public final static String FIELDS="fields";
 			String entityKey$=locator.getProperty(EntityHandler.ENTITY_KEY);
 			Sack entity=entigrator.getEntityAtKey(entityKey$);
 			boolean result=false;
+			
 			if(entity.getProperty("fields")!=null&&
 				!Locator.LOCATOR_FALSE.equals(entity.getProperty("fields"))){
 				String handler$=entity.getElementItemAt("fhandler", FieldsHandler.class.getName());
@@ -60,9 +61,23 @@ public final static String FIELDS="fields";
 					if(!entity.existsElement("fhandler"))
 						entity.createElement("fhandler");
 					entity.putElementItem("fhandler", new Core(null,FieldsHandler.class.getName(),null));
-					entigrator.save(entity);
+					entigrator.replace(entity);
 				}
-					 result=true;
+					 return true;
+			}
+			if(entity.elementGet("field")!=null){
+				if(entity.getProperty("fields")==null){
+					entity=entigrator.ent_assignProperty(entity, "fields", entity.getProperty("label"));
+					String handler$=entity.getElementItemAt("fhandler", FieldsHandler.class.getName());
+					if(handler$==null){
+						if(!entity.existsElement("fhandler"))
+							entity.createElement("fhandler");
+						entity.putElementItem("fhandler", new Core(null,FieldsHandler.class.getName(),null));
+						entigrator.replace(entity);
+					}
+						 return true;
+				}
+				
 			}
 			return result;
 		}catch(Exception e){

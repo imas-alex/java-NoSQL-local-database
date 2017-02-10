@@ -27,18 +27,28 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.Hashtable;
+import java.util.Map;
 import java.util.Properties;
 import java.util.Stack;
 import java.util.logging.Logger;
 
 import org.apache.commons.codec.binary.Base64;
 
+import gdt.data.entity.BaseHandler;
+import gdt.data.entity.EntityHandler;
+import gdt.data.entity.FacetHandler;
+import gdt.data.entity.facet.ExtensionHandler;
 import gdt.data.grain.Core;
 import gdt.data.grain.Identity;
+import gdt.data.grain.Locator;
 import gdt.data.grain.Sack;
 import gdt.data.grain.Support;
 import gdt.data.store.FileExpert;
+import gdt.jgui.base.JCategoryPanel;
+import gdt.jgui.console.JConsoleHandler;
+import gdt.jgui.console.JFacetRenderer;
 /**
 * This class is the main provider of database management methods.
 * @author  Alexander Imas
@@ -176,7 +186,7 @@ public class Entigrator {
                 propertyIndex.setKey(PROPERTY_INDEX);
                 propertyIndex.setPath(PROPERTY_INDEX);
                 propertyIndex.saveXML(getEntihome() + "/"+PROPERTY_INDEX);
-                indx_rebuild(null);
+                indx_reindex(null);
             }
             if (propertyIndex == null)
                 propertyIndex = Sack.parseXML(entihome$ + "/" + PROPERTY_INDEX);
@@ -257,7 +267,8 @@ public class Entigrator {
     		 return false;
     	sack.putAttribute(new Core(null,SAVE_ID,Identity.key()));
     	entitiesCache.put(sack);
-    	return saveNative(sack);
+    	return storeAdapter.ent_save(this, sack);
+    	//return saveNative(sack);
     }
     /**
   	 * Store an entity on the disk.
@@ -402,6 +413,7 @@ public class Entigrator {
    	 * @return array of property names.
    	 */
     public String[] indx_listPropertyNames() {
+    	try{
     	String[] sa=propertyIndex.elementListNoSorted("property");
     	String[] sa1=new String[sa.length+1];
     	for(int i=0;i<sa.length;i++)
@@ -409,6 +421,10 @@ public class Entigrator {
     	sa1[sa.length]="label";
     	Support.sortStrings(sa1);
         return  sa1;
+    	}catch(Exception e){
+    		LOGGER.severe(e.toString());
+    	}
+    	return null;
     }
     /**
    	 * List all property values.
@@ -621,15 +637,7 @@ public String[] indx_listEntities(Properties criteria) {
      */   
     public String ent_getIconAtKey(String key$){
     	return storeAdapter.ent_getIconAtKey(key$);
-    	/*
-    	try{
-    		String label$=quickMap.getElementItem("key", key$).type;
-    		return quickMap.getElementItem("label",label$).type;	
-    	} catch(Exception ee){
-      	//  LOGGER.info(ee.toString());
-      	 return null;
-        }
-        */
+    
     }
     /**
      * Get entities icon files and labels by entities keys.
@@ -663,7 +671,6 @@ public String[] indx_listEntities(Properties criteria) {
      */  
     public  String[] indx_listEntities(String propertyName$, String propertyValue$) {
 	        if (propertyName$ == null || propertyValue$ == null) {
-            //System.out.println("Entigrator:indx_listEntities:one or more null parameters");
 	        	LOGGER.severe(":indx_listEntities:one or more null parameters");
 	        	return null;
         }
@@ -969,7 +976,7 @@ public String[] indx_listEntities(Properties criteria) {
      *  @param indicator instance of Indicator class
      *  intended to inform caller about progress. Can be null.
      */  
-public void indx_rebuild(Indicator indicator) {
+public void indx_reindex(Indicator indicator) {
        
 	clr_all();
  
@@ -978,7 +985,7 @@ public void indx_rebuild(Indicator indicator) {
        //     return;
         storeAdapter.map_rebuild();
         String[] sa = indx_listEntities();
-          if (sa == null)
+        if (sa == null)
              return;
         Sack candidate ;
         for (String aSa : sa) {
@@ -990,35 +997,9 @@ public void indx_rebuild(Indicator indicator) {
             ent_reindex(candidate);
         }
         
-    /*
-        File headers=new File(entihome$+"/"+HEADERS);
-        if(headers.exists()){
-        	if(headers.isDirectory())
-        		FileExpert.clear(headers.getPath());
-        }else{
-        	headers.mkdir();
-        }
-        Sack candidate ;
-        for (String aSa : sa) {
-            if (indicator != null) {
-                indicator.run();
-            }
-            candidate = getMember("entity.base", aSa);
-            if (candidate == null) {
-                try {
-                    String base$ =ENTITY_BASE; 
-                    String file$ = entihome$ + "/" + base$ + "/data/" + aSa;
-                    File file = new File(file$);
-                    file.delete();
-                } catch (Exception ee) {
-                	 LOGGER.severe(":indx_rebuild:cannot delete unreadable entity=" + aSa);
-                }
-                continue;
-            }
-            ent_reindex(candidate);
-        }
-        */
+  
     }
+
 /**
  * Rebuild  index entries for the entity. 
  *  @param entity the entity.
@@ -2134,7 +2115,8 @@ private boolean col_existsContainer(Sack container, Sack component) {
         //entity.putElementItem("property", new Core("label",entity.getKey(),label$));
         ent_assignLabel(entity, label$);
         entity.putElementItem("property", new Core("entity",Identity.key(),type$));
-        saveNative(entity);
+        //saveNative(entity);
+        replace(entity);
         ent_reindex(entity);
         return entity;
     }
@@ -2178,6 +2160,7 @@ private boolean col_existsContainer(Sack container, Sack component) {
     /**
      * Delete an entity from the database. 
      *  @param entity the entity.
+     *  @return true if deleted.
      */
     public boolean deleteEntity(Sack entity) {
        //return storeAdapter.deleteEntity(entity);
@@ -2446,17 +2429,17 @@ public String[] ent_listContainers(Sack entity) {
      return res;
  }
  /**
-  * Get the icon of the entity encoded into
-  * Base64 string 
-  *  @param entity the entity.
-  * @return the icon string .
-  */
- public  String readEntityIcon(Sack entity) {
-		String iconString$=Support.readHandlerIcon(this,getClass(), "box.png");
+ 
+ public  String getEntityIcon(Sack entity) {
+	 String iconString$;
 	 try {
 			String icon$=entity.getAttributeAt("icon");
-			 if(icon$==null)
+			 if(icon$==null){
+				  iconString$=JCategoryPanel.getCategoryIcon(this, entity.getProperty("entity"));
+					if(iconString$==null)
+							iconString$=Support.readHandlerIcon(this,getClass(), "box.png");
 				 return iconString$;
+			 }
 			 
 			String path$ = getEntihome() + "/" + ICONS+"/"+icon$;
 			
@@ -2474,8 +2457,95 @@ public String[] ent_listContainers(Sack entity) {
 			//Logger.getLogger(Entigrator.class.getName()).severe(e.toString());
 			 
 		}
+	 iconString$=JCategoryPanel.getCategoryIcon(this, entity.getProperty("entity"));
+		if(iconString$==null)
+				iconString$=Support.readHandlerIcon(this,getClass(), "box.png");
    return iconString$;
 	}
+	*/
+ /*
+ public String getIcon(String locator$){
+	 try{
+       System.out.println("Entigrator:getIcon:locator="+locator$);		
+		 Properties locator=Locator.toProperties(locator$);
+		 String iconFile$=locator.getProperty(Locator.LOCATOR_ICON_FILE);
+		 if(iconFile$!=null&&!"null".equals(iconFile$)){
+		 if(Locator.LOCATOR_ICON_CONTAINER_ICONS.equals(locator.getProperty(Locator.LOCATOR_ICON_CONTAINER))){
+           String extension$=locator.getProperty(Locator.LOCATOR_ICON_LOCATION);
+		  if(extension$==null)
+		  {	 String path$ = getEntihome() + "/" + ICONS+"/"+iconFile$;
+				 FileInputStream is=new FileInputStream(path$);
+		         ByteArrayOutputStream bos = new ByteArrayOutputStream();
+		            byte[] b = new byte[1024];
+		            int bytesRead = 0;
+		            while ((bytesRead = is.read(b)) != -1) {
+		               bos.write(b, 0, bytesRead);
+		            }
+		            byte[] ba = bos.toByteArray();
+		            is.close();
+		           return Base64.encodeBase64String(ba);
+		  }else{
+			 return  ExtensionHandler.loadIcon(this, extension$, iconFile$);
+		  }
+			 }
+		
+		 if(Locator.LOCATOR_ICON_CONTAINER_CLASS.equals(locator.getProperty(Locator.LOCATOR_ICON_CONTAINER))){
+			
+			 String iconHandler$=locator.getProperty(Locator.LOCATOR_ICON_CLASS);
+			 Class iconHandler=JConsoleHandler.getHandlerInstance(this, iconHandler$).getClass();
+			 String iconLocation$=locator.getProperty(Locator.LOCATOR_ICON_CLASS_LOCATION);
+			if(iconLocation$==null)
+				return Support.readHandlerIcon(this, iconHandler, iconFile$);
+			else
+				return ExtensionHandler.loadIcon(this, iconLocation$, iconFile$);
+		 }
+		
+		 }
+		 String entityKey$=locator.getProperty(EntityHandler.ENTITY_KEY);
+		 if(entityKey$!=null){
+		 String entityType$=getEntityType(entityKey$);
+		 FacetHandler fh=BaseHandler.getHandler(this, entityType$);
+		 if(fh!=null){
+			 JFacetRenderer facetRenderer=JConsoleHandler.getFacetRenderer(this, fh.getClass().getName()); 
+		 
+			return  Support.readHandlerIcon(this, facetRenderer.getClass(), facetRenderer.getCategoryIcon(this));
+		 }
+		 }
+		 if(Locator.LOCATOR_ICON_CONTAINER_ENTITY.equals(locator.getProperty(Locator.LOCATOR_ICON_CONTAINER))){
+			// String entityKey$=locator.getProperty(Locator.LOCATOR_ICON_ENTITY_KEY);
+			 Sack entity=getEntityAtKey(entityKey$);
+			 String element$=locator.getProperty(Locator.LOCATOR_ICON_ELEMENT);
+			 String core$=locator.getProperty(Locator.LOCATOR_ICON_CORE);
+			 String field$=locator.getProperty(Locator.LOCATOR_ICON_FIELD);
+			 Core core=entity.getElementItem(element$, core$);
+			 if(Locator.LOCATOR_ICON_FIELD_VALUE.equals(field$))
+				 return core.value;
+			 if(Locator.LOCATOR_ICON_FIELD_TYPE.equals(field$))
+				 return core.type;
+			 return null;
+		 } 
+		 		 String iconField$=locator.getProperty(Locator.LOCATOR_ICON_FIELD);
+		 if(iconField$!=null){
+			 String entityKey$=locator.getProperty(EntityHandler.ENTITY_KEY);	
+			 Sack entity=getEntityAtKey(entityKey$);
+			 String element$=locator.getProperty(Locator.LOCATOR_ICON_ELEMENT);
+			 String item$=locator.getProperty(Locator.LOCATOR_ICON_CORE);
+			 Core core=entity.getElementItem(element$, item$);
+			 if(Locator.LOCATOR_ICON_FIELD_VALUE.equals(iconField$))
+				 return core.value;
+			 if(Locator.LOCATOR_ICON_FIELD_TYPE.equals(iconField$))
+				 return core.type;
+			 
+				 
+		 }
+		 
+		 return null;
+	 }catch(Exception e){
+		 Logger.getLogger(getClass().getName()).severe(e.toString());
+	 }
+	 return null;
+ }
+ */
  /**
   * Get the icon from the icon directory
   * encoded as Base64 string. 
@@ -2652,6 +2722,18 @@ public void store_block(){
 }
 public void store_unblock(){
 	storeAdapter.store_unblock();
+}
+public static Map<String, String> getQueryMap(String query)
+{
+    String[] params = query.split("&");
+    Map<String, String> map = new HashMap<String, String>();
+    for (String param : params)
+    {
+        String name = param.split("=")[0];
+        String value = param.split("=")[1];
+        map.put(name, value);
+    }
+    return map;
 }
 }
 

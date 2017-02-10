@@ -87,7 +87,7 @@ public  abstract class JItemsListPanel extends JPanel implements JContext{
 	private static final long serialVersionUID = 1L;
     private Logger LOGGER=Logger.getLogger(JItemsListPanel.class.getName());
     protected JMainConsole console;
-    JMenuItem selectItem;
+    protected JMenuItem selectItem;
     JMenuItem unselectItem;
     JMenuItem recentItem;
     protected JMenu menu;
@@ -150,8 +150,6 @@ public  abstract class JItemsListPanel extends JPanel implements JContext{
 				// System.out.println("ItemsListPanel:putItems:aIpl="+aIpl.getTitle());
 				 panel.add(aIpl);
 			 }
-		
-		 
 	}
     protected void clearItems() {
     	panel.removeAll();

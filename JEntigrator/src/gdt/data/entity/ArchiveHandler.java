@@ -251,7 +251,6 @@ public class ArchiveHandler {
 	public static String detectContentOfArchive(String file$){
 		try{
 			String ext$=FileExpert.getExtension(file$);
-		//	System.out.println("ArchiveHandler:detectContentOfArchive:ext="+ext$);
 			if("tar".equalsIgnoreCase(ext$)){
 				if(hasEntitiesDirInTar(file$)){
 					if(hasPropertyIndexInTar(file$))
@@ -353,7 +352,6 @@ public class ArchiveHandler {
 		 */	 
 	public boolean compressEntitiesToTar(Entigrator entigrator,String locator$){
 		try{
-		//       System.out.println("ArchiveHandler:compressEntitiesToTar:locator="+locator$);
 			Properties locator=Locator.toProperties(locator$);
 			archiveType$=locator.getProperty(ARCHIVE_TYPE);
 			archiveFile$=locator.getProperty(ARCHIVE_FILE);
@@ -370,7 +368,7 @@ public class ArchiveHandler {
             aos.setLongFileMode(TarArchiveOutputStream.LONGFILE_GNU);
             String entihome$=entigrator.getEntihome();
             String entitiesHome$ = entihome$ + "/" + Entigrator.ENTITY_BASE + "/data/";
-          //  System.out.println("ArchiveHandler:append:entities home=" + entitiesHome$);
+        
             String iconsHome$=entihome$ + "/"+Entigrator.ICONS+"/";
             String icon$;
             for (String aSa: sa) {
@@ -409,7 +407,6 @@ public class ArchiveHandler {
             File tgzFile = new File(tgzFile$);
             if (!tgzFile.exists())
                 tgzFile.createNewFile();
-           // String userHome$=System.getProperty("user.home");
             File tarFile=new File (tgzFile$.replace(".tgz", "")+".tar");
             if (!tarFile.exists())
                 tarFile.createNewFile();
@@ -452,7 +449,6 @@ public class ArchiveHandler {
 					System.out.println("directory:" + file.getPath());
 					getAllFiles(file, fileList);
 				} else {
-					//System.out.println("     file:" + file.getPath());
 					fileList.add(file);
 				}
 			}
@@ -464,7 +460,6 @@ private static void appendToZip(String directoryToZip$, File file, ZipOutputStre
 	try{
 			FileInputStream fis = new FileInputStream(file);
 			String zipFile$ = file.getPath().substring(directoryToZip$.length() + 1,file.getPath().length());
-			//System.out.println("Writing '" + zipFile$ + "' to zip file");
 			ZipEntry zipEntry = new ZipEntry(zipFile$);
 			zos.putNextEntry(zipEntry);
 			byte[] bytes = new byte[1024];
@@ -571,7 +566,6 @@ public  boolean compressEntitiesToZip(Entigrator entigrator,String locator$){
  */
 public static boolean hasEntitiesDirInTar(String tarfile$) {
 	try{
-		//System.out.println("ArchiveHandler:hasEntitiesDirInTar:tar file="+tarfile$);
 		TarArchiveInputStream tis = new TarArchiveInputStream(new FileInputStream(new File(tarfile$)));
 		return hasEntitiesDirInTarStream(tis);
 	}catch(Exception e){
@@ -581,12 +575,10 @@ public static boolean hasEntitiesDirInTar(String tarfile$) {
 }
 private static boolean hasEntitiesDirInTarStream(TarArchiveInputStream tis) {
     try {
-    //	System.out.println("ArchiveHandler:hasEntitiesDirInTarStream:BEGIN:tis="+tis.getCount());
         TarArchiveEntry entry = null;
         String entryName$;
         while ((entry = tis.getNextTarEntry()) != null) {
             entryName$ = entry.getName();
-            System.out.println("ArchiveHandler:hasEntitiesDirInTarStream:entry="+entryName$);
             if (entryName$.startsWith(Entigrator.ENTITY_BASE)) {
                 tis.close();
                 return true;
@@ -606,7 +598,6 @@ private static boolean hasEntitiesDirInTarStream(TarArchiveInputStream tis) {
  */
 public static boolean hasEntitiesDirInTgz(String tgzfile$) {
     try {
-    	//FileInputStream fis = new FileInputStream(gzipFile);
     	GZIPInputStream gis = new GZIPInputStream(new FileInputStream(new File(tgzfile$)));    	
         TarArchiveInputStream tis = new TarArchiveInputStream(gis);
         return hasEntitiesDirInTarStream(tis);
@@ -654,7 +645,6 @@ public static boolean hasPropertyIndexInTar(String tarfile$) {
  */
 public static boolean hasPropertyIndexInTgz(String tgzfile$) {
     try {
-    	//FileInputStream fis = new FileInputStream(gzipFile);
     	GZIPInputStream gis = new GZIPInputStream(new FileInputStream(new File(tgzfile$)));    	
         TarArchiveInputStream tis = new TarArchiveInputStream(gis);
         return hasPropertyIndexInTarStream(tis);
@@ -791,7 +781,6 @@ public static void extractEntitiesFromZip(String targetDirectory$,ZipInputStream
 }
 private static void extractEntitiesFromTar(String targetDirectory$,String tarfile$){
 	try{
-	//	System.out.println("ArchiveHandler:extractEntitiesFromTar.dir="+targetDirectory$);
 		TarArchiveInputStream tis = new TarArchiveInputStream(new FileInputStream(new File(tarfile$)));
 		extractEntitiesFromTar(targetDirectory$,tis);
 	}catch(Exception e){
@@ -837,7 +826,7 @@ public static void extractEntities(String targetDirectory$,String file$){
 }
 private static Sack prepareUndo(Entigrator entigrator,String cache$){
 	try{
-	//	System.out.println("ArchiveHandler:prepareUndo:cache="+cache$);
+
 		int cnt=0;
 		String[] sa=entigrator.indx_listEntities("entity", "undo");
 		if(sa!=null){
@@ -891,7 +880,6 @@ private static Sack prepareUndo(Entigrator entigrator,String cache$){
 }
 private static void fillUndo(Entigrator entigrator,Sack undo){
 	try{
-		ArrayList<String>sl=new ArrayList<String>();
 		String [] sa=undo.elementList("entity");
 		if(sa!=null){
 		Sack entity;

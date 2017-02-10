@@ -152,9 +152,12 @@ public JMenu getContextMenu() {
 		       locator.setProperty(EntityHandler.ENTITY_KEY,entityKey$);
 	    if(entityLabel$!=null)
 		       locator.setProperty(EntityHandler.ENTITY_LABEL,entityLabel$);
-	    String icon$=Support.readHandlerIcon(null,JEntityPrimaryMenu.class, "entity.png");
-	    if(icon$!=null)
-	    	locator.setProperty(Locator.LOCATOR_ICON,icon$);
+	    locator.setProperty(Locator.LOCATOR_ICON_CONTAINER,Locator.LOCATOR_ICON_CONTAINER_CLASS);
+	    locator.setProperty(Locator.LOCATOR_ICON_CLASS,getClass().getName());
+	    locator.setProperty(Locator.LOCATOR_ICON_FILE,"entity.png");
+	   // String icon$=Support.readHandlerIcon(null,JEntityPrimaryMenu.class, "entity.png");
+	   // if(icon$!=null)
+	   // 	locator.setProperty(Locator.LOCATOR_ICON,icon$);
 	    if(entityLabel$!=null)
 	    locator.setProperty(Locator.LOCATOR_TITLE, getTitle());
 	   locator.setProperty(BaseHandler.HANDLER_SCOPE,JConsoleHandler.CONSOLE_SCOPE);
@@ -186,6 +189,9 @@ public JMenu getContextMenu() {
 			 return null;
 		 ArrayList<JItemPanel>ipl=new ArrayList<JItemPanel>();
 		 String actionLocator$=getRenameLocator();
+		 actionLocator$=Locator.append(actionLocator$, Locator.LOCATOR_ICON_CONTAINER, Locator.LOCATOR_ICON_CONTAINER_CLASS);
+		actionLocator$=Locator.append(actionLocator$, Locator.LOCATOR_ICON_CLASS, getClass().getName());
+		actionLocator$=Locator.append(actionLocator$, Locator.LOCATOR_ICON_FILE, "refresh.png");
 		 JItemPanel renameItem=new JItemPanel(console, actionLocator$);
 		 ipl.add(renameItem);
 		 actionLocator$=getSetIconLocator();
@@ -269,14 +275,19 @@ private String getRenameLocator() {
 				locator$=Locator.append(locator$, Locator.LOCATOR_TITLE, "Rename");
 				locator$=Locator.append(locator$, Entigrator.LOCK_STORE, Locator.LOCATOR_TRUE);
 				locator$=Locator.append(locator$, Entigrator.ENTIHOME,entihome$);
+				locator$=Locator.append(locator$, Locator.LOCATOR_ICON_CONTAINER, Locator.LOCATOR_ICON_CONTAINER_CLASS);
+				locator$=Locator.append(locator$, Locator.LOCATOR_ICON_CLASS, getClass().getName());
+				locator$=Locator.append(locator$, Locator.LOCATOR_ICON_FILE, "refresh.png");
+		  	
 				/*
 				String info$=entigrator.store_lockInfo();
 				if(info$!=null&&entigrator.store_isSelfLocked())
 					info$=null;
 				locator$=Locator.append(locator$, JTextEditor.TEXT_TITLE, info$);
-				*/
+				
 				String icon$=Support.readHandlerIcon(null,JEntityPrimaryMenu.class, "refresh.png");
 				locator$=Locator.append(locator$, Locator.LOCATOR_ICON,icon$);
+				*/
 				String responseLocator$=getLocator();
 				responseLocator$=Locator.append(responseLocator$, JRequester.REQUESTER_ACTION, ACTION_RENAME);
 				responseLocator$=Locator.append(responseLocator$, BaseHandler.HANDLER_METHOD,"response");
@@ -297,21 +308,27 @@ private String getArchiveLocator() {
 	    			}
 	        	JArchivePanel archivePanel=new JArchivePanel();
 	        	String locator$=archivePanel.getLocator();
+	        	Properties locator=Locator.toProperties(locator$);
 	        	if(entihome$!=null)
-	        	locator$=Locator.append(locator$,Entigrator.ENTIHOME,entihome$);
+	        	    locator.setProperty(Entigrator.ENTIHOME,entihome$);
 	        	if(entityKey$!=null)
-		        	locator$=Locator.append(locator$,EntityHandler.ENTITY_KEY,entityKey$);
+	        		locator.setProperty(EntityHandler.ENTITY_KEY,entityKey$);
 	        	if(entityLabel$!=null)
-		        	locator$=Locator.append(locator$,EntityHandler.ENTITY_LABEL,entityLabel$);
-	        	String icon$=Support.readHandlerIcon(null,JEntityPrimaryMenu.class, "archive.png");
-				locator$=Locator.append(locator$, Locator.LOCATOR_ICON,icon$);
+	        		locator.setProperty(EntityHandler.ENTITY_LABEL,entityLabel$);
+	        	
+	        	//String icon$=Support.readHandlerIcon(null,JEntityPrimaryMenu.class, "archive.png");
+				//locator$=Locator.append(locator$, Locator.LOCATOR_ICON,icon$);
+	        	locator.setProperty( Locator.LOCATOR_ICON_CONTAINER, Locator.LOCATOR_ICON_CONTAINER_CLASS);
+	        	locator.setProperty( Locator.LOCATOR_ICON_CLASS, getClass().getName());
+	        	locator.setProperty( Locator.LOCATOR_ICON_FILE, "archive.png");
+		     		
 				//String responseLocator$=getLocator();
-				String responseLocator$=locator$;
+				String responseLocator$=Locator.toString(locator);
 				responseLocator$=Locator.append(responseLocator$, JRequester.REQUESTER_ACTION, ACTION_ARCHIVE);
 				responseLocator$=Locator.append(responseLocator$, BaseHandler.HANDLER_METHOD,"response");
 				String requesterResponseLocator$=Locator.compressText(responseLocator$);
-				locator$=Locator.append(locator$, JRequester.REQUESTER_RESPONSE_LOCATOR, requesterResponseLocator$);
-				return locator$;
+				locator.setProperty( JRequester.REQUESTER_RESPONSE_LOCATOR, requesterResponseLocator$);
+				return Locator.toString(locator);
 			}catch(Exception ee){
 				LOGGER.severe(ee.toString());
 				return null;
@@ -338,6 +355,10 @@ private String getSetIconLocator() {
 	responseLocator$=Locator.append(responseLocator$ ,BaseHandler.HANDLER_METHOD,"response");
 	isLocator$=Locator.append(isLocator$, Locator.LOCATOR_TITLE,"Set icon");
 	isLocator$=Locator.append(isLocator$ ,JRequester.REQUESTER_RESPONSE_LOCATOR,Locator.compressText(responseLocator$));
+	 isLocator$=Locator.append(isLocator$, Locator.LOCATOR_ICON_CONTAINER, Locator.LOCATOR_ICON_CONTAINER_CLASS);
+		isLocator$=Locator.append(isLocator$, Locator.LOCATOR_ICON_CLASS, getClass().getName());
+		isLocator$=Locator.append(isLocator$, Locator.LOCATOR_ICON_FILE, "icon.png");
+		
 	return isLocator$;
 	}catch(Exception ee){
 		LOGGER.severe(ee.toString());
@@ -353,19 +374,24 @@ private String getEntityEditorLocator() {
 	}
 	JEntityEditor editor=new JEntityEditor();
 	String locator$=editor.getLocator();
+	Properties entityLocator=Locator.toProperties(locator$);
 	locator$=Locator.append(locator$ ,BaseHandler.HANDLER_SCOPE,JConsoleHandler.CONSOLE_SCOPE);
 	if(entihome$!=null)
-	locator$=Locator.append(locator$,Entigrator.ENTIHOME,entihome$);
+		entityLocator.setProperty(Entigrator.ENTIHOME,entihome$);
 	if(entityKey$!=null)
-	locator$=Locator.append(locator$,EntityHandler.ENTITY_KEY,entityKey$);
+		entityLocator.setProperty(EntityHandler.ENTITY_KEY,entityKey$);
 	if(entityLabel$!=null)
-	locator$=Locator.append(locator$,EntityHandler.ENTITY_LABEL,entityLabel$);
-	locator$=Locator.append(locator$, Locator.LOCATOR_TITLE,"Edit");
-	locator$=Locator.append(locator$,EntityHandler.ENTITY_ACTION,JEntityEditor.ENTITY_EDIT);
-	locator$=Locator.append(locator$,BaseHandler.HANDLER_CLASS,JEntityEditor.class.getName());
-	 String icon$=Support.readHandlerIcon(null,JEntityPrimaryMenu.class, "edit.png");
-	locator$=Locator.append(locator$, Locator.LOCATOR_ICON,icon$);
-	return locator$;
+		entityLocator.setProperty(EntityHandler.ENTITY_LABEL,entityLabel$);
+	entityLocator.setProperty(Locator.LOCATOR_TITLE,"Edit");
+	entityLocator.setProperty(EntityHandler.ENTITY_ACTION,JEntityEditor.ENTITY_EDIT);
+	entityLocator.setProperty(BaseHandler.HANDLER_CLASS,JEntityEditor.class.getName());
+	entityLocator.setProperty( Locator.LOCATOR_ICON_CONTAINER, Locator.LOCATOR_ICON_CONTAINER_CLASS);
+	entityLocator.setProperty( Locator.LOCATOR_ICON_CLASS, getClass().getName());
+	entityLocator.setProperty( Locator.LOCATOR_ICON_FILE, "edit.png");
+	
+	//String icon$=Support.readHandlerIcon(null,JEntityPrimaryMenu.class, "edit.png");
+	//locator$=Locator.append(locator$, Locator.LOCATOR_ICON,icon$);
+	return Locator.toString(entityLocator);
 	}catch(Exception ee){
 		LOGGER.severe(ee.toString());
 		return null;
@@ -375,14 +401,19 @@ private String getCopyLocator() {
 	try{
 		Entigrator entigrator=console.getEntigrator(entihome$);
 		String entityLocator$=EntityHandler.getEntityLocatorAtKey(entigrator, entityKey$);
-		entityLocator$=Locator.append(entityLocator$,BaseHandler.HANDLER_CLASS,getClass().getName());
-		entityLocator$=Locator.append(entityLocator$,BaseHandler.HANDLER_METHOD,"response");
-		entityLocator$=Locator.append(entityLocator$,BaseHandler.HANDLER_SCOPE,JConsoleHandler.CONSOLE_SCOPE);
-		entityLocator$=Locator.append(entityLocator$,JRequester.REQUESTER_ACTION,ACTION_COPY);
-		String icon$=Support.readHandlerIcon(entigrator,JEntityPrimaryMenu.class, "copy.png");
-		entityLocator$= Locator.append(entityLocator$,Locator.LOCATOR_ICON,icon$);
-		entityLocator$=Locator.append(entityLocator$,Locator.LOCATOR_TITLE,"Copy");
-		return entityLocator$;
+		Properties entityLocator=Locator.toProperties(entityLocator$);
+		entityLocator.setProperty(BaseHandler.HANDLER_CLASS,getClass().getName());
+		entityLocator.setProperty(BaseHandler.HANDLER_METHOD,"response");
+		entityLocator.setProperty(BaseHandler.HANDLER_SCOPE,JConsoleHandler.CONSOLE_SCOPE);
+		entityLocator.setProperty(JRequester.REQUESTER_ACTION,ACTION_COPY);
+	//	String icon$=Support.readHandlerIcon(entigrator,JEntityPrimaryMenu.class, "copy.png");
+	//	entityLocator$= Locator.append(entityLocator$,Locator.LOCATOR_ICON,icon$);
+		entityLocator.setProperty(Locator.LOCATOR_TITLE,"Copy");
+		entityLocator.setProperty( Locator.LOCATOR_ICON_CONTAINER, Locator.LOCATOR_ICON_CONTAINER_CLASS);
+		entityLocator.setProperty(Locator.LOCATOR_ICON_CLASS, getClass().getName());
+		entityLocator.setProperty(Locator.LOCATOR_ICON_FILE, "copy.png");
+  	
+		return Locator.toString(entityLocator);
 		}catch(Exception ee){
 			LOGGER.severe(ee.toString());
 			return null;
@@ -393,14 +424,19 @@ private String getCloneLocator() {
 	try{
 		Entigrator entigrator=console.getEntigrator(entihome$);
 		String entityLocator$=EntityHandler.getEntityLocatorAtKey(entigrator, entityKey$);
-		entityLocator$=Locator.append(entityLocator$,BaseHandler.HANDLER_CLASS,getClass().getName());
-		entityLocator$=Locator.append(entityLocator$,BaseHandler.HANDLER_METHOD,"response");
-		entityLocator$=Locator.append(entityLocator$,BaseHandler.HANDLER_SCOPE,JConsoleHandler.CONSOLE_SCOPE);
-		entityLocator$=Locator.append(entityLocator$,JRequester.REQUESTER_ACTION,ACTION_CLONE);
-		String icon$=Support.readHandlerIcon(null,JEntityPrimaryMenu.class, "clone.png");
-		entityLocator$= Locator.append(entityLocator$,Locator.LOCATOR_ICON,icon$);
-		entityLocator$=Locator.append(entityLocator$,Locator.LOCATOR_TITLE,"Clone");
-		return entityLocator$;
+		Properties entityLocator=Locator.toProperties(entityLocator$);
+		entityLocator.setProperty(BaseHandler.HANDLER_CLASS,getClass().getName());
+		entityLocator.setProperty(BaseHandler.HANDLER_METHOD,"response");
+		entityLocator.setProperty(BaseHandler.HANDLER_SCOPE,JConsoleHandler.CONSOLE_SCOPE);
+		entityLocator.setProperty(JRequester.REQUESTER_ACTION,ACTION_CLONE);
+		//String icon$=Support.readHandlerIcon(null,JEntityPrimaryMenu.class, "clone.png");
+		//entityLocator$= Locator.append(entityLocator$,Locator.LOCATOR_ICON,icon$);
+		entityLocator.setProperty(Locator.LOCATOR_TITLE,"Clone");
+		entityLocator.setProperty(Locator.LOCATOR_ICON_CONTAINER, Locator.LOCATOR_ICON_CONTAINER_CLASS);
+		entityLocator.setProperty( Locator.LOCATOR_ICON_CLASS, getClass().getName());
+		entityLocator.setProperty(Locator.LOCATOR_ICON_FILE, "clone.png");
+  		
+		return Locator.toString(entityLocator);
 		
 	}catch(Exception ee){
 			LOGGER.severe(ee.toString());
@@ -416,9 +452,13 @@ private String getDeleteLocator() {
 		locator.setProperty(BaseHandler.HANDLER_SCOPE,JConsoleHandler.CONSOLE_SCOPE);
 		locator.setProperty(BaseHandler.HANDLER_CLASS,getClass().getName());
 		locator.setProperty( BaseHandler.HANDLER_METHOD, "deleteEntity");
-		 String icon$=Support.readHandlerIcon(null,JEntityPrimaryMenu.class, "delete.png");
-		 locator.setProperty(Locator.LOCATOR_ICON,icon$);
+		// String icon$=Support.readHandlerIcon(null,JEntityPrimaryMenu.class, "delete.png");
+		// locator.setProperty(Locator.LOCATOR_ICON,icon$);
 		 locator.setProperty(Locator.LOCATOR_TITLE,"Delete");
+		 locator.setProperty( Locator.LOCATOR_ICON_CONTAINER, Locator.LOCATOR_ICON_CONTAINER_CLASS);
+		 locator.setProperty( Locator.LOCATOR_ICON_CLASS, getClass().getName());
+		 locator.setProperty( Locator.LOCATOR_ICON_FILE, "delete.png");
+  	
 		return Locator.toString(locator);
 		}catch(Exception ee){
 			LOGGER.severe(ee.toString());
@@ -436,9 +476,13 @@ private String getReindexLocator() {
 		locator.setProperty(BaseHandler.HANDLER_SCOPE,JConsoleHandler.CONSOLE_SCOPE);
 		locator.setProperty(BaseHandler.HANDLER_CLASS,getClass().getName());
 		locator.setProperty( BaseHandler.HANDLER_METHOD, "reindexEntity");
-		 String icon$=Support.readHandlerIcon(null,JEntityPrimaryMenu.class, "wrench.png");
-		 locator.setProperty(Locator.LOCATOR_ICON,icon$);
+		// String icon$=Support.readHandlerIcon(null,JEntityPrimaryMenu.class, "wrench.png");
+		 //locator.setProperty(Locator.LOCATOR_ICON,icon$);
 		 locator.setProperty(Locator.LOCATOR_TITLE,"Reindex");
+		 locator.setProperty( Locator.LOCATOR_ICON_CONTAINER, Locator.LOCATOR_ICON_CONTAINER_CLASS);
+		 locator.setProperty( Locator.LOCATOR_ICON_CLASS, getClass().getName());
+		 locator.setProperty( Locator.LOCATOR_ICON_FILE, "wrench.png");
+  	
 		return Locator.toString(locator);
 		}catch(Exception ee){
 			LOGGER.severe(ee.toString());
@@ -458,9 +502,14 @@ private String getViewLocator() {
 	        	entityLabel$=entigrator.indx_getLabel(entityKey$);
 	        	//locator$=Locator.append(locator$, EntityHandler.ENTITY_LIST, entityLabel$);
 	        	locator$=Locator.append(locator$, EntityHandler.ENTITY_LIST, entityKey$);
-	        	 String icon$=Support.readHandlerIcon(null,JEntityPrimaryMenu.class, "eye.png");
-	        	locator$=Locator.append(locator$, Locator.LOCATOR_ICON,icon$);
+	        	// String icon$=Support.readHandlerIcon(null,JEntityPrimaryMenu.class, "eye.png");
+	        	//locator$=Locator.append(locator$, Locator.LOCATOR_ICON,icon$);
 	        	locator$=Locator.append(locator$, Locator.LOCATOR_TITLE,"View");
+	        	 locator$=Locator.append(locator$, Locator.LOCATOR_ICON_CONTAINER, Locator.LOCATOR_ICON_CONTAINER_CLASS);
+	     		locator$=Locator.append(locator$, Locator.LOCATOR_ICON_CLASS, getClass().getName());
+	     		locator$=Locator.append(locator$, Locator.LOCATOR_ICON_FILE, "eye.png");
+	     		
+	     	
 	        	return locator$;
 	        }catch(Exception ee){
 	    		LOGGER.severe(ee.toString());
@@ -475,10 +524,16 @@ private String getComponentsLocator() {
 		locator.setProperty(BaseHandler.HANDLER_SCOPE,JConsoleHandler.CONSOLE_SCOPE);
 		locator.setProperty(BaseHandler.HANDLER_CLASS,getClass().getName());
 		locator.setProperty( BaseHandler.HANDLER_METHOD, "showComponents");
-		 String icon$=Support.readHandlerIcon(null,JEntityPrimaryMenu.class, "clip.png");
-		 locator.setProperty(Locator.LOCATOR_ICON,icon$);
+	//	 String icon$=Support.readHandlerIcon(null,JEntityPrimaryMenu.class, "clip.png");
+	//	 locator.setProperty(Locator.LOCATOR_ICON,icon$);
 		 locator.setProperty(Locator.LOCATOR_TITLE,"Show components");
-		return Locator.toString(locator);
+		 locator.setProperty( Locator.LOCATOR_ICON_CONTAINER, Locator.LOCATOR_ICON_CONTAINER_CLASS);
+		 locator.setProperty( Locator.LOCATOR_ICON_CLASS, getClass().getName());
+		 locator.setProperty( Locator.LOCATOR_ICON_FILE, "buffer.png");
+		 locator.setProperty( Locator.LOCATOR_ICON_CONTAINER, Locator.LOCATOR_ICON_CONTAINER_CLASS);
+		 locator.setProperty( Locator.LOCATOR_ICON_CLASS, getClass().getName());
+		 locator.setProperty( Locator.LOCATOR_ICON_FILE, "clip.png");
+		 return Locator.toString(locator);
 		}catch(Exception ee){
 			LOGGER.severe(ee.toString());
 			return null;
@@ -492,15 +547,22 @@ private String getContainersLocator() {
 		locator.setProperty(BaseHandler.HANDLER_SCOPE,JConsoleHandler.CONSOLE_SCOPE);
 		locator.setProperty(BaseHandler.HANDLER_CLASS,getClass().getName());
 		locator.setProperty( BaseHandler.HANDLER_METHOD, "showContainers");
-		 String icon$=Support.readHandlerIcon(null,JEntityPrimaryMenu.class, "box.png");
-		 locator.setProperty(Locator.LOCATOR_ICON,icon$);
+	//	 String icon$=Support.readHandlerIcon(null,JEntityPrimaryMenu.class, "box.png");
+	//	 locator.setProperty(Locator.LOCATOR_ICON,icon$);
 		 locator.setProperty(Locator.LOCATOR_TITLE,"Show containers");
+		 locator.setProperty(Locator.LOCATOR_TITLE,"Show components");
+		 locator.setProperty( Locator.LOCATOR_ICON_CONTAINER, Locator.LOCATOR_ICON_CONTAINER_CLASS);
+		 locator.setProperty( Locator.LOCATOR_ICON_CLASS, getClass().getName());
+		 locator.setProperty( Locator.LOCATOR_ICON_FILE, "box.png");
+  	
+		
 		return Locator.toString(locator);
 		}catch(Exception ee){
 			LOGGER.severe(ee.toString());
 			return null;
 		}
 }
+/*
 private String adaptLocator(String locator$){
 	if(locator$==null)
 		return null;
@@ -509,13 +571,14 @@ private String adaptLocator(String locator$){
 	aLocator$=Locator.remove(aLocator$,JRequester.REQUESTER_ACTION);
 	aLocator$=Locator.append(aLocator$,JContext.CONTEXT_TYPE , getType());
 	aLocator$=Locator.append(aLocator$,JContext.CONTEXT_TYPE , getType());
-	String icon$=Support.readHandlerIcon(null,JEntityPrimaryMenu.class, "entity.png");
-    aLocator$=Locator.append(aLocator$,Locator.LOCATOR_ICON,icon$);
+	//String icon$=Support.readHandlerIcon(null,JEntityPrimaryMenu.class, "entity.png");
+    //aLocator$=Locator.append(aLocator$,Locator.LOCATOR_ICON,icon$);
     aLocator$=Locator.append(aLocator$,Locator.LOCATOR_TITLE, getTitle());
     aLocator$=Locator.append(aLocator$,BaseHandler.HANDLER_SCOPE,JConsoleHandler.CONSOLE_SCOPE);
     aLocator$=Locator.append(aLocator$,BaseHandler.HANDLER_CLASS,JEntityPrimaryMenu.class.getName());
     return aLocator$;
 }
+*/
 private void cloneEntity(JMainConsole console,String locator$){
 	  try{
 		  Properties locator=Locator.toProperties(locator$);
@@ -532,8 +595,9 @@ private void cloneEntity(JMainConsole console,String locator$){
          JFacetRenderer fr;
          String rendererClass$;
          FacetHandler fah;
-         locator$=Locator.append(locator$, EntityHandler.ENTITY_KEY, clone.getKey());
-         locator$=Locator.append(locator$, ORIGIN_KEY, entityKey$);
+         locator.setProperty( EntityHandler.ENTITY_KEY, clone.getKey());
+         locator.setProperty( ORIGIN_KEY, entityKey$);
+         locator$=Locator.toString(locator);
          if(ca!=null)
          	for(Core fh:ca){
          		try{
@@ -880,17 +944,24 @@ public void response(JMainConsole console, String locator$) {
 				console.clipboard.clear();
 				JEntityFacetPanel em=new JEntityFacetPanel();
 				String emLocator$=em.getLocator();
-				emLocator$=Locator.append(emLocator$, Entigrator.ENTIHOME, entihome$);
-				emLocator$=Locator.append(emLocator$, EntityHandler.ENTITY_KEY,entityKey$);
+				Properties emLocator=Locator.toProperties(emLocator$);
+				emLocator.setProperty( Entigrator.ENTIHOME, entihome$);
+				emLocator.setProperty(  EntityHandler.ENTITY_KEY,entityKey$);
 				String entityLabel$=entigrator.indx_getLabel(entityKey$);
-				emLocator$=Locator.append(emLocator$,Locator.LOCATOR_TITLE,entityLabel$);
+				emLocator.setProperty( Locator.LOCATOR_TITLE,entityLabel$);
+				emLocator.setProperty(Locator.LOCATOR_ICON_CONTAINER,Locator.LOCATOR_ICON_CONTAINER_ICONS);
+				emLocator.setProperty(Locator.LOCATOR_ICON_FILE,entigrator.ent_getIconAtKey(entityKey$));
+				
+				
+				/*
 				String icon$=entigrator.ent_getIconAtKey(entityKey$);
 				if(icon$!=null){
 						String picture$=entigrator.readIconFromIcons(icon$);
 						if(picture$!=null)
 							emLocator$=Locator.append(emLocator$,Locator.LOCATOR_ICON,picture$);
 				}
-				console.clipboard.putString(emLocator$);
+				*/
+				console.clipboard.putString(Locator.toString(emLocator));
 				return;
 			}
 			if(ACTION_CLONE.equals(action$)){

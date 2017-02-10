@@ -57,7 +57,23 @@ public class Locator {
     /**
    	 * Locator's icon encoded into Base64 string
    	 */
-    public static final String LOCATOR_ICON="icon";
+ //   public static final String LOCATOR_ICON="icon";
+    //public static final String LOCATOR_ICON_TYPE="icon type";
+    public static final String LOCATOR_ICON_CONTAINER="icon container";
+    public static final String LOCATOR_ICON_CONTAINER_ICONS="icons folder";
+    public static final String LOCATOR_ICON_CONTAINER_ENTITY="entity container";
+    public static final String LOCATOR_ICON_CONTAINER_CLASS="icon class container";
+    public static final String LOCATOR_ICON_LOCATION="icon class location";
+    public static final String LOCATOR_ICON_ELEMENT="icon element";
+    public static final String LOCATOR_ICON_CORE="icon core";
+    public static final String LOCATOR_ICON_FIELD="icon field";
+    public static final String LOCATOR_ICON_FIELD_VALUE="icon field value";
+    public static final String LOCATOR_ICON_ENTITY_KEY="icon entity key";
+    public static final String LOCATOR_ICON_FIELD_TYPE="icon field type";
+    public static final String LOCATOR_ICON_FILE="icon file";
+    public static final String LOCATOR_ICON_CLASS="icon class";
+    public static final String LOCATOR_ICON_CLASS_LOCATION="icon class location";
+    
     /**
    	 * The type of the locator
    	 */
@@ -82,6 +98,7 @@ public class Locator {
    	 * The boolean false representation  
    	 */
     public static final String LOCATOR_FALSE="locator false";
+    public static final String SESSION_STORAGE = "session storage";
    
     /**
    	 * Convert properties into the locator string.
@@ -304,4 +321,80 @@ public class Locator {
 	    	}
 	    }
 	}
+ public static String getScript(){
+	 StringBuffer sb=new StringBuffer();
+	 sb.append("<script >");
+	 sb.append("var NAME_DELIMITER=\"_;N_\";");
+	 sb.append("var VALUE_DELIMITER=\"=\";");
+	 sb.append("var ARRAY_DELIMITER=\"_;A_\";");
+	 sb.append("function appendProperty(locator$,name$,value$){");
+	 sb.append("var properties=locator$.split(NAME_DELIMITER);");
+	 sb.append("var result=[];");
+	 sb.append("var nv=[];");	
+	 sb.append("for (i = 0; i < properties.length; i++){");
+	 sb.append("if(properties[i]==null||properties[i].length<3)");
+	 sb.append("continue;");
+	 sb.append("nv=properties[i].split(VALUE_DELIMITER);");
+	 sb.append("if(nv[0]!=name$){");
+	 sb.append("result.push(nv.join(VALUE_DELIMITER));"); 
+	 sb.append("}");
+	 sb.append("}");
+	 sb.append("nv=[name$,value$];"); 
+	 sb.append("result.push(nv.join(VALUE_DELIMITER));");
+	 sb.append("return result.join(NAME_DELIMITER);");
+	 sb.append("};");
+	 sb.append("function getProperty(locator$,name$){");
+	 sb.append("var properties=locator$.split(NAME_DELIMITER);");
+	 sb.append("var nv=[];");	
+	 sb.append("for (i = 0; i < properties.length; i++){");
+	 sb.append("if(properties[i]==null||properties[i].length<3)");
+	 sb.append("continue;");
+	 sb.append("nv=properties[i].split(VALUE_DELIMITER);");
+	 sb.append("if(nv[0]==name$){");
+	 sb.append("return nv[1];");
+	 sb.append("}");
+	 sb.append("}");
+	 sb.append("return null;");
+	 sb.append("};");
+	 sb.append("function removeProperty(locator$,name$,value$){");
+	 sb.append("var properties=locator$.split(NAME_DELIMITER);");
+	 sb.append("var result=[];");
+	 sb.append("var nv=[];");	
+	 sb.append("for (i = 0; i < properties.length; i++){");
+	 sb.append("if(properties[i]==null||properties[i].length<3)");
+	 sb.append("continue;");
+	 sb.append("nv=properties[i].split(VALUE_DELIMITER);");
+	 sb.append("if(nv[0]!=name$){");
+	 sb.append("result.push(nv.join(VALUE_DELIMITER));"); 
+	 sb.append("}");
+	 sb.append("}");
+	 sb.append("return result.join(NAME_DELIMITER);");
+	 sb.append("};");
+	 //session storage
+	 sb.append("function appendSessionStorage(locator$){");
+	 sb.append("var properties=locator$.split(NAME_DELIMITER);");
+	 sb.append("var result=[];");
+	 sb.append("var nv=[];");	
+	/*
+	 sb.append("for (i = 0; i < properties.length; i++){");
+	 sb.append("if(properties[i]==null||properties[i].length<3)");
+	 sb.append("continue;");
+	 sb.append("nv=properties[i].split(VALUE_DELIMITER);");
+	 sb.append("result.push(nv.join(VALUE_DELIMITER));"); 
+	 sb.append("}");
+	 */
+	 sb.append("for(var i=0, len=localStorage.length; i<len; i++) {"); 
+	 sb.append(" var key = localStorage.key(i);");
+	 sb.append(" var value = localStorage[key];");
+	 sb.append(" nv=[key,value]");
+	 sb.append("result.push(nv.join(VALUE_DELIMITER));"); 
+	 sb.append("console.log(key + \" => \" + value);");
+	 sb.append("}");
+	 sb.append("}");
+	 sb.append("return appendProperty(locator,"+SESSION_STORAGE+",btoa(result));");
+	 sb.append("};");
+	 
+	 sb.append("</script>");
+	 return sb.toString();
+ }
 }

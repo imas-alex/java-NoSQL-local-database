@@ -42,6 +42,8 @@ import gdt.jgui.console.JContext;
 import gdt.jgui.console.JItemPanel;
 import gdt.jgui.console.JItemsListPanel;
 import gdt.jgui.console.JMainConsole;
+import gdt.jgui.console.WContext;
+import gdt.jgui.console.WUtils;
 import gdt.jgui.entity.JArchivePanel;
 import gdt.jgui.entity.JEntityFacetPanel;
 import gdt.jgui.entity.JEntityPrimaryMenu;
@@ -57,6 +59,8 @@ import javax.swing.event.MenuEvent;
 import javax.swing.event.MenuListener;
 import javax.swing.filechooser.FileFilter;
 import javax.swing.filechooser.FileNameExtensionFilter;
+
+import org.apache.commons.codec.binary.Base64;
 /**
 * This context displays items for database navigation:
 *  Design - show the general-purpose control for low-level database management
@@ -66,7 +70,7 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 * @version 1.0
 * @since   2016-03-11
 */
-public class JBaseNavigator extends JItemsListPanel {
+public class JBaseNavigator extends JItemsListPanel implements WContext{
 	private static final long serialVersionUID = 1L;
 	boolean debug=false;
 private Logger LOGGER=Logger.getLogger(JBaseNavigator.class.getName());
@@ -316,7 +320,7 @@ private Logger LOGGER=Logger.getLogger(JBaseNavigator.class.getName());
 	private void reindex(){
 		Entigrator entigrator=console.getEntigrator(entihome$);
 		entigrator.store_block();
-		entigrator.indx_rebuild(null);
+		entigrator.indx_reindex(null);
 		String [] sa=entigrator.indx_listEntities();
 		Sack entity;
 		String entityLocator$;
@@ -349,10 +353,16 @@ private Logger LOGGER=Logger.getLogger(JBaseNavigator.class.getName());
 	      locator.setProperty(Entigrator.ENTIHOME,entihome$);
 	    File file = new File(entihome$);
 	    locator.setProperty(Locator.LOCATOR_TITLE, file.getName());
+	   /*
 	    String icon$=Support.readHandlerIcon(null,JBaseNavigator.class, "base.png");
 	    if(icon$!=null)
 	    	locator.setProperty(Locator.LOCATOR_ICON,icon$);
 	    }
+	    */
+	    }
+	    locator.setProperty(Locator.LOCATOR_ICON_CONTAINER, Locator.LOCATOR_ICON_CONTAINER_CLASS);
+	    locator.setProperty(Locator.LOCATOR_ICON_CLASS,getClass().getName());
+	    locator.setProperty(Locator.LOCATOR_ICON_FILE, "base.png"); 
 	    locator.setProperty(BaseHandler.HANDLER_SCOPE,JConsoleHandler.CONSOLE_SCOPE);
 	    locator.setProperty(BaseHandler.HANDLER_CLASS,JBaseNavigator.class.getName());
 //	    System.out.println("JBaseNavigator:getLocator:locator="+Locator.toString(locator));
@@ -377,24 +387,32 @@ private Logger LOGGER=Logger.getLogger(JBaseNavigator.class.getName());
 		    }
 		ArrayList<JItemPanel>ipl=new ArrayList<JItemPanel>();
 		JDesignPanel designPanel=new JDesignPanel();
-		String designLocator$=designPanel.getLocator();
-		designLocator$=Locator.append(designLocator$,Entigrator.ENTIHOME,entihome$);
-		designPanel.instantiate(console, designLocator$);
-		JItemPanel designItem=new JItemPanel(console, designPanel.getLocator());
+		String itemLocator$=designPanel.getLocator();
+		itemLocator$=Locator.append(itemLocator$, Locator.LOCATOR_ICON_CONTAINER, Locator.LOCATOR_ICON_CONTAINER_CLASS);
+		itemLocator$=Locator.append(itemLocator$, Locator.LOCATOR_ICON_CLASS, getClass().getName());
+		itemLocator$=Locator.append(itemLocator$, Locator.LOCATOR_ICON_FILE, "design.png");
+		itemLocator$=Locator.append(itemLocator$,Entigrator.ENTIHOME,entihome$);
+		//designPanel.instantiate(console, itemLocator$);
+		JItemPanel designItem=new JItemPanel(console,itemLocator$);
 		ipl.add(designItem);
 		//System.out.println("JBaseNavigator:design panel done");
 		JSearchPanel searchPanel=new JSearchPanel();
-		String searchLocator$=searchPanel.getLocator();
-		searchLocator$=Locator.append(searchLocator$,Entigrator.ENTIHOME,entihome$);
-		searchPanel.instantiate(console, searchLocator$);
-		JItemPanel searchItem=new JItemPanel(console, searchPanel.getLocator());
+		 itemLocator$=searchPanel.getLocator();
+		itemLocator$=Locator.append(itemLocator$, Locator.LOCATOR_ICON_CONTAINER, Locator.LOCATOR_ICON_CONTAINER_CLASS);
+		itemLocator$=Locator.append(itemLocator$, Locator.LOCATOR_ICON_CLASS, getClass().getName());
+		itemLocator$=Locator.append(itemLocator$, Locator.LOCATOR_ICON_FILE, "zoom.png");
+		itemLocator$=Locator.append(itemLocator$,Entigrator.ENTIHOME,entihome$);
+		JItemPanel searchItem=new JItemPanel(console, itemLocator$);
 		ipl.add(searchItem);
 		//System.out.println("JBaseNavigator:search panel done");
 		JAllCategoriesPanel allCategoriesPanel=new JAllCategoriesPanel();
-		String allCategoriesLocator$= allCategoriesPanel.getLocator();
-		allCategoriesLocator$=Locator.append(allCategoriesLocator$,Entigrator.ENTIHOME,entihome$);
-		//System.out.println("JBaseNavigator:instantiate:add all categories="+allCategoriesLocator$);
-		JItemPanel allCategoriesItem=new JItemPanel(console, allCategoriesLocator$);
+		 itemLocator$=allCategoriesPanel.getLocator();
+			itemLocator$=Locator.append(itemLocator$, Locator.LOCATOR_ICON_CONTAINER, Locator.LOCATOR_ICON_CONTAINER_CLASS);
+			itemLocator$=Locator.append(itemLocator$, Locator.LOCATOR_ICON_CLASS, getClass().getName());
+			itemLocator$=Locator.append(itemLocator$, Locator.LOCATOR_ICON_FILE, "category.png");
+			itemLocator$=Locator.append(itemLocator$,Entigrator.ENTIHOME,entihome$);
+		
+		JItemPanel allCategoriesItem=new JItemPanel(console, itemLocator$);
 		ipl.add(allCategoriesItem);
 		//System.out.println("JBaseNavigator:categories panel done");
 		putItems(ipl.toArray(new JItemPanel[0]));
@@ -775,5 +793,89 @@ public void activate() {
 	if(entigrator.store_outdated())
 		entigrator.store_reload();
 	
+}
+@Override
+public String getWebView(Entigrator entigrator,String locator$) {
+	try{
+		Properties locator=Locator.toProperties(locator$);
+		String webHome$=locator.getProperty(WContext.WEB_HOME);
+		entihome$=locator.getProperty(Entigrator.ENTIHOME);
+		String webRequester$=locator.getProperty(WContext.WEB_REQUESTER);
+		File entihome=new File(entihome$);
+		if(debug)
+		System.out.println("JBasNavigator:web home="+webHome$+" locator="+locator$);
+		String iconDesign$=Support.readHandlerIcon(null,JBaseNavigator.class, "design.png");
+		String iconSearch$=Support.readHandlerIcon(null,JBaseNavigator.class, "zoom.png");
+		String iconCategory$=Support.readHandlerIcon(null,JBaseNavigator.class, "category.png");
+		StringBuffer sb=new StringBuffer();
+		sb.append("<!DOCTYPE html PUBLIC \"-//W3C//DTD HTML 4.01//EN\" \"http://www.w3.org/TR/html4/strict.dtd\">");
+		sb.append("<html>");
+		sb.append("<head>");
+		sb.append(WUtils.getMenuBarScript());
+		sb.append(WUtils.getMenuBarStyle());
+		sb.append("</head>");
+	    sb.append("<body onload=\"onLoad()\" >");
+	    sb.append("<ul class=\"menu_list\">");
+	    sb.append("<li class=\"menu_item\"><a id=\"back\">Back</a></li>");
+	    sb.append("<li class=\"menu_item\"><a href=\""+webHome$+"\">Home</a></li>");
+	    sb.append("<li class=\"menu_item\"><a href=\""+webHome$.replace("entry", WContext.ABOUT)+"\">About</a></li>");
+	     sb.append("</ul>");
+	    sb.append("<table><tr><td>Base:</td><td><strong>");
+	    sb.append(entigrator.getBaseName());
+	    sb.append("</strong></td></tr>");
+	    sb.append("<tr><td>Context:</td><td><strong>");
+	    sb.append("Base navigator");
+	    sb.append("</strong></td></tr>");
+	    sb.append("</table>");
+	    Properties itemLocator=new Properties();
+	    itemLocator.setProperty(WContext.WEB_HOME, webHome$);
+	    itemLocator.setProperty(Entigrator.ENTIHOME, entihome$);
+	    itemLocator.setProperty(BaseHandler.HANDLER_CLASS, JDesignPanel.class.getName());
+	    itemLocator.setProperty(Entigrator.ENTIHOME,entigrator.getEntihome());
+	    itemLocator.setProperty(WContext.WEB_REQUESTER, this.getClass().getName());
+	    String title$="Design";
+	    String designLocator$=Locator.toString(itemLocator);
+	    if(debug){
+	    System.out.println("JBasNavigator:design locator="+designLocator$);
+	    System.out.println("JBasNavigator:design url="+getItem(iconDesign$, webHome$,title$,designLocator$));
+	    }
+	    sb.append(getItem(iconDesign$, webHome$,title$,designLocator$)+"<br>");
+	    title$="Search for label";
+	    itemLocator.setProperty(BaseHandler.HANDLER_CLASS, JSearchPanel.class.getName());
+	    String searchLocator$=Locator.toString(itemLocator);
+	    sb.append(getItem(iconSearch$, webHome$,title$,searchLocator$)+"<br>");
+	    title$="All categories";
+	    itemLocator.setProperty(BaseHandler.HANDLER_CLASS, JAllCategoriesPanel.class.getName());
+	    String catLocator$=Locator.toString(itemLocator);;
+	    sb.append(getItem(iconCategory$, webHome$,title$,catLocator$)+"<br>");
+	    sb.append("<script>");
+	    sb.append("window.localStorage.setItem(\"back."+JDesignPanel.class.getName()+"\",\""+this.getClass().getName()+"\");");
+	    sb.append("window.localStorage.setItem(\"back."+JAllCategoriesPanel.class.getName()+"\",\""+this.getClass().getName()+"\");");
+	    sb.append("window.localStorage.setItem(\""+this.getClass().getName()+"\",\""+Base64.encodeBase64URLSafeString(locator$.getBytes())+"\");");
+	    if(debug)
+		sb.append("console.log(window.localStorage.getItem(\""+this.getClass().getName()+"\"));");
+		sb.append("function onLoad() {");
+	    sb.append("initBack(\""+this.getClass().getName()+"\",\""+webRequester$+"\");");
+	    sb.append("}");
+		sb.append("</script>");
+	    sb.append("</body>");
+	    sb.append("</html>");
+	    return sb.toString();
+	}catch(Exception e){
+		Logger.getLogger(JBasesPanel.class.getName()).severe(e.toString());	
+	}
+	return null;
+	
+}
+@Override
+public String getWebConsole(Entigrator entigrator,String locator$) {
+	// TODO Auto-generated method stub
+	return null;
+}
+private String getItem(String icon$, String url$,String title$,String locator$ ){
+	  locator$=Locator.append(locator$,Entigrator.ENTIHOME, entihome$);
+	  String iconTerm$="<img src=\"data:image/png;base64,"+icon$+
+			  "\" width=\"24\" height=\"24\" alt=\""+title$+"\">";
+	  return iconTerm$+"<a href=\""+url$+"?"+WContext.WEB_LOCATOR+"="+Base64.encodeBase64URLSafeString(locator$.getBytes())+"\" >"+" "+title$+"</a>";
 }
 }

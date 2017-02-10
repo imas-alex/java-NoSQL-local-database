@@ -23,7 +23,7 @@ import gdt.data.grain.Locator;
 import gdt.data.store.Entigrator;
 import gdt.jgui.base.JBaseNavigator;
 import gdt.jgui.base.JBasesPanel;
-
+import gdt.jgui.tool.JLocatorDecryptor;
 import gdt.jgui.tool.JTextEditor;
 import java.awt.Component;
 import java.awt.EventQueue;
@@ -38,7 +38,9 @@ import java.awt.event.ActionListener;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Hashtable;
+import java.util.Map;
 import java.util.Properties;
 import java.util.Stack;
 import java.util.logging.Logger;
@@ -49,6 +51,9 @@ import java.awt.event.WindowEvent;
 
 import javax.swing.JLabel;
 import javax.swing.border.BevelBorder;
+
+import org.apache.commons.codec.binary.Base64;
+
 import java.awt.Color;
 /**
  * This is the main application console.
@@ -80,6 +85,7 @@ public class JMainConsole {
 	public String outdatedTreatment$;
 	public JClipboard clipboard=new JClipboard();
 	static boolean debug=false;
+	public Map<String,String>cache;
 	/**
 
    * This is the main method which displays the main application console.
@@ -177,7 +183,7 @@ public class JMainConsole {
 		File.setAction(openWorkspace);
 		fileMenu.add(File);
 		recents=new Hashtable<String,String>();
-	
+		cache=new HashMap<String,String>();
 		JMenuItem newBase = new JMenuItem("New base");
 		newBase.addActionListener(new ActionListener() {
 			@Override
@@ -193,6 +199,7 @@ public class JMainConsole {
 			    	locator.setProperty(BaseHandler.ENTIROOT,entiroot$);
 			    	locator.setProperty(BaseHandler.HANDLER_SCOPE,JConsoleHandler.CONSOLE_SCOPE);
 			    	locator.setProperty(BaseHandler.HANDLER_CLASS,JBasesPanel.class.getName());
+			    	locator.setProperty(Entigrator.ENTIHOME,entiroot$+"/New_base");
 			    	locator.setProperty(BaseHandler.HANDLER_METHOD,"response");
 			    	String locator$=Locator.toString(locator);
 			    	JTextEditor textEditor=new JTextEditor();
@@ -230,8 +237,18 @@ public class JMainConsole {
 		JMenuItem clearItem = new JMenuItem("Clear");
 		clearItem.setAction(clearTrack);
 		trackMenu.add(clearItem);
+		trackMenu.addSeparator();
+		JMenuItem decryptItem = new JMenuItem("Decrypt locator");
+		decryptItem.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				   JLocatorDecryptor ld=new JLocatorDecryptor();
+				  // JConsoleHandler.execute(JMainConsole.this, ld.getLocator());
+				   JMainConsole.this.putContext(ld,ld.getLocator());
+				  }
+		} );
 		
-		
+		trackMenu.add(decryptItem);
 	}
 	
 /**
@@ -285,7 +302,8 @@ private void clearContextMenu(){
  * @param locator$ the context locator.
  */
 public void putContext(JContext context,String locator$){
-	//System.out.println("MainConsole:putContext:BEGIN:context="+context.getClass().getName());
+	if(debug)
+	System.out.println("JMainConsole:putContext::context="+context.getClass().getName()+" locator="+locator$);
 	try{
 	int cnt=frmEntigrator.getContentPane().getComponentCount();
 	if(cnt>0){
@@ -309,10 +327,8 @@ public void putContext(JContext context,String locator$){
 	//context.getPanel().revalidate();
 	frmEntigrator.setTitle(context.getTitle());
 	String ctxLocator$=context.getLocator();
-	if(ctxLocator$!=null){
-	JTrackPanel.putMember(this,ctxLocator$ );
-	
-	}
+	if(ctxLocator$!=null)
+	        JTrackPanel.putMember(this,ctxLocator$ );
 	try{
 	contextMenu=context.getContextMenu();
 	
@@ -367,12 +383,13 @@ private class OpenWorkspace extends AbstractAction {
 			    	locator.setProperty(BaseHandler.ENTIROOT,entiroot$);
 			    	locator.setProperty(BaseHandler.HANDLER_SCOPE,JConsoleHandler.CONSOLE_SCOPE);
 			    	locator.setProperty(BaseHandler.HANDLER_CLASS,JBasesPanel.class.getName());
+			    	locator.setProperty(Locator.LOCATOR_TITLE,entiroot$);
 			    	String locator$=Locator.toString(locator);
 			    	
 			    	//JConsoleHandler.execute(JMainConsole.this, locator$);
 			    	JBasesPanel bp=new JBasesPanel();
 			    	bp.instantiate(JMainConsole.this, locator$);
-			    	putContext(bp, locator$);
+			    	putContext(bp, bp.getLocator());
 			    	
 		      }
 			    else {

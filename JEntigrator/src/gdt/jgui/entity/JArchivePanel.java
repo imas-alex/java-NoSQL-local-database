@@ -68,10 +68,16 @@ public class JArchivePanel extends  JItemsListPanel implements JRequester{
 	    locator.setProperty(JContext.CONTEXT_TYPE,getType());
 	    if(entihome$!=null){
 	       locator.setProperty(Entigrator.ENTIHOME,entihome$);
-	       Entigrator entigrator=console.getEntigrator(entihome$);
+	      // Entigrator entigrator=console.getEntigrator(entihome$);
+	       locator.setProperty(Locator.LOCATOR_ICON_CONTAINER,Locator.LOCATOR_ICON_CONTAINER_CLASS);
+			locator.setProperty(Locator.LOCATOR_ICON_CLASS,JEntitiesPanel.class.getName());
+			locator.setProperty(Locator.LOCATOR_ICON_FILE,"archive.png");
+		
+	      /*
 	       String icon$=Support.readHandlerIcon(entigrator,JEntitiesPanel.class, "archive.png");
 		    if(icon$!=null)
 		    	locator.setProperty(Locator.LOCATOR_ICON,icon$);
+		    	*/
 	    }
 	    if(list$!=null)
 		       locator.setProperty(EntityHandler.ENTITY_LIST,list$);
@@ -134,8 +140,12 @@ private String getTarLocator() {
 		try{
 			Properties tarLocator=new Properties();
 			tarLocator.setProperty(Locator.LOCATOR_TITLE,"Tar");
-			String icon$=Support.readHandlerIcon(null,JEntityPrimaryMenu.class, "tar.png");
-			tarLocator.setProperty(Locator.LOCATOR_ICON,icon$);
+		//	String icon$=Support.readHandlerIcon(null,JEntityPrimaryMenu.class, "tar.png");
+		//	tarLocator.setProperty(Locator.LOCATOR_ICON,icon$);
+			  tarLocator.setProperty(Locator.LOCATOR_ICON_CONTAINER,Locator.LOCATOR_ICON_CONTAINER_CLASS);
+				tarLocator.setProperty(Locator.LOCATOR_ICON_CLASS,JEntityPrimaryMenu.class.getName());
+				tarLocator.setProperty(Locator.LOCATOR_ICON_FILE,"tar.png");
+		
 			tarLocator.setProperty(BaseHandler.HANDLER_CLASS,getClass().getName());
 			tarLocator.setProperty(BaseHandler.HANDLER_METHOD,"response");
 			tarLocator.setProperty(BaseHandler.HANDLER_SCOPE,JConsoleHandler.CONSOLE_SCOPE);
@@ -171,7 +181,10 @@ private String getTarLocator() {
      		}
 			editorLocator.setProperty(JRequester.REQUESTER_RESPONSE_LOCATOR, Locator.compressText(tarLocator$));
 			editorLocator.setProperty(Locator.LOCATOR_TITLE,"Tar");
-			editorLocator.setProperty(Locator.LOCATOR_ICON,icon$);
+			//editorLocator.setProperty(Locator.LOCATOR_ICON,icon$);
+			editorLocator.setProperty(Locator.LOCATOR_ICON_CONTAINER,Locator.LOCATOR_ICON_CONTAINER_CLASS);
+			editorLocator.setProperty(Locator.LOCATOR_ICON_CLASS,JEntityPrimaryMenu.class.getName());
+			editorLocator.setProperty(Locator.LOCATOR_ICON_FILE,"tar.png");
 			String teLocator$=Locator.toString(editorLocator);
 			return teLocator$;
 			}catch(Exception ee){
@@ -183,8 +196,12 @@ private String getTarLocator() {
 		try{
 			Properties tgzLocator=new Properties();
 			tgzLocator.setProperty(Locator.LOCATOR_TITLE,"Tgz");
-			String icon$=Support.readHandlerIcon(null,JEntityPrimaryMenu.class, "tgz.png");
-			tgzLocator.setProperty(Locator.LOCATOR_ICON,icon$);
+			//String icon$=Support.readHandlerIcon(null,JEntityPrimaryMenu.class, "tgz.png");
+			tgzLocator.setProperty(Locator.LOCATOR_ICON_CONTAINER,Locator.LOCATOR_ICON_CONTAINER_CLASS);
+			tgzLocator.setProperty(Locator.LOCATOR_ICON_CLASS,JEntityPrimaryMenu.class.getName());
+			tgzLocator.setProperty(Locator.LOCATOR_ICON_FILE,"tgz.png");
+	
+			//tgzLocator.setProperty(Locator.LOCATOR_ICON,icon$);
 			tgzLocator.setProperty(BaseHandler.HANDLER_CLASS,getClass().getName());
 			tgzLocator.setProperty(BaseHandler.HANDLER_METHOD,"response");
 			tgzLocator.setProperty(BaseHandler.HANDLER_SCOPE,JConsoleHandler.CONSOLE_SCOPE);
@@ -217,7 +234,11 @@ private String getTarLocator() {
      		}
 			editorLocator.setProperty(JRequester.REQUESTER_RESPONSE_LOCATOR, Locator.compressText(tgzLocator$));
 			editorLocator.setProperty(Locator.LOCATOR_TITLE,"Tgz");
-			editorLocator.setProperty(Locator.LOCATOR_ICON,icon$);
+			editorLocator.setProperty(Locator.LOCATOR_ICON_CONTAINER,Locator.LOCATOR_ICON_CONTAINER_CLASS);
+			editorLocator.setProperty(Locator.LOCATOR_ICON_CLASS,JEntityPrimaryMenu.class.getName());
+			editorLocator.setProperty(Locator.LOCATOR_ICON_FILE,"tgz.png");
+	
+			//editorLocator.setProperty(Locator.LOCATOR_ICON,icon$);
 			String teLocator$=Locator.toString(editorLocator);
 			return teLocator$;
 			}catch(Exception ee){
@@ -229,8 +250,12 @@ private String getTarLocator() {
 		try{
 			Properties zipLocator=new Properties();
 			zipLocator.setProperty(Locator.LOCATOR_TITLE,"Zip");
-			String icon$=Support.readHandlerIcon(null,JEntityPrimaryMenu.class, "zip.png");
-			zipLocator.setProperty(Locator.LOCATOR_ICON,icon$);
+			//String icon$=Support.readHandlerIcon(null,JEntityPrimaryMenu.class, "zip.png");
+			//zipLocator.setProperty(Locator.LOCATOR_ICON,icon$);
+			zipLocator.setProperty(Locator.LOCATOR_ICON_CONTAINER,Locator.LOCATOR_ICON_CONTAINER_CLASS);
+			zipLocator.setProperty(Locator.LOCATOR_ICON_CLASS,JEntityPrimaryMenu.class.getName());
+			zipLocator.setProperty(Locator.LOCATOR_ICON_FILE,"zip.png");
+	
 			zipLocator.setProperty(BaseHandler.HANDLER_CLASS,getClass().getName());
 			zipLocator.setProperty(BaseHandler.HANDLER_METHOD,"response");
 			zipLocator.setProperty(BaseHandler.HANDLER_SCOPE,JConsoleHandler.CONSOLE_SCOPE);
@@ -264,7 +289,11 @@ private String getTarLocator() {
      		}
 			editorLocator.setProperty(JRequester.REQUESTER_RESPONSE_LOCATOR, Locator.compressText(zipLocator$));
 			editorLocator.setProperty(Locator.LOCATOR_TITLE,"Zip");
-			editorLocator.setProperty(Locator.LOCATOR_ICON,icon$);
+			//editorLocator.setProperty(Locator.LOCATOR_ICON,icon$);
+			editorLocator.setProperty(Locator.LOCATOR_ICON_CONTAINER,Locator.LOCATOR_ICON_CONTAINER_CLASS);
+			editorLocator.setProperty(Locator.LOCATOR_ICON_CLASS,JEntityPrimaryMenu.class.getName());
+			editorLocator.setProperty(Locator.LOCATOR_ICON_FILE,"zip.png");
+	
 			String teLocator$=Locator.toString(editorLocator);
 			return teLocator$;
 			}catch(Exception ee){

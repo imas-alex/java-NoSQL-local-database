@@ -24,12 +24,19 @@ import gdt.data.grain.Locator;
 import gdt.data.grain.Sack;
 import gdt.data.grain.Support;
 import gdt.data.store.Entigrator;
+import gdt.jgui.base.JBaseNavigator;
+import gdt.jgui.base.JDesignPanel;
 import gdt.jgui.console.JConsoleHandler;
 import gdt.jgui.console.JContext;
 import gdt.jgui.console.JMainConsole;
 import gdt.jgui.console.JRequester;
 import gdt.jgui.console.ReloadDialog;
+import gdt.jgui.console.WContext;
+import gdt.jgui.console.WUtils;
+import gdt.jgui.entity.JEntityDigestDisplay;
+import gdt.jgui.entity.JEntityFacetPanel;
 import gdt.jgui.entity.JEntityPrimaryMenu;
+import gdt.jgui.entity.JEntityStructurePanel;
 import gdt.jgui.entity.fields.JFieldsEditor;
 
 import javax.swing.BorderFactory;
@@ -50,6 +57,8 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Properties;
 import java.util.logging.Logger;
 
@@ -67,7 +76,7 @@ import org.apache.commons.codec.binary.Base64;
  * @author imasa
  *
  */
-public class JEntityEditor extends JPanel implements JContext,JRequester{
+public class JEntityEditor extends JPanel implements JContext,JRequester,WContext{
 	private static final long serialVersionUID = 1L;
 	private static final String ACTION_RENAME_ELEMENT="action rename element";
 	private static final String ACTION_ADD_ELEMENT="action add element";
@@ -78,6 +87,7 @@ public class JEntityEditor extends JPanel implements JContext,JRequester{
 	private static final String CELL_FIELD_VALUE="cell field value";
 	private static final String CORE_NAME="cell core name";
 	private static final String ELEMENT="element";
+	public static final String SHOW_CONTAINERS="show containers";
 	private Logger LOGGER=Logger.getLogger(JEntityEditor.class.getName());
 	public final static String ENTITY_EDIT="entity edit";
 	private JMainConsole console;
@@ -430,8 +440,11 @@ private void sort(String header$){
 	   locator.setProperty(BaseHandler.HANDLER_SCOPE,JConsoleHandler.CONSOLE_SCOPE);
 	   locator.setProperty(BaseHandler.HANDLER_CLASS,JEntityEditor.class.getName());
 	   locator.setProperty(BaseHandler.HANDLER_METHOD,"response");
-	   String icon$=Support.readHandlerIcon(null,JEntityPrimaryMenu.class, "edit.png");
-	   locator.setProperty( Locator.LOCATOR_ICON,icon$);
+	  // String icon$=Support.readHandlerIcon(null,JEntityPrimaryMenu.class, "edit.png");
+	   //locator.setProperty( Locator.LOCATOR_ICON,icon$);
+	   locator.setProperty(Locator.LOCATOR_ICON_CONTAINER,Locator.LOCATOR_ICON_CONTAINER_CLASS);
+   	locator.setProperty(Locator.LOCATOR_ICON_CLASS,JEntityPrimaryMenu.class.getName());
+   	locator.setProperty(Locator.LOCATOR_ICON_FILE,"edit.png"); 
 	   return Locator.toString(locator);
 	}
 	/**
@@ -530,7 +543,7 @@ private void refresh(){
 			candidate.putAttribute(new Core(null,Entigrator.SAVE_ID,Identity.key()));
 			candidate.putAttribute(new Core(null,Entigrator.SAVE_ID,Identity.key()));
 			Entigrator entigrator=console.getEntigrator(entihome$);
-			entigrator.save(candidate);
+			entigrator.replace(candidate);
 			//candidate.saveXML(entihome$+"/"+Entigrator.ENTITY_BASE+"/data/"+entityKey$);
 		}catch(Exception e){
 			LOGGER.severe(e.toString());
@@ -818,5 +831,181 @@ public void response(JMainConsole console, String locator$) {
 			 JConsoleHandler.execute(console, getLocator());
 			}
 		
+	}
+	@Override
+	public String getWebView(Entigrator entigrator, String locator$) {
+		try{
+			if(debug)
+				System.out.println("JEntityEditor:locator="+locator$);
+			Properties locator=Locator.toProperties(locator$);
+			String webHome$=locator.getProperty(WContext.WEB_HOME);
+			String entityLabel$=locator.getProperty(EntityHandler.ENTITY_LABEL);
+			entityLabel$=entityLabel$.replaceAll("&quot;", "\"");
+			String webRequester$=locator.getProperty(WContext.WEB_REQUESTER);
+			String element$=locator.getProperty(ELEMENT);
+			if(debug){
+			System.out.println("JEntityEditor:web home="+webHome$+" locator="+locator$);
+			System.out.println("JEntityEditor:web requester="+webRequester$);
+			System.out.println("JEntityEditor:entity label="+entityLabel$+" element="+element$);
+			}
+			StringBuffer sb=new StringBuffer();
+			sb.append("<!DOCTYPE html PUBLIC \"-//W3C//DTD HTML 4.01//EN\" \"http://www.w3.org/TR/html4/strict.dtd\">");
+			sb.append("<html>");
+			sb.append("<head>");
+			sb.append(WUtils.getMenuBarScript());
+			sb.append(WUtils.getMenuBarStyle());
+			sb.append("</head>");
+		    sb.append("<body onload=\"onLoad()\">");
+		    sb.append("<ul class=\"menu_list\">");
+		    sb.append("<li class=\"menu_item\"><a id=\"back\">Back</a></li>");
+		    sb.append("<li class=\"menu_item\"><a href=\""+webHome$+"\">Home</a></li>");
+		    String navLocator$=Locator.append(locator$, BaseHandler.HANDLER_CLASS, JBaseNavigator.class.getName());
+		    navLocator$=Locator.append(navLocator$, Entigrator.ENTIHOME, entigrator.getEntihome());
+		    String navUrl$=webHome$+"?"+WContext.WEB_LOCATOR+"="+Base64.encodeBase64URLSafeString(navLocator$.getBytes());
+		    sb.append("<li class=\"menu_item\"><a href=\""+navUrl$+"\">Base</a></li>");
+		    sb.append("<li class=\"dropdown\">");
+		    sb.append("<a href=\"javascript:void(0)\" class=\"dropbtn\">Context</a>");
+		    sb.append("<ul class=\"dropdown-content\">");
+		    Sack entity=entigrator.getEntityAtKey(entigrator.indx_keyAtLabel(entityLabel$));
+		    String[] sa=entigrator.ent_listComponents(entity);
+		    if(sa!=null&&sa.length>0)
+		    sb.append("<li id=\"components\" onclick=\"components()\"><a href=\"#\">Components</a></li>");
+		    sa=entigrator.ent_listContainers(entity);
+		    if(sa!=null&&sa.length>0)
+		    sb.append("<li id=\"containers\" onclick=\"containers()\"><a href=\"#\">Containers</a></li>");
+		    sb.append("<li id=\"digest\" onclick=\"dig()\"><a href=\"#\">Digest</a></li>");
+		    sb.append("</ul>");
+		    sb.append("</li>");
+		    sb.append("<li class=\"menu_item\"><a href=\""+webHome$.replace("entry", WContext.ABOUT)+"\">About</a></li>");
+		    sb.append("</ul>");
+		    sb.append("<table><tr><td>Base:</td><td><strong>");
+		    sb.append(entigrator.getBaseName());
+		    sb.append("</strong></td></tr><tr><td>Entity: </td><td><strong>");
+		    sb.append(entityLabel$);
+		    sb.append("</strong></td></tr>");
+		    sb.append("</strong></td></tr><tr><td>Facet: </td><td><strong>");
+		    sb.append("Entity viewer");
+		    sb.append("</strong></td></tr>");
+		    sb.append("</table>");
+		    //<h3>Data</h3>");
+		    sb.append("<table>");
+		    sb.append("<tr>");
+		    sb.append("<td>Element:</td>");
+		    sb.append("<td>");
+		    sb.append("<select id=\"element\" size=\"1\" onchange=\"showElement()\">");
+		    entityKey$=entigrator.indx_keyAtLabel(entityLabel$);
+		   // Sack entity=entigrator.getEntityAtKey(entityKey$);
+		    if(element$==null)
+		    	element$="attributes";
+		    if("attributes".equals(element$))
+		    	sb.append("<option value=\"attributes\" selected=\"selected\" >attributes</option>");
+		    else
+		    	sb.append("<option value=\"attributes\" >attributes</option>");
+		    //String[] 
+		    		sa=entity.elementsList();
+		    Support.sortStrings(sa);
+		    if(sa!=null)
+		    	for(String s:sa){
+		    		if(element$!=null&&element$.equals(s)){
+		    			sb.append("<option value=\""+s+"\" selected=\"selected\" >"+s+"</option>");
+		    		}	
+		    		else{
+		    		    sb.append("<option value=\""+s+"\">"+s+"</option>");
+		    		}
+		    	}
+		    sb.append("</select>");
+		    sb.append("</td>");
+		    sb.append("</tr>");
+		    sb.append("</table>");
+		    	sb.append("<table style=\"text-align: left;  background-color: transparent;\"  border=\"1\" cellpadding=\"2\" cellspacing=\"2\">");
+		    	sb.append("<tr>");
+		    	sb.append("<td style='text-align:center;vertical-align:middle'><strong>Type</strong></td>");
+		    	sb.append("<td style='text-align:center;vertical-align:middle'><strong>Name</strong></td>");
+		    	sb.append("<td style='text-align:center;vertical-align:middle'><strong>Value</strong></td>");
+		    	sb.append("</tr>");
+		    	Core[] ca;
+		    	if("attributes".equals(element$))
+		    		ca=entity.attributesGet();
+		    	else
+		    	   ca=entity.elementGet(element$);
+		    	for(Core c:ca){
+		    		sb.append("<tr>");
+		    		sb.append("<td>"+c.type+"</td>");
+		    		sb.append("<td>"+c.name+"</td>");
+		    		sb.append("<td>"+c.value+"</td>");
+		    		sb.append("</tr>");
+		    	}
+		    
+		    sb.append("</table>");
+		    sb.append("<p id=\"locator\"></p>");
+		    sb.append("<p id=\"property\"></p>");
+		    sb.append("<script>");
+		    locator$=locator$.replaceAll("\"", "&quot;");
+		    locator$=locator$.replaceAll("'", "&#39;");
+		    sb.append("function showElement() {");
+		   
+		    sb.append("var locator =\""+locator$+"\";");
+		    sb.append("var element = document.getElementById(\"element\").value;");
+		    sb.append("locator=appendProperty(locator,\""+ELEMENT+"\",element);");
+		    String urlHeader$=webHome$+"?"+WContext.WEB_LOCATOR+"=";
+		    if(debug)
+		    sb.append("console.log(locator);");
+		    sb.append("var url=\""+urlHeader$+"\"+window.btoa(locator);");
+		    sb.append("window.location.assign(url);");
+		    sb.append("}");
+		    sb.append("function onLoad() {");
+		    sb.append("initBack(\""+this.getClass().getName()+"\",\""+webRequester$+"\");");
+		    sb.append("}");
+		    
+		    sb.append("function components(){");
+		    Properties foiLocator=locator; 
+		    foiLocator.setProperty(BaseHandler.HANDLER_CLASS,JEntityStructurePanel.class.getName());
+	    	foiLocator.setProperty(WContext.WEB_REQUESTER, this.getClass().getName());
+	    	sb.append(" var href=\""+webHome$+"?"+WContext.WEB_LOCATOR+"=\"+\""+Base64.encodeBase64URLSafeString(Locator.toString(foiLocator).getBytes())+"\";");
+	    	sb.append("console.log(href);");
+	    	sb.append("window.localStorage.setItem(\"back."+JEntityStructurePanel.class.getName()+"\",\""+this.getClass().getName()+"\");");
+	    	sb.append("window.location.assign(href);");
+		    sb.append("}");
+		    sb.append("function dig(){");
+		    foiLocator=locator; 
+		    foiLocator.setProperty(BaseHandler.HANDLER_CLASS,JEntityDigestDisplay.class.getName());
+	    	foiLocator.setProperty(WContext.WEB_REQUESTER, this.getClass().getName());
+	    	sb.append(" var href=\""+webHome$+"?"+WContext.WEB_LOCATOR+"=\"+\""+Base64.encodeBase64URLSafeString(Locator.toString(foiLocator).getBytes())+"\";");
+	    	sb.append("console.log(href);");
+	    	sb.append("window.localStorage.setItem(\"back."+JEntityStructurePanel.class.getName()+"\",\""+this.getClass().getName()+"\");");
+	    	sb.append("window.location.assign(href);");
+		 
+		    sb.append("}");
+		    
+		    sb.append("function containers(){");
+		    foiLocator=locator; 
+		    foiLocator.setProperty(BaseHandler.HANDLER_CLASS,JEntityStructurePanel.class.getName());
+	    	foiLocator.setProperty(WContext.WEB_REQUESTER, this.getClass().getName());
+	    	foiLocator.setProperty(SHOW_CONTAINERS, Locator.LOCATOR_TRUE);
+	    	sb.append(" var href=\""+webHome$+"?"+WContext.WEB_LOCATOR+"=\"+\""+Base64.encodeBase64URLSafeString(Locator.toString(foiLocator).getBytes())+"\";");
+	    	sb.append("console.log(href);");
+	    	sb.append("window.localStorage.setItem(\"back."+JEntityStructurePanel.class.getName()+"\",\""+this.getClass().getName()+"\");");
+	    	sb.append("window.location.assign(href);");
+		    sb.append("}");
+		    sb.append("function digest(){");
+		    //sb.append("$('#jstree').jstree('close_all');");
+		    sb.append("}");
+		    sb.append("window.localStorage.setItem(\""+this.getClass().getName()+"\",\""+Base64.encodeBase64URLSafeString(locator$.getBytes())+"\");");
+		  
+		    sb.append("window.localStorage.setItem(\""+this.getClass().getName()+"\",\""+Base64.encodeBase64URLSafeString(locator$.getBytes())+"\");");
+		    sb.append("</script>");
+		    sb.append("</body>");
+		    sb.append("</html>");
+		    return sb.toString();
+		}catch(Exception e){
+			Logger.getLogger(JEntityEditor.class.getName()).severe(e.toString());	
+		}
+		return null;
+		
+	}
+	@Override
+	public String getWebConsole(Entigrator entigrator, String locator$) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }

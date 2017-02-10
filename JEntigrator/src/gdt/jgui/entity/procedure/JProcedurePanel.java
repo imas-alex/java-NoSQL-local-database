@@ -80,7 +80,7 @@ import java.awt.Desktop;
 public class JProcedurePanel extends JPanel implements JFacetRenderer,JRequester {
 private static final long serialVersionUID = 1L;
 private static final String ACTION_CREATE_PROCEDURE="action create procedure";
-private static final String DIVIDER_LOCATION="divider location";
+public static final String DIVIDER_LOCATION="divider location";
 public  static final String PROCEDURE_LIST_KEY ="_hXMY_5nonW4JAzrWcDo1_sBdd1g";
 private	JEditorPane sourcePanel;
 private	JEditorPane reportPanel;
@@ -92,6 +92,7 @@ protected JMenu menu;
 private JSplitPane splitPane;
 private int dividerLocation=-1;
 private boolean setDivider=true;
+boolean debug=false;
 /**
  * The default constructor.
  */
@@ -227,8 +228,11 @@ private boolean setDivider=true;
 				locator.setProperty(Entigrator.ENTIHOME,entihome$);
 			if(entityLabel$!=null)
 				locator.setProperty(EntityHandler.ENTITY_LABEL,entityLabel$);
-			String icon$=Support.readHandlerIcon(null,getClass(), "procedure.png");
-	    	locator.setProperty(Locator.LOCATOR_ICON,icon$);
+			//String icon$=Support.readHandlerIcon(null,getClass(), "procedure.png");
+	    	//locator.setProperty(Locator.LOCATOR_ICON,icon$);
+			locator.setProperty(Locator.LOCATOR_ICON_CONTAINER,Locator.LOCATOR_ICON_CONTAINER_CLASS);
+	    	locator.setProperty(Locator.LOCATOR_ICON_CLASS,getClass().getName());
+	    	locator.setProperty(Locator.LOCATOR_ICON_FILE,"procedure.png"); 
 			return Locator.toString(locator);
 			}catch(Exception e){
 	        Logger.getLogger(getClass().getName()).severe(e.toString());
@@ -259,6 +263,7 @@ private boolean setDivider=true;
             String dividerLocation$=locator.getProperty(DIVIDER_LOCATION);
             if(dividerLocation$!=null)
             	dividerLocation=Integer.parseInt(dividerLocation$);
+            if(debug)
             System.out.println("JProcedurePanel:instantiate:divider location="+dividerLocation$);
             File source=new File(entihome$+"/"+entityKey$+"/"+entityKey$+".java");
             if(source.exists()){
@@ -335,10 +340,12 @@ private boolean setDivider=true;
 	 */
 	@Override
 	public String addIconToLocator(String locator$) {
+		/*
 		String icon$=Support.readHandlerIcon(null,JProcedurePanel.class, "procedure.png");
 	    if(icon$!=null)
 	    	return Locator.append(locator$, Locator.LOCATOR_ICON,icon$);
 	    else
+	    	*/
 	    	return locator$;
 	}
 	/**
@@ -362,7 +369,7 @@ private boolean setDivider=true;
 	 * @return the icon string.
 	 */
 	@Override
-	public String getCategoryIcon() {
+	public String getCategoryIcon(Entigrator entigrator) {
 		return Support.readHandlerIcon(null,getClass(), "procedure.png");
 	}
 	/**
@@ -749,5 +756,15 @@ private class ShowListener implements ComponentListener{
 	public void activate() {
 		// TODO Auto-generated method stub
 		
+	}
+	@Override
+	public String getFacetOpenItem() {
+		// TODO Auto-generated method stub
+		return JProcedureFacetOpenItem.class.getName();
+	}
+	@Override
+	public String getFacetIcon() {
+		// TODO Auto-generated method stub
+		return "procedure.png";
 	}
 }

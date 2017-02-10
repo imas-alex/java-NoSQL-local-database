@@ -27,7 +27,6 @@ import java.util.logging.Logger;
 import gdt.data.entity.BaseHandler;
 import gdt.data.entity.EntityHandler;
 import gdt.data.entity.facet.BookmarksHandler;
-import gdt.data.entity.facet.QueryHandler;
 import gdt.data.grain.Core;
 import gdt.data.grain.Identity;
 import gdt.data.grain.Locator;
@@ -60,24 +59,24 @@ import org.apache.commons.codec.binary.Base64;
  *
  */
 public class JBookmarksEditor extends JItemsListPanel implements JFacetRenderer,JRequester{
-	private Logger LOGGER=Logger.getLogger(getClass().getName());
+	protected Logger LOGGER=Logger.getLogger(getClass().getName());
 	/**
 	 * The tag of the bookmark key.
 	 */
 	public final static String BOOKMARK_KEY="bookmark key";
 	private static final String ACTION_CREATE_BOOKMARKS="action create bookmarks";
-	String entihome$;
-	String entityKey$;
-	String entityLabel$;
-	String requesterResponseLocator$;
-	JMainConsole console;
-	String locator$;
-	JMenuItem[] mia;
+	protected String entihome$;
+	protected String entityKey$;
+	protected String entityLabel$;
+	protected String requesterResponseLocator$;
+	protected String locator$;
+	protected JMenuItem[] mia;
 	int cnt=0;
 	protected String message$;
-	Sack entity;
+	protected Sack entity;
 	boolean debug=false;
 	boolean ignoreOutdate=false;
+	
 	private static final long serialVersionUID = 1L;
 	/**
 	 * The default constructor.
@@ -100,7 +99,7 @@ public class JBookmarksEditor extends JItemsListPanel implements JFacetRenderer,
 	@Override
 	public JMenu getContextMenu() {
 		menu=super.getContextMenu();
-		 mia=null;
+		mia=null;
 		 int cnt=menu.getItemCount();
 		 if(cnt>0){
 			 mia=new JMenuItem[cnt];
@@ -116,6 +115,7 @@ public class JBookmarksEditor extends JItemsListPanel implements JFacetRenderer,
 					for(JMenuItem mi:mia)
 						menu.add(mi);
 				}
+				
 				if(hasSelectedItems()){
 					menu.addSeparator();	
 				JMenuItem copyItem = new JMenuItem("Copy");
@@ -146,10 +146,13 @@ public class JBookmarksEditor extends JItemsListPanel implements JFacetRenderer,
 										  continue;
 				                   entity.removeElementItem("jbookmark", bookmarkKey$);
 								  }
-				                   
+				                   JBookmarksEditor be=new JBookmarksEditor();
+				                   String bmLocator$=be.getLocator();
+				                   bmLocator$=Locator.append(bmLocator$, EntityHandler.ENTITY_KEY, entityKey$);	 
+				                   bmLocator$=Locator.append(bmLocator$, Entigrator.ENTIHOME, entihome$);	 
 								  //entigrator.save(entity);
 								  entigrator.replace(entity);
-								  JConsoleHandler.execute(console,getLocator());
+								  JConsoleHandler.execute(console,bmLocator$);
 							   }
 							}catch(Exception ee){
 								LOGGER.severe(ee.toString());
@@ -180,6 +183,7 @@ public class JBookmarksEditor extends JItemsListPanel implements JFacetRenderer,
 					}
 				} );
 				menu.add(doneItem);
+				
 				}
 				@Override
 				public void menuDeselected(MenuEvent e) {
@@ -191,7 +195,7 @@ public class JBookmarksEditor extends JItemsListPanel implements JFacetRenderer,
 			 return menu;
 		 }
 
-	private void copy(){
+	protected void copy(){
 	try{
 		console.clipboard.clear();
 		String[] sa=listSelectedItems();
@@ -202,14 +206,14 @@ public class JBookmarksEditor extends JItemsListPanel implements JFacetRenderer,
 		LOGGER.severe(e.toString());
 	}
 }
-private boolean hasToPaste(){
+protected boolean hasToPaste(){
 	String[] sa=console.clipboard.getContent();
 	if(sa==null||sa.length<1){
 		return false;
 	}
 	return true;
 }
-private void paste(){
+protected void paste(){
     try{
     	String[] sa=console.clipboard.getContent();
     	if(sa==null||sa.length<1)
@@ -228,6 +232,8 @@ private void paste(){
     	locator$=getLocator();
     	String requesterResponseLocator$=Locator.compressText(locator$);
     	for(String aSa:sa){
+    		if(debug)
+    			System.out.println("JBookmarkEditor:paste:="+aSa);
     		title$=Locator.getProperty(aSa, Locator.LOCATOR_TITLE);
     		if(title$==null)
     			continue;
@@ -269,8 +275,9 @@ private void paste(){
 				locator.setProperty(Entigrator.ENTIHOME,entihome$);
 			if(entityLabel$!=null)
 				locator.setProperty(EntityHandler.ENTITY_LABEL,entityLabel$);
-			String icon$=Support.readHandlerIcon(null,JEntitiesPanel.class, "bookmark.png");
-	    	locator.setProperty(Locator.LOCATOR_ICON,icon$);
+			 locator.setProperty(Locator.LOCATOR_ICON_CONTAINER,Locator.LOCATOR_ICON_CONTAINER_CLASS);
+				locator.setProperty(Locator.LOCATOR_ICON_CLASS,getClass().getName());
+				locator.setProperty(Locator.LOCATOR_ICON_FILE,"bookmark.png");
 			return Locator.toString(locator);
 			}catch(Exception e){
 	        Logger.getLogger(getClass().getName()).severe(e.toString());
@@ -286,7 +293,9 @@ private void paste(){
 	@Override
 	public JContext instantiate(JMainConsole console, String locator$) {
 		try{
-//			System.out.println("BookmarkskEditor.instantiate:locator="+locator$);
+			if(debug)
+			System.out.println("JBookmarkskEditor.instantiate:locator="+locator$);
+			//removeAll();
 			this.console=console;
 			Properties locator=Locator.toProperties(locator$);
 			entihome$=locator.getProperty(Entigrator.ENTIHOME);
@@ -297,10 +306,6 @@ private void paste(){
 				 return this;
 			requesterResponseLocator$=locator.getProperty(JRequester.REQUESTER_RESPONSE_LOCATOR);
             entity=entigrator.getEntityAtKey(entityKey$);
-           // if(!entigrator.lock_set(entity)){
-				//JOptionPane.showMessageDialog(this, entigrator.lock_message(entity));
-		  //message$=entigrator.lock_message(entity);
-	  //} 
             entityLabel$=entity.getProperty("label");
             Core[] ca=entity.elementGet("jbookmark");
             Core.sortAtType(ca);
@@ -310,12 +315,16 @@ private void paste(){
             	for(Core aCa:ca){
             		aCa.value=Locator.append(aCa.value, BOOKMARK_KEY, aCa.name);
             		aCa.value=Locator.append(aCa.value, Locator.LOCATOR_TITLE, aCa.type);
+            		aCa.value=Locator.append(aCa.value, Entigrator.ENTIHOME, entihome$);
+            		if(debug)
+            			System.out.println("JBookmarkskEditor.instantiate:item locator="+aCa.value);
             		bookmarkItem=new JBookmarkItem(console,aCa.value);
             		ipl.add(bookmarkItem);
             	}
             	Collections.sort(ipl,new ItemPanelComparator());
             	putItems(ipl.toArray(new JItemPanel[0]));
-            }
+            }else
+            	clearItems();
 		}catch(Exception e){
 	        Logger.getLogger(getClass().getName()).severe(e.toString());
 		}
@@ -368,7 +377,6 @@ private void paste(){
  */
 	@Override
 	public void response(JMainConsole console, String locator$) {
-//		System.out.println("BookmarkEditor:response:locator="+locator$);
 		try{
 			Properties locator=Locator.toProperties(locator$);
 			String action$=locator.getProperty(JRequester.REQUESTER_ACTION);
@@ -399,7 +407,6 @@ private void paste(){
 			String requesterResponseLocator$=locator.getProperty(JRequester.REQUESTER_RESPONSE_LOCATOR);
 	        byte[] ba=Base64.decodeBase64(requesterResponseLocator$); 
 			String bmLocator$=new String(ba,"UTF-8");
-//			System.out.println("BookmarkEditor:response:bm locator="+bmLocator$);
 		    Properties bmLocator=Locator.toProperties(bmLocator$);
 			String entihome$=bmLocator.getProperty(Entigrator.ENTIHOME);
 			String entityKey$=bmLocator.getProperty(EntityHandler.ENTITY_KEY);
@@ -408,17 +415,15 @@ private void paste(){
 			Entigrator entigrator=console.getEntigrator(entihome$);
 			entity=entigrator.getEntityAtKey(entityKey$);
 			Core bookmark=entity.getElementItem("jbookmark", bookmarkKey$);
-			//System.out.println("BookmarkEditor:response:bookmark="+bookmarkKey$);
+
 			if(JBookmarkItem.ACTION_RENAME.equals(action$)){
 			bookmark.type=text$;
-//			System.out.println("BookmarkEditor:response:text="+text$);
+
 			}
 			if(JBookmarkItem.ACTION_SET_ICON.equals(action$)){
-			//	System.out.println("BookmarkEditor:response  icon="+icon$);
-				String bookmarkIcon$=entigrator.readIconFromIcons(icon$);
-			//	System.out.println("BookmarkEditor:response  bookmark icon="+icon$);
 				String bookmarkLocator$=bookmark.value;
-				bookmarkLocator$=Locator.append(bookmarkLocator$, Locator.LOCATOR_ICON, bookmarkIcon$);
+				bookmarkLocator$=Locator.append(bookmarkLocator$, Locator.LOCATOR_ICON_CONTAINER,Locator.LOCATOR_ICON_CONTAINER_ICONS);
+				bookmarkLocator$=Locator.append(bookmarkLocator$, Locator.LOCATOR_ICON_FILE,icon$);
 				bookmark.value=  bookmarkLocator$;
 			}
 			entity.putElementItem("jbookmark", bookmark);
@@ -438,10 +443,6 @@ private void paste(){
  */
 	@Override
 	public String addIconToLocator(String locator$) {
-		String icon$=Support.readHandlerIcon(null,JEntitiesPanel.class, "bookmarks.png");
-	    if(icon$!=null)
-	    	return Locator.append(locator$, Locator.LOCATOR_ICON,icon$);
-	    else
 	    	return locator$;
 	}
 	/**
@@ -465,7 +466,7 @@ private void paste(){
 	 * @return the icon string.
 	 */
 	@Override
-	public String getCategoryIcon() {
+	public String getCategoryIcon(Entigrator entigrator) {
 		return Support.readHandlerIcon(null,JEntitiesPanel.class, "bookmark.png");
 	}
 /**
@@ -587,10 +588,8 @@ private void paste(){
 			String referenceKey$;
 			for(Core c:ca){
 				try{
-				//	System.out.println("JBookmarksEditor:collectReferences:c.name="+c.name);
 					referenceKey$=Locator.getProperty(c.value, EntityHandler.ENTITY_KEY);
 					if(referenceKey$==null||entityKey$.equals(referenceKey$)){
-					//	System.out.println("JBookmarksEditor:collectReferences:cannot get reference locator");
 						continue;
 					}
 					JReferenceEntry.getReference(entigrator,referenceKey$, rel);
@@ -599,7 +598,6 @@ private void paste(){
 				}
 			}
 			}
-			//System.out.println("JBookmarksEditor:collectReferences:FINISH");
 		}catch(Exception e){
 			Logger.getLogger(getClass().getName()).severe(e.toString());
 		}
@@ -625,13 +623,20 @@ public void activate() {
 		return;
 	}
 	if(1==n){
-		entigrator.save(entity);
-		//JConsoleHandler.execute(console, getLocator());
+		entigrator.replace(entity);
 	}
 	if(0==n){
 		 JConsoleHandler.execute(console, getLocator());
 		}
 	
+}
+@Override
+public String getFacetOpenItem() {
+	return JBookmarksFacetOpenItem.class.getName();
+}
+@Override
+public String getFacetIcon() {
+	return "bookmark.png";
 }
 
 }

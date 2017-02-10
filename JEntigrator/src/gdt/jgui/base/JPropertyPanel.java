@@ -32,6 +32,7 @@ import gdt.jgui.console.JItemPanel;
 import gdt.jgui.console.JItemsListPanel;
 import gdt.jgui.console.JMainConsole;
 import gdt.jgui.console.JRequester;
+import gdt.jgui.entity.JEntitiesPanel;
 import gdt.jgui.entity.JEntityPrimaryMenu;
 import gdt.jgui.tool.JTextEditor;
 import javax.swing.JMenu;
@@ -100,10 +101,16 @@ public JMenu getContextMenu() {
 	    if(entihome$!=null){
 	    locator.setProperty(Entigrator.ENTIHOME,entihome$);
 	    Entigrator entigrator=console.getEntigrator(entihome$);
+	    locator.setProperty(Locator.LOCATOR_ICON_CONTAINER, Locator.LOCATOR_ICON_CONTAINER_CLASS);
+	    locator.setProperty(Locator.LOCATOR_ICON_CLASS,JEntitiesPanel.class.getName());
+	    locator.setProperty(Locator.LOCATOR_ICON_FILE, "property.png"); 
+	    /*
 	    String icon$=Support.readHandlerIcon(entigrator,JEntityPrimaryMenu.class, "property.png");
 		if(icon$!=null)
 	     locator.setProperty(Locator.LOCATOR_ICON,icon$);
+	    */
 	    }
+	    
 	    if(propertyName$!=null)
 		       locator.setProperty(JDesignPanel.PROPERTY_NAME,propertyName$);
 	    locator.setProperty(Locator.LOCATOR_TITLE, "Property");
@@ -127,9 +134,9 @@ public JMenu getContextMenu() {
 		propertyName$=locator.getProperty(JDesignPanel.PROPERTY_NAME);
 		requesterResponseLocator$=locator.getProperty(JRequester.REQUESTER_RESPONSE_LOCATOR);
 		ArrayList<JItemPanel>ipl=new ArrayList<JItemPanel>();
-		  String actionLocator$=getAddPropertyLocator();
-		  JItemPanel addPropertyItem=new JItemPanel(console, actionLocator$);
-		  ipl.add(addPropertyItem);
+		String actionLocator$=getAddPropertyLocator();
+		JItemPanel addPropertyItem=new JItemPanel(console, actionLocator$);
+		ipl.add(addPropertyItem);
 		  actionLocator$=getDeletePropertyLocator();
 		  JItemPanel deletePropertyItem=new JItemPanel(console, actionLocator$);
 		  ipl.add(deletePropertyItem);
@@ -148,9 +155,14 @@ private String getAddPropertyLocator(){
 			String locator$=textEditor.getLocator();
 			locator$=Locator.append(locator$, Locator.LOCATOR_TITLE,"Add property");
 			locator$=Locator.append(locator$, Entigrator.ENTIHOME,entihome$);
-		    Entigrator entigrator=console.getEntigrator(entihome$);
-			String icon$=Support.readHandlerIcon(entigrator,JEntityPrimaryMenu.class, "add.png");
+		  //  Entigrator entigrator=console.getEntigrator(entihome$);
+		    locator$=Locator.append(locator$,Locator.LOCATOR_ICON_CONTAINER, Locator.LOCATOR_ICON_CONTAINER_CLASS);
+		       locator$=Locator.append(locator$,Locator.LOCATOR_ICON_CLASS,JEntityPrimaryMenu.class.getName());
+		       locator$=Locator.append(locator$,Locator.LOCATOR_ICON_FILE, "add.png"); 
+			/*
+		    String icon$=Support.readHandlerIcon(entigrator,JEntityPrimaryMenu.class, "add.png");
 			locator$=Locator.append(locator$, Locator.LOCATOR_ICON,icon$);
+			*/
 			String responseLocator$=getLocator();
 			responseLocator$=Locator.append(responseLocator$, BaseHandler.HANDLER_METHOD, "response");
 			responseLocator$=Locator.append(responseLocator$ ,JRequester.REQUESTER_ACTION,ACTION_ADD_PROPERTY);
@@ -172,10 +184,15 @@ private String getDeletePropertyLocator(){
 			locator.setProperty(Locator.LOCATOR_TITLE,"Delete '"+propertyName$+"'");
 			locator.setProperty(BaseHandler.HANDLER_CLASS,getClass().getName());
 			locator.setProperty(BaseHandler.HANDLER_METHOD,METHOD_DELETE_PROPERTY);
-			 Entigrator entigrator=console.getEntigrator(entihome$);
-			String icon$=Support.readHandlerIcon(entigrator,JEntityPrimaryMenu.class, "delete.png");
-			locator.setProperty(Locator.LOCATOR_ICON,icon$);
-			return Locator.toString(locator);
+			// Entigrator entigrator=console.getEntigrator(entihome$);
+			//String icon$=Support.readHandlerIcon(entigrator,JEntityPrimaryMenu.class, "delete.png");
+			
+			 //locator.setProperty(Locator.LOCATOR_ICON,icon$);
+			locator.setProperty(Locator.LOCATOR_ICON_CONTAINER, Locator.LOCATOR_ICON_CONTAINER_CLASS);
+			locator.setProperty(Locator.LOCATOR_ICON_CLASS,JEntityPrimaryMenu.class.getName());
+			locator.setProperty(Locator.LOCATOR_ICON_FILE, "delete.png"); 
+			
+			 return Locator.toString(locator);
 			}catch(Exception ee){
 				LOGGER.severe(ee.toString());
 				return null;
@@ -188,9 +205,14 @@ private String getEditPropertyLocator(){
 		requestlocator$=Locator.append(requestlocator$, Entigrator.ENTIHOME,entihome$);
 		requestlocator$=Locator.append(requestlocator$, JTextEditor.TEXT,propertyName$);
 		 Entigrator entigrator=console.getEntigrator(entihome$);
-		String icon$=Support.readHandlerIcon(entigrator,JEntityPrimaryMenu.class, "edit.png");
-		requestlocator$=Locator.append(requestlocator$,Locator.LOCATOR_ICON,icon$);
-		requestlocator$=Locator.append(requestlocator$,Locator.LOCATOR_TITLE,"Edit '"+propertyName$+"'");
+		 //String icon$=Support.readHandlerIcon(entigrator,JEntityPrimaryMenu.class, "edit.png");
+		//requestlocator$=Locator.append(requestlocator$,Locator.LOCATOR_ICON,icon$);
+		 requestlocator$=Locator.append(requestlocator$,Locator.LOCATOR_ICON_CONTAINER, Locator.LOCATOR_ICON_CONTAINER_CLASS);
+		 requestlocator$=Locator.append(requestlocator$,Locator.LOCATOR_ICON_CLASS,JEntityPrimaryMenu.class.getName());
+		 requestlocator$=Locator.append(requestlocator$,Locator.LOCATOR_ICON_FILE, "edit.png"); 
+		
+		
+		 requestlocator$=Locator.append(requestlocator$,Locator.LOCATOR_TITLE,"Edit '"+propertyName$+"'");
 		String responseLocator$=getLocator();
 		responseLocator$=Locator.append(responseLocator$, BaseHandler.HANDLER_METHOD, "response");
 		responseLocator$=Locator.append(responseLocator$ ,JRequester.REQUESTER_ACTION,ACTION_EDIT_PROPERTY);
@@ -207,9 +229,13 @@ private String getClearPropertiesLocator(){
 	 try{
 		String responseLocator$=getLocator();
 		 Entigrator entigrator=console.getEntigrator(entihome$);
-		String icon$=Support.readHandlerIcon(entigrator,JEntityPrimaryMenu.class, "broom.png");
-		responseLocator$=Locator.append(responseLocator$,Locator.LOCATOR_ICON,icon$);
-		responseLocator$=Locator.append(responseLocator$,Locator.LOCATOR_TITLE,"Clear properties ");
+		//String icon$=Support.readHandlerIcon(entigrator,JEntityPrimaryMenu.class, "broom.png");
+		//responseLocator$=Locator.append(responseLocator$,Locator.LOCATOR_ICON,icon$);
+		 responseLocator$=Locator.append(responseLocator$,Locator.LOCATOR_ICON_CONTAINER, Locator.LOCATOR_ICON_CONTAINER_CLASS);
+		 responseLocator$=Locator.append(responseLocator$,Locator.LOCATOR_ICON_CLASS,JEntityPrimaryMenu.class.getName());
+		 responseLocator$=Locator.append(responseLocator$,Locator.LOCATOR_ICON_FILE, "broom.png"); 
+		
+		 responseLocator$=Locator.append(responseLocator$,Locator.LOCATOR_TITLE,"Clear properties ");
 		responseLocator$=Locator.append(responseLocator$, BaseHandler.HANDLER_METHOD, "response");
 		responseLocator$=Locator.append(responseLocator$ ,JRequester.REQUESTER_ACTION,ACTION_CLEAR_PROPERTIES);
 		return responseLocator$;

@@ -29,6 +29,9 @@ import gdt.data.grain.Core;
 import gdt.data.grain.Locator;
 import gdt.data.grain.Sack;
 import gdt.data.store.Entigrator;
+import gdt.jgui.base.JAllCategoriesPanel;
+import gdt.jgui.console.JConsoleHandler;
+import gdt.jgui.console.JFacetRenderer;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -86,6 +89,7 @@ public class BaseHandler {
 		 *  
 		 * @return The locator string.
 		 */	 
+	static boolean debug=false;
 	public static String getLocator(){
 			Properties locator=new Properties();
 			locator.setProperty(Locator.LOCATOR_TITLE, "Base handler");
@@ -159,7 +163,8 @@ public static String execute(Entigrator entigrator,String locator$){
 public static FacetHandler[] listAllHandlers( Entigrator entigrator){
 	try{
 	ArrayList<FacetHandler>fl=new ArrayList<FacetHandler>();
-//	System.out.println("BaseHandler:listAllHandlers:BEGIN");
+	if(debug)
+	System.out.println("BaseHandler:listAllHandlers:BEGIN");
 	fl.add(new FieldsHandler());
 	fl.add(new FolderHandler());
 	fl.add(new WebsetHandler());
@@ -168,19 +173,24 @@ public static FacetHandler[] listAllHandlers( Entigrator entigrator){
 	fl.add(new ExtensionHandler());
 	fl.add(new QueryHandler());
 	fl.add(new ProcedureHandler());
-//	System.out.println("BaseHandler:listAllHandlers:END EMBEDDED");
+	if(debug)
+	System.out.println("BaseHandler:listAllHandlers:END EMBEDDED");
+	
 	FacetHandler[] fha=ExtensionHandler.listExtensionHandlers(entigrator);
 	
 	if(fha!=null){
 		//System.out.println("BaseHandler:listAllHandlers:fha="+fha.length);
 		for(FacetHandler fh:fha){
-			//System.out.println("BaseHandler:listAllHandlers:fh="+fh.toString());
+		if(debug)	
+			System.out.println("BaseHandler:listAllHandlers:fh="+fh.getClass().getName());
 			fl.add(fh);
 		}
 	}
 	//else
 	//	System.out.println("BaseHandler:listAllHandlers:no extensions");
 //	System.out.println("BaseHandler:listAllHandlers:END EXTENSIONS");
+ 
+ 
 	return fl.toArray(new FacetHandler[0]);
 	}catch(Exception e){
 		Logger.getLogger(BaseHandler.class.getName()).severe(e.toString());
@@ -194,7 +204,8 @@ public static FacetHandler[] listAllHandlers( Entigrator entigrator){
  */	 
 public static String createBlankDatabase(String entihome$){
 	try{
-		System.out.println("BaseHandler:createBlankDatabase.entihome="+entihome$);
+		if(debug)
+		  System.out.println("BaseHandler:createBlankDatabase.entihome="+entihome$);
 		File entihome=new File(entihome$);
 		if(!entihome.exists()){
 			entihome.mkdir();
@@ -206,59 +217,22 @@ public static String createBlankDatabase(String entihome$){
 		File propertyMap=new File(entihome$+"/"+Entigrator.PROPERTY_MAP+"/data/");
 		if(!propertyMap.exists())
 			propertyMap.mkdirs();
-		File entityBase=new File(entihome$+"/"+Entigrator.PROPERTY_BASE+"/data/");
+		File entityBase=new File(entihome$+"/"+Entigrator.ENTITY_BASE+"/data/");
 		if(!entityBase.exists())
 		entityBase.mkdirs();
-		 Entigrator entigrator=new Entigrator(new String[]{entihome$});
+		Entigrator entigrator=new Entigrator(new String[]{entihome$});
 		 String[] sa=entigrator.indx_listEntities("label", "Icons");
 		 Sack folder=null;
 		 if(sa==null){
 			 folder=entigrator.ent_new("folder", "Icons",Entigrator.ICONS);
    	         folder.putAttribute(new Core(null,"icon","folder.png"));
-	         entigrator.save(folder);
+	         entigrator.replace(folder);
 	         folder=entigrator.ent_assignProperty(folder, "folder", folder.getProperty("label"));
 		 }
 	   File folderHome=new File(entihome$+"/"+Entigrator.ICONS);
 	   if(!folderHome.exists())
 		    folderHome.mkdir();
-	   Sack dependencies=entigrator.ent_new("folder", "Dependencies",Entigrator.DEPENDENCIES);
-	   dependencies.putAttribute(new Core(null,"icon","folder.png"));
-       entigrator.save(dependencies);
-       folder=entigrator.ent_assignProperty(folder, "folder", folder.getProperty("label"));
-       folderHome=new File(entihome$+"/"+Entigrator.DEPENDENCIES);
-	   if(!folderHome.exists())
-		    folderHome.mkdir();
-	   System.out.println("BaseHandler:createBlankDatabase:1");
-       InputStream is=ExtensionHandler.class.getResourceAsStream("commons-codec-1.10.jar");
-       if(is==null)
-    	   System.out.println("BaseHandler:createBlankDatabase:cannot get input stream");
-       else{
-    	   System.out.println("BaseHandler:createBlankDatabase:found input stream");
-    	   File out=new File(entihome$+"/"+Entigrator.DEPENDENCIES+"/commons-codec-1.10.jar");
-    		FileOutputStream fos = new FileOutputStream(out);
-            byte[] b = new byte[1024];
-            int bytesRead = 0;
-            while ((bytesRead = is.read(b)) != -1) {
-              fos.write(b, 0, bytesRead);
-            }
-            fos.close();
-            is.close();
-       			}
-       is=ExtensionHandler.class.getResourceAsStream("commons-compress-1.10.jar");
-       if(is==null)
-    	   System.out.println("BaseHandler:createBlankDatabase:cannot get input stream");
-       else{
-    	   System.out.println("BaseHandler:createBlankDatabase:found input stream");
-    	   File out=new File(entihome$+"/"+Entigrator.DEPENDENCIES+"/commons-compress-1.10.jar");
-    		FileOutputStream fos = new FileOutputStream(out);
-            byte[] b = new byte[1024];
-            int bytesRead = 0;
-            while ((bytesRead = is.read(b)) != -1) {
-              fos.write(b, 0, bytesRead);
-            }
-            fos.close();
-            is.close();
-       			}
+	  
     return null;	      
 	}catch(Exception e){
 		Logger.getLogger(BaseHandler.class.getName()).severe(e.toString());
@@ -266,22 +240,15 @@ public static String createBlankDatabase(String entihome$){
 	}
 	
 }
-private static String resolveName(String name,Class c) {
-	  if (name == null) {
-	    return name;
-	  }
-	  if (!name.startsWith("/")) {
-	    while (c.isArray()) {
-	      c = c.getComponentType();
-	    }
-	    String baseName = c.getName();
-	    int index = baseName.lastIndexOf('.');
-	    if (index != -1) {
-	      name = baseName.substring(0, index).replace('.', '/') + "/" + name;
-	    }
-	  } else {
-	    name = name.substring(1);
-	  }
-	  return name;
-	}
+public static FacetHandler getHandler(Entigrator entigrator,String entityType$){
+	if(entigrator==null||entityType$==null)
+		return null;
+	FacetHandler[] fha=listAllHandlers(entigrator);
+	if(fha==null||fha.length<1)
+		return null;
+	for(FacetHandler fh:fha)
+		if(entityType$.equals(fh.getType()))
+			return fh;
+	return null;
+}
 }

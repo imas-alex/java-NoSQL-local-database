@@ -19,6 +19,8 @@ package gdt.jgui.entity.fields;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Hashtable;
 import java.util.Properties;
 import java.util.logging.Logger;
 import javax.swing.JMenuItem;
@@ -30,20 +32,26 @@ import org.apache.commons.codec.binary.Base64;
 import gdt.data.entity.BaseHandler;
 import gdt.data.entity.EntityHandler;
 import gdt.data.entity.FacetHandler;
+import gdt.data.entity.facet.BookmarksHandler;
 import gdt.data.entity.facet.FieldsHandler;
 import gdt.data.grain.Core;
 import gdt.data.grain.Locator;
 import gdt.data.grain.Sack;
 import gdt.data.grain.Support;
 import gdt.data.store.Entigrator;
+import gdt.jgui.base.JBaseNavigator;
+import gdt.jgui.base.JBasesPanel;
 import gdt.jgui.console.JConsoleHandler;
 import gdt.jgui.console.JContext;
 import gdt.jgui.console.JFacetOpenItem;
 import gdt.jgui.console.JMainConsole;
 import gdt.jgui.console.JRequester;
+import gdt.jgui.console.WContext;
+import gdt.jgui.console.WUtils;
 import gdt.jgui.entity.JEntitiesPanel;
 import gdt.jgui.entity.JEntityDigestDisplay;
 import gdt.jgui.entity.JEntityFacetPanel;
+import gdt.jgui.entity.folder.JFileOpenItem;
 import gdt.jgui.tool.JTextEditor;
 /**
  * This class represents the fields facet item in the list
@@ -51,7 +59,7 @@ import gdt.jgui.tool.JTextEditor;
  * @author imasa
  *
  */
-public class JFieldsFacetOpenItem extends JFacetOpenItem implements JRequester{
+public class JFieldsFacetOpenItem extends JFacetOpenItem implements JRequester,WContext{
 	private static final long serialVersionUID = 1L;
 	public static final String LOCATOR_TYPE_FIELD_NAME = "locator type field name";
 	public static final String LOCATOR_TYPE_FIELD_VALUE = "locator type field value";
@@ -60,7 +68,9 @@ public class JFieldsFacetOpenItem extends JFacetOpenItem implements JRequester{
 	public static final String NODE_TYPE_FIELD_NAME = "node type field name";
 	public static final String NODE_TYPE_FIELD_VALUE = "node type field value";
 	public static final String ACTION_DISPLAY_FACETS="action display facets";
+	public static final String FIELDS_FACET = "fields facet";
 	private Logger LOGGER=Logger.getLogger(JFieldsFacetOpenItem.class.getName());
+	boolean debug=false;
     /**
      * The default constructor.
      * 
@@ -87,9 +97,14 @@ public String getLocator(){
 		locator.setProperty(EntityHandler.ENTITY_KEY,entityKey$);
 	if(entihome$!=null)
 		locator.setProperty(Entigrator.ENTIHOME,entihome$);
-	 String icon$=Support.readHandlerIcon(null,JFieldsEditor.class, "fields.png");
+	/*
+	String icon$=Support.readHandlerIcon(null,JFieldsEditor.class, "fields.png");
     if(icon$!=null)
     	locator.setProperty(Locator.LOCATOR_ICON,icon$);
+    	*/
+	locator.setProperty(Locator.LOCATOR_ICON_CONTAINER,Locator.LOCATOR_ICON_CONTAINER_CLASS);
+	locator.setProperty(Locator.LOCATOR_ICON_CLASS,getClass().getName());
+	locator.setProperty(Locator.LOCATOR_ICON_FILE,"fields.png");
     if(entihome$!=null){   
  	locator.setProperty(Locator.LOCATOR_CHECKABLE,Locator.LOCATOR_TRUE);
 	    }
@@ -186,7 +201,7 @@ public String getFacetName() {
  * @return the facet icon string.
  */
 @Override
-public String getFacetIcon() {
+public String getFacetIcon(Entigrator entigrator) {
 	return Support.readHandlerIcon(null,JFieldsFacetOpenItem.class, "fields.png");
 }
 /**
@@ -261,31 +276,39 @@ public String getFacetRenderer() {
  * @return the children nodes of the facet node.
  */
 @Override
-public DefaultMutableTreeNode[] getDigest() {
+public DefaultMutableTreeNode[] getDigest(Entigrator entigrator,String locator$) {
 	try{
-		//System.out.println("JFieldsFacetOpenItem:getDigest:locator="+locator$);
+		if(debug)
+		System.out.println("JFieldsFacetOpenItem:getDigest:locator="+locator$);
 		Properties locator=Locator.toProperties(locator$);
-		entihome$=locator.getProperty(Entigrator.ENTIHOME);
+		//entihome$=locator.getProperty(Entigrator.ENTIHOME);
+		entihome$=entigrator.getEntihome();
 		entityKey$=locator.getProperty(EntityHandler.ENTITY_KEY);
-		Entigrator entigrator=console.getEntigrator(entihome$);
+		//Entigrator entigrator=console.getEntigrator(entihome$);
 		Sack entity=entigrator.getEntityAtKey(entityKey$);
 		Core[]ca=entity.elementGet("field");
 		if(ca==null)
 			return null;
 		DefaultMutableTreeNode nameNode;
 		DefaultMutableTreeNode valueNode;
-		String locator$=getLocator();
+		//String locator$=getLocator();
 		String nameLocator$;
 		String valueLocator$;
-		String nameIcon$=icon$=Support.readHandlerIcon(null,JEntitiesPanel.class, "text.png");
-		String valueIcon$=Support.readHandlerIcon(null,JEntitiesPanel.class, "equal.png");
+		//String nameIcon$=icon$=Support.readHandlerIcon(null,JEntitiesPanel.class, "text.png");
+		//String valueIcon$=Support.readHandlerIcon(null,JEntitiesPanel.class, "equal.png");
+		if(debug)
+			System.out.println("JFieldsFacetOpenItem:getDigest:1");
 		ArrayList<DefaultMutableTreeNode>nl=new ArrayList<DefaultMutableTreeNode>();
 		for(Core aCa:ca){
 			nameNode=new DefaultMutableTreeNode();
-			nameLocator$=Locator.append(locator$, Locator.LOCATOR_TITLE,aCa.name);
+			nameLocator$=Locator.append(locator$, Locator.LOCATOR_TITLE,aCa.name+" : "+aCa.value);
 			nameLocator$=Locator.append(nameLocator$, Locator.LOCATOR_TYPE,FIELD_NAME);
+			
 			nameLocator$=Locator.append(nameLocator$,FIELD_NAME,aCa.name);
-			nameLocator$=Locator.append(nameLocator$,Locator.LOCATOR_ICON,nameIcon$);
+			//nameLocator$=Locator.append(nameLocator$,Locator.LOCATOR_ICON,nameIcon$);
+			nameLocator$=Locator.append(nameLocator$,Locator.LOCATOR_ICON_CONTAINER,Locator.LOCATOR_ICON_CONTAINER_CLASS);
+			nameLocator$=Locator.append(nameLocator$,Locator.LOCATOR_ICON_CLASS,JEntitiesPanel.class.getName());
+			nameLocator$=Locator.append(nameLocator$,Locator.LOCATOR_ICON_FILE,"text.png");
 			nameLocator$=Locator.append(nameLocator$,JEntityDigestDisplay.NODE_TYPE,NODE_TYPE_FIELD_NAME);
 			if(entihome$!=null)
 				nameLocator$=Locator.append(nameLocator$,Entigrator.ENTIHOME,entihome$);
@@ -294,6 +317,7 @@ public DefaultMutableTreeNode[] getDigest() {
 				nameLocator$=Locator.append(nameLocator$,EntityHandler.ENTITY_KEY,entityKey$);
 		
 			nameNode.setUserObject(nameLocator$);
+		/*
 			valueNode=new DefaultMutableTreeNode();
 			valueLocator$=Locator.append(locator$, Locator.LOCATOR_TITLE,aCa.value);
 			valueLocator$=Locator.append(valueLocator$,FIELD_NAME,aCa.name);
@@ -308,8 +332,10 @@ public DefaultMutableTreeNode[] getDigest() {
 				valueLocator$=Locator.append(valueLocator$,EntityHandler.ENTITY_KEY,entityKey$);
 				
 			valueNode.setUserObject(valueLocator$);
-//			System.out.println("JFieldsFacetOpenItem:getDigest:VALUE locator="+valueLocator$);
+			if(debug)
+			System.out.println("JFieldsFacetOpenItem:getDigest:VALUE locator="+valueLocator$);
 			nameNode.add(valueNode);
+			*/
 			nl.add(nameNode);
 		}
 		return nl.toArray(new DefaultMutableTreeNode[0]);
@@ -333,7 +359,7 @@ public FacetHandler getFacetHandler() {
  */
 @Override
 public JPopupMenu getPopupMenu(final String digestLocator$) {
-	System.out.println("JFieldsFacetOpenItem:getPopupMenu:digest locator="+Locator.remove(digestLocator$, Locator.LOCATOR_ICON));
+	//System.out.println("JFieldsFacetOpenItem:getPopupMenu:digest locator="+Locator.remove(digestLocator$, Locator.LOCATOR_ICON));
 	JPopupMenu	popup = new JPopupMenu();
 	JMenuItem editItem=new JMenuItem("Edit");
 	   popup.add(editItem);
@@ -425,4 +451,85 @@ public JPopupMenu getPopupMenu(final String digestLocator$) {
 		    });
 	return popup;
 }
+@Override
+public String getFacetIconName() {
+	return "fields.png";
+}
+@Override
+public String getWebView(Entigrator entigrator, String locator$) {
+	try{
+		Properties locator=Locator.toProperties(locator$);
+		String webHome$=locator.getProperty(WContext.WEB_HOME);
+		String entityLabel$=locator.getProperty(EntityHandler.ENTITY_LABEL);
+		String webRequester$=locator.getProperty(WContext.WEB_REQUESTER);
+		String fieldsFacet$=locator.getProperty(FIELDS_FACET);
+		if(debug)
+		System.out.println("JFieldsFacetOpenItem:web home="+webHome$+ " web requester="+webRequester$);
+		 entityKey$=entigrator.indx_keyAtLabel(entityLabel$);
+		    Sack entity=entigrator.getEntityAtKey(entityKey$);
+	        Core[]	ca=entity.elementGet("field");
+		StringBuffer sb=new StringBuffer();
+		sb.append("<!DOCTYPE html PUBLIC \"-//W3C//DTD HTML 4.01//EN\" \"http://www.w3.org/TR/html4/strict.dtd\">");
+		sb.append("<html>");
+		sb.append("<head>");
+		
+		sb.append(WUtils.getMenuBarScript());
+		sb.append(WUtils.getMenuBarStyle());
+	    sb.append("</head>");
+	    sb.append("<body onload=\"onLoad()\" >");
+	    sb.append("<ul class=\"menu_list\">");
+	    sb.append("<li class=\"menu_item\"><a id=\"back\">Back</a></li>");
+	    sb.append("<li class=\"menu_item\"><a href=\""+webHome$+"\">Home</a></li>");
+	    String navLocator$=Locator.append(locator$, BaseHandler.HANDLER_CLASS, JBaseNavigator.class.getName());
+	    navLocator$=Locator.append(navLocator$, Entigrator.ENTIHOME, entigrator.getEntihome());
+	    String navUrl$=webHome$+"?"+WContext.WEB_LOCATOR+"="+Base64.encodeBase64URLSafeString(navLocator$.getBytes());
+	    sb.append("<li class=\"menu_item\"><a href=\""+navUrl$+"\">Base</a></li>");
+	    sb.append("<li class=\"menu_item\"><a href=\""+webHome$.replace("entry", WContext.ABOUT)+"\">About</a></li>");
+	    sb.append("</ul>");
+	    sb.append("<table><tr><td>Base:</td><td><strong>");
+	    sb.append(entigrator.getBaseName());
+	    sb.append("</strong></td></tr><tr><td>Entity: </td><td><strong>");
+	    sb.append(entityLabel$);
+	    sb.append("</strong></td></tr>");
+	    if(fieldsFacet$==null)
+	    	fieldsFacet$="Fields";
+	    sb.append("<tr><td>Facet: </td><td><strong>"+fieldsFacet$+"</strong></td></tr>");
+	    sb.append("</table>");
+	   
+        if(ca!=null){
+        //	sb.append("<script>");
+        	sb.append("<table style=\"text-align: left;  background-color: transparent;\"  border=\"1\" cellpadding=\"2\" cellspacing=\"2\">");
+	    	sb.append("<tr>");
+	    	sb.append("<td style='text-align:center;vertical-align:middle'><strong>Name</strong></td>");
+	    	sb.append("<td style='text-align:center;vertical-align:middle'><strong>Value</strong></td>");
+	    	sb.append("</tr>");
+	    	for(Core c:ca){
+	    		sb.append("<tr>");
+	    		sb.append("<td>"+c.name+"</td>");
+	    		sb.append("<td>"+c.value+"</td>");
+	    		sb.append("</tr>");
+	    	}
+	    sb.append("</table>");
+        //sb.append("</script>");
+        sb.append("<script>");
+	    sb.append("function onLoad() {");
+	    sb.append("initBack(\""+this.getClass().getName()+"\",\""+webRequester$+"\");");
+	    sb.append("}");
+	    sb.append("window.localStorage.setItem(\""+this.getClass().getName()+"\",\""+Base64.encodeBase64URLSafeString(locator$.getBytes())+"\");");
+	 	    sb.append("</script>");
+	    sb.append("</body>");
+	    sb.append("</html>");
+	    return sb.toString();
+        }
+	}catch(Exception e){
+		Logger.getLogger(JBasesPanel.class.getName()).severe(e.toString());	
+	}
+	return null;
+}
+@Override
+public String getWebConsole(Entigrator entigrator, String locator$) {
+	// TODO Auto-generated method stub
+	return null;
+}
+
 }

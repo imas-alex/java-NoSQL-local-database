@@ -37,6 +37,7 @@ import gdt.data.store.Entigrator;
 * @since   2016-03-11
 */
 public class Support {
+	static boolean debug=false;
     private static boolean itemExists(String name, Vector<String> vec) {
         if (name == null)
             return false;
@@ -240,7 +241,8 @@ public class Support {
  	*/
     public static String readHandlerIcon(Entigrator entigrator,Class<?> handler,String iconResource$) {
  		try {
- 		//	System.out.println("Support:readHandlerIcon:handler="+handler.getName()+" icon="+iconResource$);
+ 		if(debug)	
+ 			System.out.println("Support:readHandlerIcon:handler="+handler.getName()+" icon="+iconResource$);
  			//InputStream is=handler.getResourceAsStream(icon$);
  			InputStream is= getClassResource(handler,iconResource$);
  			if(is!=null){

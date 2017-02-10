@@ -22,6 +22,7 @@ import java.awt.event.ActionListener;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Hashtable;
 import java.util.Properties;
 import java.util.logging.Logger;
 
@@ -33,6 +34,8 @@ import gdt.data.grain.Locator;
 import gdt.data.grain.Sack;
 import gdt.data.grain.Support;
 import gdt.data.store.Entigrator;
+import gdt.jgui.base.JBaseNavigator;
+import gdt.jgui.base.JBasesPanel;
 import gdt.jgui.console.JConsoleHandler;
 import gdt.jgui.console.JContext;
 import gdt.jgui.console.JItemPanel;
@@ -40,6 +43,8 @@ import gdt.jgui.console.JItemsListPanel;
 import gdt.jgui.console.JMainConsole;
 import gdt.jgui.console.JRequester;
 import gdt.jgui.console.ReloadDialog;
+import gdt.jgui.console.WContext;
+import gdt.jgui.console.WUtils;
 import gdt.jgui.entity.JEntitiesPanel;
 import gdt.jgui.entity.folder.JFileOpenItem;
 
@@ -55,7 +60,7 @@ import org.apache.commons.codec.binary.Base64;
  * @author imasa
  *
  */
-public class JWeblinksPanel extends JItemsListPanel {
+public class JWeblinksPanel extends JItemsListPanel implements WContext {
 	private static final long serialVersionUID = 1L;
 	/**
 	 * The tag of a web link key.
@@ -105,10 +110,14 @@ public JWeblinksPanel() {
 			       locator.setProperty(EntityHandler.ENTITY_KEY,entityKey$);
 		    if(entityLabel$!=null)
 			       locator.setProperty(EntityHandler.ENTITY_LABEL,entityLabel$);
-		    String icon$=Support.readHandlerIcon(null,JEntitiesPanel.class, "globe.png");
+		   
+		    //String icon$=Support.readHandlerIcon(null,JEntitiesPanel.class, "globe.png");
 		    locator.setProperty(Locator.LOCATOR_TITLE, getTitle());
-		    if(icon$!=null)
-		    	locator.setProperty(Locator.LOCATOR_ICON,icon$);
+		    //if(icon$!=null)
+		    //	locator.setProperty(Locator.LOCATOR_ICON,icon$);
+		    locator.setProperty(Locator.LOCATOR_ICON_CONTAINER,Locator.LOCATOR_ICON_CONTAINER_CLASS);
+	    	locator.setProperty(Locator.LOCATOR_ICON_CLASS,getClass().getName());
+	    	locator.setProperty(Locator.LOCATOR_ICON_FILE,"globe.png"); 
 		    locator.setProperty(BaseHandler.HANDLER_SCOPE,JConsoleHandler.CONSOLE_SCOPE);
 		    locator.setProperty(BaseHandler.HANDLER_CLASS,getClass().getName());
 		    return Locator.toString(locator);
@@ -194,10 +203,16 @@ private JItemPanel[] getItems(JMainConsole console,Sack entity){
 					  ipLocator.setProperty(Locator.LOCATOR_TITLE, title$);
 					  ipLocator.setProperty(Locator.LOCATOR_TYPE, LOCATOR_TYPE_WEB_LINK);
 					  ipLocator.setProperty(Locator.LOCATOR_CHECKABLE, Locator.LOCATOR_TRUE);
+					  ipLocator.setProperty(Locator.LOCATOR_ICON_CONTAINER,Locator.LOCATOR_ICON_CONTAINER_ENTITY);
+					  ipLocator.setProperty(Locator.LOCATOR_ICON_ELEMENT,"web.icon");
+					  ipLocator.setProperty(Locator.LOCATOR_ICON_CORE,aCa.name);
+					  ipLocator.setProperty(Locator.LOCATOR_ICON_FIELD,Locator.LOCATOR_ICON_FIELD_VALUE);
+					  /*
 					  icon$=entity.getElementItemAt("web.icon", aCa.name);
 					  if(icon$==null||"null".equals(icon$))
 					 	  icon$=Support.readHandlerIcon(null,JEntitiesPanel.class, "globe.png");
-					  ipLocator.setProperty(Locator.LOCATOR_ICON,icon$); 
+					  ipLocator.setProperty(Locator.LOCATOR_ICON,icon$);
+					  */ 
 					  Core login=entity.getElementItem("web.login", aCa.name);
 					  if(login!=null){
 						  if(login.type!=null&&!"null".equals(login.type))
@@ -292,6 +307,7 @@ menu.addMenuListener(new MenuListener(){
 	newItem.addActionListener(new ActionListener() {
 		@Override
 		public void actionPerformed(ActionEvent e) {
+			if(debug)
 			System.out.println("WeblinksPanel:new:"+locator$);
 			Entigrator entigrator=console.getEntigrator(entihome$);	
 			Sack entity=entigrator.getEntityAtKey(entityKey$);
@@ -342,7 +358,8 @@ menu.addMenuListener(new MenuListener(){
 					 webLinkKey$=itemLocator.getProperty(WEB_LINK_KEY);
 					 webLinkUrl$=itemLocator.getProperty(WEB_LINK_URL);
 					 webLinkName$=itemLocator.getProperty(WEB_LINK_NAME);
-					 webLinkIcon$=itemLocator.getProperty(Locator.LOCATOR_ICON);
+					 //webLinkIcon$=itemLocator.getProperty(Locator.LOCATOR_ICON);
+					 webLinkIcon$=JConsoleHandler.getIcon(entigrator, aSa);
 					 webLinkLogin$=itemLocator.getProperty(WEB_LINK_LOGIN);
 					 webLinkPassword$=itemLocator.getProperty(WEB_LINK_PASSWORD);
 					 if(webLinkKey$==null||webLinkUrl$==null)
@@ -476,5 +493,35 @@ return menu;
 			}
 		
 		
+	}
+	@Override
+	public String getWebView(Entigrator entigrator, String locator$) {
+		try{
+			if(debug)
+				System.out.println("JWeblinksPanel:locator="+locator$);
+			StringBuffer sb=new StringBuffer();
+			sb.append("<!DOCTYPE html PUBLIC \"-//W3C//DTD HTML 4.01//EN\" \"http://www.w3.org/TR/html4/strict.dtd\">");
+			sb.append("<html>");
+			Properties locator=Locator.toProperties(locator$);
+			//String type$=locator.getProperty(Locator.LOCATOR_TYPE);
+			String url$=locator.getProperty(JWeblinksPanel.WEB_LINK_URL);
+			if(debug)
+					System.out.println("JWeblinksPanel:url="+url$);
+				sb.append("<body>");
+				sb.append("<script>");
+				sb.append("window.location.assign(\""+url$+"\");");
+				sb.append("</script>");
+				sb.append("</body>");
+				sb.append("</html>");
+				return sb.toString();
+		}catch(Exception e){
+			Logger.getLogger(getClass().getName()).severe(e.toString());
+		}
+		return null;	
+	}
+	@Override
+	public String getWebConsole(Entigrator entigrator, String locator$) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }

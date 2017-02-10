@@ -79,11 +79,16 @@ static boolean debug=false;
 	    locator.setProperty(Locator.LOCATOR_TITLE, getTitle());
 	    if(entihome$!=null){
 	    locator.setProperty(Entigrator.ENTIHOME,entihome$);
-	
+	/*
 	    String icon$=Support.readHandlerIcon(null,JRecentPanel.class, "recent.png");
 	    if(icon$!=null)
 	    	locator.setProperty(Locator.LOCATOR_ICON,icon$);
+	    */
+	    
 	    }
+	    locator.setProperty(Locator.LOCATOR_ICON_CONTAINER,Locator.LOCATOR_ICON_CONTAINER_CLASS);
+		locator.setProperty(Locator.LOCATOR_ICON_CLASS,getClass().getName());
+		locator.setProperty(Locator.LOCATOR_ICON_FILE,"recent.png");
 	   // 
 	    locator.setProperty(Locator.LOCATOR_TITLE, getTitle());
 	    locator.setProperty(BaseHandler.HANDLER_SCOPE,JConsoleHandler.CONSOLE_SCOPE);
@@ -101,8 +106,8 @@ static boolean debug=false;
 	public JContext instantiate(JMainConsole console, String locator$) {
       // super.instantiate(console, locator$);
 		this.console=console;
-		if(debug)
-        System.out.println("JRecentPanel:instantiate:locator="+Locator.remove(locator$,Locator.LOCATOR_ICON));
+		//if(debug)
+        //System.out.println("JRecentPanel:instantiate:locator="+Locator.remove(locator$,Locator.LOCATOR_ICON));
 		try{
         Properties locator=Locator.toProperties(locator$);
 		entihome$=locator.getProperty(Entigrator.ENTIHOME);
@@ -115,7 +120,7 @@ static boolean debug=false;
 		@SuppressWarnings("unchecked")
 		Hashtable<String,String> recents=(Hashtable<String,String>)console.getRecents();
 		Enumeration<String> en=recents.keys();
-		 JItemPanel itemPanel;
+		JItemPanel itemPanel;
 		 String itemLocator$;
 		while(en.hasMoreElements()){
 			itemLocator$=recents.get(en.nextElement());

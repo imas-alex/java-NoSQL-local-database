@@ -58,9 +58,12 @@ public class JFolderFacetAddItem extends JFacetAddItem{
 	    		locator.setProperty(EntityHandler.ENTITY_KEY,entityKey$);
 	    	if(entihome$!=null)
 	    		locator.setProperty(Entigrator.ENTIHOME,entihome$);
-	    	 icon$=Support.readHandlerIcon(null,getClass(), "folder.png");
-	    	if(icon$!=null)
-	    	    	locator.setProperty(Locator.LOCATOR_ICON,icon$);
+	    	// icon$=Support.readHandlerIcon(null,getClass(), "folder.png");
+	    	//if(icon$!=null)
+	    	 //   	locator.setProperty(Locator.LOCATOR_ICON,icon$);
+	    	locator.setProperty(Locator.LOCATOR_ICON_CONTAINER,Locator.LOCATOR_ICON_CONTAINER_CLASS);
+	    	locator.setProperty(Locator.LOCATOR_ICON_CLASS,getClass().getName());
+	    	locator.setProperty(Locator.LOCATOR_ICON_FILE,"folder.png"); 
 	    	 locator$=Locator.toString(locator);
 	    	locator.setProperty(Locator.LOCATOR_CHECKABLE,Locator.LOCATOR_TRUE);
 	    	 return Locator.toString(locator);
@@ -152,7 +155,10 @@ public class JFolderFacetAddItem extends JFacetAddItem{
 		   // editorLocator$=Locator.append(editorLocator$,Locator.LOCATOR_DATA,Locator.compressText(locator$));
 		    editorLocator$=Locator.append(editorLocator$,Locator.LOCATOR_TITLE,"Component label");
 		    editorLocator$=Locator.append(editorLocator$,JTextEditor.TEXT_TITLE,"Add folder component");
-		 //   String icon$=Support.readHandlerIcon(EntitiesPanel.class, "folder.png");
+		    if(entihome$!=null)
+		    	 editorLocator$=Locator.append(editorLocator$,Entigrator.ENTIHOME,entihome$);	
+		  
+		    //   String icon$=Support.readHandlerIcon(EntitiesPanel.class, "folder.png");
 		 //   editorLocator$=Locator.append(editorLocator$,Locator.LOCATOR_ICON,icon$);
 		    String responseLocator$=getLocator();
 		    responseLocator$=Locator.append(responseLocator$, BaseHandler.HANDLER_METHOD, "response");

@@ -26,8 +26,12 @@ import java.io.FilenameFilter;
 */
 public class ArchiveFileFilter implements FilenameFilter{
 	 /**
-     * accept archive file
-     */
+     *Accept an archive file.
+     * @param directory file directory.
+     *  @param fileName file name.
+     * @return true if the file is an archive file.
+     *    
+     */  
 	@Override
 	public boolean accept(File directory, String fileName) {
 		  if (fileName.endsWith(".tar")

@@ -19,6 +19,7 @@ package gdt.jgui.console;
 import gdt.data.entity.BaseHandler;
 import gdt.data.grain.Locator;
 import gdt.data.grain.Support;
+import gdt.jgui.entity.JEntityPrimaryMenu;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -39,6 +40,7 @@ public class JClipboardPanel extends JItemsListPanel {
 	private static final long serialVersionUID = 1L;
 	private Logger LOGGER=Logger.getLogger(getClass().getName());
 	JMenuItem	deleteItem;
+	boolean debug=false;
 	public JClipboardPanel() {
         super();
 	}
@@ -51,9 +53,13 @@ public class JClipboardPanel extends JItemsListPanel {
 		 Properties locator=new Properties();
 		    locator.setProperty(Locator.LOCATOR_TYPE, JContext.CONTEXT_TYPE);
 		    locator.setProperty(Locator.LOCATOR_TITLE,"Clipboard");
-		    String icon$=Support.readHandlerIcon(null,getClass(), "clipboard.png");
-		    if(icon$!=null)
-		    locator.setProperty(Locator.LOCATOR_ICON,icon$);
+		   // String icon$=Support.readHandlerIcon(null,getClass(), "clipboard.png");
+		    //if(icon$!=null)
+		    //locator.setProperty(Locator.LOCATOR_ICON,icon$);
+		    locator.setProperty(Locator.LOCATOR_ICON_CONTAINER, Locator.LOCATOR_ICON_CONTAINER_CLASS);
+		    locator.setProperty(Locator.LOCATOR_ICON_CLASS,getClass().getName());
+		    locator.setProperty(Locator.LOCATOR_ICON_FILE, "clipboard.png"); 
+		
 		    locator.setProperty(BaseHandler.HANDLER_SCOPE,JConsoleHandler.CONSOLE_SCOPE);
 		    locator.setProperty(BaseHandler.HANDLER_CLASS,JClipboardPanel.class.getName());
 			return Locator.toString(locator);
@@ -105,6 +111,8 @@ public class JClipboardPanel extends JItemsListPanel {
         	
         	if(sa!=null)
         		for(String aSa:sa){
+        			if(debug)
+        				System.out.println("JClipboardPanel:instantiate:locator="+aSa);
         			aSa=Locator.append(aSa, Locator.LOCATOR_CHECKABLE, Locator.LOCATOR_TRUE);
         			itemPanel=new JItemPanel(console,aSa);
         			

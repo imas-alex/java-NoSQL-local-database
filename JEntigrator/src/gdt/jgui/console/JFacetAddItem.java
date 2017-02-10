@@ -20,8 +20,11 @@ import gdt.data.entity.BaseHandler;
 import gdt.data.entity.EntityHandler;
 import gdt.data.entity.FacetHandler;
 import gdt.data.entity.facet.ExtensionHandler;
+import gdt.data.entity.facet.FieldsHandler;
 import gdt.data.grain.Locator;
 import gdt.data.store.Entigrator;
+import gdt.jgui.entity.JEntityPrimaryMenu;
+
 import java.util.Properties;
 import java.util.logging.Logger;
 /**
@@ -58,6 +61,15 @@ public abstract class JFacetAddItem extends JItemPanel implements JRequester{
 	public JFacetAddItem(){
 		super();
 	}
+	@Override
+	public String getLocator(){
+		//locator$=super.getLocator();
+		if(entihome$!=null)
+		 locator$=Locator.append(locator$,Entigrator.ENTIHOME, entihome$);
+		if(entityKey$!=null)
+			 locator$=Locator.append(locator$,EntityHandler.ENTITY_KEY, entityKey$);
+		return locator$;
+	}
 	/**
 	 * Create the facet add item
 	 *  @param console the main application console
@@ -75,35 +87,41 @@ public abstract class JFacetAddItem extends JItemPanel implements JRequester{
 			method$=locator.getProperty(BaseHandler.HANDLER_METHOD);
 			extension$=locator.getProperty(BaseHandler.HANDLER_LOCATION);
 			addItem$=locator.getProperty(BaseHandler.HANDLER_CLASS);
+			title$=locator.getProperty(Locator.LOCATOR_TITLE);
 			Entigrator entigrator=console.getEntigrator(entihome$);
-			JFacetAddItem addItem;
+			//JFacetAddItem addItem;
+			JFacetAddItem fai;
 			if(extension$==null)
-			    addItem=(JFacetAddItem)JConsoleHandler.getHandlerInstance(entigrator, addItem$);
+			    fai=(JFacetAddItem)JConsoleHandler.getHandlerInstance(entigrator, addItem$);
 			else
-				addItem=(JFacetAddItem)JConsoleHandler.getHandlerInstance(entigrator, addItem$,extension$);
-			locator$=addItem.getLocator();
-			if(debug)
-			System.out.println("FacetAddItem:instantiate:0:faiLocator="+locator$); 
+				fai=(JFacetAddItem)JConsoleHandler.getHandlerInstance(entigrator, addItem$,extension$);
+			String faiLocator$=fai.getLocator();
+//			if(debug)
+//			System.out.println("FacetAddItem:instantiate:0:faiLocator="+locator$); 
 			//getLocator();
 			if(entihome$!=null)
-				locator$=Locator.append(locator$, Entigrator.ENTIHOME, entihome$);
+				faiLocator$=Locator.append(locator$, Entigrator.ENTIHOME, entihome$);
 			if(entityKey$!=null)
-				locator$=Locator.append(locator$, EntityHandler.ENTITY_KEY, entityKey$);
+				faiLocator$=Locator.append(locator$, EntityHandler.ENTITY_KEY, entityKey$);
 			if(method$!=null)
-				locator$=Locator.append(locator$, BaseHandler.HANDLER_METHOD, method$);
-			
-			if(extension$!=null){
-				locator$=Locator.append(locator$, BaseHandler.HANDLER_LOCATION,extension$);
-				String iconResource$=addItem.getIconResource();
-				if(iconResource$!=null)
-					 icon$=ExtensionHandler.loadIcon(entigrator, extension$,iconResource$);
-				if(icon$!=null)
-					locator$=Locator.append(locator$,Locator.LOCATOR_ICON,icon$);
-			}
+				faiLocator$=Locator.append(locator$, BaseHandler.HANDLER_METHOD, method$);
+			//=(JFacetAddItem)JConsoleHandler.getHandlerInstance(entigrator, addItem$); 
+			//locator$=fai.getLocator();
+			String foi$=fai.getFacetOpenClass();
+			JFacetOpenItem foi=(JFacetOpenItem)JConsoleHandler.getHandlerInstance(entigrator, foi$);
+			JFacetRenderer fr=(JFacetRenderer)JConsoleHandler.getHandlerInstance(entigrator, foi.getFacetRenderer());
+			String iconFile$=fr.getFacetIcon();
+			faiLocator$=Locator.append(faiLocator$,Locator.LOCATOR_ICON_CONTAINER,Locator.LOCATOR_ICON_CONTAINER_CLASS);
+			faiLocator$=Locator.append(faiLocator$,Locator.LOCATOR_ICON_CLASS,foi$);
+			faiLocator$=Locator.append(faiLocator$,Locator.LOCATOR_ICON_FILE,iconFile$);
+			if(extension$!=null)
+				faiLocator$=Locator.append(faiLocator$,Locator.LOCATOR_ICON_LOCATION,extension$);
+				
 			if(debug)
-			System.out.println("JFacetAddItem:instantiate:1:faiLocator="+locator$);  
-			locator$=markAppliedUncheckable(console, locator$);
-			super.instantiate(console, locator$);
+			System.out.println("JFacetAddItem:instantiate:faiLocator="+faiLocator$);  
+			faiLocator$=markAppliedUncheckable(console, faiLocator$);
+			//this.locator$=faiLocator$;
+			super.instantiate(console, faiLocator$);
 		
 		}catch(Exception e){
 			Logger.getLogger(JFacetAddItem.class.getName()).severe(e.toString());

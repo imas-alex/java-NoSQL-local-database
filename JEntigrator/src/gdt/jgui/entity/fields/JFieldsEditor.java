@@ -259,7 +259,8 @@ public JFieldsEditor() {
 				save();
 				if(requesterResponseLocator$!=null){
 					try{
-					   byte[] ba=Base64.decodeBase64(requesterResponseLocator$);
+					   
+						byte[] ba=Base64.decodeBase64(requesterResponseLocator$);
 					   String responseLocator$=new String(ba,"UTF-8");
 					   responseLocator$=Locator.append(responseLocator$, Entigrator.ENTIHOME, entihome$);
 					   responseLocator$=Locator.append(responseLocator$, EntityHandler.ENTITY_KEY, entityKey$);
@@ -316,9 +317,12 @@ public JFieldsEditor() {
 				locator.setProperty(EntityHandler.ENTITY_KEY,entityKey$);
 			if(entihome$!=null)
 				locator.setProperty(Entigrator.ENTIHOME,entihome$);
-				 String icon$=Support.readHandlerIcon(null,JFieldsEditor.class, "fields.png");
-			    if(icon$!=null)
-			    	locator.setProperty(Locator.LOCATOR_ICON,icon$);
+			//	 String icon$=Support.readHandlerIcon(null,JFieldsEditor.class, "fields.png");
+			 //   if(icon$!=null)
+			  //  	locator.setProperty(Locator.LOCATOR_ICON,icon$);
+			locator.setProperty(Locator.LOCATOR_ICON_CONTAINER,Locator.LOCATOR_ICON_CONTAINER_CLASS);
+			locator.setProperty(Locator.LOCATOR_ICON_CLASS,getClass().getName());
+			locator.setProperty(Locator.LOCATOR_ICON_FILE,"fields.png");   
 			return Locator.toString(locator);
 			}catch(Exception e){
 	        LOGGER.severe(e.toString());
@@ -646,7 +650,7 @@ public JFieldsEditor() {
 	 */
 	@Override
 	public void response(JMainConsole console, String locator$) {
-		System.out.println("FieldsEditor:response:"+Locator.remove(locator$,Locator.LOCATOR_ICON ));
+		//System.out.println("FieldsEditor:response:"+Locator.remove(locator$,Locator.LOCATOR_ICON ));
 		try{
 			Properties locator=Locator.toProperties(locator$);
 			String action$=locator.getProperty(JRequester.REQUESTER_ACTION);
@@ -677,6 +681,7 @@ public JFieldsEditor() {
 				efpLocator$=Locator.append(efpLocator$, EntityHandler.ENTITY_KEY, newEntity.getKey());
 				efpLocator$=Locator.append(efpLocator$, EntityHandler.ENTITY_LABEL, newEntity.getProperty("label"));
 				JEntityPrimaryMenu.reindexEntity(console, efpLocator$);
+				
 				Stack<String> s=console.getTrack();
 				s.pop();
 				console.setTrack(s);
@@ -712,10 +717,12 @@ public JFieldsEditor() {
  */
 	@Override
 	public String addIconToLocator(String locator$) {
+		/*
 		String icon$=Support.readHandlerIcon(null,JFieldsEditor.class, "fields.png");
 	    if(icon$!=null)
 		return Locator.append(locator$, Locator.LOCATOR_ICON,icon$);
 	    else
+	    */
 	    	return locator$;
 	}
 	/**
@@ -820,7 +827,7 @@ public JFieldsEditor() {
 	 * @return the category icon string. 
 	 */
 	@Override
-	public String getCategoryIcon() {
+	public String getCategoryIcon(Entigrator entigrator) {
 		return Support.readHandlerIcon(null,getClass(), "fields.png");
 	}
 	/**
@@ -846,14 +853,14 @@ public JFieldsEditor() {
 	    entihome$=Locator.getProperty(locator$,Entigrator.ENTIHOME );
 	    if(entihome$!=null)
 	    	editorLocator$=Locator.append(editorLocator$,Entigrator.ENTIHOME,entihome$);
-	    String icon$=Support.readHandlerIcon(null,getClass(), "fields.png");
-	    editorLocator$=Locator.append(editorLocator$,Locator.LOCATOR_ICON,icon$);
+	    //String icon$=Support.readHandlerIcon(null,getClass(), "fields.png");
+	    //editorLocator$=Locator.append(editorLocator$,Locator.LOCATOR_ICON,icon$);
 	    JFieldsEditor fe=new JFieldsEditor();
 	    String feLocator$=fe.getLocator();
 	    Properties responseLocator=Locator.toProperties(feLocator$);
 	    if(entihome$!=null)
 	      responseLocator.setProperty(Entigrator.ENTIHOME,entihome$);
-	   responseLocator.setProperty(BaseHandler.HANDLER_CLASS,getClass().getName());
+	      responseLocator.setProperty(BaseHandler.HANDLER_CLASS,getClass().getName());
 		responseLocator.setProperty(BaseHandler.HANDLER_METHOD,"response");
 		responseLocator.setProperty(BaseHandler.HANDLER_SCOPE,JConsoleHandler.CONSOLE_SCOPE);
 		responseLocator.setProperty(BaseHandler.HANDLER_METHOD,"response");
@@ -929,6 +936,15 @@ public JFieldsEditor() {
 				instantiate(console,getLocator());
 			}
 	
+	}
+	@Override
+	public String getFacetOpenItem() {
+		return JFieldsFacetOpenItem.class.getName();
+	}
+	@Override
+	public String getFacetIcon() {
+		
+		return "fields.png";
 	}
 		
 }

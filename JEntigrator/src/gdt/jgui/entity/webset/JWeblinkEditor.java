@@ -473,7 +473,13 @@ private void save(){
 			locator.setProperty(BaseHandler.HANDLER_CLASS,getClass().getName());
 			locator.setProperty(BaseHandler.HANDLER_SCOPE,JConsoleHandler.CONSOLE_SCOPE);
 			 locator.setProperty( JContext.CONTEXT_TYPE,getType());
-			locator.setProperty(Locator.LOCATOR_TITLE,getTitle());
+			String title$=null;
+			 if(nameField!=null)
+			 if(getTitle()!=null)
+				 title$=getTitle();
+			 if(title$==null)
+				 title$="Web address";
+			locator.setProperty(Locator.LOCATOR_TITLE,title$);	
 			if(entityLabel$!=null){
 				locator.setProperty(EntityHandler.ENTITY_LABEL,entityLabel$);
 			}
@@ -481,26 +487,18 @@ private void save(){
 				locator.setProperty(EntityHandler.ENTITY_KEY,entityKey$);
 			if(entihome$!=null)
 				locator.setProperty(Entigrator.ENTIHOME,entihome$);
-			if(webLinkKey$!=null)
+			if(webLinkKey$!=null){
 				locator.setProperty(JWeblinksPanel.WEB_LINK_KEY,webLinkKey$);
-			String icon$=null;
-			try{
-				Icon icon=iconIcon.getIcon();
-				int type = BufferedImage.TYPE_INT_RGB;
-				BufferedImage out = new BufferedImage(icon.getIconWidth(), icon.getIconHeight(), type);
-		        Graphics2D g2 = out.createGraphics();
-		        icon.paintIcon(new JPanel(), out.getGraphics(), 0, 0); 
-	            g2.dispose();
-	            ByteArrayOutputStream b =new ByteArrayOutputStream();
-	            ImageIO.write(out, "png", b );
-		            b.close();
-		 		byte[]	ba = b.toByteArray();
-		        icon$= Base64.encodeBase64String(ba);
-			}catch(Exception ee){}
-			if(icon$==null)
-			 icon$=Support.readHandlerIcon(null,JEntitiesPanel.class, "edit.png");
-	    	locator.setProperty(Locator.LOCATOR_ICON,icon$);
-			return Locator.toString(locator);
+			locator.setProperty(Locator.LOCATOR_ICON_CONTAINER,Locator.LOCATOR_ICON_CONTAINER_ENTITY);
+			locator.setProperty(Locator.LOCATOR_ICON_ELEMENT,"web.icon");
+			locator.setProperty(Locator.LOCATOR_ICON_CORE,webLinkKey$);
+			locator.setProperty(Locator.LOCATOR_ICON_FIELD,Locator.LOCATOR_ICON_FIELD_VALUE);
+			}else{
+				locator.setProperty(Locator.LOCATOR_ICON_CONTAINER,Locator.LOCATOR_ICON_CONTAINER_CLASS);
+				locator.setProperty(Locator.LOCATOR_ICON_CLASS,getClass().getName());
+				locator.setProperty(Locator.LOCATOR_ICON_FILE,"globe.png");
+			}
+				return Locator.toString(locator);
 			}catch(Exception e){
 	        Logger.getLogger(getClass().getName()).severe(e.toString());
 	        return null;
@@ -516,7 +514,8 @@ private void save(){
 @Override
 	public JContext instantiate(JMainConsole console, String locator$) {
 		try{
-//			System.out.println("WeblinkEditor.instantiate:locator="+locator$);
+			if(debug)
+			System.out.println("WeblinkEditor.instantiate:locator="+locator$);
 			this.console=console;
 			Properties locator=Locator.toProperties(locator$);
 			entihome$=locator.getProperty(Entigrator.ENTIHOME);
@@ -562,10 +561,12 @@ private void save(){
  */
 @Override
 	public String addIconToLocator(String locator$) {
-		String icon$=Support.readHandlerIcon(null,JEntitiesPanel.class, "globe.png");
+	/*	
+	String icon$=Support.readHandlerIcon(null,JEntitiesPanel.class, "globe.png");
 	    if(icon$!=null)
 		return Locator.append(locator$, Locator.LOCATOR_ICON,icon$);
 	    else
+	    */
 	    	return locator$;
 	}
 /**
@@ -589,8 +590,8 @@ private void save(){
 	 * @return the icon string.
 	 */
 	@Override
-	public String getCategoryIcon() {
-		return Support.readHandlerIcon(null,JEntitiesPanel.class, "edit.png");
+	public String getCategoryIcon(Entigrator entigrator) {
+		return Support.readHandlerIcon(null,JEntitiesPanel.class, "globe.png");
 	}
 	/**
 	 * Get category title for entities having the facet type.
@@ -676,15 +677,18 @@ private void save(){
 	    String editorLocator$=textEditor.getLocator();
 	    editorLocator$=Locator.append(editorLocator$, JTextEditor.TEXT, "Web links"+Identity.key().substring(0,4));
 	    editorLocator$=Locator.append(editorLocator$,Locator.LOCATOR_TITLE,"Web links entity");
-	    String icon$=Support.readHandlerIcon(null,JEntitiesPanel.class, "globe.png");
-	    editorLocator$=Locator.append(editorLocator$,Locator.LOCATOR_ICON,icon$);
+	   
+	   // String icon$=Support.readHandlerIcon(null,JEntitiesPanel.class, "globe.png");
+	   // editorLocator$=Locator.append(editorLocator$,Locator.LOCATOR_ICON,icon$);
 	    JWeblinkEditor fe=new JWeblinkEditor();
 	    String feLocator$=fe.getLocator();
 	    Properties responseLocator=Locator.toProperties(feLocator$);
 	    entihome$=Locator.getProperty(locator$,Entigrator.ENTIHOME );
-	    if(entihome$!=null)
+	    if(entihome$!=null){
 	      responseLocator.setProperty(Entigrator.ENTIHOME,entihome$);
-	   responseLocator.setProperty(BaseHandler.HANDLER_CLASS,getClass().getName());
+	    editorLocator$=Locator.append(editorLocator$,Entigrator.ENTIHOME,entihome$);
+	    }
+	    responseLocator.setProperty(BaseHandler.HANDLER_CLASS,getClass().getName());
 		responseLocator.setProperty(BaseHandler.HANDLER_METHOD,"response");
 		responseLocator.setProperty(BaseHandler.HANDLER_SCOPE,JConsoleHandler.CONSOLE_SCOPE);
 		responseLocator.setProperty(BaseHandler.HANDLER_METHOD,"response");
@@ -692,6 +696,7 @@ private void save(){
 		responseLocator.setProperty(Locator.LOCATOR_TITLE,"Web links");
 		 String responseLocator$=Locator.toString(responseLocator);
 		String requesterResponseLocator$=Locator.compressText(responseLocator$);
+		
 		editorLocator$=Locator.append(editorLocator$,JRequester.REQUESTER_RESPONSE_LOCATOR,requesterResponseLocator$);
 		JConsoleHandler.execute(console,editorLocator$); 
 		return editorLocator$;
@@ -741,10 +746,10 @@ private void save(){
 				try{
 					String iconFile$=locator.getProperty(JIconSelector.ICON);
 	//				System.out.println("WeblinkEditor:response:set icon="+iconFile$);
-					String icon$=entigrator.readIconFromIcons(iconFile$);
+					//String icon$=entigrator.readIconFromIcons(iconFile$);
 					//icon$=IconSelector.resize16in24(getBackground(), icon$);
 		             Sack entity=entigrator.getEntityAtKey(entityKey$);
-		             entity.putElementItem("web.icon", new Core(null,webLinkKey$,icon$));
+		             entity.putElementItem("web.icon", new Core(null,webLinkKey$,iconFile$));
 		             entigrator.save(entity);
 		             locator$=Locator.remove(locator$,BaseHandler.HANDLER_METHOD);
 		             locator$=Locator.remove(locator$,JRequester.REQUESTER_ACTION);
@@ -802,11 +807,12 @@ private void save(){
 	 */	
 @Override
 public String getTitle() {
-	if(message$==null)
+	try{
 		return nameField.getText();
-	else
-		return nameField.getText()+message$;
-	//return nameField.getText();
+	}catch(Exception e){
+		return null;
+	}
+	
 }
 /**
  * Get context subtitle.
@@ -875,6 +881,16 @@ public void activate() {
 		}
 	
 	
+}
+@Override
+public String getFacetOpenItem() {
+	// TODO Auto-generated method stub
+	return JWebsetFacetOpenItem.class.getName();
+}
+@Override
+public String getFacetIcon() {
+	// TODO Auto-generated method stub
+	return "globe.png";
 }
 }
 	

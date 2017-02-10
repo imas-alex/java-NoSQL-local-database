@@ -1,6 +1,7 @@
 package gdt.jgui.entity.query;
 
-import gdt.jgui.console.JMainConsole;
+import gdt.data.store.Entigrator;
+
 /**
  * Interface for a query.
  * @author imasa
@@ -9,9 +10,8 @@ import gdt.jgui.console.JMainConsole;
 public interface Query {
 /**
  * The select entities method.
- * @param console the main console.
- * @param entihome$ the database directory.
+ * @param entigrator the entigrator.
  * @return array of keys of selected entities.
  */
-	public String[] select(JMainConsole console,String entihome$);
+	public String[] select(Entigrator entigrator);
 }

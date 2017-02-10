@@ -29,6 +29,8 @@ import gdt.jgui.console.JItemPanel;
 import gdt.jgui.console.JItemsListPanel;
 import gdt.jgui.console.JMainConsole;
 import gdt.jgui.console.JRequester;
+import gdt.jgui.console.WContext;
+import gdt.jgui.console.WUtils;
 import gdt.jgui.entity.JEntityPrimaryMenu;
 import gdt.jgui.entity.procedure.JProcedurePanel;
 import gdt.jgui.entity.query.JQueryPanel;
@@ -43,6 +45,7 @@ import javax.swing.BoxLayout;
 
 import javax.swing.JMenu;
 
+import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;
 
 
@@ -53,11 +56,12 @@ import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;
 * @version 1.0
 * @since   2016-03-11
 */
-public class JBasesPanel extends JItemsListPanel implements JRequester{
-
+public class JBasesPanel extends JItemsListPanel implements JRequester,WContext{
+	public static final String BASES_LIST="bases list";
 private static final long serialVersionUID = 1L;
 private Logger LOGGER=Logger.getLogger(JBasesPanel.class.getName());
 private String entiroot$;
+public static boolean debug=false;
 /**
  * Default constructor
  *  
@@ -84,10 +88,15 @@ public JBasesPanel(){
 	    locator.setProperty(JContext.CONTEXT_TYPE,getType());
 	    locator.setProperty(BaseHandler.ENTIROOT,entiroot$);
 	    File file = new File(entiroot$);
-	    locator.setProperty(Locator.LOCATOR_TITLE, file.getName());
-	    String icon$=Support.readHandlerIcon(null,JBasesPanel.class, "bases.png");
+	    locator.setProperty(Locator.LOCATOR_TITLE, file.getPath());
+	    //String icon$=Support.readHandlerIcon(null,JBasesPanel.class, "bases.png");
+	    /*
 	    if(icon$!=null)
 	    	locator.setProperty(Locator.LOCATOR_ICON,icon$);
+	    	*/
+	    locator.setProperty(Locator.LOCATOR_ICON_CONTAINER, Locator.LOCATOR_ICON_CONTAINER_CLASS);
+	    locator.setProperty(Locator.LOCATOR_ICON_CLASS,getClass().getName());
+	    locator.setProperty(Locator.LOCATOR_ICON_FILE, "bases.png"); 
 	    locator.setProperty(BaseHandler.HANDLER_SCOPE,JConsoleHandler.CONSOLE_SCOPE);
 	    locator.setProperty(BaseHandler.HANDLER_CLASS,JBasesPanel.class.getName());
 	    return Locator.toString(locator);
@@ -101,7 +110,7 @@ public JBasesPanel(){
 	@Override
 	public JContext instantiate(JMainConsole console, String locator$) {
         try{
-        	//System.out.println("BasesPanel:instantiate:locator:"+Locator.remove(locator$, Locator.LOCATOR_ICON));
+        	System.out.println("JBasesPanel:instantiate:locator:"+locator$);
         	Properties locator=Locator.toProperties(locator$);
         	entiroot$=locator.getProperty(BaseHandler.ENTIROOT);
         	JConsoleHandler jch=new JConsoleHandler ();
@@ -158,14 +167,17 @@ public JBasesPanel(){
 	@Override
 	public void response(JMainConsole console, String locator$) {
 	try{
-		System.out.println("JBasesPanel:response:locator="+Locator.remove(locator$, Locator.LOCATOR_ICON));
+		if(debug)
+		  System.out.println("JBasesPanel:response:locator="+locator$);
 		Properties locator=Locator.toProperties(locator$);
 		String text$=locator.getProperty(JTextEditor.TEXT);
 		String entiroot$=locator.getProperty(BaseHandler.ENTIROOT);
 	    BaseHandler.createBlankDatabase(entiroot$+"/"+text$);
-	    System.out.println("JBasesPanel:response:database created");
+	    if(debug)
+	     System.out.println("JBasesPanel:response:database created");
 	    Entigrator entigrator=new Entigrator(new String[]{entiroot$+"/"+text$});
-	    entigrator.indx_rebuild(null);
+	    entigrator.indx_reindex(null);
+	    if(debug)
 	    System.out.println("JBasesPanel:response:index rebuilt");
 			String [] sa=entigrator.indx_listEntities();
 			Sack entity;
@@ -179,10 +191,13 @@ public JBasesPanel(){
 				entityLocator$=EntityHandler.getEntityLocator(entigrator, entity);
 				JEntityPrimaryMenu.reindexEntity(console,entityLocator$);
 			}
+		if(debug)	
 			 System.out.println("JBasesPanel:response:entities reindexed");
 		    console.putEntigrator(entigrator);
+		    refreshIconsFolder(console,entigrator.getEntihome());
 		    refreshAllEntitiesQuery(console,entigrator.getEntihome());
 		    refreshListProcedure(console,entigrator.getEntihome());
+		 if(debug)   
 		    System.out.println("JBasesPanel:response:refreshed queries and procedures");
 		    JBaseNavigator jbn=new JBaseNavigator();
 		    String jbnLocator$=jbn.getLocator();
@@ -219,9 +234,92 @@ public JBasesPanel(){
 				Logger.getLogger(JQueryPanel.class.getName()).severe(e.toString());	
 			}
 		}
+	static void refreshIconsFolder(JMainConsole console,String entihome$){
+		try{
+			InputStream is=BaseHandler.class.getResourceAsStream("icons.tar");
+	        TarArchiveInputStream tis = new TarArchiveInputStream(is);
+			ArchiveHandler.extractEntitiesFromTar(entihome$,tis);
+		    Entigrator entigrator=console.getEntigrator(entihome$);
+		    Sack icons=entigrator.getEntityAtKey(Entigrator.ICONS);
+		    String iconsLocator$=EntityHandler.getEntityLocator(entigrator, icons);
+		    JEntityPrimaryMenu.reindexEntity(console, iconsLocator$);
+		}catch(Exception e){
+			Logger.getLogger(JQueryPanel.class.getName()).severe(e.toString());	
+		}
+	}
 	@Override
 	public void activate() {
 		// TODO Auto-generated method stub
 		
 	}
+	@Override
+	public String getWebView(Entigrator entigrator,String locator$) {
+		try{
+			Properties locator=Locator.toProperties(locator$);
+			String basesList$=locator.getProperty(WContext.BASES);
+			String[] sa=Locator.toArray(basesList$);
+			String webHome$=locator.getProperty(WContext.WEB_HOME);
+		    String webRequester$=this.getClass().getName();
+		    if(debug)
+				System.out.println("JBasesPanel:web home="+webHome$);
+			 String icon$=Support.readHandlerIcon(null,JBaseNavigator.class, "base.png");
+			
+			StringBuffer sb=new StringBuffer();
+			sb.append("<!DOCTYPE html PUBLIC \"-//W3C//DTD HTML 4.01//EN\" \"http://www.w3.org/TR/html4/strict.dtd\">");
+			sb.append("<html>");
+			sb.append("<head>");
+			sb.append(WUtils.getMenuBarScript());
+			sb.append(WUtils.getMenuBarStyle());
+		    sb.append("</head>");
+		    sb.append("<body onload=\"onLoad()\" >");
+		    
+		    sb.append("<h3>Bases</h3>");
+		    sb.append("<script>");
+		    if(debug)
+		    sb.append("console.log(window.location.href);");
+	        sb.append("window.localStorage.setItem(\"back."+JBaseNavigator.class.getName()+"\",\""+this.getClass().getName()+"\");");
+	        sb.append("window.localStorage.setItem(\""+this.getClass().getName()+"\",\""+Base64.encodeBase64URLSafeString(locator$.getBytes())+"\");");
+	        if(debug)
+	        sb.append("console.log(window.localStorage.getItem(\""+this.getClass().getName()+"\"));");
+			sb.append("function onLoad() {");
+		    sb.append("initBack(\""+this.getClass().getName()+"\",\""+webRequester$+"\");");
+		    sb.append("}");
+	        sb.append("</script>");
+		    if(sa!=null)
+				for(String s:sa){
+					if(debug)
+					System.out.println("JBasesPanel:s="+s);
+					sb.append(getItem(icon$, webHome$,s,locator$)+"<br>");
+				}
+		    
+	       
+		    
+		    sb.append("</body>");
+		    sb.append("</html>");
+		    return sb.toString();
+		}catch(Exception e){
+			Logger.getLogger(JBasesPanel.class.getName()).severe(e.toString());	
+		}
+		return null;
+		
+	}
+	@Override
+	public String getWebConsole(Entigrator entigrator,String locator$) {
+				return null;
+	}
+	private String getItem(String icon$, String url$,String entihome$,String locator$ ){
+          Properties itemLocator=new Properties();
+          itemLocator.setProperty(WContext.WEB_HOME, url$);
+          //itemLocator.setProperty(WContext.WEB_REQUESTER, JBasesPanel.class.getName());
+          locator$=Locator.append(locator$,Entigrator.ENTIHOME, entihome$);
+          itemLocator.setProperty(WContext.WEB_REQUESTER, this.getClass().getName());
+          itemLocator.setProperty(Entigrator.ENTIHOME,entihome$);
+          itemLocator.setProperty(BaseHandler.HANDLER_CLASS,JBaseNavigator.class.getName());
+          String itemLocator$=Locator.toString(itemLocator);
+          File entihome = new File(entihome$);
+          String title$= entihome.getName();
+		  String iconTerm$="<img src=\"data:image/png;base64,"+icon$+
+				  "\" width=\"24\" height=\"24\" alt=\""+title$+"\">";
+		  return iconTerm$+"<a href=\""+url$+"?"+WContext.WEB_LOCATOR+"="+Base64.encodeBase64URLSafeString(itemLocator$.getBytes())+"\" >"+" "+title$+"</a>";
+	  }
 }

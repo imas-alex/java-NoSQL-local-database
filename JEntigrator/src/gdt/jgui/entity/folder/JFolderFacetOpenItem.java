@@ -28,8 +28,12 @@ import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.nio.file.Files;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Hashtable;
 import java.util.Properties;
 import java.util.logging.Logger;
+
+import javax.activation.MimetypesFileTypeMap;
 import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
 import javax.swing.tree.DefaultMutableTreeNode;
@@ -37,17 +41,23 @@ import org.apache.commons.codec.binary.Base64;
 import gdt.data.entity.BaseHandler;
 import gdt.data.entity.EntityHandler;
 import gdt.data.entity.FacetHandler;
+import gdt.data.entity.facet.BookmarksHandler;
 import gdt.data.entity.facet.FolderHandler;
 import gdt.data.store.FileExpert;
+import gdt.data.grain.Core;
 import gdt.data.grain.Locator;
 import gdt.data.grain.Sack;
 import gdt.data.grain.Support;
 import gdt.data.store.Entigrator;
+import gdt.jgui.base.JBaseNavigator;
+import gdt.jgui.base.JBasesPanel;
 import gdt.jgui.console.JConsoleHandler;
 import gdt.jgui.console.JContext;
 import gdt.jgui.console.JFacetOpenItem;
 import gdt.jgui.console.JMainConsole;
 import gdt.jgui.console.JRequester;
+import gdt.jgui.console.WContext;
+import gdt.jgui.console.WUtils;
 import gdt.jgui.entity.JEntityDigestDisplay;
 import gdt.jgui.entity.JEntityFacetPanel;
 import gdt.jgui.entity.fields.JFieldsFacetOpenItem;
@@ -59,10 +69,11 @@ import gdt.jgui.tool.JTextEditor;
  *
  */
 
-public class JFolderFacetOpenItem extends JFacetOpenItem implements JRequester {
+public class JFolderFacetOpenItem extends JFacetOpenItem implements JRequester,WContext {
 	private static final long serialVersionUID = 1L;
 	public static final String NODE_TYPE_FILE_NODE = "node type file node";
 	private Logger LOGGER=Logger.getLogger(JFieldsFacetOpenItem.class.getName());
+	boolean debug=false;
 	/**
 	 * The default constructor.
 	 */
@@ -144,7 +155,7 @@ public boolean isRemovable() {
 	 * @return the facet icon string.
 	 */
 	@Override
-	public String getFacetIcon() {
+	public String getFacetIcon(Entigrator entigrator) {
 		return Support.readHandlerIcon(null,getClass(), "folder.png");
 	}
 	/**
@@ -223,9 +234,14 @@ public boolean isRemovable() {
 			locator.setProperty(EntityHandler.ENTITY_KEY,entityKey$);
 		if(entihome$!=null)
 			locator.setProperty(Entigrator.ENTIHOME,entihome$);
-		 String icon$=Support.readHandlerIcon(null,JFolderPanel.class, "folder.png");
+		/*
+		String icon$=Support.readHandlerIcon(null,JFolderPanel.class, "folder.png");
 		    if(icon$!=null)
 		    	locator.setProperty(Locator.LOCATOR_ICON,icon$);
+		    	*/
+		locator.setProperty(Locator.LOCATOR_ICON_CONTAINER,Locator.LOCATOR_ICON_CONTAINER_CLASS);
+		locator.setProperty(Locator.LOCATOR_ICON_CLASS,getClass().getName());
+		locator.setProperty(Locator.LOCATOR_ICON_FILE,"folder.png");
 		    if(entihome$!=null){   
 		 	locator.setProperty(Locator.LOCATOR_CHECKABLE,Locator.LOCATOR_TRUE);
 		    }
@@ -236,11 +252,12 @@ public boolean isRemovable() {
 	 * @return the children nodes of the facet node.
 	 */
 	@Override
-	public DefaultMutableTreeNode[] getDigest() {
+	public DefaultMutableTreeNode[] getDigest(Entigrator entigrator,String locator$)  {
 		try{
 //			System.out.println("JFolderFacetOpenItem:getDigest:locator="+locator$);
 			Properties locator=Locator.toProperties(locator$);
-			entihome$=locator.getProperty(Entigrator.ENTIHOME);
+			//entihome$=locator.getProperty(Entigrator.ENTIHOME);
+			entihome$=entigrator.getEntihome();
 			entityKey$=locator.getProperty(EntityHandler.ENTITY_KEY);
 			String folderPath$=entihome$+"/"+entityKey$;
 			File folder=new File(folderPath$);
@@ -263,8 +280,11 @@ public boolean isRemovable() {
 					fileLocator.setProperty(Locator.LOCATOR_TYPE, JFolderPanel.LOCATOR_TYPE_FILE);
 					fileLocator.setProperty(Locator.LOCATOR_CHECKABLE,Locator.LOCATOR_TRUE);
 					fileLocator.setProperty(JEntityDigestDisplay.NODE_TYPE,NODE_TYPE_FILE_NODE);
-					icon$=Support.readHandlerIcon(null,getClass(), "file.png");
-					fileLocator.setProperty(Locator.LOCATOR_ICON, icon$);
+					//icon$=Support.readHandlerIcon(null,getClass(), "file.png");
+					//fileLocator.setProperty(Locator.LOCATOR_ICON, icon$);
+					locator.setProperty(Locator.LOCATOR_ICON_CONTAINER,Locator.LOCATOR_ICON_CONTAINER_CLASS);
+			    	locator.setProperty(Locator.LOCATOR_ICON_CLASS,getClass().getName());
+			    	locator.setProperty(Locator.LOCATOR_ICON_FILE,"file.png"); 
 					fileLocator.setProperty(BaseHandler.HANDLER_CLASS,getClass().getName());
 					fileLocator.setProperty(BaseHandler.HANDLER_METHOD,"openFile");
 					fileNode=new DefaultMutableTreeNode();
@@ -413,5 +433,157 @@ public boolean isRemovable() {
 			Logger.getLogger(JFileOpenItem.class.getName()).info(e.toString());
 			return false;
 		}
+	}
+	@Override
+	public String getFacetIconName() {
+		return  "folder.png";
+	}
+	@Override
+	public String getWebView(Entigrator entigrator, String locator$) {
+		try{
+			Properties locator=Locator.toProperties(locator$);
+			String webHome$=locator.getProperty(WContext.WEB_HOME);
+			String entityLabel$=locator.getProperty(EntityHandler.ENTITY_LABEL);
+			String webRequester$=locator.getProperty(WContext.WEB_REQUESTER);
+			if(debug)
+			System.out.println("JFolderFacetOpenItem:web home="+webHome$+ " web requester="+webRequester$);
+			entityKey$=entigrator.indx_keyAtLabel(entityLabel$);
+			String folderPath$=entigrator.getEntihome()+"/"+entityKey$;
+			//Sack entity=entigrator.getEntityAtKey(entityKey$);
+		    //    Core[]	ca=entity.elementGet("jbookmark");
+			StringBuffer sb=new StringBuffer();
+			sb.append("<!DOCTYPE html PUBLIC \"-//W3C//DTD HTML 4.01//EN\" \"http://www.w3.org/TR/html4/strict.dtd\">");
+			sb.append("<html>");
+			sb.append("<head>");
+			
+			sb.append(WUtils.getMenuBarScript());
+			sb.append(WUtils.getMenuBarStyle());
+		    sb.append("</head>");
+		    sb.append("<body onload=\"onLoad()\" >");
+		    sb.append("<ul class=\"menu_list\">");
+		    sb.append("<li class=\"menu_item\"><a id=\"back\">Back</a></li>");
+		    sb.append("<li class=\"menu_item\"><a href=\""+webHome$+"\">Home</a></li>");
+		    String navLocator$=Locator.append(locator$, BaseHandler.HANDLER_CLASS, JBaseNavigator.class.getName());
+		    navLocator$=Locator.append(navLocator$, Entigrator.ENTIHOME, entigrator.getEntihome());
+		    String navUrl$=webHome$+"?"+WContext.WEB_LOCATOR+"="+Base64.encodeBase64URLSafeString(navLocator$.getBytes());
+		    sb.append("<li class=\"menu_item\"><a href=\""+navUrl$+"\">Base</a></li>");
+		    if(hasMultipleImages(folderPath$)){
+		    	String shLocator$=Locator.append(locator$, BaseHandler.HANDLER_CLASS, JFileOpenItem.class.getName());
+			    shLocator$=Locator.append(shLocator$, Entigrator.ENTIHOME, entigrator.getEntihome());
+			    shLocator$=Locator.append(shLocator$, EntityHandler.ENTITY_KEY, entityKey$);
+			    shLocator$=Locator.append(shLocator$, WContext.WEB_REQUESTER, this.getClass().getName());
+			    shLocator$=Locator.append(shLocator$,FACET_HANDLER_CLASS,FolderHandler.class.getName());
+			    String shUrl$=webHome$+"?"+WContext.WEB_LOCATOR+"="+Base64.encodeBase64URLSafeString(shLocator$.getBytes());
+		    	sb.append("<li class=\"menu_item\"><a href=\""+shUrl$+"\">Slideshow</a></li>");
+		    }
+		    sb.append("<li class=\"menu_item\"><a href=\""+webHome$.replace("entry", WContext.ABOUT)+"\">About</a></li>");
+		    sb.append("</ul>");
+		    sb.append("<table><tr><td>Base:</td><td><strong>");
+		    sb.append(entigrator.getBaseName());
+		    sb.append("</strong></td></tr><tr><td>Entity: </td><td><strong>");
+		    sb.append(entityLabel$);
+		    sb.append("</strong></td></tr>");
+		    sb.append("<tr><td>Facet: </td><td><strong>Folder</strong></td></tr>");
+		    sb.append("</table>");
+	        	sb.append("<script>");
+	        	String foiTitle$;
+	        	Properties foiLocator;
+        	  Hashtable<String,String> tab=new Hashtable<String,String>();
+	            ArrayList <String>sl=new ArrayList<String>();
+	            String foiItem$;
+	           
+	            File folder=new File(folderPath$);
+	            File[] fa=folder.listFiles();
+	            if(fa!=null)
+	            for(File f:fa){
+	        		try{
+	        		foiLocator=new Properties();
+	        		foiTitle$=f.getName();
+	        		foiLocator.setProperty(Locator.LOCATOR_TITLE,foiTitle$ );
+	        		foiLocator.setProperty(FACET_HANDLER_CLASS,FolderHandler.class.getName());
+	        		foiLocator.setProperty(BaseHandler.HANDLER_CLASS,JFolderPanel.class.getName());
+                	
+	        		foiLocator.setProperty(Entigrator.ENTIHOME, entigrator.getEntihome());
+					if(entityKey$!=null)
+					foiLocator.setProperty(EntityHandler.ENTITY_KEY, entityKey$);
+					//foiLocator.setProperty(BaseHandler.HANDLER_SCOPE, JConsoleHandler.CONSOLE_SCOPE);
+					foiLocator.setProperty(JFolderPanel.FILE_NAME, f.getName());
+					foiLocator.setProperty(JFolderPanel.FILE_PATH, f.getPath());
+					foiLocator.setProperty(Locator.LOCATOR_TYPE, JFolderPanel.LOCATOR_TYPE_FILE);
+					//foiLocator.setProperty(Locator.LOCATOR_CHECKABLE,Locator.LOCATOR_TRUE);
+					
+					icon$=JConsoleHandler.getIcon(entigrator,Locator.toString(foiLocator));
+					
+					//foiLocator.setProperty(Locator.LOCATOR_ICON, icon$);
+					
+					//locator.setProperty(Locator.LOCATOR_ICON_CONTAINER,Locator.LOCATOR_ICON_CONTAINER_CLASS);
+			    	//locator.setProperty(Locator.LOCATOR_ICON_CLASS,getClass().getName());
+			    	//locator.setProperty(Locator.LOCATOR_ICON_FILE,"file.png");
+			    	
+					//foiLocator.setProperty(BaseHandler.HANDLER_CLASS,getClass().getName());
+					//foiLocator.setProperty(BaseHandler.HANDLER_METHOD,"openFile");
+	                	if(debug)
+	                	//System.out.println("JFolderFacetOpenItem:getWebView:foi locator(prop)="+foiLocator);
+	                	sb.append("window.localStorage.setItem(\"back."+JEntityFacetPanel.class.getName()+"\",\""+this.getClass().getName()+"\");");
+	                
+	               
+	 			   if(debug)
+	 			      System.out.println("JFolderFacetOpenItem:getWebView: foiLocator="+Locator.toString(foiLocator));
+				foiItem$=getItem(icon$, webHome$,foiTitle$,Locator.toString(foiLocator));
+	 			sl.add(foiTitle$);
+	 			tab.put(foiTitle$, foiItem$);
+	        	  }catch(Exception ee){
+	        		  System.out.println("JFolderFacetOpenItem:getWebView:"+ee.toString());
+	        	  }
+	        	}
+	            
+	            sb.append("</script>");
+	            Collections.sort(sl);
+	            for(String s:sl)
+	            	sb.append(tab.get(s)+"<br>");
+	        sb.append("<script>");
+		    sb.append("function onLoad() {");
+		    sb.append("initBack(\""+this.getClass().getName()+"\",\""+webRequester$+"\");");
+		    sb.append("}");
+		    
+		    sb.append("window.localStorage.setItem(\""+this.getClass().getName()+"\",\""+Base64.encodeBase64URLSafeString(locator$.getBytes())+"\");");
+		 	    sb.append("</script>");
+		    sb.append("</body>");
+		    sb.append("</html>");
+		    return sb.toString();
+		}catch(Exception e){
+			Logger.getLogger(JBasesPanel.class.getName()).severe(e.toString());	
+		}
+		return null;
+	}
+	@Override
+	public String getWebConsole(Entigrator entigrator, String locator$) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	private String getItem(String icon$, String url$, String title$,String foiLocator$){
+		if(debug)
+				System.out.println("JFolderFacetOpenItem:getItem: locator="+foiLocator$);
+	  
+		String iconTerm$="<img src=\"data:image/png;base64,"+icon$+
+				  "\" width=\"24\" height=\"24\" alt=\""+title$+"\">";
+		
+		foiLocator$=Locator.append(foiLocator$,WContext.WEB_HOME, url$);
+		foiLocator$=Locator.append(foiLocator$,WContext.WEB_REQUESTER, this.getClass().getName());
+		  return iconTerm$+"<a href=\""+url$+"?"+WContext.WEB_LOCATOR+"="+Base64.encodeBase64URLSafeString(foiLocator$.getBytes())+"\" >"+" "+title$+"</a>";
+	}
+	private boolean hasMultipleImages(String folderPath$){
+		if(folderPath$==null)
+			return false;
+		int i=0;
+		MimetypesFileTypeMap mimetypesFileTypeMap = new MimetypesFileTypeMap();
+		mimetypesFileTypeMap.addMimeTypes("image png  jpg jpeg bmp gif "); 
+		String fname$;
+		File folder=new File(folderPath$);
+		String[] sa=folder.list();
+		for(String s:sa)
+			if("image".equalsIgnoreCase(mimetypesFileTypeMap.getContentType(s)))
+					return true;
+			return false;
 	}
 }

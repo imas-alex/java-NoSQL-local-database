@@ -21,14 +21,25 @@ import java.awt.event.ActionListener;
 import java.util.Properties;
 import java.util.logging.Logger;
 import gdt.data.entity.BaseHandler;
+import gdt.data.entity.EntityHandler;
+import gdt.data.grain.Core;
 import gdt.data.grain.Locator;
+import gdt.data.grain.Sack;
 import gdt.data.grain.Support;
 import gdt.data.store.Entigrator;
+import gdt.jgui.base.JBaseNavigator;
 import gdt.jgui.console.JConsoleHandler;
 import gdt.jgui.console.JContext;
 import gdt.jgui.console.JMainConsole;
 import gdt.jgui.console.JRequester;
+import gdt.jgui.console.WContext;
+import gdt.jgui.console.WUtils;
 import gdt.jgui.entity.JEntitiesPanel;
+import gdt.jgui.entity.JEntityDigestDisplay;
+import gdt.jgui.entity.JEntityPrimaryMenu;
+import gdt.jgui.entity.JEntityStructurePanel;
+import gdt.jgui.entity.fields.JFieldsFacetOpenItem;
+
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
@@ -37,7 +48,7 @@ import javax.swing.BoxLayout;
 
 import org.apache.commons.codec.binary.Base64;
 
-public class JTextEditor extends JPanel implements JContext,JRequester{
+public class JTextEditor extends JPanel implements JContext,JRequester,WContext{
 private static final long serialVersionUID = 1L;
 /**
  * The text value tag. 
@@ -66,6 +77,7 @@ protected JMainConsole console;
 private String requesterResponseLocator$;
 private boolean  base64=false;
 private Logger LOGGER=Logger.getLogger(JTextEditor.class.getName());
+boolean debug=false;
 /**
  * The default constructor.
  */
@@ -102,7 +114,8 @@ public JTextEditor() {
 					   if(base64)
 						   text$=Locator.compressText(text$);
 					   responseLocator$=Locator.append(responseLocator$, TEXT, text$);
-					  // System.out.println("TextEditor:done:response locator="+Locator.remove(responseLocator$, Locator.LOCATOR_ICON));
+					  if(debug)
+						    System.out.println("TextEditor:done:response locator="+responseLocator$);
 					   JConsoleHandler.execute(console, responseLocator$);
 						}catch(Exception ee){
 							LOGGER.severe(ee.toString());
@@ -165,8 +178,11 @@ public JTextEditor() {
 	    	locator.setProperty(JRequester.REQUESTER_RESPONSE_LOCATOR, requesterResponseLocator$);
 	   locator.setProperty(BaseHandler.HANDLER_SCOPE,JConsoleHandler.CONSOLE_SCOPE);
 	   locator.setProperty(BaseHandler.HANDLER_CLASS,JTextEditor.class.getName());
-	   String icon$=Support.readHandlerIcon(null,JEntitiesPanel.class, "edit.png");
-       locator.setProperty(Locator.LOCATOR_ICON,icon$);
+	 //  String icon$=Support.readHandlerIcon(null,JEntitiesPanel.class, "edit.png");
+      // locator.setProperty(Locator.LOCATOR_ICON,icon$);
+	   locator.setProperty(Locator.LOCATOR_ICON_CONTAINER,Locator.LOCATOR_ICON_CONTAINER_CLASS);
+	   	locator.setProperty(Locator.LOCATOR_ICON_CLASS,JEntityPrimaryMenu.class.getName());
+	   	locator.setProperty(Locator.LOCATOR_ICON_FILE,"edit.png"); 
 	   return Locator.toString(locator);
 	}
 	/**
@@ -259,6 +275,71 @@ public JTextEditor() {
 	public void activate() {
 		// TODO Auto-generated method stub
 		
+	}
+	@Override
+	public String getWebView(Entigrator entigrator, String locator$) {
+		try{
+			if(debug)
+				System.out.println("JTextEditor:locator="+locator$);
+			Properties locator=Locator.toProperties(locator$);
+			String webHome$=locator.getProperty(WContext.WEB_HOME);
+			String entityKey$=locator.getProperty(EntityHandler.ENTITY_KEY);
+			String entityLabel$=entigrator.indx_getLabel(entityKey$);
+			if(entityLabel$!=null)
+			entityLabel$=entityLabel$.replaceAll("&quot;", "\"");
+			String webRequester$=locator.getProperty(WContext.WEB_REQUESTER);
+			String fieldName$=locator.getProperty(JFieldsFacetOpenItem.FIELD_NAME);
+			String text$=locator.getProperty(TEXT);
+			StringBuffer sb=new StringBuffer();
+			sb.append("<!DOCTYPE html PUBLIC \"-//W3C//DTD HTML 4.01//EN\" \"http://www.w3.org/TR/html4/strict.dtd\">");
+			sb.append("<html>");
+			sb.append("<head>");
+			sb.append(WUtils.getMenuBarScript());
+			sb.append(WUtils.getMenuBarStyle());
+			sb.append("</head>");
+		    sb.append("<body onload=\"onLoad()\">");
+		    sb.append("<ul class=\"menu_list\">");
+		    sb.append("<li class=\"menu_item\"><a id=\"back\">Back</a></li>");
+		    sb.append("<li class=\"menu_item\"><a href=\""+webHome$+"\">Home</a></li>");
+		    String navLocator$=Locator.append(locator$, BaseHandler.HANDLER_CLASS, JBaseNavigator.class.getName());
+		    navLocator$=Locator.append(navLocator$, Entigrator.ENTIHOME, entigrator.getEntihome());
+		    String navUrl$=webHome$+"?"+WContext.WEB_LOCATOR+"="+Base64.encodeBase64URLSafeString(navLocator$.getBytes());
+		    sb.append("<li class=\"menu_item\"><a href=\""+navUrl$+"\">Base</a></li>");
+		    Sack entity=entigrator.getEntityAtKey(entigrator.indx_keyAtLabel(entityLabel$));
+		    sb.append("</ul>");
+		    sb.append("<table><tr><td>Base:</td><td><strong>");
+		    sb.append(entigrator.getBaseName());
+		    sb.append("</strong></td></tr><tr><td>Entity: </td><td><strong>");
+		    sb.append(entityLabel$);
+		    sb.append("</strong></td></tr>");
+		    sb.append("</strong></td></tr><tr><td>Facet: </td><td><strong>");
+		    sb.append("Fields");
+		    sb.append("</strong></td></tr>");
+		    sb.append("<tr><td>Field: </td><td><strong>");
+		    sb.append(fieldName$);
+		    sb.append("</strong></td></tr>");
+		    sb.append("<tr><td>Value: </td><td>");
+		    sb.append("</table>");
+		    sb.append(text$);
+		    sb.append("<script>");
+		    sb.append("function onLoad() {");
+		    sb.append("initBack(\""+this.getClass().getName()+"\",\""+webRequester$+"\");");
+		    sb.append("}");
+		    sb.append("window.localStorage.setItem(\""+this.getClass().getName()+"\",\""+Base64.encodeBase64URLSafeString(locator$.getBytes())+"\");");
+		    sb.append("</script>");
+		    sb.append("</body>");
+		    sb.append("</html>");
+		    return sb.toString();
+		}catch(Exception e){
+			Logger.getLogger(JEntityEditor.class.getName()).severe(e.toString());	
+		}
+		return null;
+	
+	}
+	@Override
+	public String getWebConsole(Entigrator entigrator, String locator$) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }

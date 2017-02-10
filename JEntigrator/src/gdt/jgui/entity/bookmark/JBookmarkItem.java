@@ -41,7 +41,7 @@ public class JBookmarkItem extends JItemPanel {
 
 	private static final long serialVersionUID = 1L;
 /**
- * Indicates the rename bokkmark action.
+ * Indicates the rename bookmark action.
  */
 	public static final String ACTION_RENAME="action rename";
 	/**
@@ -49,6 +49,7 @@ public class JBookmarkItem extends JItemPanel {
 	 */
 	public static final String ACTION_SET_ICON="action set icon";
 	JMenuItem pathItem;
+	boolean debug=false;
 	/**
 	 * The constructor.
 	 * @param console the main console.
@@ -56,7 +57,11 @@ public class JBookmarkItem extends JItemPanel {
 	 */
 	public JBookmarkItem(final JMainConsole console,final String locator$){
 		super(console,locator$);
+		if(debug)
+			System.out.println("JBookmarksItem:locator="+locator$);
 		final String filePath$=Locator.getProperty(locator$, JFolderPanel.FILE_PATH);
+		final String entihome$=Locator.getProperty(locator$, Entigrator.ENTIHOME);
+		
 		popup = new JPopupMenu();
 		JMenuItem renameItem=new JMenuItem("Rename");
 		   popup.add(renameItem);
@@ -66,14 +71,15 @@ public class JBookmarkItem extends JItemPanel {
 				public void actionPerformed(ActionEvent e) {
 					try{
 					String bmLocator$=locator$;
-//					System.out.println("BookmarkItem:rename:locator="+locator$);	
 					bmLocator$=Locator.append(bmLocator$,JRequester.REQUESTER_ACTION, ACTION_RENAME);
 					bmLocator$=Locator.append(bmLocator$,BaseHandler.HANDLER_CLASS,JBookmarksEditor.class.getName());
 					bmLocator$=Locator.append(bmLocator$,BaseHandler.HANDLER_METHOD,"response");
+					bmLocator$=Locator.append(bmLocator$,Entigrator.ENTIHOME,entihome$);
 					JTextEditor te=new JTextEditor();
 					String teLocator$=te.getLocator();
 					teLocator$=Locator.append(teLocator$, JTextEditor.TEXT, title$);
 					teLocator$=Locator.append(teLocator$,JRequester.REQUESTER_RESPONSE_LOCATOR,Locator.compressText(bmLocator$));
+					teLocator$=Locator.append(teLocator$,Entigrator.ENTIHOME,entihome$);
 					JConsoleHandler.execute(console, teLocator$);
 					}catch(Exception ee){
 						Logger.getLogger(getClass().getName()).info(ee.toString());
