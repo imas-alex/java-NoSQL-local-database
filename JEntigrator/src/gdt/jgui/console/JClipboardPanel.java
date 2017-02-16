@@ -18,16 +18,12 @@ package gdt.jgui.console;
  */
 import gdt.data.entity.BaseHandler;
 import gdt.data.grain.Locator;
-import gdt.data.grain.Support;
-import gdt.jgui.entity.JEntityPrimaryMenu;
-
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Properties;
 import java.util.logging.Logger;
-
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.swing.event.MenuEvent;
@@ -53,13 +49,9 @@ public class JClipboardPanel extends JItemsListPanel {
 		 Properties locator=new Properties();
 		    locator.setProperty(Locator.LOCATOR_TYPE, JContext.CONTEXT_TYPE);
 		    locator.setProperty(Locator.LOCATOR_TITLE,"Clipboard");
-		   // String icon$=Support.readHandlerIcon(null,getClass(), "clipboard.png");
-		    //if(icon$!=null)
-		    //locator.setProperty(Locator.LOCATOR_ICON,icon$);
 		    locator.setProperty(Locator.LOCATOR_ICON_CONTAINER, Locator.LOCATOR_ICON_CONTAINER_CLASS);
 		    locator.setProperty(Locator.LOCATOR_ICON_CLASS,getClass().getName());
 		    locator.setProperty(Locator.LOCATOR_ICON_FILE, "clipboard.png"); 
-		
 		    locator.setProperty(BaseHandler.HANDLER_SCOPE,JConsoleHandler.CONSOLE_SCOPE);
 		    locator.setProperty(BaseHandler.HANDLER_CLASS,JClipboardPanel.class.getName());
 			return Locator.toString(locator);

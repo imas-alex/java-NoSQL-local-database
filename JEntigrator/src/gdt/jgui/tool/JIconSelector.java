@@ -18,20 +18,14 @@ package gdt.jgui.tool;
  */
 import gdt.data.entity.BaseHandler;
 import gdt.data.entity.EntityHandler;
-import gdt.data.grain.Core;
 import gdt.data.grain.Locator;
 import gdt.data.grain.Sack;
-import gdt.data.grain.Support;
 import gdt.data.store.Entigrator;
 import gdt.jgui.console.JConsoleHandler;
 import gdt.jgui.console.JContext;
 import gdt.jgui.console.JMainConsole;
 import gdt.jgui.console.JRequester;
-import gdt.jgui.console.ReloadDialog;
-import gdt.jgui.entity.JEntitiesPanel;
 import gdt.jgui.entity.JEntityPrimaryMenu;
-import gdt.jgui.entity.fields.JFieldsEditor;
-
 import javax.swing.JPanel;
 import java.awt.Image;
 import javax.swing.JLabel;
@@ -39,8 +33,6 @@ import javax.swing.BoxLayout;
 import javax.swing.ImageIcon;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
-import javax.swing.JOptionPane;
-
 import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -136,8 +128,6 @@ public JIconSelector() {
 		       locator.setProperty(EntityHandler.ENTITY_KEY,entityKey$);
 	    if(entityLabel$!=null)
 		       locator.setProperty(EntityHandler.ENTITY_LABEL,entityLabel$);
-	   // String icon$=Support.readHandlerIcon(null,JEntitiesPanel.class,"icon.png" );
-	    //  locator.setProperty(Locator.LOCATOR_ICON,icon$);
 	    locator.setProperty(Locator.LOCATOR_ICON_CONTAINER,Locator.LOCATOR_ICON_CONTAINER_CLASS);
 	   	locator.setProperty(Locator.LOCATOR_ICON_CLASS,JEntityPrimaryMenu.class.getName());
 	   	locator.setProperty(Locator.LOCATOR_ICON_FILE,"icon.png"); 
@@ -160,27 +150,10 @@ public JIconSelector() {
 			 entihome$=locator.getProperty(Entigrator.ENTIHOME);
 			 entityKey$=locator.getProperty(EntityHandler.ENTITY_KEY);
 			 Entigrator entigrator=console.getEntigrator(entihome$);
-//			 saveId$=entigrator.store_saveId();
-			 //message$=entigrator.ent_lockInfo(entityKey$);
-			 
 			 entity=entigrator.getEntityAtKey(entityKey$);
-			 /*
-			 if(message$!=null){
-				 if(!entigrator.ent_tryLocked(entityKey$))
-					 entigrator.ent_lock(entityKey$);
-			 }else
-				 entigrator.ent_lock(entityKey$); 
-			 */
-			/*
-			 if(!entigrator.lock_set(entity)){
-				
-			  message$=entigrator.lock_message(entity);
-		  }
-		  */
 			 entityLabel$=locator.getProperty(EntityHandler.ENTITY_LABEL);
 			 requesterResponseLocator$=locator.getProperty(JRequester.REQUESTER_RESPONSE_LOCATOR);
 //			 System.out.println("IconSelector:instantiate:locator="+locator$);
-	//		 Entigrator entigrator=console.getEntigrator(entihome$);
 			 String icons$=entigrator.ent_getHome(Entigrator.ICONS);
 			 File icons=new File(icons$);
 			 File[] fa=icons.listFiles();
@@ -226,15 +199,11 @@ public JIconSelector() {
 	 */	
 	@Override
 	public String getTitle() {
-		//return "Icon selector";
 		
 			if(message$==null)
 				return "Icon selector";
 			else
 				return "Icon selector"+message$;
-			
-		
-		//return "Icon selector";
 	}
 	/**
 	 * Get context type.

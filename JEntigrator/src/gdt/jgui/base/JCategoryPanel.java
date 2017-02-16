@@ -35,15 +35,12 @@ import org.apache.commons.codec.binary.Base64;
 import gdt.data.entity.BaseHandler;
 import gdt.data.entity.EntityHandler;
 import gdt.data.entity.FacetHandler;
-import gdt.data.entity.facet.ExtensionHandler;
 import gdt.data.grain.Core;
 import gdt.data.grain.Locator;
 import gdt.data.grain.Sack;
-import gdt.data.grain.Support;
 import gdt.data.store.Entigrator;
 import gdt.jgui.console.JConsoleHandler;
 import gdt.jgui.console.JContext;
-import gdt.jgui.console.JFacetOpenItem;
 import gdt.jgui.console.JFacetRenderer;
 import gdt.jgui.console.JItemPanel;
 import gdt.jgui.console.JItemsListPanel;
@@ -54,10 +51,7 @@ import gdt.jgui.console.WUtils;
 import gdt.jgui.entity.JArchivePanel;
 import gdt.jgui.entity.JEntitiesPanel;
 import gdt.jgui.entity.JEntityFacetPanel;
-import gdt.jgui.entity.JEntityPrimaryMenu;
 import gdt.jgui.entity.JReferenceEntry;
-import gdt.jgui.entity.query.JQueryFacetOpenItem;
-import gdt.jgui.tool.JEntityEditor;
 /**
 * This context displays of all entities belonging to the category.
 * @author  Alexander Imas
@@ -69,17 +63,14 @@ public class JCategoryPanel extends JItemsListPanel implements WContext{
 	public static final String RENDERER = "renderer";
 	public static final String LIST_MEMBERS = "list members";
 	public static final String CATEGORY_TITLE = "category title";
-	//public static final String CATEGORY_ICON = "category icon";
 	String entihome$;
 	String renderer$;
 	String entityType$;
-	//String categoryIcon$;
 	String categoryTitle$;
 	JMenu menu;
 	JMenuItem deleteItem;
 	JMenuItem copyItem;
 	private JMenuItem[] mia;
-//	String saveId$;
 	static boolean debug=false; 
 	boolean ignoreOutdate=false;
 	boolean refresh=false;
@@ -117,8 +108,6 @@ public class JCategoryPanel extends JItemsListPanel implements WContext{
 	    	 }
 	    	
 	    }
-	   // if(categoryIcon$!=null)
-	   // 	 locator.setProperty(Locator.LOCATOR_ICON, categoryIcon$);
 		if(categoryTitle$!=null) 
 		   locator.setProperty(Locator.LOCATOR_TITLE, categoryTitle$);
 	   else
@@ -126,9 +115,6 @@ public class JCategoryPanel extends JItemsListPanel implements WContext{
 	   
 	    locator.setProperty(BaseHandler.HANDLER_SCOPE,JConsoleHandler.CONSOLE_SCOPE);
 	    locator.setProperty(BaseHandler.HANDLER_CLASS,getClass().getName());
-	   
-	    
-		//System.out.println("JCategoryPanel:getLocator:locator="+locator$);
 	    return Locator.toString(locator);
 	}
 	/**
@@ -144,13 +130,10 @@ public class JCategoryPanel extends JItemsListPanel implements WContext{
 		this.console=console;
 		if(debug)
 		System.out.println("JCategoryPanel:instantiate:locator="+locator$);
-		//System.out.println("JCategory:instantiate:locator="+Locator.remove(locator$,Locator.LOCATOR_ICON));
 		Properties locator=Locator.toProperties(locator$);
 		entihome$=locator.getProperty(Entigrator.ENTIHOME);
 		Entigrator entigrator=console.getEntigrator(entihome$);
-		//saveId$=entigrator.store_saveId();
 		renderer$=locator.getProperty(RENDERER);
-		
 			JFacetRenderer facetRenderer=(JFacetRenderer)JConsoleHandler.getHandlerInstance(entigrator, renderer$);
 		if(facetRenderer==null){
 			if(debug)
@@ -162,19 +145,13 @@ public class JCategoryPanel extends JItemsListPanel implements WContext{
 		frLocator$=Locator.append(frLocator$, JFacetRenderer.ONLY_ITEM,Locator.LOCATOR_TRUE);
 		facetRenderer.instantiate(console,frLocator$ );
 		entityType$=facetRenderer.getEntityType();
-      //	categoryIcon$=facetRenderer.getCategoryIcon(entigrator);
 		categoryTitle$=facetRenderer.getCategoryTitle();
-		
 		if(debug)
 		 System.out.println("JCategoryPanel:instantiate:entity type="+entityType$+" category="+categoryTitle$);
 		this.locator$=getLocator();
 		String onlyItem$=locator.getProperty(JFacetRenderer.ONLY_ITEM);
-		//if(debug)
-		//	 System.out.println("JCategoryPanel:instantiate:list members="+listMembers$);
-			
 		if(Locator.LOCATOR_TRUE.equals(onlyItem$))
 		    return this;   
-		
 		  JItemPanel[] ipa=listCategoryMembers(console, this.locator$);
 		  if(debug)
 				 System.out.println("JCategoryPanel:instantiate:1");
@@ -183,15 +160,11 @@ public class JCategoryPanel extends JItemsListPanel implements WContext{
 		    putItems(ipa);
 			try{
 				pos=Integer.parseInt(locator.getProperty(POSITION));
-   		// System.out.println("JCategoryPanel:instantiate:pos="+pos);
 				select(pos);
 			}catch(Exception e){
 					Logger.getLogger(getClass().getName()).info(e.toString());
 			}
 	    }
-		//}
-		
-			
 		}catch(Exception e){
 		Logger.getLogger(getClass().getName()).info(e.toString());
 		}
@@ -211,7 +184,7 @@ public class JCategoryPanel extends JItemsListPanel implements WContext{
 			for(int i=0;i<cnt;i++) 
 			 mia[i]=menu.getItem(i);
 		 }
-		//menu.addSeparator();
+
 		menu.addMenuListener(new MenuListener(){
 			@Override
 			public void menuSelected(MenuEvent e) {
@@ -242,8 +215,6 @@ public class JCategoryPanel extends JItemsListPanel implements WContext{
 					String fcLocator$=facetRenderer.getLocator();
 					fcLocator$=Locator.append(fcLocator$, Entigrator.ENTIHOME, entihome$);
 			    	facetRenderer.newEntity(console, fcLocator$);
-			    	//entigrator.store_newId();
-					
 				}
 			} );
 			menu.add(newItem);
@@ -276,17 +247,7 @@ public class JCategoryPanel extends JItemsListPanel implements WContext{
 								Logger.getLogger(getClass().getName()).info(ee.toString()+":"+aSa);
 							}
 						  }
-						  //refresh=true;
-						  
 						  entigrator.store_replace();
-						  /*
-						  JCategoryPanel cp=new JCategoryPanel();
-						  String cpLocator$=cp.getLocator();
-						  cpLocator$=Locator.append(cpLocator$, Entigrator.ENTIHOME, entihome$);
-						  cpLocator$=Locator.append(cpLocator$, RENDERER, renderer$);
-						  */
-						  
-						  
 					   }
 					
 				}
@@ -330,16 +291,9 @@ public class JCategoryPanel extends JItemsListPanel implements WContext{
 		        	String apLocator$=archivePanel.getLocator();
 	        	  apLocator$=Locator.append(apLocator$,Entigrator.ENTIHOME,entihome$);
 				  apLocator$=Locator.append(apLocator$, EntityHandler.ENTITY_LIST,Locator.toString(ea));
-				 /*
-				    String icon$=Support.readHandlerIcon(entigrator,getClass(), "category.png");
-				    if(icon$!=null)
-				    	apLocator$=Locator.append(apLocator$, Locator.LOCATOR_ICON,icon$);
-				    	*/
 				  apLocator$=Locator.append(apLocator$,Locator.LOCATOR_ICON_CONTAINER, Locator.LOCATOR_ICON_CONTAINER_CLASS);
 				  apLocator$=Locator.append(apLocator$,Locator.LOCATOR_ICON_CLASS,getClass().getName());
 				  apLocator$=Locator.append(apLocator$,Locator.LOCATOR_ICON_FILE, "category.png"); 
-				 // String icon$=Support.readHandlerIcon(JEntityPrimaryMenu.class, "archive.png");
-			     // apLocator$=Locator.append(apLocator$, Locator.LOCATOR_ICON,icon$);
 				  JConsoleHandler.execute(console, apLocator$);
 					}
 			} );
@@ -369,7 +323,6 @@ public class JCategoryPanel extends JItemsListPanel implements WContext{
 				   return null;
 			   Entigrator entigrator=console.getEntigrator(entihome$);
 			   ArrayList <String>sl=new ArrayList<String>();
-			   // String[] sa=entigrator.indx_listEntitiesAtPropertyName(entityType$);
 			   String[] sa=entigrator.indx_listEntities("entity",entityType$);
 			   if(sa!=null)
 				   for(String s:sa)
@@ -405,28 +358,14 @@ public class JCategoryPanel extends JItemsListPanel implements WContext{
 			   emLocator.setProperty(Locator.LOCATOR_TITLE, c.value);
 			   emLocator.setProperty(BaseHandler.HANDLER_SCOPE, JConsoleHandler.CONSOLE_SCOPE);
 			   iconFile$=entigrator.ent_getIconAtKey(c.name);
-			   
-			   /*
-			   emLocator.setProperty(Locator.LOCATOR_ICON_CONTAINER,Locator.LOCATOR_ICON_CONTAINER_ICONS);
-			   emLocator.setProperty(Locator.LOCATOR_ICON_FILE,entigrator.ent_getIconAtKey(c.name));
-			   */
 			   if(iconFile$!=null&&!"sack.gif".equals(iconFile$)&&!"null".equals(iconFile$)){
 				   emLocator.setProperty(Locator.LOCATOR_ICON_CONTAINER,Locator.LOCATOR_ICON_CONTAINER_ICONS);
 				   emLocator.setProperty(Locator.LOCATOR_ICON_FILE,iconFile$);
 				   }else{
 						String type$=entigrator.getEntityType(c.name);
-						/*
-						if(debug)   
-							   System.out.println("JEntitiesPanel: listEntitiesAtLabelList:entity type="+type$);
-							   */	
 						boolean found=false;	
 						FacetHandler[] fha=BaseHandler.listAllHandlers(entigrator);
 				    	   for(FacetHandler fh:fha){
-				    	
-				    		   /*
-				    		   if(debug)   
-								   System.out.println("JEntitiesPanel: listEntitiesAtLabelList:handler type="+fh.getType());	
-							*/
 				    		if(type$.equals(fh.getType())){
 				    			 JFacetRenderer facetRenderer=JConsoleHandler.getFacetRenderer(entigrator, fh.getClass().getName());
 				    			 emLocator.setProperty(Locator.LOCATOR_ICON_CONTAINER,Locator.LOCATOR_ICON_CONTAINER_CLASS);
@@ -468,7 +407,6 @@ public class JCategoryPanel extends JItemsListPanel implements WContext{
 			   if(entityType$==null||"null".equals(entityType$))
 				   return null;
 			   ArrayList <String>sl=new ArrayList<String>();
-			   // String[] sa=entigrator.indx_listEntitiesAtPropertyName(entityType$);
 			   String[] sa=entigrator.indx_listEntities("entity",entityType$);
 			   if(sa!=null)
 				   for(String s:sa)
@@ -486,7 +424,6 @@ public class JCategoryPanel extends JItemsListPanel implements WContext{
 				   return null;
 			   }
 			   sl.clear();
- 		   //ArrayList<String>sl=new ArrayList<String>();
        Core [] ca=entigrator.indx_getMarks(sa);
 	       if(debug)
 				System.out.println("JCategoryPanel:listCategoryMembers:ca="+ca.length);
@@ -494,7 +431,6 @@ public class JCategoryPanel extends JItemsListPanel implements WContext{
 	    Properties foiLocator=new Properties();   
 	   	foiLocator.setProperty(BaseHandler.HANDLER_CLASS,JEntityFacetPanel.class.getName());
     	foiLocator.setProperty(Entigrator.ENTIHOME,entigrator.getEntihome());
-    	//foiLocator.setProperty(EntityHandler.ENTITY_LABEL,foiTitle$);
     	String itemIcon$;
 	    String itemTitle$;
 	    String itemKey$;
@@ -506,7 +442,6 @@ public class JCategoryPanel extends JItemsListPanel implements WContext{
      
 	    JFacetRenderer facetRenderer=(JFacetRenderer)JConsoleHandler.getHandlerInstance(entigrator, categoryRenderer$);
 		if(facetRenderer!=null)
-	    //JFacetRenderer fr=JConsoleHandler.getFacetRenderer(entigrator, categoryRenderer$);
 	     categoryIcon$=facetRenderer.getCategoryIcon(entigrator);
 	    ArrayList<String>tl=new ArrayList<String>();
 	    Hashtable<String,String> tab=new Hashtable<String,String>();
@@ -526,8 +461,6 @@ public class JCategoryPanel extends JItemsListPanel implements WContext{
 				   foiItem$=getItem(itemIcon$, webHome$,itemTitle$,Locator.toString(foiLocator));
                    tl.add(itemTitle$);
                    tab.put(itemTitle$,foiItem$);
-				   //sl.add(foiItem$); 
-
 			   }catch(Exception ee){
 				   Logger.getLogger(JCategoryPanel.class.getName()).info(ee.toString());
 			   }
@@ -548,7 +481,6 @@ public class JCategoryPanel extends JItemsListPanel implements WContext{
 	    
 		String iconTerm$="<img src=\"data:image/png;base64,"+WUtils.scaleIcon(icon$)+
 				  "\" width=\"24\" height=\"24\" alt=\""+title$+"\">";
-		//foiLocator$=Locator.remove(foiLocator$, Locator.LOCATOR_ICON);
 		foiLocator$=Locator.append(foiLocator$,WContext.WEB_HOME, url$);
 		foiLocator$=Locator.append(foiLocator$,WContext.WEB_REQUESTER, JCategoryPanel.class.getName());
 		  return iconTerm$+"<a href=\""+url$+"?"+WContext.WEB_LOCATOR+"="+Base64.encodeBase64URLSafeString(foiLocator$.getBytes())+"\" >"+" "+title$+"</a>";
@@ -639,7 +571,6 @@ public class JCategoryPanel extends JItemsListPanel implements WContext{
 			String category$=locator.getProperty(CATEGORY_TITLE);
 			if(debug)
 			System.out.println("JEntityCategoryPanel:web home="+webHome$+ " web requester="+webRequester$);
-			// String icon$=Support.readHandlerIcon(null,JBaseNavigator.class, "base.png");
 			StringBuffer sb=new StringBuffer();
 			sb.append("<!DOCTYPE html PUBLIC \"-//W3C//DTD HTML 4.01//EN\" \"http://www.w3.org/TR/html4/strict.dtd\">");
 			sb.append("<html>");
@@ -688,7 +619,6 @@ public class JCategoryPanel extends JItemsListPanel implements WContext{
 	}
 	@Override
 	public String getWebConsole(Entigrator entigrator, String locator$) {
-		// TODO Auto-generated method stub
 		return null;
 	}
 	public static String getCategoryIcon(Entigrator entigrator,String entityType$){

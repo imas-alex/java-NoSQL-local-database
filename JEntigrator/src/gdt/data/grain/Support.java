@@ -36,6 +36,7 @@ import gdt.data.store.Entigrator;
 * @version 1.0
 * @since   2016-03-11
 */
+
 public class Support {
 	static boolean debug=false;
     private static boolean itemExists(String name, Vector<String> vec) {
@@ -176,35 +177,43 @@ public class Support {
     	try {
     		InputStream is=handler.getResourceAsStream(resource$);
         	if(is!=null){
-        		//System.out.println("Support:getClassResource:resource stream="+is.toString());
+        		if(debug)
+        		  System.out.println("Support:getClassResource:resource stream="+is.toString());
         		return is;
         	}
         	else{
-        	//	System.out.println("Support:getClassResource:cannot get embedded resource stream for handler="+handler.getName());            		
+        	if(debug)
+        		  System.out.println("Support:getClassResource:cannot get embedded resource stream for handler="+handler.getName());            		
         	ClassLoader classLoader=handler.getClassLoader();
-        	//if(classLoader!=null)
-        	//	System.out.println("Support:getClassResource:class loader="+classLoader.toString());
-    		is=classLoader.getResourceAsStream(resource$);
-    		//if(is!=null)
-    		//	System.out.println("Support:getClassResource:resourse stream="+is.toString());
-    		//else
-    		//	System.out.println("Support:getClassResource:cannot get resource stream");
+        		is=classLoader.getResourceAsStream(resource$);
+    		if(is!=null)
+    		 if(debug)
+        		  System.out.println("Support:getClassResource:resourse stream="+is.toString());
+    		else
+    			if(debug)
+    			System.out.println("Support:getClassResource:cannot get resource stream");
         	String handler$=handler.getName();
-    		//System.out.println("Support:getClassResource:class="+handler$);
+        	if(debug)
+        		System.out.println("Support:getClassResource:class="+handler$);
     		String handlerName$=handler.getSimpleName();
-    		//System.out.println("Support:getClassResource:class name="+handlerName$);
+    		if(debug)
+    			System.out.println("Support:getClassResource:class name="+handlerName$);
     		String handlerPath$=handler$.replace(".", "/");
-    		//System.out.println("Support:getClassResource:class path="+handlerPath$);
+    		if(debug)
+    			System.out.println("Support:getClassResource:class path="+handlerPath$);
     		String resourcePath$="src/"+handlerPath$.replace(handlerName$, resource$);
-    		//System.out.println("Support:getClassResource:resource path="+resourcePath$);
+    		if(debug)
+    			System.out.println("Support:getClassResource:resource path="+resourcePath$);
     		ClassLoader classloader = Thread.currentThread().getContextClassLoader();
             URL resourceUrl= classloader.getResource(resourcePath$);
             if(resourceUrl!=null){
-            	//System.out.println("Support:getClassResource:resource URL="+resourceUrl.toString());
+            	if(debug)
+            		System.out.println("Support:getClassResource:resource URL="+resourceUrl.toString());
                 return resourceUrl.openStream();
             }
             else{
-            	//System.out.println("Support:getClassResource:cannot get resource URL");            	
+            	if(debug)
+            		System.out.println("Support:getClassResource:cannot get resource URL");            	
             }
         	}
     	} catch (Exception e) {
@@ -218,27 +227,7 @@ public class Support {
  	 * @param iconResource$ the name of the icon file.
  	 * @return input stream.
  	 */ 
-   /*
-    public static String readHandlerIcon(Class<?> handler,String icon$) {
- 		try {
- 			System.out.println("Support:readHandlerIcon:handler="+handler.getName()+" icon="+icon$);
- 			//InputStream is=handler.getResourceAsStream(icon$);
- 			InputStream is= getClassResource(handler,icon$);
- 			ByteArrayOutputStream bos = new ByteArrayOutputStream();
- 	            byte[] b = new byte[1024];
- 	            int bytesRead = 0;
- 	            while ((bytesRead = is.read(b)) != -1) {
- 	               bos.write(b, 0, bytesRead);
- 	            }
- 	            byte[] ba = bos.toByteArray();
- 	            is.close();
- 	           return Base64.encodeBase64String(ba);
- 		} catch (Exception e) {
- 			Logger.getLogger(gdt.data.grain.Support.class.getName()).severe(e.toString());
- 		}
- 		return null;
- 	}
- 	*/
+   
     public static String readHandlerIcon(Entigrator entigrator,Class<?> handler,String iconResource$) {
  		try {
  		if(debug)	
@@ -258,6 +247,7 @@ public class Support {
  			}else
  			{
  				if(entigrator==null){
+ 					if(debug)
  					System.out.println("Support:readHandlerIcon:entigrator is null");
  				return null;
  				}

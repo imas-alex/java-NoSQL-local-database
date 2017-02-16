@@ -103,9 +103,9 @@ public static boolean isForeignEntity(String entihome$,String entityLocator$){
  */	 
 public static String getEntityLocatorAtLabel( Entigrator entigrator, String label$){
 	try{
-		//System.out.println("Entityhandler:getEntityLocator:label="+label$);
+		
 		String entityKey$=entigrator.indx_keyAtLabel(label$);
-		//String entityKey$=entigrator.ent_.indx_keyAtLabel(label$);
+		
 				return getEntityLocatorAtKey( entigrator, entityKey$);
 	}catch(Exception e){
 		Logger.getLogger(EntityHandler.class.getName()).severe(e.toString());
@@ -120,7 +120,7 @@ public static String getEntityLocatorAtLabel( Entigrator entigrator, String labe
  */	 
 public static String getEntityLocatorAtKey( Entigrator entigrator, String entityKey$){
 	try{
-		//System.out.println("EntityHandler:getEntityLocator:at key="+entityKey$);
+		
 		if(entityKey$==null)
 	    	return null;
 		
@@ -142,17 +142,6 @@ public static String getEntityLocatorAtKey( Entigrator entigrator, String entity
 	    locator.setProperty(Locator.LOCATOR_ICON_CONTAINER, Locator.LOCATOR_ICON_CONTAINER_ICONS);
 	    locator.setProperty(Locator.LOCATOR_ICON_FILE, iconFile$);
 	    }
-	    /*
-	    else{
-	    	
-	    	String type$=entigrator.getEntityType(entityKey$);
-	    	FacetHandler[] fha=BaseHandler.listAllHandlers(entigrator);
-	    	for(FacetHandler fh:fha)
-	    		if(type$.equals(fh.getType())){
-	    			 JFacetRenderer facetRenderer=JConsoleHandler.getFacetRenderer(entigrator, fh.getClass().getName());
-	    		}
-	    	
-	    	*/
 	    	    
 
 	    return Locator.toString(locator);
@@ -168,7 +157,6 @@ public static String getEntityLocatorAtKey( Entigrator entigrator, String entity
  * @return the locator string if success ,null otherwise.
  */	 
 public static String getEntityLocator( Entigrator entigrator, Sack entity){
-	//System.out.println("EntityHandler:getEntityLocator:at entity="+entity.getProperty("label"));
 	if(entity==null)
 		return null;
 	Properties locator=new Properties();
@@ -185,36 +173,13 @@ public static String getEntityLocator( Entigrator entigrator, Sack entity){
     String entityType$=entity.getProperty("entity");
     if(entityType$!=null)
     	locator.setProperty(ENTITY_TYPE,entityType$);
-  /*
-    String icon$=entigrator.getEntityIcon(entity);
-    if(icon$!=null)
-    	locator.setProperty(Locator.LOCATOR_ICON,icon$);
-    	*/
-    String iconFile$=entity.getAttributeAt("icon");
+   String iconFile$=entity.getAttributeAt("icon");
     if(iconFile$!=null){
 	    locator.setProperty(Locator.LOCATOR_ICON_CONTAINER, Locator.LOCATOR_ICON_CONTAINER_ICONS);
 	    locator.setProperty(Locator.LOCATOR_ICON_FILE, iconFile$);
     }
 	return Locator.toString(locator);
 }
-/*
-public static String getEntityLocator( String entihome$,String entityKey$,String entityLabel$,String icon$){
-	System.out.println("EntityHandler:getEntityLocator:at entity="+entityLabel$);
-	Properties locator=new Properties();
-    locator.setProperty(Locator.LOCATOR_TYPE, ENTITY_TYPE);
-    locator.setProperty(Locator.LOCATOR_SCOPE, ENTITY_SCOPE);
-    
-    locator.setProperty(Entigrator.ENTIHOME,entihome$);
-    locator.setProperty(Locator.LOCATOR_TITLE,entityLabel$);
-    if(entityKey$!=null)
-    	locator.setProperty(ENTITY_KEY,entityKey$);
-    if(entityLabel$!=null)
-       locator.setProperty(ENTITY_LABEL,entityLabel$);
-    if(icon$!=null)
-    	locator.setProperty(Locator.LOCATOR_ICON,icon$);
-	return Locator.toString(locator);
-}
-*/
 public static void completeMigration (Entigrator entigrator, String entityKey$, FacetHandler[] fha){
 	try{
 		String locator$;
@@ -226,8 +191,6 @@ public static void completeMigration (Entigrator entigrator, String entityKey$, 
 			    fh.completeMigration(entigrator);	
 			}
 		}
-		
-		
 	}catch(Exception e){
 		Logger.getLogger(EntityHandler.class.getName()).severe(e.toString());
 	}

@@ -30,10 +30,8 @@ import java.util.logging.Logger;
 
 import gdt.data.entity.BaseHandler;
 import gdt.data.entity.EntityHandler;
-import gdt.data.grain.Core;
 import gdt.data.grain.Locator;
 import gdt.data.grain.Sack;
-import gdt.data.grain.Support;
 import gdt.data.store.Entigrator;
 import gdt.jgui.base.JBaseNavigator;
 import gdt.jgui.base.JBasesPanel;
@@ -42,8 +40,6 @@ import gdt.jgui.console.JContext;
 import gdt.jgui.console.JMainConsole;
 import gdt.jgui.console.WContext;
 import gdt.jgui.console.WUtils;
-import gdt.jgui.entity.index.JIndexFacetOpenItem;
-import gdt.jgui.entity.index.JIndexPanel;
 import gdt.jgui.tool.JEntityEditor;
 
 import javax.swing.ImageIcon;
@@ -304,8 +300,6 @@ public class JEntityStructurePanel extends JPanel implements JContext,WContext{
 			       locator.setProperty(EntityHandler.ENTITY_KEY,entityKey$);
 		    if(entityLabel$!=null)
 			       locator.setProperty(EntityHandler.ENTITY_LABEL,entityLabel$);
-		    //String icon$=Support.readHandlerIcon(null,getClass(), "tree.png");
-			 //locator.setProperty(Locator.LOCATOR_ICON, icon$);
 		    locator.setProperty(Locator.LOCATOR_ICON_CONTAINER,Locator.LOCATOR_ICON_CONTAINER_CLASS);
 		    locator.setProperty(Locator.LOCATOR_ICON_CLASS,getClass().getName());
 		    locator.setProperty(Locator.LOCATOR_ICON_FILE,"tree.png");
@@ -332,8 +326,6 @@ public class JEntityStructurePanel extends JPanel implements JContext,WContext{
 		 DefaultMutableTreeNode root = new DefaultMutableTreeNode(entityLabel$);
 		 locator=new Properties();
 		 locator.setProperty(Locator.LOCATOR_TITLE, STRUCTURE);
-		// String icon$=Support.readHandlerIcon(null,getClass(), "tree.png");
-		 //locator.setProperty(Locator.LOCATOR_ICON, icon$);
 		 locator.setProperty(Locator.LOCATOR_ICON_CONTAINER,Locator.LOCATOR_ICON_CONTAINER_CLASS);
 			locator.setProperty(Locator.LOCATOR_ICON_CLASS,getClass().getName());
 			locator.setProperty(Locator.LOCATOR_ICON_FILE,"tree.png");
@@ -436,17 +428,21 @@ public class JEntityStructurePanel extends JPanel implements JContext,WContext{
 	private void include(){
 		try{
 			String[] sa=console.clipboard.getContent();
-			if(sa==null)
+			if(sa==null){
+				if(debug)
+					System.out.println("JEntityStructure:empty clipboard");
 				return ;
+			}
 			String selectedLocator$=selection$;
-					//(String)node.getUserObject();
-//			System.out.println("EntityStructurePanel:include:selection="+selection$);
+			if(debug)
+			System.out.println("EntityStructurePanel:include:selection="+selection$);
 			Properties locator=Locator.toProperties(selectedLocator$);
 			String entihome$=locator.getProperty(Entigrator.ENTIHOME);
 			String selectedEntityKey$=locator.getProperty(EntityHandler.ENTITY_KEY);
 			Entigrator entigrator=console.getEntigrator(entihome$);
 			Sack selectedEntity=entigrator.getEntityAtKey(selectedEntityKey$);
-//			System.out.println("EntityStructurePanel:include:selected entity="+selectedEntity.getProperty("label"));
+			if(debug)
+			System.out.println("EntityStructurePanel:include:selected entity="+selectedEntity.getProperty("label"));
 			String candidateKey$;
 			Sack candidate;
 			for(String aSa:sa )
@@ -455,6 +451,8 @@ public class JEntityStructurePanel extends JPanel implements JContext,WContext{
 					candidateKey$=locator.getProperty(EntityHandler.ENTITY_KEY);
 					candidate=entigrator.getEntityAtKey(candidateKey$);
 					entigrator.col_addComponent(selectedEntity, candidate);
+					if(debug)
+						System.out.println("JEntityStructure:add component:container="+selectedEntity.getProperty("label")+" component="+candidate.getProperty("label"));
 				}
 		}catch(Exception e){
 			Logger.getLogger(getClass().getName()).info(e.toString());
@@ -462,6 +460,8 @@ public class JEntityStructurePanel extends JPanel implements JContext,WContext{
 	}
 	private boolean canInclude(String candidateLocator$){
 		try{
+			if(debug)
+				System.out.println("JEntityStructure:canInclude:locator="+locator$);
 			String selectedLocator$=(String)node.getUserObject();
 			Properties locator=Locator.toProperties(selectedLocator$);
 			String entihome$=locator.getProperty(Entigrator.ENTIHOME);
@@ -471,11 +471,22 @@ public class JEntityStructurePanel extends JPanel implements JContext,WContext{
 			locator=Locator.toProperties(candidateLocator$);
 			String candidateKey$=locator.getProperty(EntityHandler.ENTITY_KEY);
 			Sack candidate=entigrator.getEntityAtKey(candidateKey$);
-			if(candidate==null)
+			if(candidate==null){
+				if(debug)
+					System.out.println("JEntityStructure:canInclude:cannot find candidate="+candidateKey$);
 				return false;
+			}
 			if(entigrator.col_isComponentDown(selectedEntity,candidate)
-					||entigrator.col_isComponentUp(selectedEntity, candidate))
+					//||entigrator.col_isComponentUp(selectedEntity, candidate)
+					){
+				if(debug)
+					System.out.println("JEntityStructure:canInclude:already in path candidate="+candidateKey$);
+			
 				return false;
+			}
+			if(debug)
+				System.out.println("JEntityStructure:canInclude:return true");
+		
 			return true;
 		}catch(Exception e){
 			Logger.getLogger(getClass().getName()).info(e.toString());
@@ -490,7 +501,8 @@ public class JEntityStructurePanel extends JPanel implements JContext,WContext{
     private void expandAll(JTree tree, TreePath path, boolean expand) {
         TreeNode node = (TreeNode) path.getLastPathComponent();
         if (node.getChildCount() >= 0) {
-            Enumeration enumeration = node.children();
+            @SuppressWarnings("unchecked")
+			Enumeration<TreeNode> enumeration = node.children();
             while (enumeration.hasMoreElements()) {
                 TreeNode n = (TreeNode) enumeration.nextElement();
                 TreePath p = path.pathByAddingChild(n);
@@ -529,30 +541,9 @@ public class JEntityStructurePanel extends JPanel implements JContext,WContext{
 	        		Properties locator=Locator.toProperties((String)userObject);
 	        		String title$=locator.getProperty(Locator.LOCATOR_TITLE);
 	        		label.setText(title$); 
-	        		//String icon$=entigrator.getIcon((String)userObject);
 	        		String icon$=JConsoleHandler.getIcon(entigrator,(String)userObject);
 	        		if(debug)
-	        			System.out.println("JEntityDigestDisplay:NodeRenderer: user object="+userObject);
-	        		
-	        		/*
-	        		String icon$=locator.getProperty(Locator.LOCATOR_ICON);
-	        		if(icon$==null){
-	        			String entihome$=locator.getProperty(Entigrator.ENTIHOME);
-	        			String entityKey$=locator.getProperty(EntityHandler.ENTITY_KEY);
-	        			Entigrator entigrator=console.getEntigrator(entihome$);
-	        			Sack entity=entigrator.getEntityAtKey(entityKey$);
-        				icon$=entigrator.getEntityIcon(entity);
-	        		}
-	        		
-	        		
-	        		if(icon$==null){
-	        			String entihome$=locator.getProperty(Entigrator.ENTIHOME);
-	        			String entityKey$=locator.getProperty(EntityHandler.ENTITY_KEY);
-	        			Entigrator entigrator=console.getEntigrator(entihome$);
-	        			Sack entity=entigrator.getEntityAtKey(entityKey$);
-        				icon$=entigrator.getEntityIcon(entity);
-	        		}
-	        		*/
+	        			System.out.println("JEntityStructurePanel:NodeRenderer: user object="+userObject);
 	        		if(icon$!=null){
 	        			byte[] ba=Base64.decodeBase64(icon$);
 	        	      	  ImageIcon icon = new ImageIcon(ba);
@@ -658,7 +649,7 @@ public class JEntityStructurePanel extends JPanel implements JContext,WContext{
 		    sb.append("<li id=\"collapse\" onclick=\"collapse()\"><a href=\"#\">Collaps</a></li>");
 		    sb.append("</ul>");
 		    sb.append("</li>");
-		    sb.append("<li class=\"menu_item\"><a href=\""+webHome$.replace("entry", WContext.ABOUT)+"\">About</a></li>");
+		    sb.append("<li class=\"menu_item\"><a href=\""+WContext.ABOUT+"\">About</a></li>");
 		    sb.append("</ul>");
 		    sb.append("<table><tr><td>Base:</td><td><strong>");
 		    sb.append(entigrator.getBaseName());
@@ -682,13 +673,9 @@ public class JEntityStructurePanel extends JPanel implements JContext,WContext{
 		    sb.append("$('#jstree').jstree();");
 		    sb.append("$('#jstree').on(\"changed.jstree\", function (e, data) {");
 		    sb.append(" var ref=data.instance.get_node(data.selected[0]).li_attr.ref;");
-		    //sb.append(" var type=data.instance.get_node(data.selected[0]).li_attr.type;");
 		    sb.append(" console.log(data.selected);");
-		   // sb.append(" console.log('type='+type);");
 		    sb.append(" console.log('ref='+ref);");
-		   // sb.append(" if('node type reference'==type){");
 		    sb.append(" window.location.assign(ref);");
-		  //  sb.append("}");
 		    sb.append("});");
 		    sb.append("});");
 		    
@@ -746,9 +733,6 @@ public class JEntityStructurePanel extends JPanel implements JContext,WContext{
 	}
 	private static void addItems(Entigrator entigrator,Sack entity , String webHome$,ArrayList<String>sl,boolean showComponents){
 		try{
-			//Core[] ca=index.elementGet("index.jlocator");
-			//ArrayList<String> el=new ArrayList<String>();
-			//el.add(entity.getKey());
 			String[] sa=null;
 			if(showComponents)
 			 sa=entigrator.ent_listComponents(entity);
@@ -757,10 +741,6 @@ public class JEntityStructurePanel extends JPanel implements JContext,WContext{
 			if(sa!=null)
 				if(debug)
 					System.out.println("JEntityStructurePanel:addItems: entity="+entity.getProperty("label")+" components="+sa.length);	
-			
-			//if(sa!=null)
-			//for (String s:sa)
-			//	el.add(s);
 			Properties itemLocator=new Properties();
 			itemLocator.setProperty(Entigrator.ENTIHOME, entigrator.getEntihome());
 			itemLocator.setProperty(BaseHandler.HANDLER_CLASS,JEntityFacetPanel.class.getName());
@@ -783,12 +763,9 @@ public class JEntityStructurePanel extends JPanel implements JContext,WContext{
 					child=entigrator.getEntityAtKey(s);
 					icon$=entigrator.ent_getIconAtKey(s);
 					itemLocator.setProperty(EntityHandler.ENTITY_LABEL, title$);
-//					sl.add(getItem(title$,icon$, webHome$, Locator.toString(itemLocator))+"\n");
 					addItems(entigrator,child,webHome$,sl,showComponents);
-					//sl.add("\n</li>");
 					sl.add("\n</ul>\n");
 				}catch(Exception ee){
-					//LOGGER.info(ee.toString());
 					Logger.getLogger(JEntityStructurePanel.class.getName()).info(ee.toString());
 				}
 			}
@@ -804,15 +781,7 @@ public class JEntityStructurePanel extends JPanel implements JContext,WContext{
 				System.out.println("JEntityStructurePanel:getItem: locator="+foiLocator$);
 	   
 		icon$=WUtils.scaleIcon(icon$);
-		/*
-		String iconTerm$="<img data-jstree='{\"icon\":data:image/png;base64,"+WUtils.scaleIcon(icon$)+
-				  "}'  width=\"24\" height=\"24\" alt=\""+title$+"\">";
-		//foiLocator$=Locator.remove(foiLocator$, Locator.LOCATOR_ICON);
-		foiLocator$=Locator.append(foiLocator$,WContext.WEB_HOME, url$);
-		foiLocator$=Locator.append(foiLocator$,WContext.WEB_REQUESTER, JEntityStructurePanel.class.getName());
-		  return iconTerm$+"<a href=\""+url$+"?"+WContext.WEB_LOCATOR+"="+Base64.encodeBase64URLSafeString(foiLocator$.getBytes())+"\" >"+" "+title$+"</a>";
-		  */
-		  String iconTerm$=" data-jstree='{\"icon\":\"data:image/png;base64,"+icon$+"\"}' width=\"24\" height=\"24\"";
+	  String iconTerm$=" data-jstree='{\"icon\":\"data:image/png;base64,"+icon$+"\"}' width=\"24\" height=\"24\"";
 		  if(debug){
 				 
 			  System.out.println("JEntityStructurePanel:getItem:icon term="+iconTerm$);
@@ -828,14 +797,6 @@ public class JEntityStructurePanel extends JPanel implements JContext,WContext{
 			//  System.out.println("JIndexPanel:getWebView:locator="+locator$);
 		  }
 		  String item$=refTerm$+ iconTerm$+">"+title$;
-		  /*
-		  if(locator$!=null){
-	        
-			 String enLocator$= Base64.encodeBase64URLSafeString(locator$.getBytes());
-		     href$=url$+"?"+WContext.WEB_LOCATOR+"="+enLocator$;
-	    	 item$= "<li id='"+nodeKey$+"' type='"+nodeType$+"' ref='"+href$+"'"+" locator='"+enLocator$+"'"+iconTerm$+">"+title$;
-		  }
-		  */
 		  if(debug)
 				 System.out.println("JEntityStructurePanel:getItem:item="+item$);
 		  return item$;

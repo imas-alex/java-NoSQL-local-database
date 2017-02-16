@@ -19,8 +19,6 @@ package gdt.jgui.entity.fields;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Hashtable;
 import java.util.Properties;
 import java.util.logging.Logger;
 import javax.swing.JMenuItem;
@@ -32,7 +30,6 @@ import org.apache.commons.codec.binary.Base64;
 import gdt.data.entity.BaseHandler;
 import gdt.data.entity.EntityHandler;
 import gdt.data.entity.FacetHandler;
-import gdt.data.entity.facet.BookmarksHandler;
 import gdt.data.entity.facet.FieldsHandler;
 import gdt.data.grain.Core;
 import gdt.data.grain.Locator;
@@ -51,7 +48,6 @@ import gdt.jgui.console.WUtils;
 import gdt.jgui.entity.JEntitiesPanel;
 import gdt.jgui.entity.JEntityDigestDisplay;
 import gdt.jgui.entity.JEntityFacetPanel;
-import gdt.jgui.entity.folder.JFileOpenItem;
 import gdt.jgui.tool.JTextEditor;
 /**
  * This class represents the fields facet item in the list
@@ -97,11 +93,6 @@ public String getLocator(){
 		locator.setProperty(EntityHandler.ENTITY_KEY,entityKey$);
 	if(entihome$!=null)
 		locator.setProperty(Entigrator.ENTIHOME,entihome$);
-	/*
-	String icon$=Support.readHandlerIcon(null,JFieldsEditor.class, "fields.png");
-    if(icon$!=null)
-    	locator.setProperty(Locator.LOCATOR_ICON,icon$);
-    	*/
 	locator.setProperty(Locator.LOCATOR_ICON_CONTAINER,Locator.LOCATOR_ICON_CONTAINER_CLASS);
 	locator.setProperty(Locator.LOCATOR_ICON_CLASS,getClass().getName());
 	locator.setProperty(Locator.LOCATOR_ICON_FILE,"fields.png");
@@ -136,6 +127,7 @@ public void response(JMainConsole console, String locator$) {
 			   String selection$=new String(ba,"UTF-8");
 			   locator=Locator.toProperties(selection$);
 			   String fieldName$=locator.getProperty(FIELD_NAME);
+			   if(debug)
 			   System.out.println("JFieldsFacetOpenItem:response:SELECTION locator="+selection$);	   
 			Entigrator entigrator=console.getEntigrator(entihome$);
 			Sack entity=entigrator.getEntityAtKey(entityKey$);
@@ -281,21 +273,14 @@ public DefaultMutableTreeNode[] getDigest(Entigrator entigrator,String locator$)
 		if(debug)
 		System.out.println("JFieldsFacetOpenItem:getDigest:locator="+locator$);
 		Properties locator=Locator.toProperties(locator$);
-		//entihome$=locator.getProperty(Entigrator.ENTIHOME);
 		entihome$=entigrator.getEntihome();
 		entityKey$=locator.getProperty(EntityHandler.ENTITY_KEY);
-		//Entigrator entigrator=console.getEntigrator(entihome$);
 		Sack entity=entigrator.getEntityAtKey(entityKey$);
 		Core[]ca=entity.elementGet("field");
 		if(ca==null)
 			return null;
 		DefaultMutableTreeNode nameNode;
-		DefaultMutableTreeNode valueNode;
-		//String locator$=getLocator();
 		String nameLocator$;
-		String valueLocator$;
-		//String nameIcon$=icon$=Support.readHandlerIcon(null,JEntitiesPanel.class, "text.png");
-		//String valueIcon$=Support.readHandlerIcon(null,JEntitiesPanel.class, "equal.png");
 		if(debug)
 			System.out.println("JFieldsFacetOpenItem:getDigest:1");
 		ArrayList<DefaultMutableTreeNode>nl=new ArrayList<DefaultMutableTreeNode>();
@@ -317,25 +302,6 @@ public DefaultMutableTreeNode[] getDigest(Entigrator entigrator,String locator$)
 				nameLocator$=Locator.append(nameLocator$,EntityHandler.ENTITY_KEY,entityKey$);
 		
 			nameNode.setUserObject(nameLocator$);
-		/*
-			valueNode=new DefaultMutableTreeNode();
-			valueLocator$=Locator.append(locator$, Locator.LOCATOR_TITLE,aCa.value);
-			valueLocator$=Locator.append(valueLocator$,FIELD_NAME,aCa.name);
-			valueLocator$=Locator.append(valueLocator$,FIELD_VALUE,aCa.value);
-			valueLocator$=Locator.append(valueLocator$, Locator.LOCATOR_TYPE,FIELD_VALUE);
-			valueLocator$=Locator.append(valueLocator$,Locator.LOCATOR_ICON,valueIcon$);
-			valueLocator$=Locator.append(valueLocator$,JEntityDigestDisplay.NODE_TYPE,NODE_TYPE_FIELD_VALUE);
-			if(entihome$!=null)
-				valueLocator$=Locator.append(valueLocator$,Entigrator.ENTIHOME,entihome$);
-			valueLocator$=Locator.append(valueLocator$,JEntityDigestDisplay.NODE_TYPE,NODE_TYPE_FIELD_VALUE);
-			if(entityKey$!=null)
-				valueLocator$=Locator.append(valueLocator$,EntityHandler.ENTITY_KEY,entityKey$);
-				
-			valueNode.setUserObject(valueLocator$);
-			if(debug)
-			System.out.println("JFieldsFacetOpenItem:getDigest:VALUE locator="+valueLocator$);
-			nameNode.add(valueNode);
-			*/
 			nl.add(nameNode);
 		}
 		return nl.toArray(new DefaultMutableTreeNode[0]);
@@ -376,9 +342,9 @@ public JPopupMenu getPopupMenu(final String digestLocator$) {
 				   String entihome$=locator.getProperty(Entigrator.ENTIHOME);
 				   String entityKey$=locator.getProperty(EntityHandler.ENTITY_KEY);
 				   String nodeType$=locator.getProperty(JEntityDigestDisplay.NODE_TYPE);
+				   if(debug)
 				   System.out.println("JFieldsFacetOpenItem:getPopupMenu:node type:"+nodeType$);
 				   Entigrator entigrator=console.getEntigrator(entihome$);
-			//	   Sack entity=entigrator.getEntityAtKey(entityKey$);
 				   if(NODE_TYPE_FIELD_NAME.equals(nodeType$)){
 				   String fieldName$=locator.getProperty(Locator.LOCATOR_TITLE);
 				   JTextEditor te=new JTextEditor();
@@ -398,9 +364,11 @@ public JPopupMenu getPopupMenu(final String digestLocator$) {
 				   foiLocator$=Locator.append(foiLocator$,Entigrator.ENTIHOME,entihome$);
 				   if(entityKey$!=null)
 				   foiLocator$=Locator.append(foiLocator$,EntityHandler.ENTITY_KEY,entityKey$);
+				   if(debug)
 				   System.out.println("JFieldsFacetOpenItem:getPopupMenu:name:locator="+foiLocator$);
 				   teLocator$=Locator.append(teLocator$, JRequester.REQUESTER_RESPONSE_LOCATOR, Locator.compressText(foiLocator$));
 				   JConsoleHandler.execute(console, teLocator$);
+				   if(debug)
 				   System.out.println("JFieldsFacetOpenItem:getPopupMenu:teLocator="+teLocator$);
 				   return;
 				   }
@@ -423,6 +391,7 @@ public JPopupMenu getPopupMenu(final String digestLocator$) {
 						   foiLocator$=Locator.append(foiLocator$,Entigrator.ENTIHOME,entihome$);
 						   if(entityKey$!=null)
 						   foiLocator$=Locator.append(foiLocator$,EntityHandler.ENTITY_KEY,entityKey$);
+						   if(debug)
 						   System.out.println("JFieldsFacetOpenItem:getPopupMenu:value:locator="+foiLocator$);
 						 
 					   teLocator$=Locator.append(teLocator$, JRequester.REQUESTER_RESPONSE_LOCATOR, Locator.compressText(foiLocator$));
@@ -484,7 +453,7 @@ public String getWebView(Entigrator entigrator, String locator$) {
 	    navLocator$=Locator.append(navLocator$, Entigrator.ENTIHOME, entigrator.getEntihome());
 	    String navUrl$=webHome$+"?"+WContext.WEB_LOCATOR+"="+Base64.encodeBase64URLSafeString(navLocator$.getBytes());
 	    sb.append("<li class=\"menu_item\"><a href=\""+navUrl$+"\">Base</a></li>");
-	    sb.append("<li class=\"menu_item\"><a href=\""+webHome$.replace("entry", WContext.ABOUT)+"\">About</a></li>");
+	    sb.append("<li class=\"menu_item\"><a href=\""+WContext.ABOUT+"\">About</a></li>");
 	    sb.append("</ul>");
 	    sb.append("<table><tr><td>Base:</td><td><strong>");
 	    sb.append(entigrator.getBaseName());

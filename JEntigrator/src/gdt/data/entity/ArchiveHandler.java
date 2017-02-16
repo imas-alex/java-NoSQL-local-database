@@ -99,6 +99,7 @@ public class ArchiveHandler {
 	private String method$;
 	private String archiveType$;
 	private String archiveFile$;
+	static boolean debug=false;
 	 /**
 	 * Build the set of arguments needed to create an instance of ArchiveHandler 
 	 * and pack them in the special string parameter - locator. 
@@ -166,16 +167,16 @@ public class ArchiveHandler {
 	                s.clear();
 	                getTarEntries(entry, s, root$);
 	                cnt = s.size();
-	              //  System.out.println("EximpExpert:append:cnt=" + cnt);
+	  
 	                File nextFile = null;
 	                for (int j = 0; j < cnt; j++) {
 	                    entry = (TarArchiveEntry) s.pop();
 	                    try {
 	                        String nextFile$ = entigrator.getEntihome() + "/" + entry.getName();
-	            //            System.out.println("EximpExpert:append:try next file=" + nextFile$);
-	                        nextFile = new File(nextFile$);
+	  	                        nextFile = new File(nextFile$);
 	                        if (!nextFile.exists() || nextFile.length() < 1) {
-	                            System.out.println("ArchiveHandler:append:wrong next file=" + nextFile$);
+	                            if(debug)
+	                        	System.out.println("ArchiveHandler:append:wrong next file=" + nextFile$);
 	                            continue;
 	                        }
 	                        aos.putArchiveEntry(entry);
@@ -293,6 +294,7 @@ public class ArchiveHandler {
 	 */
 	 public boolean compressDatabaseToTar(Entigrator entigrator,String locator$){
 			try{
+				if(debug)
 				System.out.println("ArchiveHandler:compressDatabaseToTar:locator="+locator$);
 				Properties locator=Locator.toProperties(locator$);
 				archiveType$=locator.getProperty(ARCHIVE_TYPE);
@@ -357,7 +359,8 @@ public class ArchiveHandler {
 			archiveFile$=locator.getProperty(ARCHIVE_FILE);
 	        String entityList$=locator.getProperty(EntityHandler.ENTITY_LIST);
 	        String[] sa=Locator.toArray(entityList$);
-	       System.out.println("ArchiveHandler:compressEntitiesToTar:sa="+sa.length);
+	        if(debug)
+	         System.out.println("ArchiveHandler:compressEntitiesToTar:sa="+sa.length);
 	        String tarfile$ =archiveFile$; 
             File tarfile = new File(tarfile$);
             if (!tarfile.exists())
@@ -378,7 +381,6 @@ public class ArchiveHandler {
                 if (new File(entityHome$).exists()) {
                     append(entigrator,entigrator.getEntihome(), entityHome$, aos);
                 }
-                //icon$=entigrator.indx_getIcon(aSa);
                 icon$=entigrator.ent_getIconAtKey(aSa);
                 if(icon$!=null)
                 	append(entigrator,entigrator.getEntihome(), iconsHome$+icon$, aos);
@@ -424,7 +426,6 @@ public class ArchiveHandler {
                 entityHome$ = entigrator.ent_getHome(aSa);
                 if (new File(entityHome$).exists()) 
                     append(entigrator,entigrator.getEntihome(), entityHome$, aos);
-                //icon$=entigrator.indx_getIcon(aSa);
                 icon$=entigrator.ent_getIconAtKey(aSa);
                 if(icon$!=null)
                 	append(entigrator,entigrator.getEntihome(), iconsHome$+icon$, aos);
@@ -446,6 +447,7 @@ public class ArchiveHandler {
 			for (File file : files) {
 				fileList.add(file);
 				if (file.isDirectory()) {
+					if(debug)
 					System.out.println("directory:" + file.getPath());
 					getAllFiles(file, fileList);
 				} else {
@@ -987,7 +989,8 @@ public static String[] insertCache(Entigrator entigrator,String cache$,boolean k
 public static String insertEntities(JMainConsole console,String entihome$,String file$){
 	try{
        if(!ARCHIVE_CONTENT_ENTITIES.equals(detectContentOfArchive(file$))){
-    	  System.out.println("ArchiveHandler:insertEntites:wrong archive="+file$);
+    	  if(debug)
+    	   System.out.println("ArchiveHandler:insertEntites:wrong archive="+file$);
     	   return null;
        }
     	   

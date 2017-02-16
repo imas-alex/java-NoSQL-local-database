@@ -33,7 +33,6 @@ import gdt.data.entity.facet.ExtensionHandler;
 import gdt.data.grain.Core;
 import gdt.data.grain.Locator;
 import gdt.data.grain.Sack;
-import gdt.data.grain.Support;
 import gdt.data.store.Entigrator;
 import gdt.jgui.console.JConsoleHandler;
 import gdt.jgui.console.JContext;
@@ -130,9 +129,6 @@ public JEntityAddFacets() {
 		   locator.setProperty(Locator.LOCATOR_ICON_CONTAINER,Locator.LOCATOR_ICON_CONTAINER_CLASS);
 		   locator.setProperty(Locator.LOCATOR_ICON_CLASS,getClass().getName());
 			locator$=Locator.append(locator$,Locator.LOCATOR_ICON_FILE,"facet.png");
-		
-		   // String icon$=Support.readHandlerIcon(null,getClass(), "facet.png");
-		   //locator.setProperty(Locator.LOCATOR_ICON,icon$);
 		   return Locator.toString(locator);
 	}
 	/**
@@ -153,8 +149,6 @@ public JEntityAddFacets() {
 			
 			
 			putItems(getAllFacetAddItems());
-			//revalidate();
-			//repaint();
 		}catch(Exception e){
 			LOGGER.severe(e.toString());
 		}
@@ -163,6 +157,8 @@ public JEntityAddFacets() {
 private JFacetAddItem[] getAllFacetAddItems(){
 	try{
 		ArrayList<JFacetAddItem>fail=new ArrayList<JFacetAddItem>();
+		if(debug)
+			 System.out.println("JEntityAddFacets:getAllFacetAddItems:locator="+locator$);
 		Properties locator=Locator.toProperties(locator$);
 		entihome$=locator.getProperty(Entigrator.ENTIHOME);
 		entityKey$=locator.getProperty(EntityHandler.ENTITY_KEY);
@@ -207,14 +203,17 @@ private JFacetAddItem[] getAllFacetAddItems(){
 		fail.add(bookmarksItem);		
 		
 		//extensions
-		System.out.println("JEntityAddFacets:getAllFacetAddItems:check extensions");
+		if(debug)
+		 System.out.println("JEntityAddFacets:getAllFacetAddItems:check extensions");
 		Entigrator entigrator=console.getEntigrator(entihome$);
 		String[] sa=entigrator.indx_listEntities("entity","extension");
 		
 		String facetAddItemClass$;
 		JFacetAddItem addItem;
-		System.out.println("JEntityAddFacets:getAllFacetAddItems:sa="+sa.length);
+		
 		if(sa!=null){
+			if(debug)
+				System.out.println("JEntityAddFacets:getAllFacetAddItems:sa="+sa.length);
 			Sack extension;
 		for(String aSa:sa){
 			try{
@@ -222,10 +221,8 @@ private JFacetAddItem[] getAllFacetAddItems(){
 				if(debug)
 				System.out.println("JEntityAddFacets:getAllFacetAddItems:extension="+extension.getProperty("label"));
 				Core[] ca=extension.elementGet("content.jfacet");
-				//String extension$;
-				String facetAddClass$;
-				//String icon$;
-				String iconResource$;
+						String facetAddClass$;
+						String iconResource$;
 				Properties itemLocator;
 				if(ca!=null)
 					for(Core aCa:ca){
@@ -253,10 +250,6 @@ private JFacetAddItem[] getAllFacetAddItems(){
 							itemLocator.setProperty(Locator.LOCATOR_ICON_CLASS,facetAddClass$);
 							itemLocator.setProperty(Locator.LOCATOR_ICON_FILE,addItem.getIconResource());
 							itemLocator.setProperty(Locator.LOCATOR_ICON_LOCATION,aSa);
-							//icon$=ExtensionHandler.loadIcon(entigrator, aSa, iconResource$);
-							//if(icon$!=null)
-							//	itemLocator$=Locator.append(itemLocator$,Locator.LOCATOR_ICON,icon$);
-							
 						}
 						if(debug)
 						System.out.println("JEntityAddFacets:getAllFacetAddItems:item locator="+addItem.getClass().getName());
@@ -271,7 +264,8 @@ private JFacetAddItem[] getAllFacetAddItems(){
 			}
 		}
 	}else
-		System.out.println("JEntityAddFacets:getAllFacetAddItems:mo extensions found");	
+		if(debug)
+		System.out.println("JEntityAddFacets:getAllFacetAddItems:no extensions found");	
 	Collections.sort(fail,new ItemPanelComparator());
 	JFacetAddItem[]faia=fail.toArray(new JFacetAddItem[0]);
 	if(debug)
@@ -289,17 +283,14 @@ private JFacetAddItem[] getAllFacetAddItems(){
 }
 private void applyFacets(){
 	//System.out.println("EntityAddFacets:applyFacets:");
-	String facetHandlerClass$;
+	
 	try{
 		String[] sa=listSelectedItems();
         for(String aSa:sa ){
-        	
             aSa=Locator.append(aSa, BaseHandler.HANDLER_METHOD, JFacetAddItem.METHOD_ADD_FACET);
-            facetHandlerClass$=Locator.getProperty(aSa,JFacetOpenItem.FACET_HANDLER_CLASS);
-            if(facetHandlerClass$!=null)
-            //aSa=Locator.append(aSa,BaseHandler.HANDLER_CLASS,facetHandlerClass$ );
             aSa=Locator.append(aSa,Entigrator.ENTIHOME,entihome$);
             aSa=Locator.append(aSa,EntityHandler.ENTITY_KEY,entityKey$);
+            if(debug)
             System.out.println("EntityAddFacets:applyFacets:aSa:"+aSa);
             JConsoleHandler.execute(console, aSa);
         }

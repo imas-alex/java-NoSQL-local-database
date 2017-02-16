@@ -41,10 +41,8 @@ import org.apache.commons.codec.binary.Base64;
 import gdt.data.entity.BaseHandler;
 import gdt.data.entity.EntityHandler;
 import gdt.data.entity.FacetHandler;
-import gdt.data.entity.facet.BookmarksHandler;
 import gdt.data.entity.facet.FolderHandler;
 import gdt.data.store.FileExpert;
-import gdt.data.grain.Core;
 import gdt.data.grain.Locator;
 import gdt.data.grain.Sack;
 import gdt.data.grain.Support;
@@ -95,7 +93,7 @@ public class JFolderFacetOpenItem extends JFacetOpenItem implements JRequester,W
 			String action$=locator.getProperty(JRequester.REQUESTER_ACTION);
 			if(JFolderPanel.ACTION_EDIT_FILE.equals(action$)){
 				String text$=locator.getProperty(JTextEditor.TEXT);
-				String filePath$=locator.getProperty(JFolderPanel.FILE_PATH);
+				String filePath$=entihome$+"/"+locator.getProperty(JFolderPanel.FILE_PATH);
 				String selection$=locator.getProperty(JEntityDigestDisplay.SELECTION);
 				File file=new File(filePath$);
 				   if(!file.exists())
@@ -234,11 +232,6 @@ public boolean isRemovable() {
 			locator.setProperty(EntityHandler.ENTITY_KEY,entityKey$);
 		if(entihome$!=null)
 			locator.setProperty(Entigrator.ENTIHOME,entihome$);
-		/*
-		String icon$=Support.readHandlerIcon(null,JFolderPanel.class, "folder.png");
-		    if(icon$!=null)
-		    	locator.setProperty(Locator.LOCATOR_ICON,icon$);
-		    	*/
 		locator.setProperty(Locator.LOCATOR_ICON_CONTAINER,Locator.LOCATOR_ICON_CONTAINER_CLASS);
 		locator.setProperty(Locator.LOCATOR_ICON_CLASS,getClass().getName());
 		locator.setProperty(Locator.LOCATOR_ICON_FILE,"folder.png");
@@ -256,7 +249,6 @@ public boolean isRemovable() {
 		try{
 //			System.out.println("JFolderFacetOpenItem:getDigest:locator="+locator$);
 			Properties locator=Locator.toProperties(locator$);
-			//entihome$=locator.getProperty(Entigrator.ENTIHOME);
 			entihome$=entigrator.getEntihome();
 			entityKey$=locator.getProperty(EntityHandler.ENTITY_KEY);
 			String folderPath$=entihome$+"/"+entityKey$;
@@ -268,6 +260,7 @@ public boolean isRemovable() {
 				ArrayList<DefaultMutableTreeNode> fnl=new ArrayList<DefaultMutableTreeNode>();
 				Properties fileLocator;
 				String icon$;
+				String fpath$;
 				for(File f:fa){
 					fileLocator=new Properties();
 					fileLocator.setProperty(Locator.LOCATOR_TITLE, f.getName());
@@ -276,12 +269,14 @@ public boolean isRemovable() {
 					fileLocator.setProperty(BaseHandler.HANDLER_SCOPE, JConsoleHandler.CONSOLE_SCOPE);
 					fileLocator.setProperty(JFolderPanel.FILE_NAME, f.getName());
 //					System.out.println("JFolderFacetOpenItem:getDigest:file="+f.getName());
-					fileLocator.setProperty(JFolderPanel.FILE_PATH, f.getPath());
+					fpath$=f.getPath();
+					fpath$=fpath$.replace(entihome$, "");
+					if(fpath$.startsWith("/")||fpath$.startsWith("\\"))
+						fpath$=fpath$.substring(1,fpath$.length());
+					fileLocator.setProperty(JFolderPanel.FILE_PATH, fpath$);
 					fileLocator.setProperty(Locator.LOCATOR_TYPE, JFolderPanel.LOCATOR_TYPE_FILE);
 					fileLocator.setProperty(Locator.LOCATOR_CHECKABLE,Locator.LOCATOR_TRUE);
 					fileLocator.setProperty(JEntityDigestDisplay.NODE_TYPE,NODE_TYPE_FILE_NODE);
-					//icon$=Support.readHandlerIcon(null,getClass(), "file.png");
-					//fileLocator.setProperty(Locator.LOCATOR_ICON, icon$);
 					locator.setProperty(Locator.LOCATOR_ICON_CONTAINER,Locator.LOCATOR_ICON_CONTAINER_CLASS);
 			    	locator.setProperty(Locator.LOCATOR_ICON_CLASS,getClass().getName());
 			    	locator.setProperty(Locator.LOCATOR_ICON_FILE,"file.png"); 
@@ -370,7 +365,7 @@ public boolean isRemovable() {
 					public void actionPerformed(ActionEvent e) {
 					   try{
 						   Properties locator=Locator.toProperties(selection$);
-						   String filePath$=locator.getProperty(JFolderPanel.FILE_PATH);
+						   String filePath$=entihome$+"/"+locator.getProperty(JFolderPanel.FILE_PATH);
 						   File file=new File(filePath$);
 						   Desktop.getDesktop().open(file);
 					   }catch(Exception ee){
@@ -378,7 +373,7 @@ public boolean isRemovable() {
 					   }
 					}
 				    });
-			 String filePath$=locator.getProperty(JFolderPanel.FILE_PATH);  
+			 String filePath$=entihome$+"/"+locator.getProperty(JFolderPanel.FILE_PATH);  
 		     final File file=new File(filePath$);
 		     if(isTextFile(file)){
 		    	 JMenuItem editItem=new JMenuItem("Edit");
@@ -476,7 +471,7 @@ public boolean isRemovable() {
 			    String shUrl$=webHome$+"?"+WContext.WEB_LOCATOR+"="+Base64.encodeBase64URLSafeString(shLocator$.getBytes());
 		    	sb.append("<li class=\"menu_item\"><a href=\""+shUrl$+"\">Slideshow</a></li>");
 		    }
-		    sb.append("<li class=\"menu_item\"><a href=\""+webHome$.replace("entry", WContext.ABOUT)+"\">About</a></li>");
+		    sb.append("<li class=\"menu_item\"><a href=\""+WContext.ABOUT+"\">About</a></li>");
 		    sb.append("</ul>");
 		    sb.append("<table><tr><td>Base:</td><td><strong>");
 		    sb.append(entigrator.getBaseName());
@@ -494,7 +489,10 @@ public boolean isRemovable() {
 	           
 	            File folder=new File(folderPath$);
 	            File[] fa=folder.listFiles();
+	            String fpath$;
+	            String fname$;
 	            if(fa!=null)
+	            	
 	            for(File f:fa){
 	        		try{
 	        		foiLocator=new Properties();
@@ -506,23 +504,13 @@ public boolean isRemovable() {
 	        		foiLocator.setProperty(Entigrator.ENTIHOME, entigrator.getEntihome());
 					if(entityKey$!=null)
 					foiLocator.setProperty(EntityHandler.ENTITY_KEY, entityKey$);
-					//foiLocator.setProperty(BaseHandler.HANDLER_SCOPE, JConsoleHandler.CONSOLE_SCOPE);
-					foiLocator.setProperty(JFolderPanel.FILE_NAME, f.getName());
-					foiLocator.setProperty(JFolderPanel.FILE_PATH, f.getPath());
+					fname$= f.getName();
+					foiLocator.setProperty(JFolderPanel.FILE_NAME,fname$);
+					fpath$=entityKey$+"/"+fname$;
+					foiLocator.setProperty(JFolderPanel.FILE_PATH, fpath$);
 					foiLocator.setProperty(Locator.LOCATOR_TYPE, JFolderPanel.LOCATOR_TYPE_FILE);
-					//foiLocator.setProperty(Locator.LOCATOR_CHECKABLE,Locator.LOCATOR_TRUE);
-					
 					icon$=JConsoleHandler.getIcon(entigrator,Locator.toString(foiLocator));
-					
-					//foiLocator.setProperty(Locator.LOCATOR_ICON, icon$);
-					
-					//locator.setProperty(Locator.LOCATOR_ICON_CONTAINER,Locator.LOCATOR_ICON_CONTAINER_CLASS);
-			    	//locator.setProperty(Locator.LOCATOR_ICON_CLASS,getClass().getName());
-			    	//locator.setProperty(Locator.LOCATOR_ICON_FILE,"file.png");
-			    	
-					//foiLocator.setProperty(BaseHandler.HANDLER_CLASS,getClass().getName());
-					//foiLocator.setProperty(BaseHandler.HANDLER_METHOD,"openFile");
-	                	if(debug)
+	                //	if(debug)
 	                	//System.out.println("JFolderFacetOpenItem:getWebView:foi locator(prop)="+foiLocator);
 	                	sb.append("window.localStorage.setItem(\"back."+JEntityFacetPanel.class.getName()+"\",\""+this.getClass().getName()+"\");");
 	                
@@ -575,10 +563,8 @@ public boolean isRemovable() {
 	private boolean hasMultipleImages(String folderPath$){
 		if(folderPath$==null)
 			return false;
-		int i=0;
 		MimetypesFileTypeMap mimetypesFileTypeMap = new MimetypesFileTypeMap();
 		mimetypesFileTypeMap.addMimeTypes("image png  jpg jpeg bmp gif "); 
-		String fname$;
 		File folder=new File(folderPath$);
 		String[] sa=folder.list();
 		for(String s:sa)

@@ -24,7 +24,6 @@ import java.util.Properties;
 import java.util.logging.Logger;
 import gdt.data.entity.BaseHandler;
 import gdt.data.grain.Locator;
-import gdt.data.grain.Support;
 import gdt.data.store.Entigrator;
 import gdt.jgui.console.JConsoleHandler;
 import gdt.jgui.console.JContext;
@@ -104,11 +103,6 @@ public JMenu getContextMenu() {
 	    locator.setProperty(Locator.LOCATOR_ICON_CONTAINER, Locator.LOCATOR_ICON_CONTAINER_CLASS);
 	    locator.setProperty(Locator.LOCATOR_ICON_CLASS,JEntitiesPanel.class.getName());
 	    locator.setProperty(Locator.LOCATOR_ICON_FILE, "property.png"); 
-	    /*
-	    String icon$=Support.readHandlerIcon(entigrator,JEntityPrimaryMenu.class, "property.png");
-		if(icon$!=null)
-	     locator.setProperty(Locator.LOCATOR_ICON,icon$);
-	    */
 	    }
 	    
 	    if(propertyName$!=null)
@@ -155,14 +149,9 @@ private String getAddPropertyLocator(){
 			String locator$=textEditor.getLocator();
 			locator$=Locator.append(locator$, Locator.LOCATOR_TITLE,"Add property");
 			locator$=Locator.append(locator$, Entigrator.ENTIHOME,entihome$);
-		  //  Entigrator entigrator=console.getEntigrator(entihome$);
 		    locator$=Locator.append(locator$,Locator.LOCATOR_ICON_CONTAINER, Locator.LOCATOR_ICON_CONTAINER_CLASS);
 		       locator$=Locator.append(locator$,Locator.LOCATOR_ICON_CLASS,JEntityPrimaryMenu.class.getName());
 		       locator$=Locator.append(locator$,Locator.LOCATOR_ICON_FILE, "add.png"); 
-			/*
-		    String icon$=Support.readHandlerIcon(entigrator,JEntityPrimaryMenu.class, "add.png");
-			locator$=Locator.append(locator$, Locator.LOCATOR_ICON,icon$);
-			*/
 			String responseLocator$=getLocator();
 			responseLocator$=Locator.append(responseLocator$, BaseHandler.HANDLER_METHOD, "response");
 			responseLocator$=Locator.append(responseLocator$ ,JRequester.REQUESTER_ACTION,ACTION_ADD_PROPERTY);
@@ -184,10 +173,6 @@ private String getDeletePropertyLocator(){
 			locator.setProperty(Locator.LOCATOR_TITLE,"Delete '"+propertyName$+"'");
 			locator.setProperty(BaseHandler.HANDLER_CLASS,getClass().getName());
 			locator.setProperty(BaseHandler.HANDLER_METHOD,METHOD_DELETE_PROPERTY);
-			// Entigrator entigrator=console.getEntigrator(entihome$);
-			//String icon$=Support.readHandlerIcon(entigrator,JEntityPrimaryMenu.class, "delete.png");
-			
-			 //locator.setProperty(Locator.LOCATOR_ICON,icon$);
 			locator.setProperty(Locator.LOCATOR_ICON_CONTAINER, Locator.LOCATOR_ICON_CONTAINER_CLASS);
 			locator.setProperty(Locator.LOCATOR_ICON_CLASS,JEntityPrimaryMenu.class.getName());
 			locator.setProperty(Locator.LOCATOR_ICON_FILE, "delete.png"); 
@@ -205,8 +190,6 @@ private String getEditPropertyLocator(){
 		requestlocator$=Locator.append(requestlocator$, Entigrator.ENTIHOME,entihome$);
 		requestlocator$=Locator.append(requestlocator$, JTextEditor.TEXT,propertyName$);
 		 Entigrator entigrator=console.getEntigrator(entihome$);
-		 //String icon$=Support.readHandlerIcon(entigrator,JEntityPrimaryMenu.class, "edit.png");
-		//requestlocator$=Locator.append(requestlocator$,Locator.LOCATOR_ICON,icon$);
 		 requestlocator$=Locator.append(requestlocator$,Locator.LOCATOR_ICON_CONTAINER, Locator.LOCATOR_ICON_CONTAINER_CLASS);
 		 requestlocator$=Locator.append(requestlocator$,Locator.LOCATOR_ICON_CLASS,JEntityPrimaryMenu.class.getName());
 		 requestlocator$=Locator.append(requestlocator$,Locator.LOCATOR_ICON_FILE, "edit.png"); 
@@ -228,9 +211,6 @@ private String getEditPropertyLocator(){
 private String getClearPropertiesLocator(){
 	 try{
 		String responseLocator$=getLocator();
-		 Entigrator entigrator=console.getEntigrator(entihome$);
-		//String icon$=Support.readHandlerIcon(entigrator,JEntityPrimaryMenu.class, "broom.png");
-		//responseLocator$=Locator.append(responseLocator$,Locator.LOCATOR_ICON,icon$);
 		 responseLocator$=Locator.append(responseLocator$,Locator.LOCATOR_ICON_CONTAINER, Locator.LOCATOR_ICON_CONTAINER_CLASS);
 		 responseLocator$=Locator.append(responseLocator$,Locator.LOCATOR_ICON_CLASS,JEntityPrimaryMenu.class.getName());
 		 responseLocator$=Locator.append(responseLocator$,Locator.LOCATOR_ICON_FILE, "broom.png"); 

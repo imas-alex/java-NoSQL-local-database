@@ -3,24 +3,17 @@ package gdt.jgui.tool;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Properties;
-import java.util.logging.Logger;
-
 import javax.swing.BoxLayout;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
-import javax.swing.JPasswordField;
 import javax.swing.JTextField;
-
 import org.apache.commons.codec.binary.Base64;
-
 import gdt.data.entity.BaseHandler;
 import gdt.data.grain.Locator;
 import gdt.jgui.console.JConsoleHandler;
 import gdt.jgui.console.JContext;
 import gdt.jgui.console.JMainConsole;
-import gdt.jgui.console.JRequester;
-import gdt.jgui.entity.JEntityPrimaryMenu;
 
 public class JLocatorDecryptor extends JPanel implements JContext{
 	/**
@@ -31,6 +24,9 @@ public class JLocatorDecryptor extends JPanel implements JContext{
 	
 	private JTextField encrypted;
 	private JTextField decrypted;
+	public JLocatorDecryptor(){
+		super();
+	}
 	@Override
 	public JPanel getPanel() {
 		setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
@@ -83,11 +79,6 @@ public class JLocatorDecryptor extends JPanel implements JContext{
 	    locator.setProperty(JContext.CONTEXT_TYPE,getType());
 	    locator.setProperty(BaseHandler.HANDLER_SCOPE,JConsoleHandler.CONSOLE_SCOPE);
 	    locator.setProperty(BaseHandler.HANDLER_CLASS,getClass().getName());
-/*
-	    locator.setProperty(Locator.LOCATOR_ICON_CONTAINER,Locator.LOCATOR_ICON_CONTAINER_CLASS);
-	   	locator.setProperty(Locator.LOCATOR_ICON_CLASS,JEntityPrimaryMenu.class.getName());
-	   	locator.setProperty(Locator.LOCATOR_ICON_FILE,"lock.png");
-	   	*/ 
 	   return Locator.toString(locator);
 		
 	}

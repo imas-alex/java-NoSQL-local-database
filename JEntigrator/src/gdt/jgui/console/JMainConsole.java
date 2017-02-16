@@ -35,8 +35,6 @@ import javax.swing.JMenuItem;
 import javax.swing.AbstractAction;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.FocusEvent;
-import java.awt.event.FocusListener;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Hashtable;
@@ -51,9 +49,6 @@ import java.awt.event.WindowEvent;
 
 import javax.swing.JLabel;
 import javax.swing.border.BevelBorder;
-
-import org.apache.commons.codec.binary.Base64;
-
 import java.awt.Color;
 /**
  * This is the main application console.
@@ -323,8 +318,6 @@ public void putContext(JContext context,String locator$){
 	context.instantiate(this, locator$);
 	
 	frmEntigrator.getContentPane().add(context.getPanel(),BorderLayout.CENTER );
-	//context.getPanel().repaint();
-	//context.getPanel().revalidate();
 	frmEntigrator.setTitle(context.getTitle());
 	String ctxLocator$=context.getLocator();
 	if(ctxLocator$!=null)
@@ -351,9 +344,6 @@ public void putContext(JContext context,String locator$){
 	
 	frmEntigrator.getContentPane().revalidate();
 	frmEntigrator.getContentPane().repaint();
-	
-	
-//	System.out.println("MainConsole:putContext:FINISH:");
 }
 
 /**
@@ -385,8 +375,6 @@ private class OpenWorkspace extends AbstractAction {
 			    	locator.setProperty(BaseHandler.HANDLER_CLASS,JBasesPanel.class.getName());
 			    	locator.setProperty(Locator.LOCATOR_TITLE,entiroot$);
 			    	String locator$=Locator.toString(locator);
-			    	
-			    	//JConsoleHandler.execute(JMainConsole.this, locator$);
 			    	JBasesPanel bp=new JBasesPanel();
 			    	bp.instantiate(JMainConsole.this, locator$);
 			    	putContext(bp, bp.getLocator());

@@ -244,7 +244,8 @@ public class Entigrator {
   	 */
     public synchronized boolean save(Sack sack){
     	if (sack == null) {
-            System.out.println("Entigrator:save:sack is null");
+    		if(debug)
+    		System.out.println("Entigrator:save:sack is null");
             return false;
         }
     	// System.out.println("Entigrator:save:"+sack.getKey());
@@ -253,7 +254,6 @@ public class Entigrator {
     	 if(entityBase$.equals(base$)){
     		// System.out.println("Entigrator:save:put in cache:"+sack.getKey());
     	     entitiesCache.put(sack);
-    	    // saveNative(sack);
     	     return true;
     	 }else{
     	    return saveNative(sack);
@@ -1614,8 +1614,8 @@ public String col_addComponent(Sack container, Sack component) {
         Core containerRecord = new Core(container.getProperty("label"), key$, container.getKey());
         component.putElementItem("container", containerRecord);
         container.putElementItem("component.type", new Core(component.getProperty("entity"), key$, component.getProperty("component")));
-        save(component);
-        save(container);
+       replace(component);
+       replace(container);
         return key$;
     }
 

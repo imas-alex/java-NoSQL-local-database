@@ -2,8 +2,6 @@ package gdt.jgui.console;
 
 import java.awt.Color;
 import java.awt.Graphics2D;
-import java.awt.Image;
-
 import java.awt.image.BufferedImage;
 import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
@@ -251,14 +249,11 @@ public static String scaleIcon(String icon$){
 	if(icon$==null)
 		icon$=Support.readHandlerIcon(null,JEntitiesPanel.class, "icon.png");
 		byte[] ba=Base64.decodeBase64(icon$);
-	  ImageIcon icon = new ImageIcon(ba);
-	  Image image= icon.getImage();
 	  BufferedImage bi = new BufferedImage(24, 24, BufferedImage.TYPE_INT_RGB);
       Graphics2D g2d = (Graphics2D)bi.createGraphics();
       g2d.setColor(Color.WHITE);
       g2d.fillRect(0, 0, 24, 24);
-      boolean b = g2d.drawImage(image, 0, 0, 24, 24, null);
-	  ByteArrayOutputStream baos=new ByteArrayOutputStream();
+   	  ByteArrayOutputStream baos=new ByteArrayOutputStream();
 	  ImageIO.write(bi, "png", baos );
 	  g2d.dispose();
 	  ba=baos.toByteArray();

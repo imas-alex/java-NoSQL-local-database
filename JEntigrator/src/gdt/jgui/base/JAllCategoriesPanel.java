@@ -35,7 +35,6 @@ import gdt.data.grain.Support;
 import gdt.data.store.Entigrator;
 import gdt.jgui.console.JConsoleHandler;
 import gdt.jgui.console.JContext;
-import gdt.jgui.console.JFacetOpenItem;
 import gdt.jgui.console.JFacetRenderer;
 import gdt.jgui.console.JItemPanel;
 import gdt.jgui.console.JItemsListPanel;
@@ -79,13 +78,7 @@ Hashtable<String,JItemPanel> items;
 	    locator.setProperty(Locator.LOCATOR_ICON_CONTAINER, Locator.LOCATOR_ICON_CONTAINER_CLASS);
 	    locator.setProperty(Locator.LOCATOR_ICON_CLASS,getClass().getName());
 	    locator.setProperty(Locator.LOCATOR_ICON_FILE, "category.png"); 
-	   /*
-	    String icon$=Support.readHandlerIcon(null,JAllCategoriesPanel.class, "category.png");
-	    //System.out.println("JAllCategoriesPanel:getLocator:icon="+icon$);
-	    if(icon$!=null)
-	    	locator.setProperty(Locator.LOCATOR_ICON,icon$);
-	    	*/
-		    locator.setProperty(Locator.LOCATOR_TITLE, getTitle());
+	 	    locator.setProperty(Locator.LOCATOR_TITLE, getTitle());
 	    locator.setProperty(BaseHandler.HANDLER_SCOPE,JConsoleHandler.CONSOLE_SCOPE);
 	    locator.setProperty(BaseHandler.HANDLER_CLASS,getClass().getName());
 		return Locator.toString(locator);
@@ -155,10 +148,6 @@ Hashtable<String,JItemPanel> items;
 			  String handlerLocation$=Locator.getProperty(fh.getLocator(),BaseHandler.HANDLER_LOCATION);
 			  if(handlerLocation$!=null)
 				  cpLocator$=Locator.append(cpLocator$,Locator.LOCATOR_ICON_CLASS_LOCATION,handlerLocation$);
-	//		  cpLocator$=Locator.append(cpLocator$, JCategoryPanel.LIST_MEMBERS,Locator.LOCATOR_TRUE);
-//			  if(debug)
-	//			  System.out.println("AllCategoriesPanel:instantiate:category panel(2)="+cpLocator$);		 
-			  
 			  entigrator.putLocator(fh$, cpLocator$);
 			  }
 			  if(debug)
@@ -175,7 +164,6 @@ Hashtable<String,JItemPanel> items;
      			}	 
 			 }
 		 }
-	//	 System.out.println("AllCategoriesPanel:instantiate:END MAKE CATEGORY PANELS");
 			
 		Collections.sort(ipl,new ItemPanelComparator()); 
 		putItems(ipl.toArray(new JItemPanel[0]));
@@ -285,7 +273,6 @@ Hashtable<String,JItemPanel> items;
 			String webRequester$=locator.getProperty(WContext.WEB_REQUESTER);
 			if(debug)
 			System.out.println("JAllCategoriesPanel:web home="+webHome$+ " web requester="+webRequester$);
-			// String icon$=Support.readHandlerIcon(null,JBaseNavigator.class, "base.png");
 			StringBuffer sb=new StringBuffer();
 			sb.append("<!DOCTYPE html PUBLIC \"-//W3C//DTD HTML 4.01//EN\" \"http://www.w3.org/TR/html4/strict.dtd\">");
 			sb.append("<html>");
@@ -301,7 +288,7 @@ Hashtable<String,JItemPanel> items;
 		    navLocator$=Locator.append(navLocator$, Entigrator.ENTIHOME, entigrator.getEntihome());
 		    String navUrl$=webHome$+"?"+WContext.WEB_LOCATOR+"="+Base64.encodeBase64URLSafeString(navLocator$.getBytes());
 		    sb.append("<li class=\"menu_item\"><a href=\""+navUrl$+"\">Base</a></li>");
-		    sb.append("<li class=\"menu_item\"><a href=\""+webHome$.replace("entry", WContext.ABOUT)+"\">About</a></li>");
+		    sb.append("<li class=\"menu_item\"><a href=\""+WContext.ABOUT+"\">About</a></li>");
 		    sb.append("</ul>");
 		    sb.append("<table><tr><td>Base:</td><td><strong>");
 		    sb.append(entigrator.getBaseName());
@@ -331,10 +318,8 @@ Hashtable<String,JItemPanel> items;
 				       facetRenderer=JConsoleHandler.getFacetRenderer(entigrator, fh.getClass().getName());
                    	   fTitle$=facetRenderer.getCategoryTitle();
                    	   fIcon$=facetRenderer.getCategoryIcon(entigrator);
-                   	  // fLocator.setProperty(BaseHandler.HANDLER_CLASS,facetRenderer.getFacetOpenItem());
                    	   fLocator.setProperty(BaseHandler.HANDLER_CLASS,JCategoryPanel.class.getName());
                    	   fLocator.setProperty(JCategoryPanel.CATEGORY_TITLE,facetRenderer.getCategoryTitle());
-                   	   //fLocator.setProperty(JCategoryPanel.CATEGORY_TITLE,facetRenderer.getCategoryTitle());
                    	   fLocator.setProperty(EntityHandler.ENTITY_TYPE,facetRenderer.getEntityType());
                    	   fLocator.setProperty(JCategoryPanel.RENDERER,facetRenderer.getClass().getName());
                    	   
@@ -342,7 +327,7 @@ Hashtable<String,JItemPanel> items;
                    	   if(!sl.contains(fTitle$))
                    	        sl.add(fTitle$);
                    	   tab.put(fTitle$, item$);
-                   	   //sb.append(getItem(fTitle$,fIcon$,webHome$,Locator.toString(fLocator))+"<br>");
+
 					 }catch(Exception ee){
 						 Logger.getLogger(JAllCategoriesPanel.class.getName()).info(ee.toString());
 					 }
@@ -368,7 +353,6 @@ Hashtable<String,JItemPanel> items;
 	}
 	@Override
 	public String getWebConsole(Entigrator entigrator, String locator$) {
-		// TODO Auto-generated method stub
 		return null;
 	}
 	private String getItem(String fTitle$,String fIcon$, String webHome$,String locator$ ){

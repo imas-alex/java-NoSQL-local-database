@@ -317,9 +317,6 @@ public JFieldsEditor() {
 				locator.setProperty(EntityHandler.ENTITY_KEY,entityKey$);
 			if(entihome$!=null)
 				locator.setProperty(Entigrator.ENTIHOME,entihome$);
-			//	 String icon$=Support.readHandlerIcon(null,JFieldsEditor.class, "fields.png");
-			 //   if(icon$!=null)
-			  //  	locator.setProperty(Locator.LOCATOR_ICON,icon$);
 			locator.setProperty(Locator.LOCATOR_ICON_CONTAINER,Locator.LOCATOR_ICON_CONTAINER_CLASS);
 			locator.setProperty(Locator.LOCATOR_ICON_CLASS,getClass().getName());
 			locator.setProperty(Locator.LOCATOR_ICON_FILE,"fields.png");   
@@ -500,7 +497,6 @@ public JFieldsEditor() {
 			//entity.print();
 				entity.putAttribute(new Core(null,Entigrator.TIMESTAMP,String.valueOf(System.currentTimeMillis())));	
 				entity.putAttribute(new Core(null,Entigrator.SAVE_ID,Identity.key()));
-           //entigrator.save(entity);
 				entigrator.replace(entity);
 		}catch(Exception e){
 			LOGGER.severe(e.toString());
@@ -671,9 +667,7 @@ public JFieldsEditor() {
 				String icons$=entihome$+"/"+Entigrator.ICONS;
 				Support.addHandlerIcon(getClass(), "fields.png", icons$);
 				newEntity=entigrator.ent_reindex(newEntity);
-				
 			//	newEntity.print();
-			//	reindex(console, entigrator, newEntity);
 				JEntityFacetPanel efp=new JEntityFacetPanel(); 
 				String efpLocator$=efp.getLocator();
 				efpLocator$=Locator.append(efpLocator$,Locator.LOCATOR_TITLE,newEntity.getProperty("label"));
@@ -717,12 +711,6 @@ public JFieldsEditor() {
  */
 	@Override
 	public String addIconToLocator(String locator$) {
-		/*
-		String icon$=Support.readHandlerIcon(null,JFieldsEditor.class, "fields.png");
-	    if(icon$!=null)
-		return Locator.append(locator$, Locator.LOCATOR_ICON,icon$);
-	    else
-	    */
 	    	return locator$;
 	}
 	/**
@@ -779,7 +767,6 @@ public JFieldsEditor() {
 			String entihome$=locator.getProperty(Entigrator.ENTIHOME);
 			String entityKey$=locator.getProperty(EntityHandler.ENTITY_KEY);
 			Entigrator entigrator=console.getEntigrator(entihome$);
-			//Sack entity=entigrator.getEntityAtKey(entityKey$);
 			Sack entity=entigrator.ent_getAtKey(entityKey$);
 			String entityLocator$=EntityHandler.getEntityLocator(entigrator, entity);
 			FieldsHandler fieldsHandler=new FieldsHandler();

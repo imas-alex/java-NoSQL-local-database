@@ -60,11 +60,8 @@ import gdt.jgui.entity.JReferenceEntry;
 import gdt.jgui.tool.JIconSelector;
 import gdt.jgui.tool.JTextEditor;
 import gdt.jgui.tool.JTextEncrypter;
-
-import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JMenuItem;
-import javax.swing.JOptionPane;
 import javax.swing.JPopupMenu;
 import javax.swing.JLabel;
 
@@ -561,12 +558,6 @@ private void save(){
  */
 @Override
 	public String addIconToLocator(String locator$) {
-	/*	
-	String icon$=Support.readHandlerIcon(null,JEntitiesPanel.class, "globe.png");
-	    if(icon$!=null)
-		return Locator.append(locator$, Locator.LOCATOR_ICON,icon$);
-	    else
-	    */
 	    	return locator$;
 	}
 /**
@@ -746,8 +737,6 @@ private void save(){
 				try{
 					String iconFile$=locator.getProperty(JIconSelector.ICON);
 	//				System.out.println("WeblinkEditor:response:set icon="+iconFile$);
-					//String icon$=entigrator.readIconFromIcons(iconFile$);
-					//icon$=IconSelector.resize16in24(getBackground(), icon$);
 		             Sack entity=entigrator.getEntityAtKey(entityKey$);
 		             entity.putElementItem("web.icon", new Core(null,webLinkKey$,iconFile$));
 		             entigrator.save(entity);
@@ -835,9 +824,7 @@ public String getType() {
  */
 @Override
 public void close() {
-	//Entigrator entigrator=console.getEntigrator(entihome$);
-	//if(!entigrator.lock_release(entity))
-	//	JOptionPane.showMessageDialog(this, Entigrator.LOCK_CLOSE_MESSAGE);
+
 }
 /**
  * No action.

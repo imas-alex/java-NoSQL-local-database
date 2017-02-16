@@ -38,9 +38,6 @@ public class JExtensionRenderer extends gdt.jgui.entity.folder.JFolderPanel{
 				locator.setProperty(EntityHandler.ENTITY_KEY,entityKey$);
 			if(entihome$!=null)
 				locator.setProperty(Entigrator.ENTIHOME,entihome$);
-			// String icon$=Support.readHandlerIcon(null,getClass(), "facet.png");
-			 //   if(icon$!=null)
-			  //
 			locator.setProperty(Locator.LOCATOR_ICON_CONTAINER,Locator.LOCATOR_ICON_CONTAINER_CLASS);
 			locator.setProperty(Locator.LOCATOR_ICON_CLASS,getClass().getName());
 			locator.setProperty(Locator.LOCATOR_ICON_FILE,"extension.png");   

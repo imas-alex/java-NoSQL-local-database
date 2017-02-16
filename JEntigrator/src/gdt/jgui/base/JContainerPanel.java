@@ -24,11 +24,8 @@ import java.util.logging.Logger;
 
 import gdt.data.entity.BaseHandler;
 import gdt.data.entity.EntityHandler;
-import gdt.data.grain.Core;
-import gdt.data.grain.Identity;
 import gdt.data.grain.Locator;
 import gdt.data.grain.Sack;
-import gdt.data.grain.Support;
 import gdt.data.store.Entigrator;
 import gdt.jgui.console.JConsoleHandler;
 import gdt.jgui.console.JContext;
@@ -36,10 +33,8 @@ import gdt.jgui.console.JItemPanel;
 import gdt.jgui.console.JItemsListPanel;
 import gdt.jgui.console.JMainConsole;
 import gdt.jgui.console.JRequester;
-import gdt.jgui.console.ReloadDialog;
 import gdt.jgui.entity.JEntitiesPanel;
 import gdt.jgui.entity.JEntityFacetPanel;
-import gdt.jgui.entity.JEntityPrimaryMenu;
 import javax.swing.JMenu;
 /**
 * This context displays actions 
@@ -72,6 +67,7 @@ public class JContainerPanel extends JItemsListPanel implements JRequester{
 	String [] selectedEntities;
 	String requesterResponseLocator$;
 	String mode$;
+	boolean debug=false;
 	/**
 	 * Get context menu. 
 	 * @return null.
@@ -91,14 +87,9 @@ public class JContainerPanel extends JItemsListPanel implements JRequester{
 	    locator.setProperty(JContext.CONTEXT_TYPE,getType());
 	    if(entihome$!=null){
 	       locator.setProperty(Entigrator.ENTIHOME,entihome$);
-	       Entigrator entigrator=console.getEntigrator(entihome$);
 	       locator.setProperty(Locator.LOCATOR_ICON_CONTAINER, Locator.LOCATOR_ICON_CONTAINER_CLASS);
 	       locator.setProperty(Locator.LOCATOR_ICON_CLASS,getClass().getName());
 	       locator.setProperty(Locator.LOCATOR_ICON_FILE, "box.png"); 
-        /*
-	       String icon$=Support.readHandlerIcon(entigrator,JEntityPrimaryMenu.class, "box.png");
-			 locator.setProperty(Locator.LOCATOR_ICON,icon$);
-			 */
 	    }
 	    if(propertyName$!=null)
 		       locator.setProperty(JDesignPanel.PROPERTY_NAME,propertyName$);
@@ -184,13 +175,7 @@ private String getIncludeLocator(){
             locator$=Locator.append(locator$,Locator.LOCATOR_ICON_CONTAINER, Locator.LOCATOR_ICON_CONTAINER_CLASS);
             locator$=Locator.append(locator$,Locator.LOCATOR_ICON_CLASS,getClass().getName());
             locator$=Locator.append(locator$,Locator.LOCATOR_ICON_FILE, "include.png"); 
-         
-			/*
-            String icon$=Support.readHandlerIcon(entigrator,JEntityPrimaryMenu.class, "include.png");
-			if(icon$!=null)
-			locator$=Locator.append(locator$,Locator.LOCATOR_ICON,icon$);
-			*/
-			return locator$;
+       	return locator$;
 			}catch(Exception ee){
 				LOGGER.severe(ee.toString());
 				return null;
@@ -211,13 +196,7 @@ private String getExcludeLocator(){
            locator$=Locator.append(locator$,Locator.LOCATOR_ICON_CONTAINER, Locator.LOCATOR_ICON_CONTAINER_CLASS);
            locator$=Locator.append(locator$,Locator.LOCATOR_ICON_CLASS,getClass().getName());
            locator$=Locator.append(locator$,Locator.LOCATOR_ICON_FILE, "exclude.png"); 
-          /*
-           String icon$=Support.readHandlerIcon(entigrator,JEntityPrimaryMenu.class, "exclude.png");
-           //String icon$=Support.readHandlerIcon(JEntityPrimaryMenu.class, "exclude.png");
-           if(icon$!=null)
-			locator$=Locator.append(locator$,Locator.LOCATOR_ICON,icon$);
-			*/
-			return locator$;
+       	return locator$;
 			}catch(Exception ee){
 				LOGGER.severe(ee.toString());
 				return null;
@@ -238,12 +217,7 @@ private String getListComponentsLocator(){
         locator$=Locator.append(locator$,Locator.LOCATOR_ICON_CONTAINER, Locator.LOCATOR_ICON_CONTAINER_CLASS);
         locator$=Locator.append(locator$,Locator.LOCATOR_ICON_CLASS,getClass().getName());
         locator$=Locator.append(locator$,Locator.LOCATOR_ICON_FILE, "entities.png"); 
-        /*
-        String icon$=Support.readHandlerIcon(entigrator,JEntityPrimaryMenu.class, "entities.png");
-		if(icon$!=null)
-		locator$=Locator.append(locator$,Locator.LOCATOR_ICON,icon$);
-		*/
-		return locator$;
+       return locator$;
 			}catch(Exception ee){
 				LOGGER.severe(ee.toString());
 				return null;
@@ -256,12 +230,7 @@ private String getFacetsLocator(){
        locator$=Locator.append(locator$, Locator.LOCATOR_TITLE,"Facets");
        locator$=Locator.append(locator$,BaseHandler.HANDLER_METHOD,"response"); 
        locator$=Locator.append(locator$,JRequester.REQUESTER_ACTION,ACTION_FACETS);
-		/*
-       String icon$=Support.readHandlerIcon(entigrator,JEntityPrimaryMenu.class, "facet.png");
-		if(icon$!=null)
-		locator$=Locator.append(locator$,Locator.LOCATOR_ICON,icon$);
-		*/
-       locator$=Locator.append(locator$,Locator.LOCATOR_ICON_CONTAINER, Locator.LOCATOR_ICON_CONTAINER_CLASS);
+	   locator$=Locator.append(locator$,Locator.LOCATOR_ICON_CONTAINER, Locator.LOCATOR_ICON_CONTAINER_CLASS);
        locator$=Locator.append(locator$,Locator.LOCATOR_ICON_CLASS,getClass().getName());
        locator$=Locator.append(locator$,Locator.LOCATOR_ICON_FILE, "facet.png"); 
 		return locator$;
@@ -327,8 +296,8 @@ private String getFacetsLocator(){
 				    dpLocator$=Locator.append(dpLocator$, JDesignPanel.CONTAINER_LABEL, containerLabel$);
 				    dpLocator$=Locator.append(dpLocator$, JDesignPanel.CONTAINERS_LIST, containersList$);
 				    dpLocator$=Locator.append(dpLocator$, JDesignPanel.MODE, mode$);
+				    if(debug)
 				    System.out.println("JContainerPanel:response:locator="+dpLocator$);
-					
 				    JConsoleHandler.execute(console, dpLocator$);
 				    
 				return;

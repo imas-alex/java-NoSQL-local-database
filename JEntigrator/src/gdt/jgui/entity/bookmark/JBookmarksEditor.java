@@ -150,7 +150,6 @@ public class JBookmarksEditor extends JItemsListPanel implements JFacetRenderer,
 				                   String bmLocator$=be.getLocator();
 				                   bmLocator$=Locator.append(bmLocator$, EntityHandler.ENTITY_KEY, entityKey$);	 
 				                   bmLocator$=Locator.append(bmLocator$, Entigrator.ENTIHOME, entihome$);	 
-								  //entigrator.save(entity);
 								  entigrator.replace(entity);
 								  JConsoleHandler.execute(console,bmLocator$);
 							   }
@@ -177,7 +176,6 @@ public class JBookmarksEditor extends JItemsListPanel implements JFacetRenderer,
 					@Override
 					public void actionPerformed(ActionEvent e) {
 						Entigrator entigrator=console.getEntigrator(entihome$);
-						//entigrator.save(entity);
 						entigrator.replace(entity);
 						console.back();
 					}
@@ -295,7 +293,6 @@ protected void paste(){
 		try{
 			if(debug)
 			System.out.println("JBookmarkskEditor.instantiate:locator="+locator$);
-			//removeAll();
 			this.console=console;
 			Properties locator=Locator.toProperties(locator$);
 			entihome$=locator.getProperty(Entigrator.ENTIHOME);

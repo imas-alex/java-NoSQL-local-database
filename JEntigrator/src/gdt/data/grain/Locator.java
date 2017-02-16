@@ -151,8 +151,7 @@ public class Locator {
     public static Properties toProperties(String locator$) {
        // System.out.println("Locator:toProperties:locator="+locator$);
     	if (locator$ == null){
-        	//Logger.getLogger(Locator.class.getName()).severe(":toProperties:locator is null");
-            return null;
+             return null;
         }
         Properties props = new Properties();
         String[] sa = locator$.split(NAME_DELIMITER);

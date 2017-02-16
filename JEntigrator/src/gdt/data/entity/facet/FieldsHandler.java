@@ -48,7 +48,6 @@ public final static String FIELDS="fields";
 	@Override
 	public boolean isApplied(Entigrator entigrator, String locator$) {
 		try{
-			//System.out.println("FieldsHandler:isApplied:locator="+locator$);
 			Properties locator=Locator.toProperties(locator$);
 			String entityKey$=locator.getProperty(EntityHandler.ENTITY_KEY);
 			Sack entity=entigrator.getEntityAtKey(entityKey$);

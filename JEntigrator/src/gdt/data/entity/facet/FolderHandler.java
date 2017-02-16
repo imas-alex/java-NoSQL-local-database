@@ -44,17 +44,13 @@ public class FolderHandler extends FacetHandler{
 	@Override
 	public boolean isApplied(Entigrator entigrator, String locator$) {
 		try{
-//		System.out.println("FolderHandler:isApplied:locator="+locator$);
 			Properties locator=Locator.toProperties(locator$);
 			entityKey$=locator.getProperty(EntityHandler.ENTITY_KEY);
 			boolean result=false;
 			Sack entity=entigrator.getEntityAtKey(entityKey$);
-//			System.out.println("FolderHandler:isApplied:entity="+entity.getProperty("label"));
 			String folder$=entity.getProperty("folder");
 			if(folder$!=null&&!Locator.LOCATOR_FALSE.equals(folder$)){
-//				System.out.println("FolderHandler:isApplied:2");
 			    if(entity.getElementItem("fhandler", getClass().getName())==null){	
-//					System.out.println("FolderHandler:isApplied:3");
 					if(!entity.existsElement("fhandler"))
 						entity.createElement("fhandler");
 					entity.putElementItem("fhandler", new Core(null,getClass().getName(),null));

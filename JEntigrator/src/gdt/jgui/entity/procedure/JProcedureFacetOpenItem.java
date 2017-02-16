@@ -35,7 +35,7 @@ import gdt.jgui.console.JFacetOpenItem;
 import gdt.jgui.console.JMainConsole;
 import gdt.jgui.console.JRequester;
 import gdt.jgui.entity.JEntityFacetPanel;
-import gdt.jgui.tool.JTextEditor;
+
 /**
  * This class represents the procedure facet item in the list
  * of  entity's facets.
@@ -68,11 +68,6 @@ public String getLocator(){
 		locator.setProperty(EntityHandler.ENTITY_KEY,entityKey$);
 	if(entihome$!=null)
 		locator.setProperty(Entigrator.ENTIHOME,entihome$);
-	/*
-	String icon$=Support.readHandlerIcon(null,getClass(), "procedure.png");
-    if(icon$!=null)
-    	locator.setProperty(Locator.LOCATOR_ICON,icon$);
-    	*/
 	locator.setProperty(Locator.LOCATOR_ICON_CONTAINER,Locator.LOCATOR_ICON_CONTAINER_CLASS);
 	locator.setProperty(Locator.LOCATOR_ICON_CLASS,getClass().getName());
 	locator.setProperty(Locator.LOCATOR_ICON_FILE,"procedure.png");

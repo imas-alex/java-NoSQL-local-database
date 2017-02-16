@@ -83,7 +83,6 @@ public static JFacetOpenItem getFacetOpenItemInstance(JMainConsole console,Strin
 			 facetOpenItem=(JFacetOpenItem)Class.forName(handler$).newInstance(); 
 		else
 			facetOpenItem= (JFacetOpenItem)ExtensionHandler.loadHandlerInstance(entigrator, extension$, handler$);
-		//facetOpenItem.console=console;
 		Properties  foiLocator=Locator.toProperties(facetOpenItem.getLocator());
 		foiLocator.setProperty(Entigrator.ENTIHOME, entihome$);
 		foiLocator.setProperty(EntityHandler.ENTITY_KEY, entityKey$);
@@ -103,7 +102,6 @@ public static JFacetOpenItem getFacetOpenItemInstance(JMainConsole console,Strin
 		 return facetOpenItem;
 		}catch(Exception e){
 			Logger.getLogger(JFacetAddItem.class.getName()).severe(e.toString());
-			//e.printStackTrace();
 			return null;
 		}
 	

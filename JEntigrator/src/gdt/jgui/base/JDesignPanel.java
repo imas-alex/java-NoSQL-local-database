@@ -30,18 +30,14 @@ import gdt.data.grain.Locator;
 import gdt.data.grain.Sack;
 import gdt.data.grain.Support;
 import gdt.data.store.Entigrator;
-import gdt.jgui.console.JClipboard;
 import gdt.jgui.console.JConsoleHandler;
 import gdt.jgui.console.JContext;
 import gdt.jgui.console.JMainConsole;
-import gdt.jgui.console.ReloadDialog;
 import gdt.jgui.console.WContext;
 import gdt.jgui.console.WUtils;
 import gdt.jgui.entity.JEntitiesPanel;
 import gdt.jgui.entity.JEntityPrimaryMenu;
-import gdt.jgui.tool.JSearchPanel;
 import gdt.jgui.entity.JEntityFacetPanel;
-
 import javax.swing.ComboBoxModel;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JDialog;
@@ -68,8 +64,6 @@ import org.apache.commons.codec.binary.Base64;
 
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.io.File;
-import java.net.URL;
 /**
  * This class displays the general-purpose low-level
  * database management control.
@@ -115,7 +109,7 @@ public class JDesignPanel extends JPanel implements JContext,WContext{
 	private Logger LOGGER =Logger.getLogger(JDesignPanel.class.getName());
 	private JMainConsole console;
 	protected String saveId$;
-	boolean debug=true;
+	boolean debug=false;
 	/**
 	 * The default constructor.
 	 */
@@ -414,12 +408,6 @@ private void copy(){
 		return;
 	String locator$=EntityHandler.getEntityLocator(entigrator, entity);
 	console.clipboard.putString(locator$);
-	/*
-	String copyLocator$=JClipboard.getPutLocator(new String[]{locator$});
-	String icon$=Support.readHandlerIcon(JEntityPrimaryMenu.class, "copy.png");
-	copyLocator$= Locator.append(copyLocator$,Locator.LOCATOR_ICON,icon$);
-	JConsoleHandler.execute(console, copyLocator$);
-	*/
 }
 private void reindex(){
 	String entityLabel$=(String)entityComboBox.getSelectedItem();
@@ -660,17 +648,10 @@ public String getLocator() {
 	    locator.setProperty(MODE, mode$);
 	   if(entihome$!=null){
 	      locator.setProperty(Entigrator.ENTIHOME,entihome$);
-	      Entigrator entigrator=console.getEntigrator(entihome$);
-	      locator.setProperty(Locator.LOCATOR_ICON_CONTAINER, Locator.LOCATOR_ICON_CONTAINER_CLASS);
+	        locator.setProperty(Locator.LOCATOR_ICON_CONTAINER, Locator.LOCATOR_ICON_CONTAINER_CLASS);
 		    locator.setProperty(Locator.LOCATOR_ICON_CLASS,getClass().getName());
 		    locator.setProperty(Locator.LOCATOR_ICON_FILE, "design.png"); 
-	   /*
-	      String icon$=Support.readHandlerIcon(entigrator,JBasesPanel.class, "design.png");
-	    if(icon$!=null)
-	    	locator.setProperty(Locator.LOCATOR_ICON,icon$);
-	    	*/
 	   }
-	  
 	    locator.setProperty(BaseHandler.HANDLER_SCOPE,JConsoleHandler.CONSOLE_SCOPE);
 	    locator.setProperty(BaseHandler.HANDLER_CLASS,JDesignPanel.class.getName());
 	    String propertyName$=(String)propertyComboBox.getSelectedItem();
@@ -717,8 +698,6 @@ public void close(){
 		//System.out.println("DesignPanel:instantiate:locator="+locator$);
 		Properties locator=Locator.toProperties(locator$);
 		entihome$=locator.getProperty(Entigrator.ENTIHOME);
-		Entigrator entigrator=console.getEntigrator(entihome$);
-		//saveId$=entigrator.store_saveId();
 		String mode$=locator.getProperty(MODE);
 		if(mode$!=null){
 			this.mode$=mode$;
@@ -801,8 +780,8 @@ public void close(){
 		String entityLabel$=(String)entityComboBox.getSelectedItem();
 		if(entityLabel$!=null){
 			String entityKey$=entigrator.indx_keyAtLabel(entityLabel$);
-			System.out.println("JDesignPanel:showValuePanel:entity label="+entityLabel$+ " key="+entityKey$);
-			//tring entityKey$=entigrator.indx_keyAtLabel(label$)
+			if(debug)
+			 System.out.println("JDesignPanel:showValuePanel:entity label="+entityLabel$+ " key="+entityKey$);
 			locator$=Locator.append(locator$,EntityHandler.ENTITY_KEY,entityKey$);
 		}
 		String[] sa=getSelectedEntities();
@@ -823,7 +802,6 @@ public void close(){
 //		System.out.println("DesignPanel:showEntityPanel:entity locator="+entityLocator$);
 		Properties entityLocator=Locator.toProperties(entityLocator$);
 		String entityKey$=entityLocator.getProperty(EntityHandler.ENTITY_KEY);
-		//String entityIcon$=entityLocator.getProperty(Locator.LOCATOR_ICON);
 		JEntityFacetPanel erm=new JEntityFacetPanel();
 		String locator$=erm.getLocator();
 		locator$=Locator.append(locator$,Entigrator.ENTIHOME,entihome$);
@@ -835,10 +813,6 @@ public void close(){
 	    	 locator$=Locator.append(locator$,Locator.LOCATOR_ICON_CONTAINER, Locator.LOCATOR_ICON_CONTAINER_ICONS);
 	    	 locator$=Locator.append(locator$,Locator.LOCATOR_ICON_FILE, iconFile$);
 	    }
-		/*
-		if(entityIcon$!=null)
-		   locator$=Locator.append(locator$,Locator.LOCATOR_ICON,entityIcon$);
-		   */
 		JConsoleHandler.execute(console, locator$);
 		}catch(Exception e){
 			LOGGER.severe(e.toString());
@@ -869,9 +843,10 @@ public void close(){
 	    	String containersList$=getList(containerComboBox);
 	    	locator$=Locator.append(locator$,CONTAINERS_LIST,containersList$);
 	    }else
+	    	if(debug)
 	    	System.out.println("DesignPanel:showContainersPanel:no containers");
 	    locator$=Locator.append(locator$,MODE,mode$);
-//		System.out.println("DesignPanel:showContainersPanel:locator="+Locator.remove(locator$,Locator.LOCATOR_ICON));
+
 		JConsoleHandler.execute(console, locator$);
 	}
 private void listContainers(){
@@ -952,7 +927,7 @@ public String getWebView(Entigrator entigrator,String locator$) {
 	    navLocator$=Locator.append(navLocator$, Entigrator.ENTIHOME, entigrator.getEntihome());
 	    String navUrl$=webHome$+"?"+WContext.WEB_LOCATOR+"="+Base64.encodeBase64URLSafeString(navLocator$.getBytes());
 	    sb.append("<li class=\"menu_item\"><a href=\""+navUrl$+"\">Base</a></li>");
-	    sb.append("<li class=\"menu_item\"><a href=\""+webHome$.replace("entry", WContext.ABOUT)+"\">About</a></li>");
+	    sb.append("<li class=\"menu_item\"><a href=\""+WContext.ABOUT+"\">About</a></li>");
 	    sb.append("</ul>");
 	    //sb.append("<h3>"+entigrator.getBaseName()+"</h3>");
 	    sb.append("<table>");
@@ -1077,7 +1052,6 @@ public String getWebView(Entigrator entigrator,String locator$) {
 	    sb.append("var value = document.getElementById(\"vselector\").value;");
 	    sb.append("if(value!=null)");
 	    sb.append("locator=appendProperty(locator,\""+PROPERTY_VALUE+"\",value);");
-	   // sb.append("var entity = document.getElementById(\"eselector\").value;");
 	  
 	    urlHeader$=webHome$+"?"+WContext.WEB_LOCATOR+"=";
 	    sb.append("console.log(locator);");
@@ -1107,9 +1081,6 @@ public String getWebView(Entigrator entigrator,String locator$) {
 	    sb.append("var locator =\""+locator$+"\";");
 	    sb.append("var propertyName = document.getElementById(\"pselector\").value;");
 	    sb.append("locator=appendProperty(locator,\""+PROPERTY_NAME+"\",propertyName);");
-	    //sb.append("locator=removeProperty(locator,\""+PROPERTY_VALUE+"\");");
-	    //sb.append("locator=removeProperty(locator,\""+PROPERTY_NAME+"\");");
-	    //sb.append("locator=appendProperty(locator,\""+EntityHandler.ENTITY_LABEL+"\",entityLabel);");
 	    sb.append("locator=appendProperty(locator,\""+BaseHandler.HANDLER_CLASS+"\",\""+JEntitiesPanel.class.getName()+"\");");
 	    sb.append("locator=appendProperty(locator,\""+WContext.WEB_REQUESTER+"\",\""+this.getClass().getName()+"\");");
 	    locator$=Locator.append(locator$,Entigrator.ENTIHOME,entigrator.getEntihome());

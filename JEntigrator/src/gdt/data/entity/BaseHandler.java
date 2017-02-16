@@ -146,7 +146,6 @@ public static String execute(Entigrator entigrator,String locator$){
 	String method$=locator.getProperty(HANDLER_METHOD);
 	Class<?> cls = Class.forName(handlerClass$);
     Object obj = cls.newInstance();
-    	// System.out.println("ConsoleHandler:execute:context="+handlerClass$);
     Method method = cls.getDeclaredMethod(method$,Entigrator.class,String.class);
    	 return (String)method.invoke(obj,entigrator, locator$);
    	   }catch(Exception e){
@@ -179,17 +178,14 @@ public static FacetHandler[] listAllHandlers( Entigrator entigrator){
 	FacetHandler[] fha=ExtensionHandler.listExtensionHandlers(entigrator);
 	
 	if(fha!=null){
-		//System.out.println("BaseHandler:listAllHandlers:fha="+fha.length);
+		
 		for(FacetHandler fh:fha){
 		if(debug)	
 			System.out.println("BaseHandler:listAllHandlers:fh="+fh.getClass().getName());
 			fl.add(fh);
 		}
 	}
-	//else
-	//	System.out.println("BaseHandler:listAllHandlers:no extensions");
-//	System.out.println("BaseHandler:listAllHandlers:END EXTENSIONS");
- 
+	
  
 	return fl.toArray(new FacetHandler[0]);
 	}catch(Exception e){

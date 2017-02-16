@@ -41,14 +41,11 @@ public class BookmarksHandler extends FacetHandler{
 	@Override
 	public boolean isApplied(Entigrator entigrator, String locator$) {
 		try{
-//			System.out.println("BookmarksHandler;isApplied:BEGIN");
 			Properties locator=Locator.toProperties(locator$);
      		entityKey$=locator.getProperty(EntityHandler.ENTITY_KEY);
 			boolean result=false;
 			Sack entity=entigrator.getEntityAtKey(entityKey$);
 	    	String bookmarks=entity.getProperty("bookmarks");
-	    	
-//	    	System.out.println("BookmarksHandler:isApplied:bookmarks="+bookmarks);
 				if(bookmarks!=null&&!Locator.LOCATOR_FALSE.equals(bookmarks)){
 				    if(entity.getElementItem("fhandler", getClass().getName())==null){	
 						if(!entity.existsElement("fhandler"))

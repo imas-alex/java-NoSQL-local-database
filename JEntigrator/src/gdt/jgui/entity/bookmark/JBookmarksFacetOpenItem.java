@@ -207,7 +207,6 @@ static boolean debug=false;
 			Properties locator=Locator.toProperties(locator$);
 			String entihome$=locator.getProperty(Entigrator.ENTIHOME);
 			String entityKey$=locator.getProperty(EntityHandler.ENTITY_KEY);
-			//JBookmarksFacetOpenItem bookmarksEditor=new JBookmarksFacetOpenItem();
 			JBookmarksEditor bookmarksEditor=new JBookmarksEditor();
 			String beLocator$=bookmarksEditor.getLocator();
 			beLocator$=Locator.append(beLocator$, Entigrator.ENTIHOME, entihome$);
@@ -227,10 +226,7 @@ static boolean debug=false;
 		try{
 //			System.out.println("JBookmarksFacetOpenItem:getDigest:locator="+locator$);
 			Properties locator=Locator.toProperties(locator$);
-			//entihome$=locator.getProperty(Entigrator.ENTIHOME);
-			//entihome$=entigrator.getEntihome();
 			entityKey$=locator.getProperty(EntityHandler.ENTITY_KEY);
-			//Entigrator entigrator=console.getEntigrator(entihome$);
 			Sack entity=entigrator.getEntityAtKey(entityKey$);
 			Core[]ca=entity.elementGet("jbookmark");
 			if(ca==null)
@@ -241,12 +237,10 @@ static boolean debug=false;
 				for(Core aCa:ca){
 				bookmarkNode=new DefaultMutableTreeNode();
 				itemLocator$=aCa.value;
+				if(debug)
+					System.out.println("JBookmarksFacetOpenItem:getDigest:bookmark locator="+aCa.value);
 				itemLocator$=Locator.append(itemLocator$, BaseHandler.HANDLER_CLASS, getClass().getName());
-				/*
-				itemLocator$=Locator.append(itemLocator$,Locator.LOCATOR_ICON_CONTAINER,Locator.LOCATOR_ICON_CONTAINER_CLASS);
-				itemLocator$=Locator.append(itemLocator$,Locator.LOCATOR_ICON_CLASS,getClass().getName());
-				itemLocator$=Locator.append(itemLocator$,Locator.LOCATOR_ICON_FILE,"bookmark.png");
-			*/
+				
 				bookmarkNode.setUserObject(itemLocator$);
 				nl.add(bookmarkNode);
 			}
@@ -290,7 +284,7 @@ static boolean debug=false;
 					   String entihome$=locator.getProperty(Entigrator.ENTIHOME);
 					   String type$=locator.getProperty(Locator.LOCATOR_TYPE);
 					   if(JFolderPanel.LOCATOR_TYPE_FILE.equals(type$)){
-						   String filePath$=locator.getProperty(JFolderPanel.FILE_PATH);
+						   String filePath$=entihome$+"/"+locator.getProperty(JFolderPanel.FILE_PATH);
 						   File file=new File(filePath$);
 							Desktop.getDesktop().open(file);
 							return;
@@ -359,7 +353,7 @@ public String getWebView(Entigrator entigrator, String locator$) {
 		    String shUrl$=webHome$+"?"+WContext.WEB_LOCATOR+"="+Base64.encodeBase64URLSafeString(shLocator$.getBytes());
 	    	sb.append("<li class=\"menu_item\"><a href=\""+shUrl$+"\">Slideshow</a></li>");
 	    }
-	    sb.append("<li class=\"menu_item\"><a href=\""+webHome$.replace("entry", WContext.ABOUT)+"\">About</a></li>");
+	    sb.append("<li class=\"menu_item\"><a href=\""+WContext.ABOUT+"\">About</a></li>");
 	    sb.append("</ul>");
 	    sb.append("<table><tr><td>Base:</td><td><strong>");
 	    sb.append(entigrator.getBaseName());
@@ -381,6 +375,7 @@ public String getWebView(Entigrator entigrator, String locator$) {
             JEntityFacetPanel facetPanel=new JEntityFacetPanel();
             String facetPanelType$=facetPanel.getType();
             String foiType$;
+           
             for(Core c:ca){
         		try{
         		foiLocator$=c.value;
@@ -388,7 +383,11 @@ public String getWebView(Entigrator entigrator, String locator$) {
             		System.out.println("JBookmarksFacetOpenItem:getWebView: bm locator="+foiLocator$);
         		foiTitle$=c.type;
         		foiLocator=Locator.toProperties(foiLocator$);
+        		foiLocator.setProperty(Entigrator.ENTIHOME,entigrator.getEntihome());
                 foiType$=foiLocator.getProperty(JContext.CONTEXT_TYPE);
+                ///foiHandler$=foiLocator.getProperty(BaseHandler.HANDLER_CLASS);
+                
+                	
                 foiIcon$=JConsoleHandler.getIcon(entigrator,c.value);
                 if(debug)
             		System.out.println("JBookmarksFacetOpenItem:getWebView: foiType="+foiType$+" facet panel type="+facetPanelType$);

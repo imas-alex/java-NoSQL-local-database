@@ -59,9 +59,10 @@ public class JBookmarkItem extends JItemPanel {
 		super(console,locator$);
 		if(debug)
 			System.out.println("JBookmarksItem:locator="+locator$);
-		final String filePath$=Locator.getProperty(locator$, JFolderPanel.FILE_PATH);
-		final String entihome$=Locator.getProperty(locator$, Entigrator.ENTIHOME);
 		
+		
+		final String entihome$=Locator.getProperty(locator$, Entigrator.ENTIHOME);
+		final String filePath$=entihome$+"/"+Locator.getProperty(locator$, JFolderPanel.FILE_PATH);
 		popup = new JPopupMenu();
 		JMenuItem renameItem=new JMenuItem("Rename");
 		   popup.add(renameItem);

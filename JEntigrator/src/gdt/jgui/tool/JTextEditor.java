@@ -22,10 +22,8 @@ import java.util.Properties;
 import java.util.logging.Logger;
 import gdt.data.entity.BaseHandler;
 import gdt.data.entity.EntityHandler;
-import gdt.data.grain.Core;
 import gdt.data.grain.Locator;
 import gdt.data.grain.Sack;
-import gdt.data.grain.Support;
 import gdt.data.store.Entigrator;
 import gdt.jgui.base.JBaseNavigator;
 import gdt.jgui.console.JConsoleHandler;
@@ -34,12 +32,8 @@ import gdt.jgui.console.JMainConsole;
 import gdt.jgui.console.JRequester;
 import gdt.jgui.console.WContext;
 import gdt.jgui.console.WUtils;
-import gdt.jgui.entity.JEntitiesPanel;
-import gdt.jgui.entity.JEntityDigestDisplay;
 import gdt.jgui.entity.JEntityPrimaryMenu;
-import gdt.jgui.entity.JEntityStructurePanel;
 import gdt.jgui.entity.fields.JFieldsFacetOpenItem;
-
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
@@ -178,8 +172,6 @@ public JTextEditor() {
 	    	locator.setProperty(JRequester.REQUESTER_RESPONSE_LOCATOR, requesterResponseLocator$);
 	   locator.setProperty(BaseHandler.HANDLER_SCOPE,JConsoleHandler.CONSOLE_SCOPE);
 	   locator.setProperty(BaseHandler.HANDLER_CLASS,JTextEditor.class.getName());
-	 //  String icon$=Support.readHandlerIcon(null,JEntitiesPanel.class, "edit.png");
-      // locator.setProperty(Locator.LOCATOR_ICON,icon$);
 	   locator.setProperty(Locator.LOCATOR_ICON_CONTAINER,Locator.LOCATOR_ICON_CONTAINER_CLASS);
 	   	locator.setProperty(Locator.LOCATOR_ICON_CLASS,JEntityPrimaryMenu.class.getName());
 	   	locator.setProperty(Locator.LOCATOR_ICON_FILE,"edit.png"); 
@@ -203,10 +195,6 @@ public JTextEditor() {
 		entihome$=locator.getProperty(Entigrator.ENTIHOME);
 		if(Locator.LOCATOR_TRUE.equals(locator.getProperty(Entigrator.LOCK_STORE))){
 			Entigrator entigrator=console.getEntigrator(entihome$);
-			//if(!entigrator.store_tryLocked())
-			//entigrator.store_lock();
-			//if(!entigrator.store_isSelfLocked())
-			//		info$=entigrator.store_lockInfo();
 		}
 		if(Locator.LOCATOR_TRUE.equals(locator.getProperty(IS_BASE64))){
 				byte[] ba=Base64.decodeBase64(text$);

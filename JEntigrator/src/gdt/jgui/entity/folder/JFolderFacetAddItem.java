@@ -12,7 +12,6 @@ import gdt.data.grain.Core;
 import gdt.data.grain.Identity;
 import gdt.data.grain.Locator;
 import gdt.data.grain.Sack;
-import gdt.data.grain.Support;
 import gdt.data.store.Entigrator;
 import gdt.jgui.console.JConsoleHandler;
 import gdt.jgui.console.JContext;
@@ -20,9 +19,7 @@ import gdt.jgui.console.JFacetAddItem;
 import gdt.jgui.console.JFacetOpenItem;
 import gdt.jgui.console.JMainConsole;
 import gdt.jgui.console.JRequester;
-import gdt.jgui.entity.JEntitiesPanel;
 import gdt.jgui.entity.JEntityFacetPanel;
-import gdt.jgui.entity.fields.JFieldsFacetOpenItem;
 import gdt.jgui.tool.JTextEditor;
 /**
  * This class represents the folder facet in the list
@@ -58,9 +55,6 @@ public class JFolderFacetAddItem extends JFacetAddItem{
 	    		locator.setProperty(EntityHandler.ENTITY_KEY,entityKey$);
 	    	if(entihome$!=null)
 	    		locator.setProperty(Entigrator.ENTIHOME,entihome$);
-	    	// icon$=Support.readHandlerIcon(null,getClass(), "folder.png");
-	    	//if(icon$!=null)
-	    	 //   	locator.setProperty(Locator.LOCATOR_ICON,icon$);
 	    	locator.setProperty(Locator.LOCATOR_ICON_CONTAINER,Locator.LOCATOR_ICON_CONTAINER_CLASS);
 	    	locator.setProperty(Locator.LOCATOR_ICON_CLASS,getClass().getName());
 	    	locator.setProperty(Locator.LOCATOR_ICON_FILE,"folder.png"); 
@@ -150,16 +144,11 @@ public class JFolderFacetAddItem extends JFacetAddItem{
 		    
 			JTextEditor textEditor=new JTextEditor();
 		    String editorLocator$=textEditor.getLocator();
-		   // editorLocator$=Locator.append(editorLocator$, Requester.REQUESTER_CLASS, getClass().getName());
 		    editorLocator$=Locator.append(editorLocator$, JTextEditor.TEXT, label$+".folder."+Identity.key().substring(0,4));
-		   // editorLocator$=Locator.append(editorLocator$,Locator.LOCATOR_DATA,Locator.compressText(locator$));
 		    editorLocator$=Locator.append(editorLocator$,Locator.LOCATOR_TITLE,"Component label");
 		    editorLocator$=Locator.append(editorLocator$,JTextEditor.TEXT_TITLE,"Add folder component");
 		    if(entihome$!=null)
 		    	 editorLocator$=Locator.append(editorLocator$,Entigrator.ENTIHOME,entihome$);	
-		  
-		    //   String icon$=Support.readHandlerIcon(EntitiesPanel.class, "folder.png");
-		 //   editorLocator$=Locator.append(editorLocator$,Locator.LOCATOR_ICON,icon$);
 		    String responseLocator$=getLocator();
 		    responseLocator$=Locator.append(responseLocator$, BaseHandler.HANDLER_METHOD, "response");
 		    responseLocator$=Locator.append(responseLocator$, Entigrator.ENTIHOME, entihome$);

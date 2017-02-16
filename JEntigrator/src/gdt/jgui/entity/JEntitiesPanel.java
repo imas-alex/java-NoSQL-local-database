@@ -18,8 +18,6 @@ package gdt.jgui.entity;
  */
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.FocusEvent;
-import java.awt.event.FocusListener;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Hashtable;
@@ -34,10 +32,8 @@ import org.apache.commons.codec.binary.Base64;
 import gdt.data.entity.BaseHandler;
 import gdt.data.entity.EntityHandler;
 import gdt.data.entity.FacetHandler;
-import gdt.data.grain.Core;
 import gdt.data.grain.Locator;
 import gdt.data.grain.Sack;
-import gdt.data.grain.Support;
 import gdt.data.store.Entigrator;
 import gdt.jgui.base.JBaseNavigator;
 import gdt.jgui.base.JBasesPanel;
@@ -214,11 +210,8 @@ public class JEntitiesPanel extends JItemsListPanel implements WContext {
 							}
 							JArchivePanel archivePanel=new JArchivePanel();
 				        	String apLocator$=archivePanel.getLocator();
-				        	//locator$=getLocator();
 			        	  apLocator$=Locator.append(apLocator$,Entigrator.ENTIHOME,entihome$);
 						  apLocator$=Locator.append(apLocator$, EntityHandler.ENTITY_LIST,Locator.toString(ea));
-					      //String icon$=Support.readHandlerIcon(null,JEntityPrimaryMenu.class, "archive.png");
-					      //apLocator$=Locator.append(apLocator$, Locator.LOCATOR_ICON,icon$);
 						  apLocator$=Locator.append(apLocator$,Locator.LOCATOR_ICON_CONTAINER,Locator.LOCATOR_ICON_CONTAINER_CLASS);
 						  apLocator$=Locator.append(apLocator$,Locator.LOCATOR_ICON_CLASS,JEntityPrimaryMenu.class.getName());
 						  apLocator$=Locator.append(apLocator$,Locator.LOCATOR_ICON_FILE,"archive.png.png");
@@ -241,7 +234,6 @@ public class JEntitiesPanel extends JItemsListPanel implements WContext {
 							Entigrator entigrator=console.getEntigrator(entihome$);
 							String iLocator$;
 							Properties iLocator;
-							String iEntityKey$;
 							String iEntityLabel$;
 							Sack iEntity;
 							ArrayList<String>sl=new ArrayList<String>();
@@ -254,9 +246,6 @@ public class JEntitiesPanel extends JItemsListPanel implements WContext {
 								if(ip.isChecked()){
 								//	System.out.println("JEntitiesPanel:delete label="+iEntityLabel$);
 									iEntity=entigrator.ent_getAtLabel(iEntityLabel$);
-									
-									//iEntityKey$=iLocator.getProperty(EntityHandler.ENTITY_KEY);
-									//	iEntity=entigrator.getEntityAtKey(iEntityKey$);
 									if(iEntity!=null)
 										entigrator.deleteEntity(iEntity);
 									
@@ -327,18 +316,14 @@ public class JEntitiesPanel extends JItemsListPanel implements WContext {
 			//locator.setProperty(Locator.LOCATOR_ICON_FILE,"bookmark.png");
 		    if(containerKey$!=null){
 			       locator.setProperty(EntityHandler.ENTITY_CONTAINER,containerKey$);
-			       //icon$=Support.readHandlerIcon(null,JEntitiesPanel.class, "clip.png");
 			       locator.setProperty(Locator.LOCATOR_ICON_FILE,"clip.png");
 		    }
 		    if(componentKey$!=null){
 			       locator.setProperty(EntityHandler.ENTITY_COMPONENT,componentKey$);
-			       //icon$=Support.readHandlerIcon(null,JEntitiesPanel.class, "box.png");
 			       locator.setProperty(Locator.LOCATOR_ICON_FILE,"box.png");
 		    }
 		    
     	    locator.setProperty(Locator.LOCATOR_TITLE, getTitle());
-		    //if(icon$!=null)
-		    //	locator.setProperty(Locator.LOCATOR_ICON,icon$);
 		    locator.setProperty(BaseHandler.HANDLER_SCOPE,JConsoleHandler.CONSOLE_SCOPE);
 		    locator.setProperty(BaseHandler.HANDLER_CLASS,JEntitiesPanel.class.getName());
 			if(list$!=null)
@@ -646,7 +631,7 @@ public String getTitle() {
 		    navLocator$=Locator.append(navLocator$, Entigrator.ENTIHOME, entigrator.getEntihome());
 		    String navUrl$=webHome$+"?"+WContext.WEB_LOCATOR+"="+Base64.encodeBase64URLSafeString(navLocator$.getBytes());
 		    sb.append("<li class=\"menu_item\"><a href=\""+navUrl$+"\">Base</a></li>");
-		    sb.append("<li class=\"menu_item\"><a href=\""+webHome$.replace("entry", WContext.ABOUT)+"\">About</a></li>");
+		    sb.append("<li class=\"menu_item\"><a href=\""+WContext.ABOUT+"\">About</a></li>");
 		    sb.append("</ul>");
 		    sb.append("<table><tr><td>Base:</td><td><strong>");
 		    sb.append(entigrator.getBaseName());

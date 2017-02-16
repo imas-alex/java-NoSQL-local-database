@@ -110,6 +110,7 @@ public JBasesPanel(){
 	@Override
 	public JContext instantiate(JMainConsole console, String locator$) {
         try{
+        	if(debug)
         	System.out.println("JBasesPanel:instantiate:locator:"+locator$);
         	Properties locator=Locator.toProperties(locator$);
         	entiroot$=locator.getProperty(BaseHandler.ENTIROOT);

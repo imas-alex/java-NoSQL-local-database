@@ -52,7 +52,6 @@ import org.apache.commons.codec.binary.Base64;
 import gdt.data.entity.BaseHandler;
 import gdt.data.entity.EntityHandler;
 import gdt.data.entity.FacetHandler;
-import gdt.data.entity.facet.FieldsHandler;
 import gdt.data.entity.facet.FolderHandler;
 import gdt.data.grain.Core;
 import gdt.data.grain.Identity;
@@ -71,13 +70,10 @@ import gdt.jgui.console.ReloadDialog;
 import gdt.jgui.console.WContext;
 import gdt.jgui.console.WUtils;
 import gdt.jgui.entity.fields.JFieldsFacetOpenItem;
-import gdt.jgui.entity.folder.JFileOpenItem;
 import gdt.jgui.entity.folder.JFolderFacetOpenItem;
 import gdt.jgui.entity.folder.JFolderPanel;
-import gdt.jgui.entity.index.JIndexFacetOpenItem;
 import gdt.jgui.entity.index.JIndexPanel;
 import gdt.jgui.entity.webset.JWeblinksPanel;
-import gdt.jgui.tool.JTextEditor;
 /**
  * Displays the digest view of the entity.
  * @author imasa
@@ -143,16 +139,7 @@ public  class JEntityDigestDisplay extends JPanel implements JContext ,JRequeste
 	 */
 	public JEntityDigestDisplay() {
 		super();
-      /*
-		try{
-		setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
-		scrollPane = new JScrollPane();
-		add(scrollPane);
-       }catch(Exception e){
-    	   Logger.getLogger(JEntityDigestDisplay.class.getName()).severe(e.toString());
-       }
-       */
-	}
+    }
 	/**
 	 * Get the context locator.
 	 * @return the context locator.
@@ -170,9 +157,6 @@ public  class JEntityDigestDisplay extends JPanel implements JContext ,JRequeste
 			       locator.setProperty(EntityHandler.ENTITY_LABEL,entityLabel$);
 		    if(selection$!=null)
 			       locator.setProperty(SELECTION,Locator.compressText(selection$));
-		    //String icon$=Support.readHandlerIcon(null,getClass(), "digest.png");
-			
-		    //locator.setProperty(Locator.LOCATOR_ICON, icon$);
 		    locator.setProperty(Locator.LOCATOR_ICON_CONTAINER,Locator.LOCATOR_ICON_CONTAINER_CLASS);
 			locator.setProperty(Locator.LOCATOR_ICON_CLASS,getClass().getName());
 			locator.setProperty(Locator.LOCATOR_ICON_FILE,"digest.png");
@@ -218,10 +202,6 @@ public  class JEntityDigestDisplay extends JPanel implements JContext ,JRequeste
 		 DefaultMutableTreeNode root = new DefaultMutableTreeNode(entityLabel$);
 		 locator=new Properties();
 		 locator.setProperty(Locator.LOCATOR_TITLE, DIGEST);
-		 /*
-		 String icon$=Support.readHandlerIcon(null,getClass(), "digest.png");
-		 locator.setProperty(Locator.LOCATOR_ICON, icon$);
-		 */
 		 locator.setProperty(Locator.LOCATOR_ICON_CONTAINER,Locator.LOCATOR_ICON_CONTAINER_CLASS);
 		locator.setProperty(Locator.LOCATOR_ICON_CLASS,getClass().getName());
 		locator.setProperty(Locator.LOCATOR_ICON_FILE,"digest.png");
@@ -268,16 +248,11 @@ public  class JEntityDigestDisplay extends JPanel implements JContext ,JRequeste
 		 DefaultMutableTreeNode root = new DefaultMutableTreeNode(entityLabel$);
 		 locator=new Properties();
 		 locator.setProperty(Locator.LOCATOR_TITLE, DIGEST);
-		/*
-		 String icon$=Support.readHandlerIcon(null,JEntityDigestDisplay.class, "digest.png");
-		 locator.setProperty(Locator.LOCATOR_ICON, icon$);
-		 */
 		 locator.setProperty(Locator.LOCATOR_ICON_CONTAINER,Locator.LOCATOR_ICON_CONTAINER_CLASS);
 			locator.setProperty(Locator.LOCATOR_ICON_CLASS,getClass().getName());
 			locator.setProperty(Locator.LOCATOR_ICON_FILE,"digest.png");
 		 locator.setProperty(NODE_TYPE, NODE_TYPE_ROOT);
 		 root.setUserObject(Locator.toString(locator));
-		 //DefaultMutableTreeNode 
 		 parentNode = new DefaultMutableTreeNode(entityLabel$);
 		 root.add(parentNode);
 		 Sack parent=entigrator.getEntityAtKey(entityKey$);
@@ -285,18 +260,7 @@ public  class JEntityDigestDisplay extends JPanel implements JContext ,JRequeste
 		 parentLocator$=Locator.append(parentLocator$, NODE_TYPE, NODE_TYPE_PARENT);
 		 parentNode.setUserObject(parentLocator$);
 		 tree=new JTree(root);
-		// tree.setCellRenderer(new NodeRenderer()); 
 		 facets=listFacetOpenItems();
-		/*
-		 DefaultMutableTreeNode []na=getFacetOpenItems();
-		 if(na!=null)
-			 for(DefaultMutableTreeNode n:na){
-				 parentNode.add(n);
-				 visitAllNodes(webHome$,n,);
-			 }
-			 */
-		 //expandTree(tree,true);
-		 //select();
 		 return tree;
 		}catch(Exception e){
 			Logger.getLogger(getClass().getName()).severe(e.toString());
@@ -446,10 +410,6 @@ public  class JEntityDigestDisplay extends JPanel implements JContext ,JRequeste
 		    	nodeLocator$=(String)aNa.getUserObject();
 		    	nodeLocator$=Locator.append(nodeLocator$, NODE_NUMBER, String.valueOf(nodeNumber++));
 		    	nodeLocator$=Locator.append(nodeLocator$, COMPONENT_KEY, entityKey$);
-		    	//nodeLocator$=Locator.append(nodeLocator$,Locator.LOCATOR_ICON_CONTAINER,Locator.LOCATOR_ICON_CONTAINER_CLASS);
-				//nodeLocator$=Locator.append(nodeLocator$,Locator.LOCATOR_ICON_CLASS,facetClass$);
-				//nodeLocator$=Locator.append(nodeLocator$,Locator.LOCATOR_ICON_FILE,facetOpenItem.getFacetIconName());
-			
 		    	aNa.setUserObject(nodeLocator$);
 		    	facetComponentNode.add(aNa);
 		    	setSubnodesNumbers(aNa);
@@ -473,14 +433,15 @@ private boolean instantiateFacetNode(DefaultMutableTreeNode facetNode){
 		JFacetOpenItem facetOpenItem=(JFacetOpenItem)JConsoleHandler.getHandlerInstance(entigrator,facetClass$ );
 		FacetHandler facetHandler=facetOpenItem.getFacetHandler();
 //		System.out.println("EntityDigestDisplay:instantiateFacetNode:facet handler="+facetHandler.getClassName());
-		Sack entity=entigrator.getEntityAtKey(entityKey$);
+		
 		if(debug){
+			Sack entity=entigrator.getEntityAtKey(entityKey$);
 			System.out.println("JEntityDigestDisplay:instantiateFacetNode:entity key="+entityKey$);
 			if(entity==null)
 				System.out.println("JEntityDigestDisplay:instantiateFacetNode:entity is NULL");
 		}
 		
-		//String entityLocator$=EntityHandler.getEntityLocator(entigrator, entity);
+
 		String entityLocator$=EntityHandler.getEntityLocatorAtKey(entigrator, entityKey$);
 //		System.out.println("EntityDigestDisplay:instantiateFacetNode:entity locator="+entityLocator$);
 		DefaultMutableTreeNode facetComponentNode;
@@ -489,7 +450,7 @@ private boolean instantiateFacetNode(DefaultMutableTreeNode facetNode){
 			
 		if(facetHandler.isApplied(entigrator, entityLocator$)){
 			if(debug)
-			System.out.println("EntityDigestDisplay:instantiateFacetNode:entity locator="+entityLocator$);
+			System.out.println("EntityDigestDisplay:instantiateFacetNode:applied facet="+facetClass$);
 			entityLocator$=Locator.append(entityLocator$, Locator.LOCATOR_TYPE, LOCATOR_FACET_COMPONENT);
 			entityLocator$=Locator.append(entityLocator$, BaseHandler.HANDLER_CLASS, facetClass$);
 			entityLocator$=Locator.append(entityLocator$, NODE_TYPE, NODE_TYPE_FACET_OWNER);
@@ -502,7 +463,7 @@ private boolean instantiateFacetNode(DefaultMutableTreeNode facetNode){
 			}
 		}else{
 			if(debug)
-				System.out.println("EntityDigestDisplay:instantiateFacetNode:not applied");
+				System.out.println("EntityDigestDisplay:instantiateFacetNode:not applied facet="+facetClass$);
 		}
 		
 		String[] sa=entigrator.ent_listComponents(entity);
@@ -517,9 +478,6 @@ private boolean instantiateFacetNode(DefaultMutableTreeNode facetNode){
 					entityLocator$=Locator.append(entityLocator$, Locator.LOCATOR_TYPE, LOCATOR_FACET_COMPONENT);
 					entityLocator$=Locator.append(entityLocator$, BaseHandler.HANDLER_CLASS, facetClass$);
 					facetComponentNode=new DefaultMutableTreeNode();
-				//	entityLocator$=Locator.append(entityLocator$,Locator.LOCATOR_ICON_CONTAINER,Locator.LOCATOR_ICON_CONTAINER_CLASS);
-				//	entityLocator$=Locator.append(entityLocator$,Locator.LOCATOR_ICON_CLASS,facetClass$);
-				//	entityLocator$=Locator.append(entityLocator$,Locator.LOCATOR_ICON_FILE,facetOpenItem.getFacetIconName());
 					facetComponentNode.setUserObject(entityLocator$);
 					instantiateComponentNode(facetComponentNode);
 					facetNode.add(facetComponentNode);
@@ -576,7 +534,6 @@ private boolean instantiateFacetNode(DefaultMutableTreeNode facetNode){
 	}
 	private String[] listFacetOpenItems(){
 		try{
-			//Entigrator entigrator=console.getEntigrator(entihome$);
 			Sack entity=entigrator.getEntityAtKey(entityKey$);
 			String[] sa=entigrator.ent_listComponentsCascade(entity);
 			Core[]ca=entity.elementGet("jfacet");
@@ -611,9 +568,10 @@ private boolean instantiateFacetNode(DefaultMutableTreeNode facetNode){
     private static void expandAll(JTree tree, TreePath path, boolean expand) {
         TreeNode node = (TreeNode) path.getLastPathComponent();
         if (node.getChildCount() >= 0) {
-            Enumeration enumeration = node.children();
+            @SuppressWarnings("unchecked")
+			Enumeration<DefaultMutableTreeNode> enumeration = node.children();
             while (enumeration.hasMoreElements()) {
-            	DefaultMutableTreeNode n = (DefaultMutableTreeNode) enumeration.nextElement();
+            	DefaultMutableTreeNode n =  enumeration.nextElement();
                 TreePath p = path.pathByAddingChild(n);
                 expandAll(tree, p, expand);
             }
@@ -679,7 +637,8 @@ private boolean instantiateFacetNode(DefaultMutableTreeNode facetNode){
 		   openItem.addActionListener(new ActionListener() {
 				@Override
 				public void actionPerformed(ActionEvent e) {
-				   //System.out.println("JEmailFacetOpenItem:edit:digest locator="+digestLocator$);
+				   if(debug)
+					System.out.println("JEntityDigestDisplay:open: locator="+selection$);
 				   try{
 					   Properties locator=Locator.toProperties(selection$);
 					   String entihome$=locator.getProperty(Entigrator.ENTIHOME);
@@ -791,22 +750,9 @@ private boolean instantiateFacetNode(DefaultMutableTreeNode facetNode){
 	        		Properties locator=Locator.toProperties((String)userObject);
 	        		String title$=locator.getProperty(Locator.LOCATOR_TITLE);
 	        		label.setText(title$);
-	        		//String icon$=locator.getProperty(Locator.LOCATOR_ICON);
-	        		//String icon$=entigrator.getIcon((String)userObject);
 	        		String icon$=JConsoleHandler.getIcon(entigrator,(String)userObject);
 	        		if(debug)
 	        			System.out.println("JEntityDigestDisplay:NodeRenderer: user object="+userObject);
-	        		//String icon$=entigrator.getIcon((String)userObject);
-	        		/*
-	        		String icon$=locator.getProperty(Locator.LOCATOR_ICON);
-	        		if(icon$==null){
-	        			String entihome$=locator.getProperty(Entigrator.ENTIHOME);
-	        			String entityKey$=locator.getProperty(EntityHandler.ENTITY_KEY);
-	        			Entigrator entigrator=console.getEntigrator(entihome$);
-	        			Sack entity=entigrator.getEntityAtKey(entityKey$);
-        				icon$=entigrator.getEntityIcon(entity);
-	        		}
-	        		*/
 	        		if(icon$!=null){
 	        			byte[] ba=Base64.decodeBase64(icon$);
 	        	      	  ImageIcon icon = new ImageIcon(ba);
@@ -915,6 +861,7 @@ private boolean instantiateFacetNode(DefaultMutableTreeNode facetNode){
 		if(entity==null)
 			return;
 		if(!entigrator.ent_outdated(entity)){
+			if(debug)
 			System.out.println("JEntityDigestDisplay:activate:up to date");
 			return;
 		}
@@ -968,7 +915,7 @@ private boolean instantiateFacetNode(DefaultMutableTreeNode facetNode){
 		    sb.append("<li id=\"collapse\" onclick=\"collapse()\"><a href=\"#\">Collaps</a></li>");
 		    sb.append("</ul>");
 		    sb.append("</li>");
-		    sb.append("<li class=\"menu_item\"><a href=\""+webHome$.replace("entry", WContext.ABOUT)+"\">About</a></li>");
+		    sb.append("<li class=\"menu_item\"><a href=\""+WContext.ABOUT+"\">About</a></li>");
 		    sb.append("</ul>");
 		    sb.append("<table><tr><td>Base:</td><td><strong>");
 		    sb.append(entigrator.getBaseName());
@@ -1045,7 +992,7 @@ private boolean instantiateFacetNode(DefaultMutableTreeNode facetNode){
 			ddLocator$=Locator.append(ddLocator$, EntityHandler.ENTITY_KEY,entityKey$);
 			ddLocator$=Locator.append(ddLocator$, EntityHandler.ENTITY_LABEL,entityLabel$);
 			dd.instantiate(entigrator, ddLocator$);
-			 DefaultMutableTreeNode []na=dd.getFacetOpenItems();
+			DefaultMutableTreeNode []na=dd.getFacetOpenItems();
 			 if(na!=null)
 				 for(DefaultMutableTreeNode n:na)
 					 dd.parentNode.add(n);
@@ -1060,51 +1007,105 @@ private boolean instantiateFacetNode(DefaultMutableTreeNode facetNode){
 		return null;
 	}
 	private static String getItem(Entigrator entigrator,String url$, String locator$){
-		//if(debug)
-		//	 System.out.println("JEntityDigestDisplay:getItem:locator="+Locator.remove(locator$, Locator.LOCATOR_ICON));
+		try{
+		if(debug)
+			 System.out.println("JEntityDigestDisplay:getItem:locator="+locator$);
 	    Properties locator=Locator.toProperties(locator$);
 		String title$=locator.getProperty(Locator.LOCATOR_TITLE);
-		//String icon$=locator.getProperty(Locator.LOCATOR_ICON);
-		//String icon$=entigrator.getIcon(locator$);
-		String icon$=JConsoleHandler.getIcon(entigrator,locator$);
+		String icon$=null;
+		String entihome$=entigrator.getEntihome();
+		String iconTerm$=null;
 		String entityKey$=locator.getProperty(EntityHandler.ENTITY_KEY);
-		String filePath$=locator.getProperty(JFolderPanel.FILE_PATH);
-		String webLink$=locator.getProperty(JWeblinksPanel.WEB_LINK_URL);
-		  String entihome$=locator.getProperty(Entigrator.ENTIHOME);
-		  String nodeType$=locator.getProperty(NODE_TYPE);
-		  String iconTerm$=null;
+		String nodeType$=locator.getProperty(NODE_TYPE);
+		String type$=locator.getProperty(Locator.LOCATOR_TYPE);
+		String contextType$=locator.getProperty(JContext.CONTEXT_TYPE);
+		boolean facetComponent=false;
+		if(LOCATOR_FACET_COMPONENT.equals(type$)||JEntityFacetPanel.ENTITY_FACET_PANEL.equals(contextType$))
+			facetComponent=true;
+	    String href$="";
+		String enLocator$=null;
+		
+		if(NODE_TYPE_PARENT.equals(nodeType$)||NODE_TYPE_FACET_OWNER.equals(nodeType$)){
+			String eLocator$=EntityHandler.getEntityLocatorAtKey(entigrator, entityKey$);
+			if(debug)
+				 System.out.println("JEntityDigestDisplay:getItem:parent locator="+eLocator$);
+			icon$=JConsoleHandler.getIcon(entigrator,eLocator$);
+			if(icon$!=null)
+			    iconTerm$=" data-jstree='{\"icon\":\"data:image/png;base64,"+WUtils.scaleIcon(icon$)+"\"}' width=\"24\" height=\"24\"";
+			 String foiLocator$=new JEntityFacetPanel().getLocator();
+			 Properties foiLocator=Locator.toProperties(foiLocator$);
+       	     foiLocator.setProperty(Locator.LOCATOR_TITLE,"Facets" );
+       		 foiLocator.setProperty(Entigrator.ENTIHOME, entihome$);
+       		 foiLocator.setProperty(EntityHandler.ENTITY_KEY, entityKey$);
+       		 foiLocator.setProperty(EntityHandler.ENTITY_LABEL,entigrator.indx_getLabel(entityKey$));
+			 foiLocator.setProperty(WContext.WEB_HOME,url$);
+			 foiLocator.setProperty(WContext.WEB_REQUESTER, JEntityDigestDisplay.class.getName());
+				if(debug)
+					 System.out.println("JEntityDigestDisplay:getItem:node type facet component:foi="+Locator.toString(foiLocator));
+				enLocator$= Base64.encodeBase64URLSafeString(Locator.toString(foiLocator).getBytes());			      
+		        href$=url$+"?"+WContext.WEB_LOCATOR+"="+enLocator$;
+		        
+		       // if(debug)
+				//	 System.out.println("JEntityDigestDisplay:getItem:facet component ="+href$);
+				nodeType$=NODE_TYPE_REFERENCE;
+		}
+			if(facetComponent){
+			String iconContainer$=locator.getProperty(Locator.LOCATOR_ICON_CONTAINER);
+			if(debug)
+				 System.out.println("JEntityDigestDisplay:getItem:facet component locator="+locator$);
+			if(iconContainer$!=null&&iconContainer$.equals(Locator.LOCATOR_ICON_CONTAINER_CLASS)){
+				icon$=JConsoleHandler.getIcon(entigrator,locator$);
+			}else{
+				String eLocator$=EntityHandler.getEntityLocatorAtKey(entigrator, entityKey$);
+				if(debug)
+					 System.out.println("JEntityDigestDisplay:getItem:facet component locator="+eLocator$);
+					icon$=JConsoleHandler.getIcon(entigrator,eLocator$);
+			}
+			if(icon$!=null)
+			    iconTerm$=" data-jstree='{\"icon\":\"data:image/png;base64,"+WUtils.scaleIcon(icon$)+"\"}' width=\"24\" height=\"24\"";
+	         String foiLocator$=new JEntityFacetPanel().getLocator();
+			 Properties foiLocator=Locator.toProperties(foiLocator$);
+       	     foiLocator.setProperty(Locator.LOCATOR_TITLE,"Facets" );
+       		 foiLocator.setProperty(Entigrator.ENTIHOME, entihome$);
+       		 foiLocator.setProperty(EntityHandler.ENTITY_KEY, entityKey$);
+       		 foiLocator.setProperty(EntityHandler.ENTITY_LABEL,entigrator.indx_getLabel(entityKey$));
+			 foiLocator.setProperty(WContext.WEB_HOME,url$);
+			 foiLocator.setProperty(WContext.WEB_REQUESTER, JEntityDigestDisplay.class.getName());
+				if(debug)
+					 System.out.println("JEntityDigestDisplay:getItem:node type facet component:foi="+Locator.toString(foiLocator));
+				enLocator$= Base64.encodeBase64URLSafeString(Locator.toString(foiLocator).getBytes());			      
+		        href$=url$+"?"+WContext.WEB_LOCATOR+"="+enLocator$;
+		        
+		       // if(debug)
+				//	 System.out.println("JEntityDigestDisplay:getItem:facet component ="+href$);
+				nodeType$=NODE_TYPE_REFERENCE;
+		}
+		if(NODE_TYPE_FACET_HEADER.equals(nodeType$)){
+			icon$=JConsoleHandler.getIcon(entigrator,locator$);
+			if(icon$!=null)
+			    iconTerm$=" data-jstree='{\"icon\":\"data:image/png;base64,"+WUtils.scaleIcon(icon$)+"\"}' width=\"24\" height=\"24\"";
+		}
+		String filePath$=null;
+		if(locator.getProperty(JFolderPanel.FILE_PATH)!=null){
+		 filePath$=entigrator.getEntihome()+"/"+locator.getProperty(JFolderPanel.FILE_PATH);
+		}
 		  
-		  if(icon$!=null)
-		    iconTerm$=" data-jstree='{\"icon\":\"data:image/png;base64,"+WUtils.scaleIcon(icon$)+"\"}' width=\"24\" height=\"24\"";
-		  String href$="";
-		  
-		 //String item$= "<li id='"+Identity.key()+"' type=''"+iconTerm$+">"+title$;
-		 String enLocator$=null;//= Base64.encodeBase64URLSafeString(locator$.getBytes());
 		 boolean print=true;
-		// if(entityKey$!=null){
-			 if(JFieldsFacetOpenItem.NODE_TYPE_FIELD_VALUE.equals(nodeType$)){
-				/*
-				 if(debug)
-					 System.out.println("JEntityDigestDisplay:getItem:node type field value:locator="+Locator.remove(locator$, Locator.LOCATOR_ICON));
-				 if(debug)
-					 System.out.println("JEntityDigestDisplay:getItem:node type field value:locator="+Locator.remove(locator$, Locator.LOCATOR_ICON));
-					 */
-				
+		 boolean typeDone=false;
+		
+		if(JFieldsFacetOpenItem.NODE_TYPE_FIELD_VALUE.equals(nodeType$)){
 				 String fieldName$=locator.getProperty(JFieldsFacetOpenItem.FIELD_NAME);
 				 String fieldValue$=locator.getProperty(JFieldsFacetOpenItem.FIELD_VALUE);
-				 
 				 if(debug)
 					 System.out.println("JEntityDigestDisplay:getItem:field name="+fieldName$+" value="+fieldValue$);
-				 if(fieldValue$==null)
+		if(fieldValue$==null)
 					 fieldValue$="";
-				 Properties foiLocator=new Properties();
-	        	 foiLocator.setProperty(Locator.LOCATOR_TITLE,fieldName$ );
-	        		//foiLocator.setProperty(JFolderFacetOpenItem.FACET_HANDLER_CLASS,FieldsHandler.class.getName());
-	        		foiLocator.setProperty(BaseHandler.HANDLER_CLASS,JTextEditor.class.getName());
+		         String foiLocator$=new JFieldsFacetOpenItem().getLocator();
+				 Properties foiLocator=Locator.toProperties(foiLocator$);
+	        	 foiLocator.setProperty(Locator.LOCATOR_TITLE,"Fields" );
 	        		foiLocator.setProperty(Entigrator.ENTIHOME, entihome$);
-	        		foiLocator.setProperty(JTextEditor.TEXT, fieldValue$);
 	        		foiLocator.setProperty(EntityHandler.ENTITY_KEY, entityKey$);
-	        		foiLocator.setProperty(JFieldsFacetOpenItem.FIELD_NAME, fieldName$);
+	        		foiLocator.setProperty(EntityHandler.ENTITY_LABEL,entigrator.indx_getLabel(entityKey$));
 					foiLocator.setProperty(WContext.WEB_HOME,url$);
 					foiLocator.setProperty(WContext.WEB_REQUESTER, JEntityDigestDisplay.class.getName());
 					if(debug)
@@ -1115,18 +1116,31 @@ private boolean instantiateFacetNode(DefaultMutableTreeNode facetNode){
 			        if(debug)
 						 System.out.println("JEntityDigestDisplay:getItem:field href="+href$);
 					nodeType$=NODE_TYPE_REFERENCE;
-			 }else{
-			// if(NODE_TYPE_REFERENCE.equals(nodeType$)){
+					typeDone=true;
+					icon$=Support.readHandlerIcon(entigrator,JEntityDigestDisplay.class ,"field.png");
+					if(icon$!=null)
+					    iconTerm$=" data-jstree='{\"icon\":\"data:image/png;base64,"+WUtils.scaleIcon(icon$)+"\"}' width=\"24\" height=\"24\"";
 			
-			 if(webLink$!=null){
-				 href$=webLink$;
-				 nodeType$=NODE_TYPE_REFERENCE;
-				 print=false;
+				//	item$= "<li id='"+Identity.key()+"' type='"+nodeType$+"' ref='"+href$+"'"+" locator='"+enLocator$+"'"+iconTerm$+">"+title$;
 			 }
-			 else{
-			//	 locator$=Locator.remove(locator$, Locator.LOCATOR_ICON);
-				 
-				 if(filePath$!=null){
+		
+		if(JWeblinksPanel.WEB_LINK_NAME.equals(type$)){
+				icon$=JConsoleHandler.getIcon(entigrator,locator$);
+			if(icon$!=null)
+			    iconTerm$=" data-jstree='{\"icon\":\"data:image/png;base64,"+WUtils.scaleIcon(icon$)+"\"}' width=\"24\" height=\"24\"";
+	  		nodeType$=NODE_TYPE_REFERENCE;
+				if(title$!=null){
+			      String[] sa=title$.split(" > ");
+			      if(sa.length>1){
+		    	  href$=sa[1];
+					 print=false;
+					 typeDone=true;
+		      }
+				}
+		}	
+		
+		
+    		 if(filePath$!=null){
 					 String fileName$=Locator.getProperty(locator$,JFolderPanel.FILE_NAME);
 					 Properties foiLocator=new Properties();
 					 String foiTitle$=fileName$;
@@ -1136,17 +1150,20 @@ private boolean instantiateFacetNode(DefaultMutableTreeNode facetNode){
 		        		foiLocator.setProperty(Entigrator.ENTIHOME, entihome$);
 						foiLocator.setProperty(EntityHandler.ENTITY_KEY, entityKey$);
 						foiLocator.setProperty(JFolderPanel.FILE_NAME, foiTitle$);
-						foiLocator.setProperty(JFolderPanel.FILE_PATH, filePath$);
+						//foiLocator.setProperty(JFolderPanel.FILE_PATH, filePath$);
+						foiLocator.setProperty(JFolderPanel.FILE_PATH, locator.getProperty(JFolderPanel.FILE_PATH));
 						foiLocator.setProperty(Locator.LOCATOR_TYPE, JFolderPanel.LOCATOR_TYPE_FILE);
-					//	icon$=Support.readHandlerIcon(null,JFolderFacetOpenItem.class, "file.png");
-					//	foiLocator.setProperty(Locator.LOCATOR_ICON, icon$);
 						foiLocator.setProperty(WContext.WEB_HOME,url$);
 						enLocator$= Base64.encodeBase64URLSafeString(Locator.toString(foiLocator).getBytes());			      
 				        href$=url$+"?"+WContext.WEB_LOCATOR+"="+enLocator$;
+						icon$=JConsoleHandler.getIcon(entigrator,locator$);
+				        if(icon$!=null)
+				        	 iconTerm$=" data-jstree='{\"icon\":\"data:image/png;base64,"+WUtils.scaleIcon(icon$)+"\"}' width=\"24\" height=\"24\"";
 				        nodeType$=NODE_TYPE_REFERENCE;
-				        //locator$=Locator.append(locator$, BaseHandler.HANDLER_CLASS, JFileOpenItem.class.getName());
-				 }
-				 else{	 
+				        typeDone=true;
+				 }			 
+    	
+		 if(!typeDone){
 				 locator$=Locator.append(locator$, BaseHandler.HANDLER_CLASS, JEntityFacetPanel.class.getName());
 				 locator$=Locator.append(locator$, WContext.WEB_HOME, url$);
 				 locator$=Locator.append(locator$, WContext.WEB_REQUESTER, JEntityDigestDisplay.class.getName());
@@ -1154,14 +1171,18 @@ private boolean instantiateFacetNode(DefaultMutableTreeNode facetNode){
 			   // 	  System.out.println("JEntityDigestDisplay:getItem:no link item locator="+Locator.remove(locator$,Locator.LOCATOR_ICON));
 				  enLocator$= Base64.encodeBase64URLSafeString(locator$.getBytes());			      
 		         href$=url$+"?"+WContext.WEB_LOCATOR+"="+enLocator$;
-				 }
-			 }
-		  }
-		 
+		         if(debug)
+					 System.out.println("JEntityDigestDisplay:getItem:3");
+			
+		 }
 		String  item$= "<li id='"+Identity.key()+"' type='"+nodeType$+"' ref='"+href$+"'"+" locator='"+enLocator$+"'"+iconTerm$+">"+title$;
 		  if(debug&&print)
 				 System.out.println("JEntityDigestDisplay:getItem:item="+"<li id='"+Identity.key()+"' type='"+nodeType$+"' ref='"+href$+"'"+" locator='' >"+title$);
 		  return item$;
+		}catch(Exception e){
+			Logger.getLogger(JEntityDigestDisplay.class.getName()).info(e.toString());
+			return null;
+		}
 	}
 	
 	public static void visitAllNodes(Entigrator entigrator,String webHome$,DefaultMutableTreeNode node, StringBuffer sb) {
@@ -1169,7 +1190,9 @@ private boolean instantiateFacetNode(DefaultMutableTreeNode facetNode){
 		String locator$=(String)node.getUserObject();
 		// if(debug)
 		//	 System.out.println("JEntityDigestDisplay:visitAllNodes:locator="+Locator.remove(locator$, Locator.LOCATOR_ICON));
-	 
+	    String item$=getItem(entigrator,webHome$,locator$);
+	    if(item$==null)
+	    	return;
 		sb.append(getItem(entigrator,webHome$,locator$));
 	    if (node.getChildCount() > 0) {
 	    sb.append("<ul>"); 	

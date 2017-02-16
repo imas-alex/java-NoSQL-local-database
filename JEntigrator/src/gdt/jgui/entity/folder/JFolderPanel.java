@@ -22,12 +22,10 @@ import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.ClipboardOwner;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
-import java.awt.datatransfer.UnsupportedFlavorException;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.FileOutputStream;
-import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.util.ArrayList;
@@ -64,7 +62,6 @@ import gdt.jgui.console.JFacetRenderer;
 import gdt.jgui.console.JItemsListPanel;
 import gdt.jgui.console.JMainConsole;
 import gdt.jgui.console.JRequester;
-import gdt.jgui.entity.JEntityFacetPanel;
 import gdt.jgui.entity.JEntityPrimaryMenu;
 import gdt.jgui.entity.JReferenceEntry;
 import gdt.jgui.tool.JTextEditor;
@@ -104,7 +101,7 @@ public class JFolderPanel extends JItemsListPanel implements JFacetRenderer,JReq
 	protected JMenuItem[] mia;
 	String message$;
 	Sack entity;
-	boolean debug=true;
+	boolean debug=false;
 /**
  * The default constructor.	
  */
@@ -129,9 +126,6 @@ public class JFolderPanel extends JItemsListPanel implements JFacetRenderer,JReq
 				locator.setProperty(EntityHandler.ENTITY_KEY,entityKey$);
 			if(entihome$!=null)
 				locator.setProperty(Entigrator.ENTIHOME,entihome$);
-			 //String icon$=Support.readHandlerIcon(null,getClass(), "folder.png");
-			  //  if(icon$!=null)
-			   // 	locator.setProperty(Locator.LOCATOR_ICON,icon$);
 			locator.setProperty(Locator.LOCATOR_ICON_CONTAINER,Locator.LOCATOR_ICON_CONTAINER_CLASS);
 	    	locator.setProperty(Locator.LOCATOR_ICON_CLASS,getClass().getName());
 	    	locator.setProperty(Locator.LOCATOR_ICON_FILE,"folder.png"); 
@@ -161,10 +155,6 @@ public class JFolderPanel extends JItemsListPanel implements JFacetRenderer,JReq
 				 return this;
 			
 			entity=entigrator.getEntityAtKey(entityKey$);
-			//  if(!entigrator.lock_set(entity)){
-						//JOptionPane.showMessageDialog(this, entigrator.lock_message(entity));
-			//	  message$=entigrator.lock_message(entity);
-			 // }
 			requesterResponseLocator$=locator.getProperty(JRequester.REQUESTER_RESPONSE_LOCATOR);
 			entityLabel$=locator.getProperty(EntityHandler.ENTITY_LABEL);
 			if(entityLabel$==null){
@@ -172,13 +162,15 @@ public class JFolderPanel extends JItemsListPanel implements JFacetRenderer,JReq
 			}
 			File folder=new File(entihome$+"/"+entityKey$);
 			File[] fa=folder.listFiles();
+			
+			
 //			System.out.println("FolderPanel.instantiate:fa="+fa.length);
 			if(fa!=null){
 				ArrayList<JFileOpenItem> foil=new ArrayList<JFileOpenItem>();
 				JFileOpenItem fileOpenItem;
 				Properties fileLocator;
-				//Icon icon;
-				String icon$;
+				String fpath$;
+				String fname$;
 				for(File f:fa){
 					fileOpenItem =new JFileOpenItem();
 					fileLocator=new Properties();
@@ -186,13 +178,13 @@ public class JFolderPanel extends JItemsListPanel implements JFacetRenderer,JReq
 					fileLocator.setProperty(Entigrator.ENTIHOME, entihome$);
 					fileLocator.setProperty(EntityHandler.ENTITY_KEY, entityKey$);
 					fileLocator.setProperty(BaseHandler.HANDLER_SCOPE, JConsoleHandler.CONSOLE_SCOPE);
-					fileLocator.setProperty(FILE_NAME, f.getName());
-					fileLocator.setProperty(FILE_PATH, f.getPath());
+					fname$=f.getName();
+					fileLocator.setProperty(FILE_NAME,fname$ );
+					fpath$=entityKey$+"/"+fname$;
+					fileLocator.setProperty(JFolderPanel.FILE_PATH, fpath$);
 					fileLocator.setProperty(Locator.LOCATOR_TYPE, LOCATOR_TYPE_FILE);
 					fileLocator.setProperty(Locator.LOCATOR_CHECKABLE,Locator.LOCATOR_TRUE);
 					locator.setProperty(Locator.LOCATOR_ICON_CONTAINER,Locator.LOCATOR_ICON_CONTAINER_ENTITY);
-			    	//locator.setProperty(Locator.LOCATOR_ICON_CLASS,getClass().getName());
-			    	 
 					if(f.isFile())
 						locator.setProperty(Locator.LOCATOR_ICON_FILE,"file.png");
 					else
@@ -247,13 +239,6 @@ public class JFolderPanel extends JItemsListPanel implements JFacetRenderer,JReq
  */
 	@Override
 	public void close() {
-		/*
-		Entigrator entigrator=console.getEntigrator(entihome$);
-		//Sack entity=entigrator.getEntityAtKey(entityKey$);
-		if(!entigrator.lock_release(entity))
-			JOptionPane.showMessageDialog(this, Entigrator.LOCK_CLOSE_MESSAGE);
-			*/
-		
 	}
 /**
  * Execute the response locator.
@@ -277,7 +262,8 @@ public class JFolderPanel extends JItemsListPanel implements JFacetRenderer,JReq
 			   JConsoleHandler.execute(console, locator$);
 			}
 			if(ACTION_EDIT_FILE.equals(action$)){
-				   String filePath$=locator.getProperty(FILE_PATH);
+				String entihome$=locator.getProperty(Entigrator.ENTIHOME); 
+				   String filePath$=entihome$+"/"+locator.getProperty(FILE_PATH);
 				   String text$=locator.getProperty(JTextEditor.TEXT);
 				   File file=new File(filePath$);
 				   if(!file.exists())
@@ -813,13 +799,14 @@ public JMenu getContextMenu() {
 		//	System.out.println("FolderPanel:openFile:locator::"+locator$);
 			try{
 			Properties locator=Locator.toProperties(locator$);
-			String filePath$=locator.getProperty(FILE_PATH);
+			String filePath$=entihome$+"/"+locator.getProperty(FILE_PATH);
 			File file=new File(filePath$);
 			Desktop.getDesktop().open(file);
 			String requesterResponseLocator$=locator.getProperty(JRequester.REQUESTER_RESPONSE_LOCATOR);
 			if(requesterResponseLocator$!=null){
 				byte[] ba=Base64.decodeBase64(requesterResponseLocator$);
 				String responseLocator$=new String(ba,"UTF-8");
+				responseLocator$=Locator.append(responseLocator$,Entigrator.ENTIHOME, entihome$);
 				JConsoleHandler.execute(console, responseLocator$);
 			}
 			}catch(Exception e){
@@ -837,11 +824,12 @@ public JMenu getContextMenu() {
 			Properties locator=Locator.toProperties(locator$);
 			String webHome$=locator.getProperty(WContext.WEB_HOME);
 			entityKey$=locator.getProperty(EntityHandler.ENTITY_KEY);
+			entihome$=entigrator.getEntihome();
 			String entityLabel$=locator.getProperty(EntityHandler.ENTITY_LABEL);
 			if(entityLabel$==null&&entityKey$!=null)
 				entityLabel$=entigrator.indx_getLabel(entityKey$);
 			String webRequester$=locator.getProperty(WContext.WEB_REQUESTER);
-			String filePath$=locator.getProperty(JFolderPanel.FILE_PATH);
+			String filePath$=entihome$+"/"+locator.getProperty(JFolderPanel.FILE_PATH);
 			String method$=locator.getProperty(BaseHandler.HANDLER_METHOD);
 			String fname$=null;
 			File file=null;
@@ -870,7 +858,7 @@ public JMenu getContextMenu() {
 		    navLocator$=Locator.append(navLocator$, Entigrator.ENTIHOME, entigrator.getEntihome());
 		    String navUrl$=webHome$+"?"+WContext.WEB_LOCATOR+"="+Base64.encodeBase64URLSafeString(navLocator$.getBytes());
 		    sb.append("<li class=\"menu_item\"><a href=\""+navUrl$+"\">Navigate</a></li>");
-		    sb.append("<li class=\"menu_item\"><a href=\""+webHome$.replace("entry", WContext.ABOUT)+"\">About</a></li>");
+		    sb.append("<li class=\"menu_item\"><a href=\""+WContext.ABOUT+"\">About</a></li>");
 		    sb.append("</ul>");
 		    sb.append("<table><tr><td>Base:</td><td><strong>");
 		    sb.append(entigrator.getBaseName());
@@ -886,10 +874,8 @@ public JMenu getContextMenu() {
 		    sb.append("<tr>");
 		    sb.append("<td><button onclick=\"openFile()\">Open</button></td>");
 		    sb.append("<td><button onclick=\"download()\">Download</button></td>");
-		    //sb.append("<td><button onclick=\"slideshow()\">Slideshow</button></td>");
 		    sb.append("</tr>");
 		    sb.append("</table>");
-		    		//+ "</tr></table><h3>File</h3>");
 		    if(entityKey$==null)
 		    	entityKey$=entigrator.indx_keyAtLabel(entityLabel$);
 		  
@@ -910,7 +896,6 @@ public JMenu getContextMenu() {
         	sb.append("var url=\""+url$+"\";");
         	sb.append("console.log('url='+url);");
         	sb.append("window.location.href=url;");
-        	//sb.append("window.location(url);");
         	sb.append("}");
 		    sb.append("function download() {");
 		    Properties downloadLocator=new Properties();

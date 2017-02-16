@@ -91,10 +91,8 @@ public class JItemPanel extends JPanel {
 	        	 title.addMouseListener(new MousePopupListener());
 	      		title.setAlignmentX(Component.LEFT_ALIGNMENT);
 	      		add(title,BorderLayout.WEST );
-	          //icon$=locator.getProperty(Locator.LOCATOR_ICON);
 	      		String entihome$=locator.getProperty(Entigrator.ENTIHOME);
 	      		Entigrator entigrator=console.getEntigrator(entihome$);
-	      		//icon$=entigrator.getIcon(locator$);
 	      		icon$=JConsoleHandler.getIcon(entigrator,locator$);
 	          if(icon$!=null){
 	        	  byte[] ba=Base64.decodeBase64(icon$);
@@ -115,7 +113,6 @@ public class JItemPanel extends JPanel {
 		timer	= new Timer(100, new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				//System.out.println("ItemPanel:createTimer:timer done ");
 				title.setBackground(JItemPanel.this.getBackground());
 				String locator$=JItemPanel.this.locator$;
 				JConsoleHandler.execute(JItemPanel.this.console,locator$ );
@@ -155,7 +152,6 @@ public class JItemPanel extends JPanel {
 	      			checkbox.setSelected(true);
 	          }
 	          title = new JLabel(title$, JLabel.LEFT);
-	          //title.setIcon(null);
 	          title$=locator.getProperty(Locator.LOCATOR_TITLE);
 	          if(title$!=null){
 	        	 title.setText(title$); 
@@ -163,11 +159,9 @@ public class JItemPanel extends JPanel {
 	        	 title.addMouseListener(new MousePopupListener());
 	      		title.setAlignmentX(Component.LEFT_ALIGNMENT);
 	      		add(title,BorderLayout.WEST );
-	          //icon$=locator.getProperty(Locator.LOCATOR_ICON);
 	      	  String	entihome$=locator.getProperty(Entigrator.ENTIHOME);	
 	          Entigrator entigrator=console.getEntigrator(entihome$);
-	      	  //icon$=entigrator.getIcon(locator$);
-	      	 icon$=JConsoleHandler.getIcon(entigrator,locator$);
+	          icon$=JConsoleHandler.getIcon(entigrator,locator$);
 	      	  if(icon$!=null){
 	        	  byte[] ba=Base64.decodeBase64(icon$);
 	        	  ImageIcon icon = new ImageIcon(ba);
@@ -184,7 +178,6 @@ public class JItemPanel extends JPanel {
 	}
 	public JItemPanel instantiate(Entigrator entigrator,String locator$){
 		try{
-			//this.console=console;
 			this.locator$=locator$;
 			this.removeAll();
 			title$=Locator.getProperty(locator$,Locator.LOCATOR_TITLE);

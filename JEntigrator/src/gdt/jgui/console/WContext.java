@@ -14,7 +14,7 @@ public interface WContext {
 	public static final String PAGE_METHOD_DOWNLOAD="page method download";
 	public static final String PAGE_METHOD_OPEN="page method open";
 	public static final String PAGE_METHOD_SLIDESHOW="page method slideshow";
-	public static final String ABOUT="whitepaper.html";
+	public static final String ABOUT="http://www.gradatech.de/whitepaper.html";
 	public abstract String getWebView(Entigrator entigrator,String locator$);
 	public abstract String getWebConsole(Entigrator entigrator,String locator$);
 	

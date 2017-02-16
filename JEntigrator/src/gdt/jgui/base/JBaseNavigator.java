@@ -75,7 +75,6 @@ public class JBaseNavigator extends JItemsListPanel implements WContext{
 	boolean debug=false;
 private Logger LOGGER=Logger.getLogger(JBaseNavigator.class.getName());
 	String entihome$;
-//	boolean ignoreOutdate=false;
 	
 	/**
 	 * Default constructor
@@ -83,7 +82,6 @@ private Logger LOGGER=Logger.getLogger(JBaseNavigator.class.getName());
 	 */
 	public JBaseNavigator() {
 		super();
-	//	System.out.println("JBaseNavigator:constructor:BEGIN");
 
 	}
 	/**
@@ -124,15 +122,11 @@ private Logger LOGGER=Logger.getLogger(JBaseNavigator.class.getName());
 					   	}
 					    	try{
 					    		String[] args=new String[]{entihome$};
-					    		String path = JBaseNavigator.class.getProtectionDomain().getCodeSource().getLocation().getPath();
-						    	//String decodedPath$ = URLDecoder.decode(path, "UTF-8");
 						    	URL[] urls = { new URL("jar:file:"+extension$+"!/") };
 								URLClassLoader cl = URLClassLoader.newInstance(urls);
-								
 								Class<?>cls=cl.loadClass("gdt.data.extension.Main");
 								ExtensionMain em=(ExtensionMain)cls.newInstance();
 								em.main(args);
-							  //  restartClasspath(console, entihome$);
 					    	}catch(Exception ee){
 					    		LOGGER.severe(ee.toString());
 					    	}
@@ -176,8 +170,6 @@ private Logger LOGGER=Logger.getLogger(JBaseNavigator.class.getName());
 					    					if(entity==null)
 					    						continue;
 					    					EntityHandler.completeMigration(entigrator, s, fha);
-					    					//if("index".equals(entity.getProperty("entity")))
-					    					//    updateEntihome(entigrator, s);
 					    					entityLocator$=EntityHandler.getEntityLocator(entigrator, entity);
 					    					JEntityPrimaryMenu.reindexEntity(console,entityLocator$);
 					    					console.clipboard.putString(entityLocator$);
@@ -290,7 +282,6 @@ private Logger LOGGER=Logger.getLogger(JBaseNavigator.class.getName());
 					    	FileExpert.clear(entihome$);
 					    	File entihome=new File (entihome$);
 					    	entihome.delete();
-					    	//removeClasspath(console, entihome$);
 					    	console.back();
 					    	}catch(Exception ee){
 					    		LOGGER.severe(ee.toString());
@@ -353,19 +344,12 @@ private Logger LOGGER=Logger.getLogger(JBaseNavigator.class.getName());
 	      locator.setProperty(Entigrator.ENTIHOME,entihome$);
 	    File file = new File(entihome$);
 	    locator.setProperty(Locator.LOCATOR_TITLE, file.getName());
-	   /*
-	    String icon$=Support.readHandlerIcon(null,JBaseNavigator.class, "base.png");
-	    if(icon$!=null)
-	    	locator.setProperty(Locator.LOCATOR_ICON,icon$);
-	    }
-	    */
 	    }
 	    locator.setProperty(Locator.LOCATOR_ICON_CONTAINER, Locator.LOCATOR_ICON_CONTAINER_CLASS);
 	    locator.setProperty(Locator.LOCATOR_ICON_CLASS,getClass().getName());
 	    locator.setProperty(Locator.LOCATOR_ICON_FILE, "base.png"); 
 	    locator.setProperty(BaseHandler.HANDLER_SCOPE,JConsoleHandler.CONSOLE_SCOPE);
 	    locator.setProperty(BaseHandler.HANDLER_CLASS,JBaseNavigator.class.getName());
-//	    System.out.println("JBaseNavigator:getLocator:locator="+Locator.toString(locator));
 	    return Locator.toString(locator);
 	}
 	/**
@@ -483,7 +467,7 @@ private Logger LOGGER=Logger.getLogger(JBaseNavigator.class.getName());
 					undo=entigrator.getEntityAtKey(s);
 				}
 			}
-		//	System.out.println("BaseNavigator:undo="+undo.getProperty("label"));
+
 			Sack entity;
 			sa=undo.elementList("entity");
 			if(sa!=null)
@@ -556,11 +540,9 @@ private  JReferenceEntry[] getToPaste(){
 		entityKey$=clipLocator.getProperty(EntityHandler.ENTITY_KEY);
 		if(entityKey$!=null){
 			eka.add(entityKey$);
-		//if(clipLocator.getProperty(EntityHandler.ENTITY_KEY)!=null)
 			sl.add(s);
 		}
 	}
-	//sa=sl.toArray(new String[0]);
 	sa=eka.toArray(new String[0]);
 	if(sa==null||foreignEntihome$==null)
 		return null;
@@ -704,8 +686,6 @@ private void paste(boolean keep){
 			if(entity==null)
 				continue;
 			EntityHandler.completeMigration(entigrator, s, fha);
-			//if("index".equals(entity.getProperty("entity")))
-			 //   updateEntihome(entigrator, s);
 			entityLocator$=EntityHandler.getEntityLocator(entigrator, entity);
 			JEntityPrimaryMenu.reindexEntity(console,entityLocator$);
 			console.clipboard.putString(entityLocator$);
@@ -714,7 +694,6 @@ private void paste(boolean keep){
 		entigrator.save(undo);
 		updateBookmarks(entigrator,undo);
 	}
-	//entigrator.prp_refresh();
     JConsoleHandler.execute(console, getLocator());
 	}catch(Exception e){
 		Logger.getLogger(getClass().getName()).severe(e.toString());
@@ -818,7 +797,7 @@ public String getWebView(Entigrator entigrator,String locator$) {
 	    sb.append("<ul class=\"menu_list\">");
 	    sb.append("<li class=\"menu_item\"><a id=\"back\">Back</a></li>");
 	    sb.append("<li class=\"menu_item\"><a href=\""+webHome$+"\">Home</a></li>");
-	    sb.append("<li class=\"menu_item\"><a href=\""+webHome$.replace("entry", WContext.ABOUT)+"\">About</a></li>");
+	    sb.append("<li class=\"menu_item\"><a href=\""+WContext.ABOUT+"\">About</a></li>");
 	     sb.append("</ul>");
 	    sb.append("<table><tr><td>Base:</td><td><strong>");
 	    sb.append(entigrator.getBaseName());

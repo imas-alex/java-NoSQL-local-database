@@ -214,8 +214,6 @@ static boolean debug=false;
 		Class<?> cls=null;
 		String jar$="jar:file:" +entigrator.getEntihome()+"/"+extension$+"/"+lib$+"!/";
 		URL[] urls = { new URL(jar$) };
-		//if(debug)
-		//System.out.println("ExtensionHandler:listExtensionHandlers:this jar="+entigrator.getClass().getProtectionDomain().getCodeSource().getLocation().toURI().getPath());
 		Class sh=null;
 		ClassLoader shLoader;
 		URLClassLoader cl;
@@ -301,12 +299,12 @@ static boolean debug=false;
 	}
 	public static InputStream getResourceStream(Entigrator entigrator,String extension$,String resource$){
 		try{
-			
+	if(debug)		
 	System.out.println("ExtensionHandler:getResourceStream:extension="+extension$+" resource="+resource$);
 			Sack extension=entigrator.getEntityAtKey(extension$);
 			String lib$=extension.getElementItemAt("field", "lib");
 			String jar$=entigrator.getEntihome()+"/"+extension$+"/"+lib$;
-	//		System.out.println("ExtensionHandler:loadIcon:jar="+jar$);
+	
 			  ZipFile zf = new ZipFile(jar$);
 			    Enumeration<? extends ZipEntry> entries = zf.entries();
 			    ZipEntry ze;
@@ -315,7 +313,6 @@ static boolean debug=false;
 			      try{
 			    	ze = entries.nextElement();
 			      sa=ze.getName().split("/");
-			 //     System.out.println("ExtensionHandler:loadIcon:zip entry="+sa[sa.length-1]);
 			      if(resource$.equals(sa[sa.length-1])){
 			    	  InputStream is=zf.getInputStream(ze);
 			    	  if(is!=null)
@@ -335,7 +332,7 @@ static boolean debug=false;
 	}
 	public static InputStream getResourceStream(String jar$,String resource$){
 		try{
-	//		System.out.println("ExtensionHandler:loadIcon:jar="+jar$);
+	
 			  ZipFile zf = new ZipFile(jar$);
 			    Enumeration<? extends ZipEntry> entries = zf.entries();
 			    ZipEntry ze;
@@ -344,7 +341,7 @@ static boolean debug=false;
 			      try{
 			    	ze = entries.nextElement();
 			      sa=ze.getName().split("/");
-			 //     System.out.println("ExtensionHandler:loadIcon:zip entry="+sa[sa.length-1]);
+	
 			      if(resource$.equals(sa[sa.length-1])){
 			    	  InputStream is=zf.getInputStream(ze);
 			    	  if(is!=null)
@@ -377,7 +374,7 @@ static boolean debug=false;
 			    	ze = entries.nextElement();
 			      sa=ze.getName().split("/");
 			      resource$=sa[sa.length-1];
-			 //     System.out.println("ExtensionHandler:loadIcon:zip entry="+sa[sa.length-1]);
+	
 			      if(type$.equals(FileExpert.getExtension(resource$))){
 	                       sl.add(resource$);
 			      }
@@ -441,6 +438,7 @@ static boolean debug=false;
 //
 	public static  void addExtensionLibraries(Entigrator entigrator,String extension$){
 		try{
+			if(debug)
 			System.out.println("ExtensionHandler:addExtensionLibraries:extension="+extension$);
 				Object obj=null;
 				Sack extension=entigrator.getEntityAtKey(extension$);
@@ -448,7 +446,6 @@ static boolean debug=false;
 				String jar$="jar:file:" +entigrator.getEntihome()+"/"+extension$+"/"+lib$+"!/";
 				ArrayList <URL> urll=new ArrayList<URL>();
 				urll.add(new URL(jar$));
-				//URL[] urls = { new URL(jar$) };
 				String[]sa=extension.elementListNoSorted("classpath");
 				if(sa!=null){
 					File file; 
@@ -465,7 +462,6 @@ static boolean debug=false;
 				for(URL url:urls)
 				    extensionLoader.addURL(url);
 				 Thread.currentThread().setContextClassLoader(extensionLoader);
-				//URLClassLoader cl = URLClassLoader.newInstance(urls);
 				
 		}catch(Exception e){
 			Logger.getLogger(ExtensionHandler.class.getName()).severe(e.toString());
@@ -487,11 +483,8 @@ static boolean debug=false;
 		if(sa==null)
 			return null;
 		Sack extension;
-		//=entigrator.getEntityAtKey(extension$);
 		String lib$;
-		//=extension.getElementItemAt("field", "lib");
 		String jar$;
-		//="jar:file:" +entigrator.getEntihome()+"/"+extension$+"/"+lib$+"!/";
 		File  file; 
 		StringBuffer sb=new StringBuffer();
 		String[]ca;
@@ -530,14 +523,6 @@ static boolean debug=false;
 			
 		}
 		return sb.toString();
-		/*
-		 String path$ = JMainConsole.class.getProtectionDomain().getCodeSource().getLocation().getPath();
-         // System.out.println("Community:main.path="+path$);
-          String jar$ = URLDecoder.decode(path$, "UTF-8");
-          jar$=jar$.replace("file:", "");
-          jar$=jar$.replace("!/", "");
-          File jar=new File(jar$);
-          */
 	}catch(Exception e){
 		Logger.getLogger(ExtensionHandler.class.getName()).severe(e.toString());	
 	}

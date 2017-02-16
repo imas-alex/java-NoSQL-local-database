@@ -74,9 +74,6 @@ public class JExtensionFacetOpenItem extends JFolderFacetOpenItem{
 			locator.setProperty(EntityHandler.ENTITY_KEY,entityKey$);
 		if(entihome$!=null)
 			locator.setProperty(Entigrator.ENTIHOME,entihome$);
-		// String icon$=Support.readHandlerIcon(null,JExtensionRenderer.class, "facet.png");
-		 //   if(icon$!=null)
-		  //  	locator.setProperty(Locator.LOCATOR_ICON,icon$);
 	 	locator.setProperty(Locator.LOCATOR_CHECKABLE,Locator.LOCATOR_FALSE);
 	 	locator.setProperty(Locator.LOCATOR_ICON_CONTAINER,Locator.LOCATOR_ICON_CONTAINER_CLASS);
 		locator.setProperty(Locator.LOCATOR_ICON_CLASS,getClass().getName());

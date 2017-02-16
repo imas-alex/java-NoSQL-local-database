@@ -17,7 +17,6 @@ package gdt.jgui.console;
     along with JEntigrator.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.AdjustmentEvent;
@@ -99,7 +98,6 @@ public  abstract class JItemsListPanel extends JPanel implements JContext{
     @Override
 	public JMenu getContextMenu() {
 	   menu=new JMenu("Context");
-	  // menu.setName("Context");
 	   selectItem = new JMenuItem("Select all");
 	   selectItem.addActionListener(new ActionListener() {
 			@Override
@@ -145,9 +143,6 @@ public  abstract class JItemsListPanel extends JPanel implements JContext{
     	setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
 		 if(ipa!=null)
 			 for(JItemPanel aIpl:ipa){
-				// aIpl.revalidate();
-				// aIpl.repaint();
-				// System.out.println("ItemsListPanel:putItems:aIpl="+aIpl.getTitle());
 				 panel.add(aIpl);
 			 }
 	}
@@ -224,8 +219,6 @@ public  JContext instantiate(JMainConsole console,String locator$){
 	return this;
 }
 public void select(int pos){
-	//int cnt=panel.getComponentCount();
-	//if(pos<cnt&&pos>-1)
 	this.pos=pos;
 }
 public static class ItemPanelComparator implements Comparator<JItemPanel>{

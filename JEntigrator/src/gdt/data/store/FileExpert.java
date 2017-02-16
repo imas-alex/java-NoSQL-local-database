@@ -34,6 +34,7 @@ public class FileExpert extends File {
 	public static final int ADD = 1;
     private static final int OVERWRITE = 2;
     private static final int UPDATE = 3;
+    static boolean debug=false;
     private FileExpert(String pathname) {
         super(pathname);
     }
@@ -227,7 +228,8 @@ public class FileExpert extends File {
         if (list != null)
             for (String aList : list) {
                 if (!new File(aList).delete())
-                    System.out.println("can not delete " + aList);
+                   if(debug)
+                	System.out.println("FileExpert:clear:can not delete " + aList);
             }
         list = target.childrenDirectoryPaths();
         if (list == null){

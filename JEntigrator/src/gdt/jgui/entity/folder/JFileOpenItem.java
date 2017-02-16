@@ -22,7 +22,6 @@ import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileInputStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Hashtable;
@@ -105,8 +104,8 @@ public class JFileOpenItem extends JItemPanel implements WContext{
 			public void actionPerformed(ActionEvent e) {
 				try{
 				Properties locator=Locator.toProperties(locator$);
-				String filePath$=locator.getProperty(JFolderPanel.FILE_PATH);
 				String entihome$=locator.getProperty(Entigrator.ENTIHOME);
+				String filePath$=entihome$+"/"+locator.getProperty(JFolderPanel.FILE_PATH);
 				JTextEditor te=new JTextEditor();
 				String teLocator$=te.getLocator();
 				teLocator$=Locator.append(teLocator$, Entigrator.ENTIHOME, entihome$);
@@ -128,7 +127,8 @@ public class JFileOpenItem extends JItemPanel implements WContext{
 			public void actionPerformed(ActionEvent e) {
 				try{
 				Properties locator=Locator.toProperties(locator$);
-				String filePath$=locator.getProperty(JFolderPanel.FILE_PATH);
+				String entihome$=locator.getProperty(Entigrator.ENTIHOME);
+				String filePath$=entihome$+"/"+locator.getProperty(JFolderPanel.FILE_PATH);
 				File itemFile=new File(filePath$);
 				File folder=itemFile.getParentFile();
 				Desktop.getDesktop().open(folder);
@@ -139,10 +139,12 @@ public class JFileOpenItem extends JItemPanel implements WContext{
 		    });
 	  String fname$=Locator.getProperty(locator$, JFolderPanel.FILE_NAME);
 	  if(isArchiveFile(fname$)){
-		 
-		  String filePath$=Locator.getProperty(locator$,JFolderPanel.FILE_PATH);
-		  System.out.println("JFileOpenItem:file path="+filePath$);
+		  String entihome$=Locator.getProperty(locator$,Entigrator.ENTIHOME);
+		  String filePath$=entihome$+"/"+Locator.getProperty(locator$,JFolderPanel.FILE_PATH);
+		 if(debug)
+		   System.out.println("JFileOpenItem:file path="+filePath$);
 		  String contentType$=ArchiveHandler.detectContentOfArchive(filePath$);
+		  if(debug)
 		  System.out.println("JFileOpenItem:content type="+contentType$);
 		  if(ArchiveHandler.ARCHIVE_CONTENT_ENTITIES.equals(contentType$)){
 			  popup.addSeparator();
@@ -155,6 +157,7 @@ public class JFileOpenItem extends JItemPanel implements WContext{
 					try{
 					Properties locator=Locator.toProperties(locator$);
 					String filePath$=locator.getProperty(JFolderPanel.FILE_PATH);
+					if(debug)
 					System.out.println("FileOpenItem:import file="+filePath$);
 					}catch(Exception ee){
 						Logger.getLogger(JFileOpenItem.class.getName()).info(ee.toString());
@@ -173,6 +176,7 @@ public class JFileOpenItem extends JItemPanel implements WContext{
 						try{
 						Properties locator=Locator.toProperties(locator$);
 						String filePath$=locator.getProperty(JFolderPanel.FILE_PATH);
+						if(debug)
 						System.out.println("FileOpenItem:extract file="+filePath$);
 						JFileChooser chooser = new JFileChooser(); 
 					    chooser.setCurrentDirectory(new java.io.File(System.getProperty("user.home")));
@@ -294,7 +298,8 @@ if(BookmarksHandler.class.getName().equals(facetHandlerClass$)){
 		if("image".equalsIgnoreCase(mimetypesFileTypeMap.getContentType(fname$))){
 		imLocator=Locator.toProperties(c.value);
 		  ftitle$=c.type;
-		  fpath$=imLocator.getProperty(JFolderPanel.FILE_PATH);
+		  
+		  fpath$=entigrator.getEntihome()+"/"+imLocator.getProperty(JFolderPanel.FILE_PATH);
 		  if(fname$!=null&&fpath$!=null)
 			  sl.add(ftitle$);
 		      ht.put(ftitle$, fpath$);
@@ -356,8 +361,6 @@ if(FolderHandler.class.getName().equals(facetHandlerClass$)){
       sb.append("<img src=\"data:image/png;base64,"+icon$+"\" alt=\""+ftitle$+"\">");
 
 sb.append("<script>");
-//sb.append(" var slideIndex = 1;");
-
 sb.append("function prev() {");
 if(sa!=null&&sa[0]!=null){
 	String urlHeader$=webHome$+"?"+WContext.WEB_LOCATOR+"=";
@@ -403,23 +406,6 @@ return sb.toString();
 public String getWebConsole(Entigrator entigrator, String locator$) {
 	// TODO Auto-generated method stub
 	return null;
-}
-private String loadImage(String file$){
-	try{
-	FileInputStream is=new FileInputStream(new File(file$));
-	ByteArrayOutputStream bos = new ByteArrayOutputStream();
-    byte[] b = new byte[1024];
-    int bytesRead = 0;
-    while ((bytesRead = is.read(b)) != -1) {
-       bos.write(b, 0, bytesRead);
-    }
-    byte[] ba = bos.toByteArray();
-    is.close();
-    return Base64.encodeBase64String(ba);
-	}catch(Exception e){
-		Logger.getLogger(JFileOpenItem.class.getName()).severe(e.toString());
-		return null;
-	}
 }
 private String[] getNavigators(ArrayList<String>sl,String title$){
 	try{

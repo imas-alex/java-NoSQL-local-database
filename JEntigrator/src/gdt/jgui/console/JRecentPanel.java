@@ -38,7 +38,6 @@ import javax.swing.event.MenuListener;
 
 import gdt.data.entity.BaseHandler;
 import gdt.data.grain.Locator;
-import gdt.data.grain.Support;
 import gdt.data.store.Entigrator;
 import gdt.jgui.console.JConsoleHandler;
 import gdt.jgui.console.JContext;
@@ -79,11 +78,6 @@ static boolean debug=false;
 	    locator.setProperty(Locator.LOCATOR_TITLE, getTitle());
 	    if(entihome$!=null){
 	    locator.setProperty(Entigrator.ENTIHOME,entihome$);
-	/*
-	    String icon$=Support.readHandlerIcon(null,JRecentPanel.class, "recent.png");
-	    if(icon$!=null)
-	    	locator.setProperty(Locator.LOCATOR_ICON,icon$);
-	    */
 	    
 	    }
 	    locator.setProperty(Locator.LOCATOR_ICON_CONTAINER,Locator.LOCATOR_ICON_CONTAINER_CLASS);
@@ -104,7 +98,6 @@ static boolean debug=false;
 	 */		
 	@Override
 	public JContext instantiate(JMainConsole console, String locator$) {
-      // super.instantiate(console, locator$);
 		this.console=console;
 		//if(debug)
         //System.out.println("JRecentPanel:instantiate:locator="+Locator.remove(locator$,Locator.LOCATOR_ICON));
@@ -230,10 +223,10 @@ static boolean debug=false;
 			if(console.recents==null||console.recents.isEmpty())
 				return ;
 			ArrayList <String>sl=new ArrayList<String>();
-			Enumeration en=console.recents.keys();
+			Enumeration<String> en=console.recents.keys();
 			//String locator$;
 			while(en.hasMoreElements()){
-				sl.add((String)console.recents.get(en.nextElement()));
+				sl.add(console.recents.get(en.nextElement()));
 			}
 			String[] sa= sl.toArray(new String[0]);
 			if(sa==null){

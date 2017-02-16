@@ -25,7 +25,6 @@ import gdt.data.grain.Sack;
 import gdt.data.grain.Support;
 import gdt.data.store.Entigrator;
 import gdt.jgui.base.JBaseNavigator;
-import gdt.jgui.base.JDesignPanel;
 import gdt.jgui.console.JConsoleHandler;
 import gdt.jgui.console.JContext;
 import gdt.jgui.console.JMainConsole;
@@ -34,11 +33,8 @@ import gdt.jgui.console.ReloadDialog;
 import gdt.jgui.console.WContext;
 import gdt.jgui.console.WUtils;
 import gdt.jgui.entity.JEntityDigestDisplay;
-import gdt.jgui.entity.JEntityFacetPanel;
 import gdt.jgui.entity.JEntityPrimaryMenu;
 import gdt.jgui.entity.JEntityStructurePanel;
-import gdt.jgui.entity.fields.JFieldsEditor;
-
 import javax.swing.BorderFactory;
 import javax.swing.JLabel;
 import javax.swing.JMenu;
@@ -57,8 +53,6 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.Properties;
 import java.util.logging.Logger;
 
@@ -268,7 +262,7 @@ private void sort(String header$){
 			if(cutItem!=null)
 				   menu.remove(cutItem);
 			if(hasEditingCell()){
-				//menu.addSeparator();
+
 				editCellItem = new JMenuItem("Edit item");
 				editCellItem.addActionListener(new ActionListener() {
 					@Override
@@ -376,7 +370,6 @@ private void sort(String header$){
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				String element$="new element";
-				//addElement(element$);
 				String locator$=getRenameElementLocator(element$);
 				JConsoleHandler.execute(console, locator$);
 			}
@@ -461,12 +454,6 @@ private void sort(String header$){
 			 entityKey$=locator.getProperty(EntityHandler.ENTITY_KEY);
 			 Entigrator entigrator=console.getEntigrator(entihome$);
 			 entity=entigrator.getEntityAtKey(entityKey$);
-			/*
-			 if(entigrator.ent_tryLocked(entityKey$))
-				 message$=entigrator.ent_lockInfo(entityKey$);
-			 else
-				 entigrator.ent_lock(entityKey$);
-				 */
 			 entityLabel$=locator.getProperty(EntityHandler.ENTITY_LABEL);
 			 requesterAction$=locator.getProperty(JRequester.REQUESTER_ACTION);
 			 element$=locator.getProperty(ELEMENT);
@@ -544,7 +531,7 @@ private void refresh(){
 			candidate.putAttribute(new Core(null,Entigrator.SAVE_ID,Identity.key()));
 			Entigrator entigrator=console.getEntigrator(entihome$);
 			entigrator.replace(candidate);
-			//candidate.saveXML(entihome$+"/"+Entigrator.ENTITY_BASE+"/data/"+entityKey$);
+
 		}catch(Exception e){
 			LOGGER.severe(e.toString());
 		}
@@ -733,6 +720,7 @@ public void response(JMainConsole console, String locator$) {
 			//System.out.println("EntityEditor:response:entity="+entity.getProperty("label"));
 			String element$=locator.getProperty(ELEMENT);
 			text$=locator.getProperty(JTextEditor.TEXT);
+			if(debug)
 			System.out.println("EntityEditor:response:text="+text$);
 			if(Locator.LOCATOR_TRUE.equals(locator.getProperty(JTextEditor.IS_BASE64))){
 				byte[] ba=Base64.decodeBase64(text$);
@@ -760,6 +748,7 @@ public void response(JMainConsole console, String locator$) {
 			else	
 				entity.putElementItem(element$, core);
 			entigrator.save(entity);
+			if(debug)
 			System.out.println("EntityEditor:response:entity saved");
 			locator$=Locator.append(locator$, Locator.LOCATOR_TITLE,"Edit");
 			locator$=Locator.append(locator$,EntityHandler.ENTITY_ACTION,JEntityEditor.ENTITY_EDIT);
@@ -876,7 +865,7 @@ public void response(JMainConsole console, String locator$) {
 		    sb.append("<li id=\"digest\" onclick=\"dig()\"><a href=\"#\">Digest</a></li>");
 		    sb.append("</ul>");
 		    sb.append("</li>");
-		    sb.append("<li class=\"menu_item\"><a href=\""+webHome$.replace("entry", WContext.ABOUT)+"\">About</a></li>");
+		    sb.append("<li class=\"menu_item\"><a href=\""+WContext.ABOUT+"\">About</a></li>");
 		    sb.append("</ul>");
 		    sb.append("<table><tr><td>Base:</td><td><strong>");
 		    sb.append(entigrator.getBaseName());
@@ -894,15 +883,13 @@ public void response(JMainConsole console, String locator$) {
 		    sb.append("<td>");
 		    sb.append("<select id=\"element\" size=\"1\" onchange=\"showElement()\">");
 		    entityKey$=entigrator.indx_keyAtLabel(entityLabel$);
-		   // Sack entity=entigrator.getEntityAtKey(entityKey$);
 		    if(element$==null)
 		    	element$="attributes";
 		    if("attributes".equals(element$))
 		    	sb.append("<option value=\"attributes\" selected=\"selected\" >attributes</option>");
 		    else
 		    	sb.append("<option value=\"attributes\" >attributes</option>");
-		    //String[] 
-		    		sa=entity.elementsList();
+	    		sa=entity.elementsList();
 		    Support.sortStrings(sa);
 		    if(sa!=null)
 		    	for(String s:sa){
@@ -988,7 +975,6 @@ public void response(JMainConsole console, String locator$) {
 	    	sb.append("window.location.assign(href);");
 		    sb.append("}");
 		    sb.append("function digest(){");
-		    //sb.append("$('#jstree').jstree('close_all');");
 		    sb.append("}");
 		    sb.append("window.localStorage.setItem(\""+this.getClass().getName()+"\",\""+Base64.encodeBase64URLSafeString(locator$.getBytes())+"\");");
 		  

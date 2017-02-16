@@ -32,6 +32,7 @@ import java.util.logging.Logger;
 public class JClipboard {
 	private static final String CLIP="clip";
 	private ArrayList<String>sl=new ArrayList<String>();
+	static boolean debug=false;
 	/**
 	 * Get  clipboard content.
 	 * @return clipboard content as a string array.
@@ -75,7 +76,8 @@ public static void store(JMainConsole console){
 		String[] sa=console.clipboard.getContent();
 		if(sa==null)
 			return;
-		System.out.println("Clipboard:store:sa="+sa.length);
+		if(debug)
+		System.out.println("JClipboard:store:sa="+sa.length);
 	 FileOutputStream fos = new FileOutputStream(clipFile);
      OutputStreamWriter osw = new OutputStreamWriter(fos);
      for(String aSa:sa)

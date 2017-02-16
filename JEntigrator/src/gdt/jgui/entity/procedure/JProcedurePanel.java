@@ -177,7 +177,7 @@ boolean debug=false;
 							} );
 							menu.add(doneItem);
 							try{
-								//Entigrator entigrator=console.getEntigrator(entihome$);
+				
 								Sack entity=entigrator.getEntityAtKey(entityKey$);
 								String template$=entity.getAttributeAt("template");
 								if(template$!=null){
@@ -228,8 +228,6 @@ boolean debug=false;
 				locator.setProperty(Entigrator.ENTIHOME,entihome$);
 			if(entityLabel$!=null)
 				locator.setProperty(EntityHandler.ENTITY_LABEL,entityLabel$);
-			//String icon$=Support.readHandlerIcon(null,getClass(), "procedure.png");
-	    	//locator.setProperty(Locator.LOCATOR_ICON,icon$);
 			locator.setProperty(Locator.LOCATOR_ICON_CONTAINER,Locator.LOCATOR_ICON_CONTAINER_CLASS);
 	    	locator.setProperty(Locator.LOCATOR_ICON_CLASS,getClass().getName());
 	    	locator.setProperty(Locator.LOCATOR_ICON_FILE,"procedure.png"); 
@@ -340,12 +338,6 @@ boolean debug=false;
 	 */
 	@Override
 	public String addIconToLocator(String locator$) {
-		/*
-		String icon$=Support.readHandlerIcon(null,JProcedurePanel.class, "procedure.png");
-	    if(icon$!=null)
-	    	return Locator.append(locator$, Locator.LOCATOR_ICON,icon$);
-	    else
-	    	*/
 	    	return locator$;
 	}
 	/**

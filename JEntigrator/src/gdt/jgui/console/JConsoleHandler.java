@@ -58,10 +58,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Properties;
 import java.util.logging.Logger;
-
 import javax.imageio.ImageIO;
-import javax.swing.JPanel;
-
 import org.apache.commons.codec.binary.Base64;
 /**
  *  This class serves as a dispatcher for creating 
@@ -73,7 +70,7 @@ public class JConsoleHandler {
 	 * Indicates that an execute request must be handled by this class. 
 	 */
 	public final static String CONSOLE_SCOPE="console scope";
-	final static boolean debug=true;
+	final static boolean debug=false;
 	/**
 	 * Execute a handle request.
 	 *  @param console the main console
@@ -175,11 +172,9 @@ public class JConsoleHandler {
 		   String baseLocator$=baseNavigator.getLocator();
 		   String icon$=Support.readHandlerIcon(null,JConsoleHandler.class, "base.png");
 		    if(icon$!=null)
-		    	//baseLocator$=Locator.append(baseLocator$,Locator.LOCATOR_ICON,icon$);
 		    	baseLocator$=Locator.append(baseLocator$,Locator.LOCATOR_ICON_CONTAINER,Locator.LOCATOR_ICON_CONTAINER_CLASS);
 		    baseLocator$=Locator.append(baseLocator$,Locator.LOCATOR_ICON_CLASS,JBasesPanel.class.getName());
 		    baseLocator$=Locator.append(baseLocator$,Locator.LOCATOR_ICON_FILE,"base.png");
-		    
 		//    System.out.println("ConsoleHandler:listBases:icon="+icon$);
 		    for(String aSa:sa){
 			   baseLocator$=Locator.append(baseLocator$, Entigrator.ENTIHOME, aSa);
@@ -286,6 +281,7 @@ try{
 	if(debug)
 	System.out.println("ConsoleHandler:getHandlerInstance:handler class="+handlerClass$);
 	if(handlerClass$==null||"null".equals(handlerClass$)){
+		if(debug)
 		System.out.println("ConsoleHandler:getHandlerInstance:argument null");
 		return null;
 	}
@@ -296,7 +292,6 @@ try{
 	try{
 		if(debug)
 		System.out.println("ConsoleHandler:getHandlerInstance:forName");
-		//Object 	handler=null;
 		Object 	handler=entigrator.getHandler(handlerClass$);
 		if(handler!=null){
 			if(debug)
@@ -320,6 +315,7 @@ try{
 		System.out.println("ConsoleHandler:getHandlerInstance:embedded class not found");
 	String[]sa=entigrator.indx_listEntities("entity", "extension");
 	if(sa==null){
+		if(debug)
 		System.out.println("ConsoleHandler:getHandlerInstance:no extensions:"+entigrator.getEntihome());
 		return null;
 	}
@@ -506,7 +502,7 @@ try{
 		}
 		}
 		 String fileName$=locator.getProperty(JFolderPanel.FILE_NAME);
-		 String filePath$=locator.getProperty(JFolderPanel.FILE_PATH);
+		 String filePath$=entigrator.getEntihome()+"/"+locator.getProperty(JFolderPanel.FILE_PATH);
 		if(debug)
 			System.out.println("JConsoleHandler:getIcon:file path="+filePath$);
 		 if(fileName$!=null){
@@ -578,9 +574,6 @@ try{
 		 String entityKey$=locator.getProperty(EntityHandler.ENTITY_KEY);
 		 
 		 if(Locator.LOCATOR_ICON_CONTAINER_ENTITY.equals(locator.getProperty(Locator.LOCATOR_ICON_CONTAINER))){
-			// String entityKey$=locator.getProperty(Locator.LOCATOR_ICON_ENTITY_KEY);
-			
-			
 			 Sack entity=entigrator.getEntityAtKey(entityKey$);
 			 String element$=locator.getProperty(Locator.LOCATOR_ICON_ELEMENT);
 			 String core$=locator.getProperty(Locator.LOCATOR_ICON_CORE);
@@ -601,22 +594,6 @@ try{
 				return  Support.readHandlerIcon(entigrator, facetRenderer.getClass(), facetRenderer.getFacetIcon());
 			 }
 			 }
-		 /*
-		 String iconField$=locator.getProperty(Locator.LOCATOR_ICON_FIELD);
-		 if(iconField$!=null){
-			// String entityKey$=locator.getProperty(EntityHandler.ENTITY_KEY);	
-			 Sack entity=getEntityAtKey(entityKey$);
-			 String element$=locator.getProperty(Locator.LOCATOR_ICON_ELEMENT);
-			 String item$=locator.getProperty(Locator.LOCATOR_ICON_CORE);
-			 Core core=entity.getElementItem(element$, item$);
-			 if(Locator.LOCATOR_ICON_FIELD_VALUE.equals(iconField$))
-				 return core.value;
-			 if(Locator.LOCATOR_ICON_FIELD_TYPE.equals(iconField$))
-				 return core.type;
-			 
-				 
-		 }
-		 */
 		 return null;
 	 }catch(Exception e){
 		 Logger.getLogger(JConsoleHandler.class.getName()).severe(e.toString());

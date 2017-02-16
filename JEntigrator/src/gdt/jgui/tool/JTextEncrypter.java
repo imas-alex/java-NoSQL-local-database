@@ -19,12 +19,10 @@ package gdt.jgui.tool;
 
 import gdt.data.entity.BaseHandler;
 import gdt.data.grain.Locator;
-import gdt.data.grain.Support;
 import gdt.jgui.console.JConsoleHandler;
 import gdt.jgui.console.JContext;
 import gdt.jgui.console.JMainConsole;
 import gdt.jgui.console.JRequester;
-import gdt.jgui.entity.JEntitiesPanel;
 import gdt.jgui.entity.JEntityPrimaryMenu;
 
 import javax.crypto.Cipher;
@@ -219,8 +217,6 @@ public class JTextEncrypter extends JPanel implements JContext{
 	    	locator.setProperty(JRequester.REQUESTER_RESPONSE_LOCATOR, requesterResponseLocator$);
 	   locator.setProperty(BaseHandler.HANDLER_SCOPE,JConsoleHandler.CONSOLE_SCOPE);
 	   locator.setProperty(BaseHandler.HANDLER_CLASS,JTextEncrypter.class.getName());
-	   //String icon$=Support.readHandlerIcon(null,JEntitiesPanel.class, "lock.png");
-       //locator.setProperty(Locator.LOCATOR_ICON,icon$);
 	   locator.setProperty(Locator.LOCATOR_ICON_CONTAINER,Locator.LOCATOR_ICON_CONTAINER_CLASS);
 	   	locator.setProperty(Locator.LOCATOR_ICON_CLASS,JEntityPrimaryMenu.class.getName());
 	   	locator.setProperty(Locator.LOCATOR_ICON_FILE,"lock.png"); 

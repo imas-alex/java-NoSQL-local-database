@@ -40,7 +40,7 @@ import gdt.jgui.console.WUtils;
 import gdt.jgui.entity.JEntityFacetPanel;
 import gdt.jgui.entity.JEntityPrimaryMenu;
 import gdt.jgui.entity.fields.JFieldsFacetOpenItem;
-import gdt.jgui.entity.index.JIndexPanel;
+
 /**
  * This class represents the query facet item in the list
  * of  entity's facets.
@@ -77,11 +77,6 @@ public String getLocator(){
 		locator.setProperty(EntityHandler.ENTITY_KEY,entityKey$);
 	if(entihome$!=null)
 		locator.setProperty(Entigrator.ENTIHOME,entihome$);
-	/* 
-	String icon$=Support.readHandlerIcon(null,JEntityPrimaryMenu.class, "query.png");
-    if(icon$!=null)
-    	locator.setProperty(Locator.LOCATOR_ICON,icon$);
-    	*/
 	locator.setProperty(Locator.LOCATOR_ICON_CONTAINER,Locator.LOCATOR_ICON_CONTAINER_CLASS);
 	locator.setProperty(Locator.LOCATOR_ICON_CLASS,getClass().getName());
 	locator.setProperty(Locator.LOCATOR_ICON_FILE,"query.png");
@@ -249,7 +244,7 @@ public String getWebView(Entigrator entigrator, String locator$) {
 	    navLocator$=Locator.append(navLocator$, Entigrator.ENTIHOME, entigrator.getEntihome());
 	    String navUrl$=webHome$+"?"+WContext.WEB_LOCATOR+"="+Base64.encodeBase64URLSafeString(navLocator$.getBytes());
 	    sb.append("<li class=\"menu_item\"><a href=\""+navUrl$+"\">Base</a></li>");
-	    sb.append("<li class=\"menu_item\"><a href=\""+webHome$.replace("entry", WContext.ABOUT)+"\">About</a></li>");
+	    sb.append("<li class=\"menu_item\"><a href=\""+WContext.ABOUT+"\">About</a></li>");
 	    sb.append("</ul>");
 	    sb.append("<table><tr><td>Base:</td><td><strong>");
 	    sb.append(entigrator.getBaseName());
@@ -275,7 +270,6 @@ public String getWebView(Entigrator entigrator, String locator$) {
 	    Properties foiLocator=new Properties(); 
 	    foiLocator.setProperty(BaseHandler.HANDLER_CLASS,JEntityFacetPanel.class.getName());
     	foiLocator.setProperty(Entigrator.ENTIHOME,entigrator.getEntihome());
-    	//foiLocator.setProperty(EntityHandler.ENTITY_LABEL,foiTitle$);
     	foiLocator.setProperty(WContext.WEB_HOME, webHome$);
     	foiLocator.setProperty(WContext.WEB_REQUESTER, this.getClass().getName());
      	sb.append(" var locator=\""+Locator.toString(foiLocator)+"\";");

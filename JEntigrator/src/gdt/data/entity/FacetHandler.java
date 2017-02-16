@@ -94,7 +94,7 @@ public abstract class FacetHandler {
       */	 
      public  String instantiate(String locator$){
     		try{
-    		//	System.out.println("FacetHandler:instantiate:locator="+locator$);
+    	
     			Properties locator=Locator.toProperties(locator$);
     			entihome$=locator.getProperty(Entigrator.ENTIHOME);
     			entityKey$=locator.getProperty(EntityHandler.ENTITY_KEY);

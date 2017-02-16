@@ -80,7 +80,6 @@ import gdt.jgui.entity.JEntityPrimaryMenu;
 import gdt.jgui.entity.JReferenceEntry;
 import gdt.jgui.entity.folder.JFolderFacetAddItem;
 import gdt.jgui.entity.folder.JFolderFacetOpenItem;
-import gdt.jgui.entity.index.JIndexPanel;
 import gdt.jgui.tool.JTextEditor;
 /**
  * This class represents the query context
@@ -343,13 +342,12 @@ public class JQueryPanel extends JPanel implements JFacetRenderer,JRequester{
 							Sack query=entigrator.getEntityAtKey(entityKey$);
 							if(!query.existsElement("exclude"))
 								query.createElement("exclude");
-							//else
-							//	query.clearElement("exclude");
 							ListSelectionModel lsm=table.getSelectionModel();
 							 int minIndex = lsm.getMinSelectionIndex();
 					            int maxIndex = lsm.getMaxSelectionIndex();
 					            for (int i = minIndex; i <= maxIndex; i++) {
 					                if (lsm.isSelectedIndex(i)) {
+					                	if(debug)
 					                    System.out.println("JQueryPanel:exclude rows:label="+table.getValueAt(i, 1));
 					                    query.putElementItem("exclude", new Core(null,(String)table.getValueAt(i, 1),null));
 					                }
@@ -394,10 +392,6 @@ public class JQueryPanel extends JPanel implements JFacetRenderer,JRequester{
 	}
 	public static String[] select(Entigrator entigrator,Sack query){
 		try{
-			  
-			//Entigrator entigrator=console.getEntigrator(entihome$);
-			//Sack query=entigrator.getEntityAtKey(entityKey$);
-			//String queryClass$=query.getElementItemAt("parameter", "query.class");
 			String entihome$=entigrator.getEntihome();
 			String entityKey$=query.getKey();
 			File queryHome=new File(entihome$+"/"+entityKey$);
@@ -454,9 +448,6 @@ public class JQueryPanel extends JPanel implements JFacetRenderer,JRequester{
 				locator.setProperty(Entigrator.ENTIHOME,entihome$);
 			if(entityLabel$!=null)
 				locator.setProperty(EntityHandler.ENTITY_LABEL,entityLabel$);
-			//String icon$=Support.readHandlerIcon(null,JEntitiesPanel.class, "query.png");
-	    	//locator.setProperty(Locator.LOCATOR_ICON,icon$);
-			
 			return Locator.toString(locator);
 			}catch(Exception e){
 	        Logger.getLogger(getClass().getName()).severe(e.toString());
@@ -548,12 +539,6 @@ public class JQueryPanel extends JPanel implements JFacetRenderer,JRequester{
 	 */
 	@Override
 	public String addIconToLocator(String locator$) {
-		/*
-		String icon$=Support.readHandlerIcon(null,JEntitiesPanel.class, "query.png");
-	    if(icon$!=null)
-	    	return Locator.append(locator$, Locator.LOCATOR_ICON,icon$);
-	    else
-	    	*/
 	    	return locator$;
 	}
 	/**
@@ -730,7 +715,6 @@ public class JQueryPanel extends JPanel implements JFacetRenderer,JRequester{
 					createSource(entihome$,entityKey$);
 					createProjectFile(entihome$,entityKey$);
 					createClasspathFile(entihome$,entityKey$);
-					//createClass(entihome$,entityKey$);
 				   JQueryPanel qp=new JQueryPanel();
 				   String qpLocator$=qp.getLocator();
 				   qpLocator$=Locator.append(qpLocator$, Entigrator.ENTIHOME, entihome$);
@@ -1106,11 +1090,13 @@ private void showContent(){
     	 entity$=entigrator.indx_keyAtLabel(s);
     	 entity=entigrator.getEntityAtKey(entity$);
     	 if(entity==null){
+    		 if(debug)
     		 System.out.println("JQueryPanel:showContent:cannot get entity="+entity$);
     		 continue;
     	 }
     	 row=getRow(entity, query,num++);
     	 if(row==null){
+    		 if(debug)
     		 System.out.println("JQueryPanel:showContent:cannot get row num="+num);
     		 continue;
     	 }
@@ -1274,13 +1260,11 @@ private static void createSource(String entihome$,String queryKey$){
 		 writer.write("import gdt.jgui.entity.query.Query;\n");
 		 
 		 writer.write("public class "+queryKey$+"  implements Query {\n");
-		 //writer.write("private final static String ENTIHOME=\""+entihome$+"\";\n");
 		 writer.write("private final static String ENTITY_KEY=\""+queryKey$+"\";\n");
 		 writer.write("@Override\n");
-		 writer.write("public String[] select(JMainConsole console,String entihome$){\n");
+		 writer.write("public String[] select(Entigrator entigrator){\n");
 		 writer.write("try{\n");
 		 writer.write("//Do NOT change this section of the code\n"); 
-		 writer.write("Entigrator entigrator=console.getEntigrator(entihome$);\n");
 		 writer.write("String [] sa;\n");
 		 writer.write("// Put query code here\n");
 		 writer.write("sa=entigrator.indx_listEntitiesAtPropertyName(\"entity\");\n");
@@ -1327,9 +1311,7 @@ public static String getViewItems(Entigrator entigrator,String locator$){
 			Properties locator=Locator.toProperties(locator$);
 			String entityLabel$=locator.getProperty(EntityHandler.ENTITY_LABEL);
 			String entityKey$=entigrator.indx_keyAtLabel(entityLabel$);
-			String webHome$=locator.getProperty(WContext.WEB_HOME);
-			String webRequester$=locator.getProperty(WContext.WEB_REQUESTER);
-	        Sack  query=entigrator.getEntityAtKey(entityKey$);
+		    Sack  query=entigrator.getEntityAtKey(entityKey$);
 			 StringBuffer sb=new StringBuffer();
 			 sb.append("<table style=\"text-align: left;  background-color: transparent;\"  border=\"1\" cellpadding=\"2\" cellspacing=\"2\">");
 			 sb.append(getWebHeader(query));
@@ -1388,6 +1370,7 @@ public static String getWebItems(Entigrator entigrator,Sack query){
 	    	 entity$=entigrator.indx_keyAtLabel(s);
 	    	 entity=entigrator.getEntityAtKey(entity$);
 	    	 if(entity==null){
+	    		 if(debug)
 	    		 System.out.println("JQueryPanel:showContent:cannot get entity="+entity$);
 	    		 continue;
 	    	 }
