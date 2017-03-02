@@ -42,11 +42,11 @@ public class JExtensionFacetOpenItem extends JFolderFacetOpenItem{
 	 */
 	@Override
 	public String getFacetIcon(Entigrator entigrator) {
-		return Support.readHandlerIcon(null,getClass(), "facet.png");
+		return Support.readHandlerIcon(null,getClass(), "extension.png");
 	}
 	@Override
 	public String getFacetIconName() {
-		return "file.png";
+		return "extension.png";
 	}
 	/**
 	 * Get the facet renderer class name.

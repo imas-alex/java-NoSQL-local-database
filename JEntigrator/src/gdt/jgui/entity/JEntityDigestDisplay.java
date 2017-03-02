@@ -1188,6 +1188,7 @@ private boolean instantiateFacetNode(DefaultMutableTreeNode facetNode){
 	public static void visitAllNodes(Entigrator entigrator,String webHome$,DefaultMutableTreeNode node, StringBuffer sb) {
 		
 		String locator$=(String)node.getUserObject();
+		locator$=Locator.append(locator$, Entigrator.ENTIHOME, entigrator.getEntihome());
 		// if(debug)
 		//	 System.out.println("JEntityDigestDisplay:visitAllNodes:locator="+Locator.remove(locator$, Locator.LOCATOR_ICON));
 	    String item$=getItem(entigrator,webHome$,locator$);

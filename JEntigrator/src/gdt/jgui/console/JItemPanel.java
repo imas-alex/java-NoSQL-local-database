@@ -263,7 +263,9 @@ public boolean equals(Object v) {
 	if (v instanceof JItemPanel){
           if( locator$.equals(((JItemPanel)v).locator$))
         	  return true;
+          
       }
+	
    }catch(Exception e){
 	   LOGGER.severe(e.toString());
    }

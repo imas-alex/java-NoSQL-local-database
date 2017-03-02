@@ -300,7 +300,7 @@ Hashtable<String,JItemPanel> items;
 		    FacetHandler[] fha=BaseHandler.listAllHandlers(entigrator);
 			 if(fha!=null){
 				 JFacetRenderer facetRenderer;
-				 String fHandler$;
+
 				 String fIcon$;
 				 String fTitle$;
 				 Properties fLocator=new Properties();
@@ -312,12 +312,15 @@ Hashtable<String,JItemPanel> items;
 				 String item$;
 				 for(FacetHandler fh:fha){
 					 try{
-				       fHandler$=fh.getClassName();
+				     //  fHandler$=fh.getClassName();
 				       if(debug) 
 				    	   System.out.println("JAllCategoriesPanel:getWebView:facet handler="+fh.getClass().getName());		 
 				       facetRenderer=JConsoleHandler.getFacetRenderer(entigrator, fh.getClass().getName());
                    	   fTitle$=facetRenderer.getCategoryTitle();
                    	   fIcon$=facetRenderer.getCategoryIcon(entigrator);
+                   	 if(debug) 
+				    	   System.out.println("JAllCategoriesPanel:getWebView:facet icon="+fIcon$);		 
+				     
                    	   fLocator.setProperty(BaseHandler.HANDLER_CLASS,JCategoryPanel.class.getName());
                    	   fLocator.setProperty(JCategoryPanel.CATEGORY_TITLE,facetRenderer.getCategoryTitle());
                    	   fLocator.setProperty(EntityHandler.ENTITY_TYPE,facetRenderer.getEntityType());
@@ -358,8 +361,11 @@ Hashtable<String,JItemPanel> items;
 	private String getItem(String fTitle$,String fIcon$, String webHome$,String locator$ ){
 		  locator$=Locator.append(locator$,Entigrator.ENTIHOME, entihome$);
 		  
-		  String iconTerm$="<img src=\"data:image/png;base64,"+WUtils.scaleIcon(fIcon$)+
+		  //String iconTerm$="<img src=\"data:image/png;base64,"+WUtils.scaleIcon(fIcon$)+
+		//		  "\" width=\"24\" height=\"24\" alt=\""+fTitle$+"\">";
+		  String iconTerm$="<img src=\"data:image/png;base64,"+fIcon$+
 				  "\" width=\"24\" height=\"24\" alt=\""+fTitle$+"\">";
+	 
 		  return iconTerm$+"<a href=\""+webHome$+"?"+WContext.WEB_LOCATOR+"="+Base64.encodeBase64URLSafeString(locator$.getBytes())+"\" >"+" "+fTitle$+"</a>";
 	}
 }

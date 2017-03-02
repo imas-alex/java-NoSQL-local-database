@@ -240,7 +240,7 @@ static boolean debug=false;
 				if(debug)
 					System.out.println("JBookmarksFacetOpenItem:getDigest:bookmark locator="+aCa.value);
 				itemLocator$=Locator.append(itemLocator$, BaseHandler.HANDLER_CLASS, getClass().getName());
-				
+				itemLocator$=Locator.append(itemLocator$, Entigrator.ENTIHOME, entigrator.getEntihome());
 				bookmarkNode.setUserObject(itemLocator$);
 				nl.add(bookmarkNode);
 			}
@@ -397,7 +397,7 @@ public String getWebView(Entigrator entigrator, String locator$) {
                 		System.out.println("JBookmarksFacetOpenItem:getWebView: make facet panel locator");
             	
                 	foiLocator.setProperty(BaseHandler.HANDLER_CLASS,JEntityFacetPanel.class.getName());
-                	foiLocator.setProperty(Entigrator.ENTIHOME,entigrator.getEntihome());
+                	//foiLocator.setProperty(Entigrator.ENTIHOME,entigrator.getEntihome());
                 	foiLocator.setProperty(EntityHandler.ENTITY_LABEL,foiTitle$);
                 	if(debug)
                 	System.out.println("JBookmarksFacetOpenItem:getWebView:foi locator(prop)="+foiLocator);

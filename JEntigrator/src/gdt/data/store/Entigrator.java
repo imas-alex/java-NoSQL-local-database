@@ -716,7 +716,23 @@ public String[] indx_listEntities(Properties criteria) {
         }
         String[] ea = map.elementList("entity");
         if (ea != null) {
-            return ea;
+        	ArrayList <String>el=new ArrayList<String>();
+        	Sack candidate; 
+        	boolean saveMap=false;
+        	
+        	for(String e:ea){
+        		//System.out.println("Entigrator:indx_listEntities.e="+e);
+        		candidate=getEntityAtKey(e);
+        		if(candidate!=null){
+        			el.add(e);
+        		}else{
+        			map.removeElementItem("entity", e);
+        			saveMap=true;
+        		}
+        	}
+        	if(saveMap)
+        		this.save(map);
+            return el.toArray(new String[0]);
         } else {
             LOGGER.severe(":indx_listEntities:empty map=" + map$ + " at value=" + propertyValue$ + " in property=" + propertyName$);
             return null;
@@ -988,16 +1004,22 @@ public void indx_reindex(Indicator indicator) {
         if (sa == null)
              return;
         Sack candidate ;
+        
         for (String aSa : sa) {
+         	   
             if (indicator != null) {
                 indicator.run();
             }
            // candidate = getMember("entity.base", aSa);
-            candidate = storeAdapter.ent_getAtKey(aSa);   
+            candidate = storeAdapter.ent_getAtKey(aSa); 
+            if(candidate==null){
+            	System.out.println("Entigrator:indx_reindex:cannot get aSa="+aSa);
+                continue;
+            }
             ent_reindex(candidate);
         }
         
-  
+      //  System.out.println("Entigrator:indx_reindex:finish all");
     }
 
 /**
@@ -1043,8 +1065,6 @@ public Sack ent_reindex(Sack entity) {
         	      label$=label$+entity.getKey().substring(0, 4);
         }
         entity.putElementItem("property", new Core("label",entity.getKey(),label$));
-       // quickMap.putElementItem("label", new Core(entity.getAttributeAt("icon"),label$,entity.getKey()));
-       // quickMap.putElementItem("key", new Core(label$,entity.getKey(),entity.getProperty("entity")));
         Sack header=null;       
         String header$=getEntihome()+"/"+StoreAdapter.HEADERS+"/"+entity.getKey();
         try{
@@ -1066,12 +1086,12 @@ public Sack ent_reindex(Sack entity) {
         	LOGGER.severe(":ent_reindex:"+e.toString());
         }
         entity.putAttribute(new Core(null,"key",entity.getKey()));
-        
         save(entity);
         if(entity.getProperty("entity")!=null)
             entity=ent_assignProperty(entity, entity.getProperty("entity"), entity.getProperty("label"));
         entity=col_clearComponents(entity);
         entity=col_updateContainers(entity);
+        replace(entity);
         return entity;
     }
 
@@ -1531,7 +1551,7 @@ public Sack col_clearComponents(Sack container){
 		}
 		ca=cl.toArray(new Core[0]);
 		container.elementReplace("component", ca);
-		save(container);
+		replace(container);
 		return container;
 	}catch(Exception e){
 		LOGGER.severe(":col_clearComponents"+e.toString());
@@ -1562,7 +1582,7 @@ public Sack col_updateContainers(Sack component){
 				}
 			
 		}
-       save(component);
+       replace(component);
 		
 	}catch(Exception e){
 		LOGGER.severe(":col_clearComponents"+e.toString());

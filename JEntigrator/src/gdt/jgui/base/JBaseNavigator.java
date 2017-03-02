@@ -75,6 +75,7 @@ public class JBaseNavigator extends JItemsListPanel implements WContext{
 	boolean debug=false;
 private Logger LOGGER=Logger.getLogger(JBaseNavigator.class.getName());
 	String entihome$;
+	boolean keep=true;
 	
 	/**
 	 * Default constructor
@@ -198,10 +199,16 @@ private Logger LOGGER=Logger.getLogger(JBaseNavigator.class.getName());
 						public void actionPerformed(ActionEvent e) {
 							 int response = JOptionPane.showConfirmDialog(console.getContentPanel(), "Keep existing entities ?", "Confirm",
 					  			        JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
-					    		  if (response == JOptionPane.YES_OPTION) 
-					    			  paste(true);
+					    		 
+							 if (response == JOptionPane.YES_OPTION)
+								 keep=true;
+					    			  //paste(true);
 					    		  else 
-					    		     paste(false);
+					    			  keep=false;
+					    		     //paste(false);
+					    	ProgressDialog pd=new ProgressDialog(console.getFrame(),Paste,"Wait for paste..");	
+					    	pd.setLocationRelativeTo(JBaseNavigator.this);
+					    	pd.setVisible(true);
 						}
 					} );
 					menu.add(paste);
@@ -249,8 +256,10 @@ private Logger LOGGER=Logger.getLogger(JBaseNavigator.class.getName());
 				reindexItem.addActionListener(new ActionListener() {
 					@Override
 					public void actionPerformed(ActionEvent e) {
-					 reindex();
-					
+					 //reindex();
+						ProgressDialog pd=new ProgressDialog(console.getFrame(),Reindex,"Wait for reindex..");	
+				    	pd.setLocationRelativeTo(JBaseNavigator.this);
+				    	pd.setVisible(true);
 					}
 				   
 				});
@@ -304,11 +313,12 @@ private Logger LOGGER=Logger.getLogger(JBaseNavigator.class.getName());
 			});
 		return menu;
 	}
-	/**
-	 * Get context locator. 
-	 * @return the locator.
-	 */	
-	private void reindex(){
+	
+//	Runnable reindex=new Runnable 
+	
+	//private void reindex(){
+	Runnable Reindex=new Runnable(){
+	public void run(){
 		Entigrator entigrator=console.getEntigrator(entihome$);
 		entigrator.store_block();
 		entigrator.indx_reindex(null);
@@ -316,6 +326,7 @@ private Logger LOGGER=Logger.getLogger(JBaseNavigator.class.getName());
 		Sack entity;
 		String entityLocator$;
 		for(String s:sa){
+			//System.out.println("Entigrator:Reindex:s="+s);
 			entity=entigrator.getEntityAtKey(s);
 			if(entity==null)
 				continue;
@@ -324,17 +335,17 @@ private Logger LOGGER=Logger.getLogger(JBaseNavigator.class.getName());
 		entityLocator$=EntityHandler.getEntityLocator(entigrator, entity);
 		 JEntityPrimaryMenu.reindexEntity(console,entityLocator$);
 		}
-		for(String s:sa){
-			entity=entigrator.getEntityAtKey(s);
-			if(entity==null)
-				continue;
-			if("extension".equals(entity.getProperty("entity")))
-				continue;
-		entityLocator$=EntityHandler.getEntityLocator(entigrator, entity);
-		 JEntityPrimaryMenu.reindexEntity(console,entityLocator$);
-		}
+		//System.out.println("Entigrator:Reindex:finish");
+		
 		entigrator.store_unblock();
 	}
+	};
+	/**
+	 * Get context locator. 
+	 * @return the locator.
+	 */
+	
+	
 	@Override
 	public String getLocator() {
 		Properties locator=new Properties();
@@ -554,6 +565,155 @@ private  JReferenceEntry[] getToPaste(){
 	}
 	return null;
 }
+Runnable Paste=new Runnable(){
+	public void run(){
+	try{
+		JReferenceEntry[] jrea= getToPaste();
+	Entigrator entigrator=console.getEntigrator(entihome$);
+	int cnt=0;
+	String[] sa=entigrator.indx_listEntities("entity", "undo");
+	if(sa!=null){
+		String label$;
+		int max=0;
+		for(String s:sa){
+			label$=entigrator.indx_getLabel(s);
+			cnt=Integer.parseInt(label$.substring(5, label$.length()));
+			if (cnt>max){
+				max=cnt;
+			}
+		}
+		cnt=max+1;
+	}
+	Sack undo=entigrator.ent_new("undo", "undo_"+String.valueOf(cnt));
+	entigrator.save(undo);
+	entigrator.ent_reindex(undo);
+	entigrator.ent_assignProperty(undo, "folder", undo.getProperty("label"));
+	undo.createElement("entity");
+	undo.createElement("icon");
+	undo.createElement("jbookmark");
+	File sourceEntity;
+	File undoEntity;
+	File oldEntity;
+	Sack pastedEntity;
+	File undoIcon;
+	File oldIcon;
+	File newIcon;
+	File undoHome=new File(entigrator.ent_getHome(undo.getKey()));
+	File undoBodies=new File(undoHome.getPath()+"/"+Entigrator.ENTITY_BASE+"/data/");
+	File undoIcons=new File(undoHome.getPath()+"/"+Entigrator.ICONS);
+	File oldEntityHome;
+	File undoEntityHome;
+	File sourceEntityHome;
+	File oldIcons=new File(entigrator.getEntihome()+"/"+Entigrator.ICONS);
+	String entityBodies$=entigrator.getEntihome()+"/"+Entigrator.ENTITY_BASE+"/data/";
+    String icon$;
+	for(JReferenceEntry jre:jrea){
+		try{
+		if(keep&&entigrator.indx_getLabel(jre.name)!=null)
+			continue;
+		oldEntity=new File(entityBodies$+jre.name);
+		if(oldEntity.exists()){
+			if(!undoBodies.exists())
+				undoBodies.mkdirs();
+			undoEntity=new File(undoBodies.getPath()+"/"+jre.name);
+			FileExpert.copyFile(oldEntity, undoEntity);
+			//icon$=entigrator.indx_getIcon(jre.name);
+			icon$=entigrator.ent_getIconAtKey(jre.name);
+			if(icon$!=null){
+				oldIcon=new File(oldIcons.getPath()+"/"+icon$);
+				if(oldIcon.exists()){
+				if(!undoIcons.exists())
+					undoIcons.mkdir();
+				undoIcon=new File(undoIcons.getPath()+"/"+icon$);
+				undoIcon.createNewFile();
+				oldIcon=new File(oldIcons.getPath()+"/"+icon$);
+				FileExpert.copyFile(oldIcon, undoIcon);
+				undo.putElementItem("icon", new Core(null,icon$,null));
+				}
+			}
+			oldEntityHome=new File(entihome$+"/"+jre.name);
+			if(oldEntityHome.exists()){
+				undoEntityHome=new File(undoHome.getPath()+"/"+jre.name);
+				undoEntityHome.mkdir();
+				FileExpert.copyAll(oldEntityHome.getPath(), undoEntityHome.getPath());
+			}
+		}
+		
+		undo.putElementItem("entity", new Core(Locator.getProperty(jre.value,Entigrator.ENTIHOME),jre.name,jre.value));
+	    sourceEntity=new File(jre.type+"/"+Entigrator.ENTITY_BASE+"/data/"+jre.name);
+	   //  System.out.println("BaseNavigator:source entity="+sourceEntity.getPath());
+	    if(!oldEntity.exists())
+	    	oldEntity.createNewFile();
+	    FileExpert.copyFile(sourceEntity,oldEntity);
+	    pastedEntity=Sack.parseXML(oldEntity.getPath());
+	    entigrator.ent_reindex(pastedEntity);
+	    pastedEntity.putAttribute(new Core(null,JReferenceEntry.ORIGIN_ENTIHOME,jre.type));
+	    entigrator.save(pastedEntity);
+	    icon$=pastedEntity.getAttributeAt("icon");
+	    //System.out.println("BaseNavigator:paste:icon="+icon$);
+	    if(icon$!=null){
+	    	undo.putElementItem("icon", new Core(null,icon$,null));
+	    	newIcon=new File(jre.type+"/"+Entigrator.ICONS+"/"+icon$);
+	    	if(newIcon.exists()){
+	    		
+	    		oldIcon=new File(oldIcons.getPath()+"/"+icon$);
+	    		if(!oldIcon.exists())
+	    			oldIcon.createNewFile();
+	    		else{
+	    			if(!undoIcons.exists())
+	    				undoIcons.mkdir();
+	    			undoIcon=new File(undoIcons.getPath()+"/"+icon$);
+	    			FileExpert.copyFile(oldIcon, undoIcon);
+	    		}
+	    		FileExpert.copyFile(newIcon, oldIcon);
+	    	}
+	    }
+	    sourceEntityHome=new File(jre.type+"/"+jre.name);
+	    if( sourceEntityHome.exists()){
+	    	oldEntityHome=new File(entihome$+"/"+jre.name);
+	    	if(!oldEntityHome.exists())
+	    		oldEntityHome.mkdir();
+	    	FileExpert.copyAll(sourceEntityHome.getPath(), oldEntityHome.getPath());
+	    }
+		}catch(Exception e){
+			Logger.getLogger(getClass().getName()).info(e.toString());
+		}
+	}
+	
+  //  
+    undo.putElementItem("fhandler", new Core(null,"gdt.data.entity.facet.BookmarksHandler",null));
+    undo.putElementItem("jfacet", new Core("gdt.jgui.entity.bookmark.JBookmarksFacetAddItem","gdt.data.entity.facet.BookmarksHandler","gdt.jgui.entity.bookmark.JBookmarksFacetOpenItem"));
+    entigrator.save(undo);
+    entigrator.ent_assignProperty(undo, "bookmarks", undo.getProperty("label"));
+    String undoLocator$=EntityHandler.getEntityLocator(entigrator, undo);
+    JEntityPrimaryMenu.reindexEntity(console, undoLocator$);
+	sa=undo.elementList("entity");
+	if(sa!=null){
+		String entityLocator$;
+		Sack entity;
+		console.clipboard.clear();
+		FacetHandler[] fha=BaseHandler.listAllHandlers(entigrator);
+		for(String s:sa){
+			entity=entigrator.getEntityAtKey(s);
+			
+			if(entity==null)
+				continue;
+			EntityHandler.completeMigration(entigrator, s, fha);
+			entityLocator$=EntityHandler.getEntityLocator(entigrator, entity);
+			JEntityPrimaryMenu.reindexEntity(console,entityLocator$);
+			console.clipboard.putString(entityLocator$);
+		}
+		undo=putBookmarks(console,undo);
+		entigrator.save(undo);
+		updateBookmarks(entigrator,undo);
+	}
+    JConsoleHandler.execute(console, getLocator());
+	
+}catch(Exception ee){
+	Logger.getLogger(getClass().getName()).severe(ee.toString());
+}	
+}};
+/*
 private void paste(boolean keep){
 	try{
 	JReferenceEntry[] jrea= getToPaste();
@@ -699,6 +859,7 @@ private void paste(boolean keep){
 		Logger.getLogger(getClass().getName()).severe(e.toString());
 	}
 }
+*/
 private  static Sack putBookmarks(JMainConsole console,Sack undo ){
     try{
     	String[] sa=console.clipboard.getContent();
@@ -780,7 +941,7 @@ public String getWebView(Entigrator entigrator,String locator$) {
 		String webHome$=locator.getProperty(WContext.WEB_HOME);
 		entihome$=locator.getProperty(Entigrator.ENTIHOME);
 		String webRequester$=locator.getProperty(WContext.WEB_REQUESTER);
-		File entihome=new File(entihome$);
+	
 		if(debug)
 		System.out.println("JBasNavigator:web home="+webHome$+" locator="+locator$);
 		String iconDesign$=Support.readHandlerIcon(null,JBaseNavigator.class, "design.png");

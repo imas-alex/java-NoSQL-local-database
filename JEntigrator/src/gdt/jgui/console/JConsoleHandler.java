@@ -291,18 +291,28 @@ try{
 	
 	try{
 		if(debug)
-		System.out.println("ConsoleHandler:getHandlerInstance:forName");
-		Object 	handler=entigrator.getHandler(handlerClass$);
+		System.out.println("ConsoleHandler:getHandlerInstance:forName="+handlerClass$);
+		Object 	handler;
+		if(entigrator!=null){
+		handler=entigrator.getHandler(handlerClass$);
 		if(handler!=null){
 			if(debug)
-			System.out.println("ConsoleHandler:getHandlerInstance:found handler="+handler.toString());
+			System.out.println("JConsoleHandler:getHandlerInstance:found handler="+handler.toString());
 			return handler;
 		}
-		
-		 handler= Class.forName(handlerClass$).newInstance();
+		}
+		 Class<?> handlerClass=Class.forName(handlerClass$);
+		 if(handlerClass==null){
+			 if(debug)
+					System.out.println("JConsoleHandler:getHandlerInstance:cannot load handler class="+handlerClass$);
+					return null;
+		 }
+			 
+		 handler= handlerClass.newInstance();
 		if(handler!=null){
 			if(debug)
 				System.out.println("ConsoleHandler:getHandlerInstance:found handler for name="+handlerClass$);
+			if(entigrator!=null)
 			entigrator.putHandler(handlerClass$, handler);
 			return handler;
 		}else{
@@ -492,7 +502,8 @@ public static class TitleComparator implements Comparator<JItemPanel>{
 }
 public static String getIcon(Entigrator entigrator,String locator$){
 try{
-    //System.out.println("JConsoleHandler:getIcon:locator="+locator$);		
+	if(debug)
+    System.out.println("JConsoleHandler:getIcon:locator="+locator$);		
 		 Properties locator=Locator.toProperties(locator$);
 		String contextType$=locator.getProperty(JContext.CONTEXT_TYPE);
 		if(contextType$!=null){
@@ -503,8 +514,8 @@ try{
 		}
 		 String fileName$=locator.getProperty(JFolderPanel.FILE_NAME);
 		 String filePath$=entigrator.getEntihome()+"/"+locator.getProperty(JFolderPanel.FILE_PATH);
-		if(debug)
-			System.out.println("JConsoleHandler:getIcon:file path="+filePath$);
+		//if(debug)
+		//	System.out.println("JConsoleHandler:getIcon:file path="+filePath$);
 		 if(fileName$!=null){
 			 for (final String ext : JFileOpenItem.IMAGE_EXTENSIONS) {
 	                if (fileName$.toLowerCase().endsWith("." + ext)) {
@@ -515,7 +526,7 @@ try{
 	                    g.fillRect(0, 0, 24, 24);
 	                	g.drawImage(img, 0, 0, 24, 24, null);
 	                	g.dispose();
-	                	Image im =img.getScaledInstance( 24, 24,  java.awt.Image.SCALE_SMOOTH ) ;  
+	                	//Image im =img.getScaledInstance( 24, 24,  java.awt.Image.SCALE_SMOOTH ) ;  
 	                     ByteArrayOutputStream b =new ByteArrayOutputStream();
 	    	            ImageIO.write(newImage, "png", b );
 	    		            b.close();

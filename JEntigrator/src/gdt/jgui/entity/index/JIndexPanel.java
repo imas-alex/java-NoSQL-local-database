@@ -1713,8 +1713,10 @@ private static Core[] getGroupItems(Sack index,String groupKey$){
 			cl.add(c);
 	}
 	Core[]ia= cl.toArray(new Core[0]);
+	if(debug)
 	System.out.println("JIndexPanel:getWebView:groupKey="+groupKey$+" selection="+ia.length);
 	Core.sortAtIntType(ia);
+	if(debug)
 	for(Core c:ia){
 		System.out.println("JIndexPanel:getWebView:ia type="+c.type);
 	}

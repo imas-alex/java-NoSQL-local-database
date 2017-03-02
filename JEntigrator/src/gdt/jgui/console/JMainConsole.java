@@ -430,7 +430,10 @@ private class OpenWorkspace extends AbstractAction {
 	    	    JConsoleHandler.execute(JMainConsole.this, locator$);
 	    	}
 	}
-	
+	public JFrame getFrame(){
+		return frmEntigrator;
+		
+	}
 	private class BackTrack extends AbstractAction {
 		private static final long serialVersionUID = 1L;
 		public BackTrack() {

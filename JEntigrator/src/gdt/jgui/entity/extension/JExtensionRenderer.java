@@ -70,7 +70,7 @@ public class JExtensionRenderer extends gdt.jgui.entity.folder.JFolderPanel{
 	@Override
 	public String getCategoryIcon(Entigrator entigrator) {
 		
-		return Support.readHandlerIcon(null,getClass(), "facet.png");
+		return Support.readHandlerIcon(null,getClass(), "extension.png");
 	}
 	/**
 	 * Get the category title.

@@ -4,6 +4,7 @@ import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -249,10 +250,12 @@ public static String scaleIcon(String icon$){
 	if(icon$==null)
 		icon$=Support.readHandlerIcon(null,JEntitiesPanel.class, "icon.png");
 		byte[] ba=Base64.decodeBase64(icon$);
+		BufferedImage origin=ImageIO.read(new ByteArrayInputStream(ba));
 	  BufferedImage bi = new BufferedImage(24, 24, BufferedImage.TYPE_INT_RGB);
       Graphics2D g2d = (Graphics2D)bi.createGraphics();
       g2d.setColor(Color.WHITE);
       g2d.fillRect(0, 0, 24, 24);
+      g2d.drawImage(origin, 0, 0, 24,24, null);
    	  ByteArrayOutputStream baos=new ByteArrayOutputStream();
 	  ImageIO.write(bi, "png", baos );
 	  g2d.dispose();

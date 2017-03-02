@@ -352,6 +352,7 @@ static boolean debug=false;
 			    	  
 			      }
 			    }
+			    zf.close();
 			return null;
 		}catch(Exception e){
 			Logger.getLogger(ExtensionHandler.class.getName()).severe(e.toString());
