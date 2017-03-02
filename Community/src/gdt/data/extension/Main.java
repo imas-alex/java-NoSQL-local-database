@@ -17,14 +17,8 @@ package gdt.data.extension;
     along with JEntigrator.  If not, see <http://www.gnu.org/licenses/>.
  */
 import java.io.File;
-import java.io.FileOutputStream;
-import java.io.InputStream;
-import java.net.URL;
-import java.net.URLClassLoader;
 import java.net.URLDecoder;
 import java.util.logging.Logger;
-
-import gdt.data.entity.facet.ExtensionHandler;
 import gdt.data.entity.facet.ExtensionMain;
 import gdt.data.grain.Core;
 import gdt.data.grain.Sack;
@@ -64,21 +58,7 @@ public class Main implements ExtensionMain{
                if(!target.exists())
             	   target.createNewFile();
                FileExpert.copyFile(jar, target);
-          //     System.out.println("CommunityMain:main:url="+Main.class.getProtectionDomain().getCodeSource().getLocation().toString());
-               InputStream is = ExtensionHandler.getResourceStream(entigrator, EXTENSION_KEY,"community.tar" );
-                  target=new File(folder$+"/community.tar");
-               if(is!=null){
-            	  if(!target.exists())
-                	   target.createNewFile();
-               int readBytes;
-               byte[] buffer = new byte[4096];
-              FileOutputStream os = new FileOutputStream(target);
-               while ((readBytes = is.read(buffer)) > 0) {
-                   os.write(buffer, 0, readBytes);
-               }
-               os.close();
-               is.close();
-               }
+        
                 }catch(Exception e ){
             	  Logger.getLogger(Main.class.getName()).severe(e.toString());
               }
@@ -154,6 +134,22 @@ public class Main implements ExtensionMain{
          extension.putElementItem("content.jrenderer", new Core(null,"gdt.data.entity.AddressHandler","gdt.jgui.entity.address.JAddressEditor"));
          extension.putElementItem("content.jrenderer", new Core(null,"gdt.data.entity.BankHandler","gdt.jgui.entity.bank.JBankEditor"));
          extension.putElementItem("content.jrenderer", new Core(null,"gdt.data.contact.ContactHandler","gdt.jgui.entity.contact.JContactEditor"));
+         if(!extension.existsElement("content.jrenderer"))
+        	 extension.createElement("content.super");
+         else
+        	 extension.clearElement("content.super");
+         extension.putElementItem("content.super", new Core(null,"gdt.jgui.entity.phone.JPhoneFacetOpenItem","gdt.jgui.console.JFacetOpenItem"));
+         extension.putElementItem("content.super", new Core(null,"gdt.jgui.entity.phone.JPhoneFacetAddItem","gdt.jgui.console.JFacetAddItem"));
+         extension.putElementItem("content.super", new Core(null,"gdt.jgui.entity.person.JPersonFacetOpenItem","gdt.jgui.console.JFacetOpenItem"));
+         extension.putElementItem("content.super", new Core(null,"gdt.jgui.entity.person.JPersonFacetAddItem","gdt.jgui.console.JFacetAddItem"));
+         extension.putElementItem("content.super", new Core(null,"gdt.jgui.entity.email.JEmailFacetOpenItem","gdt.jgui.console.JFacetOpenItem"));
+         extension.putElementItem("content.super", new Core(null,"gdt.jgui.entity.email.JEmailFacetAddItem","gdt.jgui.console.JFacetAddItem"));
+         extension.putElementItem("content.super", new Core(null,"gdt.jgui.entity.contact.JContactFacetOpenItem","gdt.jgui.console.JFacetOpenItem"));
+         extension.putElementItem("content.super", new Core(null,"gdt.jgui.entity.contact.JContactFacetAddItem","gdt.jgui.console.JFacetAddItem"));
+         extension.putElementItem("content.super", new Core(null,"gdt.jgui.entity.bank.JBankFacetOpenItem","gdt.jgui.console.JFacetOpenItem"));
+         extension.putElementItem("content.super", new Core(null,"gdt.jgui.entity.bank.JBankFacetAddItem","gdt.jgui.console.JFacetAddItem"));
+         extension.putElementItem("content.super", new Core(null,"gdt.jgui.entity.address.JAddressFacetOpenItem","gdt.jgui.console.JFacetOpenItem"));
+         extension.putElementItem("content.super", new Core(null,"gdt.jgui.entity.address.JAddressFacetAddItem","gdt.jgui.console.JFacetAddItem"));
                   return extension;
 	}
 }

@@ -43,7 +43,6 @@ import gdt.jgui.entity.JEntityPrimaryMenu;
 import gdt.jgui.entity.JReferenceEntry;
 import gdt.jgui.entity.fields.JFieldsEditor;
 import gdt.jgui.entity.webset.JWeblinkEditor;
-import gdt.jgui.entity.webset.JWebsetFacetOpenItem;
 import gdt.jgui.tool.JTextEditor;
 
 public class JAddressEditor extends JFieldsEditor {

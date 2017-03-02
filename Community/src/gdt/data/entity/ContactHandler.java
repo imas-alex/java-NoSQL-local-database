@@ -30,7 +30,7 @@ public class ContactHandler extends FacetHandler{
 private Logger LOGGER=Logger.getLogger(ContactHandler.class.getName());
 String entihome$;
 String entityKey$;
-boolean debug=true;
+boolean debug=false;
 public final static String CONTACT="contact";
 
 	@Override

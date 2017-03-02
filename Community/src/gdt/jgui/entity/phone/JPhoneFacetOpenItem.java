@@ -50,7 +50,7 @@ public class JPhoneFacetOpenItem extends JFacetOpenItem implements JRequester,WC
 	private static final long serialVersionUID = 1L;
 	private Logger LOGGER=Logger.getLogger(PhoneHandler.class.getName());
 	String phone$;
-	boolean debug=true;
+	boolean debug=false;
 	public JPhoneFacetOpenItem(){
 		super();
 	}
@@ -127,7 +127,6 @@ public class JPhoneFacetOpenItem extends JFacetOpenItem implements JRequester,WC
 				JEntityDigestDisplay edd=new JEntityDigestDisplay();
 				String eddLocator$=edd.getLocator();
 				eddLocator$=Locator.append(eddLocator$, Entigrator.ENTIHOME, entihome$);
-				//eddLocator$=Locator.append(eddLocator$, EntityHandler.ENTITY_KEY, entityKey$);
 				eddLocator$=Locator.append(eddLocator$,  EntityHandler.ENTITY_KEY, Locator.getProperty(responseLocator$,JEntityDigestDisplay.ROOT_ENTITY_KEY ));
 				eddLocator$=Locator.append(eddLocator$, JEntityDigestDisplay.SELECTION, Locator.getProperty(responseLocator$,JEntityDigestDisplay.SELECTION ));
 				JConsoleHandler.execute(console, eddLocator$);
@@ -238,8 +237,6 @@ public class JPhoneFacetOpenItem extends JFacetOpenItem implements JRequester,WC
 			locator$=Locator.append(locator$,Locator.LOCATOR_ICON_CONTAINER,Locator.LOCATOR_ICON_CONTAINER_CLASS);
 			locator$=Locator.append(locator$,Locator.LOCATOR_ICON_CLASS,getClass().getName());
 			locator$=Locator.append(locator$,Locator.LOCATOR_ICON_FILE,"phone.png");
-		
-			//locator$=Locator.append(locator$, Locator.LOCATOR_ICON,getFacetIcon(entigrator));
 			DefaultMutableTreeNode phoneNode=new DefaultMutableTreeNode();
 			phoneNode.setUserObject(locator$);
 			return new DefaultMutableTreeNode[]{phoneNode};
@@ -329,6 +326,7 @@ public class JPhoneFacetOpenItem extends JFacetOpenItem implements JRequester,WC
 	    navLocator$=Locator.append(navLocator$, Entigrator.ENTIHOME, entigrator.getEntihome());
 	    String navUrl$=webHome$+"?"+WContext.WEB_LOCATOR+"="+Base64.encodeBase64URLSafeString(navLocator$.getBytes());
 	    sb.append("<li class=\"menu_item\"><a href=\""+navUrl$+"\">Base</a></li>");
+	    sb.append("<li class=\"menu_item\"><a href=\""+WContext.ABOUT+"\">About</a></li>");
 	    sb.append("</ul>");
 	    sb.append("<table><tr><td>Base:</td><td><strong>");
 	    sb.append(entigrator.getBaseName());

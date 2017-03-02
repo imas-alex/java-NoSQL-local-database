@@ -18,10 +18,7 @@ package gdt.jgui.entity.email;
  */
 import java.util.ArrayList;
 import java.util.Properties;
-import java.util.Stack;
 import java.util.logging.Logger;
-
-import gdt.data.entity.AddressHandler;
 import gdt.data.entity.BaseHandler;
 import gdt.data.entity.EmailHandler;
 import gdt.data.entity.EntityHandler;
@@ -30,13 +27,10 @@ import gdt.data.grain.Core;
 import gdt.data.grain.Identity;
 import gdt.data.grain.Locator;
 import gdt.data.grain.Sack;
-import gdt.data.grain.Support;
 import gdt.data.store.Entigrator;
 import gdt.jgui.console.*;
 import gdt.jgui.entity.JEntityFacetPanel;
-import gdt.jgui.entity.JEntityPrimaryMenu;
 import gdt.jgui.entity.JReferenceEntry;
-import gdt.jgui.entity.address.JAddressFacetOpenItem;
 import gdt.jgui.tool.JTextEditor;
 public class JEmailEditor extends JTextEditor implements JFacetRenderer,JRequester{
 String entityKey$;
@@ -215,17 +209,6 @@ String entihome$;
 			    String requesterResponseLocator$=Locator.compressText(fpLocator$);
 			    teLocator$=Locator.append(teLocator$,JRequester.REQUESTER_RESPONSE_LOCATOR,requesterResponseLocator$);
 			    JConsoleHandler.execute(console, teLocator$);
-			   /*
-			   JEmailEditor ee=new JEmailEditor();
-			   String eeLocator$=ee.getLocator();
-			   eeLocator$=Locator.append(eeLocator$, Entigrator.ENTIHOME, entihome$);
-			   eeLocator$=Locator.append(eeLocator$, EntityHandler.ENTITY_KEY, entityKey$);
-			   JEntityPrimaryMenu.reindexEntity(console, eeLocator$);
-			   Stack<String> s=console.getTrack();
-			   s.pop();
-			   console.setTrack(s);
-			   JConsoleHandler.execute(console, eeLocator$);
-			   */
 			}
 		if(ACTION_CREATE_ADDRESS.equals(action$)){
 			   entihome$=locator.getProperty(Entigrator.ENTIHOME);

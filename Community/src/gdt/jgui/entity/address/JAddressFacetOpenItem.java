@@ -19,24 +19,20 @@ package gdt.jgui.entity.address;
 import java.util.Properties;
 import java.util.logging.Logger;
 import javax.swing.JPopupMenu;
+import javax.swing.tree.DefaultMutableTreeNode;
+
 import gdt.data.entity.AddressHandler;
-import gdt.data.entity.BankHandler;
 import gdt.data.entity.BaseHandler;
-import gdt.data.entity.EmailHandler;
 import gdt.data.entity.EntityHandler;
 import gdt.data.entity.FacetHandler;
-import gdt.data.entity.PhoneHandler;
 import gdt.data.entity.facet.ExtensionHandler;
 import gdt.data.grain.Locator;
-
-import gdt.data.grain.Support;
 import gdt.data.store.Entigrator;
 import gdt.jgui.console.JConsoleHandler;
 import gdt.jgui.console.JContext;
 import gdt.jgui.console.JFacetOpenItem;
 import gdt.jgui.console.JMainConsole;
 import gdt.jgui.console.JRequester;
-import gdt.jgui.console.WContext;
 import gdt.jgui.entity.JEntityFacetPanel;
 import gdt.jgui.entity.fields.JFieldsFacetOpenItem;
 
@@ -62,11 +58,6 @@ public String getLocator(){
 		locator.setProperty(EntityHandler.ENTITY_KEY,entityKey$);
 	if(entihome$!=null)
 		locator.setProperty(Entigrator.ENTIHOME,entihome$);
-	/*
-	String icon$=Support.readHandlerIcon(null,JAddressEditor.class, "address.png");
-    if(icon$!=null)
-    	locator.setProperty(Locator.LOCATOR_ICON,icon$);
-    	*/
 	locator.setProperty(Locator.LOCATOR_ICON_CONTAINER,Locator.LOCATOR_ICON_CONTAINER_CLASS);
 	locator.setProperty(Locator.LOCATOR_ICON_CLASS,getClass().getName());
 	locator.setProperty(Locator.LOCATOR_ICON_FILE,"address.png");
@@ -92,6 +83,11 @@ public String getFacetIcon(Entigrator entigrator) {
 
 
 		return ExtensionHandler.loadIcon(entigrator,AddressHandler.EXTENSION_KEY, "address.png");
+}
+@Override
+public String getFacetIconName() {
+	// TODO Auto-generated method stub
+	return "address.png";
 }
 @Override
 public void removeFacet() {
@@ -152,4 +148,10 @@ public void response(JMainConsole console, String locator$) {
 	super.response(console,locator$);
 
 }
+
+@Override
+public DefaultMutableTreeNode[] getDigest(Entigrator entigrator,String locator$) {
+	return null;
+}
+
 }

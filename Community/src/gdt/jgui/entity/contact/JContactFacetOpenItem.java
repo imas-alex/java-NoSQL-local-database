@@ -22,21 +22,15 @@ import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.Properties;
 import java.util.logging.Logger;
-
-
 import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
 import javax.swing.tree.DefaultMutableTreeNode;
-
 import org.apache.commons.codec.binary.Base64;
-
-
 import gdt.data.entity.BaseHandler;
 import gdt.data.entity.ContactHandler;
 import gdt.data.entity.EmailHandler;
 import gdt.data.entity.EntityHandler;
 import gdt.data.entity.FacetHandler;
-import gdt.data.entity.PhoneHandler;
 import gdt.data.entity.facet.ExtensionHandler;
 import gdt.data.grain.Locator;
 import gdt.data.grain.Sack;
@@ -64,7 +58,7 @@ public class JContactFacetOpenItem extends JFacetOpenItem implements JRequester,
 	public static final String EXTENSION_KEY="_v6z8CVgemqMI6Bledpc7F1j0pVY";
 	private Logger LOGGER=Logger.getLogger(ContactHandler.class.getName());
 	String contact$;
-	boolean debug=true;
+	boolean debug=false;
 	public JContactFacetOpenItem(){
 		super();
 	}
@@ -105,13 +99,6 @@ public class JContactFacetOpenItem extends JFacetOpenItem implements JRequester,
 			locator.setProperty(EntityHandler.ENTITY_KEY,entityKey$);
 		if(entihome$!=null){
 			locator.setProperty(Entigrator.ENTIHOME,entihome$);
-		//String icon$=Support.readHandlerIcon(JContactFacetOpenItem.class, "contact.png");
-			/*
-			Entigrator entigrator=console.getEntigrator(entihome$);
-			String icon$=ExtensionHandler.loadIcon(entigrator, ContactHandler.EXTENSION_KEY, "contact.png");
-		    if(icon$!=null)
-		    	locator.setProperty(Locator.LOCATOR_ICON,icon$);
-		    	*/
 		}
 			locator.setProperty(Locator.LOCATOR_ICON_CONTAINER,Locator.LOCATOR_ICON_CONTAINER_CLASS);
 			locator.setProperty(Locator.LOCATOR_ICON_CLASS,getClass().getName());
@@ -246,18 +233,22 @@ public class JContactFacetOpenItem extends JFacetOpenItem implements JRequester,
 		    EmailHandler emailHandler=new EmailHandler();
 		    if(emailHandler.isApplied(entigrator, locator$)){
 			String email$=entity.getProperty("email");
-			String itemLocator$;
+			String emLocator$;
 			if(email$!=null){
 				JEmailFacetOpenItem eoi=new JEmailFacetOpenItem();
-			    itemLocator$=eoi.getLocator();
-			    itemLocator$=Locator.append(itemLocator$,Locator.LOCATOR_TITLE,email$);
-			    itemLocator$=Locator.append(itemLocator$,EntityHandler.ENTITY_KEY,entityKey$);
-			    itemLocator$=Locator.append(itemLocator$,Entigrator.ENTIHOME,entigrator.getEntihome());
-			if(debug)
-				System.out.println("JContactFacetOpenItem:getDigest:email locator="+itemLocator$);
+			    emLocator$=eoi.getLocator();
+			    emLocator$=Locator.append(emLocator$,Locator.LOCATOR_TITLE,email$);
+			    emLocator$=Locator.append(emLocator$,EntityHandler.ENTITY_KEY,entityKey$);
+			    emLocator$=Locator.append(emLocator$,Entigrator.ENTIHOME,entigrator.getEntihome());
+			    emLocator$=Locator.append(emLocator$,Locator.LOCATOR_ICON_CLASS,eoi.getClass().getName());
+				emLocator$=Locator.append(emLocator$,Locator.LOCATOR_ICON_CONTAINER,Locator.LOCATOR_ICON_CONTAINER_CLASS);
+				emLocator$=Locator.append(emLocator$,Locator.LOCATOR_ICON_FILE,"email.png");
+				emLocator$=Locator.append(emLocator$,Locator.LOCATOR_TYPE,JEntityDigestDisplay.LOCATOR_FACET_COMPONENT);
+			    if(debug)
+				System.out.println("JContactFacetOpenItem:getDigest:email locator="+emLocator$);
 			//locator$=Locator.append(locator$, Locator.LOCATOR_ICON,eoi.getFacetIcon(entigrator));
 			DefaultMutableTreeNode emailNode=new DefaultMutableTreeNode();
-			emailNode.setUserObject(itemLocator$);
+			emailNode.setUserObject(emLocator$);
 			nl.add(emailNode);
 			}
 		    }
@@ -311,7 +302,8 @@ public class JContactFacetOpenItem extends JFacetOpenItem implements JRequester,
 					   Properties locator=Locator.toProperties(digestLocator$);
 					   String entihome$=locator.getProperty(Entigrator.ENTIHOME);
 					   String entityKey$=locator.getProperty(EntityHandler.ENTITY_KEY);
-					   Entigrator entigrator=console.getEntigrator(entihome$);
+					   
+					   //Entigrator entigrator=console.getEntigrator(entihome$);
 					   JContactEditor ce=new JContactEditor();
 					   String ceLocator$=ce.getLocator();
 					   ceLocator$=Locator.append(ceLocator$,Entigrator.ENTIHOME,entihome$);

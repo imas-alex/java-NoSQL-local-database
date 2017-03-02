@@ -18,25 +18,19 @@ package gdt.jgui.entity.email;
  */
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.ArrayList;
 import java.util.Properties;
 import java.util.logging.Logger;
 import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
 import javax.swing.tree.DefaultMutableTreeNode;
-
 import org.apache.commons.codec.binary.Base64;
-
 import gdt.data.entity.BaseHandler;
 import gdt.data.entity.EmailHandler;
 import gdt.data.entity.EntityHandler;
 import gdt.data.entity.FacetHandler;
-import gdt.data.entity.PhoneHandler;
 import gdt.data.entity.facet.ExtensionHandler;
-import gdt.data.grain.Core;
 import gdt.data.grain.Locator;
 import gdt.data.grain.Sack;
-import gdt.data.grain.Support;
 import gdt.data.store.Entigrator;
 import gdt.jgui.base.JBaseNavigator;
 import gdt.jgui.console.JConsoleHandler;
@@ -46,21 +40,17 @@ import gdt.jgui.console.JMainConsole;
 import gdt.jgui.console.JRequester;
 import gdt.jgui.console.WContext;
 import gdt.jgui.console.WUtils;
-import gdt.jgui.entity.JEntitiesPanel;
 import gdt.jgui.entity.JEntityDigestDisplay;
 import gdt.jgui.entity.JEntityFacetPanel;
-import gdt.jgui.entity.webset.JWeblinksPanel;
 import gdt.jgui.tool.JEntityEditor;
 import gdt.jgui.tool.JTextEditor;
 
 public class JEmailFacetOpenItem extends JFacetOpenItem implements JRequester,WContext{
 
 	private static final long serialVersionUID = 1L;
-	
-	//public static final String EXTENSION_KEY="_v6z8CVgemqMI6Bledpc7F1j0pVY";
 	private Logger LOGGER=Logger.getLogger(EmailHandler.class.getName());
 	String email$;
-	boolean debug=true;
+	boolean debug=false;
 	public JEmailFacetOpenItem(){
 		super();
 	}
@@ -107,13 +97,6 @@ public class JEmailFacetOpenItem extends JFacetOpenItem implements JRequester,WC
 			locator.setProperty(Locator.LOCATOR_CHECKABLE,Locator.LOCATOR_TRUE);
 			if(debug)	
 				System.out.println("JEmailFacetOpenItem:getLocator:1");
-			//Entigrator entigrator=console.getEntigrator(entihome$);
-			/*
-			String icon$=ExtensionHandler.loadIcon(entigrator,EmailHandler.EXTENSION_KEY, "email.png");
-		    if(icon$!=null)
-		    	locator.setProperty(Locator.LOCATOR_ICON,icon$);
-		    	*/
-			
 		}
 		locator.setProperty(Locator.LOCATOR_ICON_CONTAINER,Locator.LOCATOR_ICON_CONTAINER_CLASS);
 		locator.setProperty(Locator.LOCATOR_ICON_CLASS,getClass().getName());
@@ -262,22 +245,9 @@ public class JEmailFacetOpenItem extends JFacetOpenItem implements JRequester,WC
 			locator$=Locator.append(locator$,Locator.LOCATOR_ICON_CONTAINER,Locator.LOCATOR_ICON_CONTAINER_CLASS);
 			locator$=Locator.append(locator$,Locator.LOCATOR_ICON_CLASS,getClass().getName());
 			locator$=Locator.append(locator$,Locator.LOCATOR_ICON_FILE,"email.png");
-		
-			//locator$=Locator.append(locator$, Locator.LOCATOR_ICON,getFacetIcon(entigrator));
 			DefaultMutableTreeNode emailNode=new DefaultMutableTreeNode();
 			emailNode.setUserObject(locator$);
-			/*
-			DefaultMutableTreeNode nameNode=new DefaultMutableTreeNode();
-			Properties valueLocator=new Properties();
-			String valueIcon$=ExtensionHandler.loadIcon(entigrator, EmailHandler.EXTENSION_KEY, "email.png");
-			valueLocator.setProperty(Locator.LOCATOR_TITLE,"email");
-			valueLocator.setProperty(Locator.LOCATOR_ICON,valueIcon$);
-			valueLocator.setProperty(JEntityDigestDisplay.NODE_TYPE,JEntityDigestDisplay.NODE_TYPE_PROPERTY);
-			valueLocator.setProperty(Entigrator.ENTIHOME,entigrator.getEntihome());
-			valueLocator.setProperty(EntityHandler.ENTITY_KEY,entityKey$);
-			nameNode.setUserObject(Locator.toString(valueLocator));
-			emailNode.add(nameNode);
-			*/
+			
 			return new DefaultMutableTreeNode[]{emailNode};
 		}catch(Exception e){
 			Logger.getLogger(getClass().getName()).severe(e.toString());
@@ -367,6 +337,7 @@ public class JEmailFacetOpenItem extends JFacetOpenItem implements JRequester,WC
 		    navLocator$=Locator.append(navLocator$, Entigrator.ENTIHOME, entigrator.getEntihome());
 		    String navUrl$=webHome$+"?"+WContext.WEB_LOCATOR+"="+Base64.encodeBase64URLSafeString(navLocator$.getBytes());
 		    sb.append("<li class=\"menu_item\"><a href=\""+navUrl$+"\">Base</a></li>");
+		    sb.append("<li class=\"menu_item\"><a href=\""+WContext.ABOUT+"\">About</a></li>");
 		    sb.append("</ul>");
 		    sb.append("<table><tr><td>Base:</td><td><strong>");
 		    sb.append(entigrator.getBaseName());

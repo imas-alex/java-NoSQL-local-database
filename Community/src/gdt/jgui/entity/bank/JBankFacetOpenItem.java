@@ -20,15 +20,14 @@ import java.util.Properties;
 import java.util.logging.Logger;
 
 import javax.swing.JPopupMenu;
+import javax.swing.tree.DefaultMutableTreeNode;
 
 import gdt.data.entity.BankHandler;
 import gdt.data.entity.BaseHandler;
 import gdt.data.entity.EntityHandler;
 import gdt.data.entity.FacetHandler;
-import gdt.data.entity.PhoneHandler;
 import gdt.data.entity.facet.ExtensionHandler;
 import gdt.data.grain.Locator;
-import gdt.data.grain.Support;
 import gdt.data.store.Entigrator;
 import gdt.jgui.console.JConsoleHandler;
 import gdt.jgui.console.JContext;
@@ -59,12 +58,6 @@ public class JBankFacetOpenItem extends JFieldsFacetOpenItem{
 		if(entihome$!=null){
 			locator.setProperty(Entigrator.ENTIHOME,entihome$);
 			locator.setProperty(Locator.LOCATOR_CHECKABLE,Locator.LOCATOR_TRUE);
-			/*
-			Entigrator entigrator=console.getEntigrator(entihome$);
-			String icon$=ExtensionHandler.loadIcon(entigrator,BankHandler.EXTENSION_KEY, "bank.png");
-		    if(icon$!=null)
-		    	locator.setProperty(Locator.LOCATOR_ICON,icon$);
-		    	*/
 		}
 			locator.setProperty(Locator.LOCATOR_ICON_CONTAINER,Locator.LOCATOR_ICON_CONTAINER_CLASS);
 			locator.setProperty(Locator.LOCATOR_ICON_CLASS,getClass().getName());
@@ -149,5 +142,8 @@ public void response(JMainConsole console, String locator$) {
 //	System.out.println("JBankFacetOpenItem:responce:locator="+locator$);
 	super.response(console,locator$);
 }
-
+@Override
+public DefaultMutableTreeNode[] getDigest(Entigrator entigrator,String locator$) {
+	return null;
+}
 }

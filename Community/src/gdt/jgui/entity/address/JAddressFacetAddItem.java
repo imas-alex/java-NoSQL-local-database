@@ -44,6 +44,7 @@ public class JAddressFacetAddItem extends JFacetAddItem{
 	public static final String EXTENSION_KEY="_v6z8CVgemqMI6Bledpc7F1j0pVY";
 	private Logger LOGGER=Logger.getLogger(JAddressFacetAddItem.class.getName());
     String entityLabel$;
+    static boolean debug=false;
     public JAddressFacetAddItem(){
 		super();
 	}
@@ -51,7 +52,7 @@ public class JAddressFacetAddItem extends JFacetAddItem{
 public String getLocator(){
 	Properties locator=new Properties();
 	locator.setProperty(Locator.LOCATOR_TITLE,"Address");
-	locator.setProperty(BaseHandler.HANDLER_CLASS,JFacetAddItem.class.getName());
+	locator.setProperty(BaseHandler.HANDLER_CLASS,JAddressFacetAddItem.class.getName());
 	locator.setProperty(BaseHandler.HANDLER_SCOPE,JConsoleHandler.CONSOLE_SCOPE);
 	locator.setProperty(BaseHandler.HANDLER_METHOD,METHOD_ADD_COMPONENT);
 	locator.setProperty(BaseHandler.HANDLER_LOCATION,AddressHandler.EXTENSION_KEY);
@@ -63,15 +64,10 @@ public String getLocator(){
 	
 	if(entihome$!=null)	{
 		locator.setProperty(Entigrator.ENTIHOME,entihome$);
-		//Entigrator entigrator=console.getEntigrator(entihome$);
-		// String icon$=Support.readHandlerIcon(null,JAddressEditor.class, "address.png");
-	//String icon$=ExtensionHandler.loadIcon(entigrator,AddressHandler.EXTENSION_KEY, "address.png");
-	//if(icon$!=null)
-	 //   	locator.setProperty(Locator.LOCATOR_ICON,icon$);
 	}
 	locator.setProperty( Locator.LOCATOR_ICON_CONTAINER, Locator.LOCATOR_ICON_CONTAINER_CLASS);
 	locator.setProperty( Locator.LOCATOR_ICON_CLASS, getClass().getName());
-	locator.setProperty( Locator.LOCATOR_ICON_FILE, "addresspng");
+	locator.setProperty( Locator.LOCATOR_ICON_FILE, "address.png");
 	 locator$=Locator.toString(locator);
 	locator.setProperty(Locator.LOCATOR_CHECKABLE,Locator.LOCATOR_TRUE);
 	 return Locator.toString(locator);
@@ -133,9 +129,11 @@ public void addFacet(JMainConsole console, String locator$) {
 @Override
 public void addComponent(JMainConsole console, String locator$) {
 	try{
+		if(debug)
+			System.out.println("JAddressfacetAddItem:addComponent:locator="+locator$);
 		Properties locator=Locator.toProperties(locator$);
-	    String entihome$=locator.getProperty(Entigrator.ENTIHOME);
-	    String entityKey$=locator.getProperty(EntityHandler.ENTITY_KEY);
+	    entihome$=locator.getProperty(Entigrator.ENTIHOME);
+	    entityKey$=locator.getProperty(EntityHandler.ENTITY_KEY);
 	    Entigrator entigrator=console.getEntigrator(entihome$);
 	    String label$=entigrator.indx_getLabel(entityKey$);
 		JTextEditor textEditor=new JTextEditor();
@@ -143,11 +141,15 @@ public void addComponent(JMainConsole console, String locator$) {
 	    editorLocator$=Locator.append(editorLocator$, JTextEditor.TEXT, label$+".address."+Identity.key().substring(0,4));
 	    editorLocator$=Locator.append(editorLocator$,Locator.LOCATOR_TITLE,"Component label");
 	    editorLocator$=Locator.append(editorLocator$,JTextEditor.TEXT_TITLE,"Add address component");
+	    if(entihome$!=null)
+	    	 editorLocator$=Locator.append(editorLocator$,Entigrator.ENTIHOME,entihome$);	
+	  
 	    String responseLocator$=getLocator();
 	    responseLocator$=Locator.append(responseLocator$, BaseHandler.HANDLER_METHOD, "response");
 	    responseLocator$=Locator.append(responseLocator$, Entigrator.ENTIHOME, entihome$);
 	    responseLocator$=Locator.append(responseLocator$, EntityHandler.ENTITY_KEY, entityKey$);
 	    responseLocator$=Locator.append(responseLocator$, ADD_MODE, ADD_MODE_COMPONENT);
+	    responseLocator$=Locator.append(responseLocator$, BaseHandler.HANDLER_LOCATION,EXTENSION_KEY);
 	    String requesterResponseLocator$=Locator.compressText(responseLocator$);
 	    editorLocator$=Locator.append(editorLocator$, JRequester.REQUESTER_RESPONSE_LOCATOR, requesterResponseLocator$);
 	    JConsoleHandler.execute(console, editorLocator$);

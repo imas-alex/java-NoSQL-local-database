@@ -22,8 +22,6 @@ import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.Properties;
 import java.util.Stack;
@@ -32,9 +30,6 @@ import javax.swing.JLabel;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
-
-import gdt.data.entity.AddressHandler;
-import gdt.data.entity.BankHandler;
 import gdt.data.entity.BaseHandler;
 import gdt.data.entity.ContactHandler;
 import gdt.data.entity.EntityHandler;
@@ -43,9 +38,7 @@ import gdt.data.grain.Core;
 import gdt.data.grain.Identity;
 import gdt.data.grain.Locator;
 import gdt.data.grain.Sack;
-import gdt.data.grain.Support;
 import gdt.data.store.Entigrator;
-
 import gdt.jgui.console.JConsoleHandler;
 import gdt.jgui.console.JContext;
 import gdt.jgui.console.JFacetRenderer;
@@ -56,7 +49,6 @@ import gdt.jgui.entity.JEntityFacetPanel;
 import gdt.jgui.entity.JEntityPrimaryMenu;
 import gdt.jgui.entity.JEntityStructurePanel;
 import gdt.jgui.entity.JReferenceEntry;
-import gdt.jgui.entity.address.JAddressFacetOpenItem;
 import gdt.jgui.tool.JTextEditor;
 
 import javax.swing.JTextField;

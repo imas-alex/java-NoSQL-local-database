@@ -26,7 +26,6 @@ import gdt.data.entity.BaseHandler;
 import gdt.data.entity.EntityHandler;
 import gdt.data.entity.FacetHandler;
 import gdt.data.entity.PersonHandler;
-import gdt.data.entity.PhoneHandler;
 import gdt.data.entity.facet.ExtensionHandler;
 import gdt.data.grain.Locator;
 import gdt.data.store.Entigrator;
@@ -60,12 +59,6 @@ public String getLocator(){
 	if(entihome$!=null){
 		locator.setProperty(Entigrator.ENTIHOME,entihome$);
 		locator.setProperty(Locator.LOCATOR_CHECKABLE,Locator.LOCATOR_TRUE);
-	/*
-		Entigrator entigrator=console.getEntigrator(entihome$);
-    String icon$=ExtensionHandler.loadIcon(entigrator,PersonHandler.EXTENSION_KEY, "person.png");
-    if(icon$!=null)
-    	locator.setProperty(Locator.LOCATOR_ICON,icon$);
-    	*/
 	}
 	locator.setProperty(Locator.LOCATOR_ICON_CONTAINER,Locator.LOCATOR_ICON_CONTAINER_CLASS);
 	locator.setProperty(Locator.LOCATOR_ICON_CLASS,getClass().getName());
@@ -154,4 +147,5 @@ public String getFacetIconName() {
 public DefaultMutableTreeNode[] getDigest(Entigrator entigrator,String locator$) {
 	return null;
 }
+
 }

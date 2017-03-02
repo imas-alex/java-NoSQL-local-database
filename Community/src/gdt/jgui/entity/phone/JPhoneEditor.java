@@ -32,7 +32,6 @@ import gdt.data.store.Entigrator;
 import gdt.jgui.console.*;
 import gdt.jgui.entity.JEntityFacetPanel;
 import gdt.jgui.entity.JReferenceEntry;
-import gdt.jgui.entity.address.JAddressFacetOpenItem;
 import gdt.jgui.tool.JTextEditor;
 public class JPhoneEditor extends JTextEditor implements JFacetRenderer,JRequester{
 String entityKey$;
@@ -216,17 +215,6 @@ String entihome$;
 			    String requesterResponseLocator$=Locator.compressText(peLocator$);
 			    teLocator$=Locator.append(teLocator$,JRequester.REQUESTER_RESPONSE_LOCATOR,requesterResponseLocator$);
 			    JConsoleHandler.execute(console, teLocator$);
-			   /*
-			   JPhoneEditor pe=new JPhoneEditor();
-			   String peLocator$=pe.getLocator();
-			   peLocator$=Locator.append(peLocator$, Entigrator.ENTIHOME, entihome$);
-			   peLocator$=Locator.append(peLocator$, EntityHandler.ENTITY_KEY, entityKey$);
-			   JEntityPrimaryMenu.reindexEntity(console, peLocator$);
-			   Stack<String> s=console.getTrack();
-			   s.pop();
-			   console.setTrack(s);
-			   JConsoleHandler.execute(console, peLocator$);
-			   */
 			}
 		if(ACTION_EDIT_PHONE.equals(action$)){
 			   entihome$=locator.getProperty(Entigrator.ENTIHOME);

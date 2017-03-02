@@ -22,12 +22,10 @@ import gdt.data.entity.BaseHandler;
 import gdt.data.entity.ContactHandler;
 import gdt.data.entity.EntityHandler;
 import gdt.data.entity.FacetHandler;
-import gdt.data.entity.facet.ExtensionHandler;
 import gdt.data.grain.Core;
 import gdt.data.grain.Identity;
 import gdt.data.grain.Locator;
 import gdt.data.grain.Sack;
-import gdt.data.grain.Support;
 import gdt.data.store.Entigrator;
 import gdt.jgui.console.JConsoleHandler;
 import gdt.jgui.console.JContext;
@@ -35,7 +33,6 @@ import gdt.jgui.console.JFacetAddItem;
 import gdt.jgui.console.JFacetOpenItem;
 import gdt.jgui.console.JMainConsole;
 import gdt.jgui.console.JRequester;
-import gdt.jgui.entity.JEntitiesPanel;
 import gdt.jgui.entity.JEntityFacetPanel;
 import gdt.jgui.tool.JTextEditor;
 public class JContactFacetAddItem extends JFacetAddItem{
@@ -63,9 +60,6 @@ public String getLocator(){
 		locator.setProperty(EntityHandler.ENTITY_KEY,entityKey$);
 	if(entihome$!=null){
 		locator.setProperty(Entigrator.ENTIHOME,entihome$);
-	//	Entigrator entigrator=console.getEntigrator(entihome$);
-	 //icon$=ExtensionHandler.loadIcon(entigrator, ContactHandler.EXTENSION_KEY, "contact.png");
-	  //  	locator.setProperty(Locator.LOCATOR_ICON,icon$);
 	}
 	locator.setProperty( Locator.LOCATOR_ICON_CONTAINER, Locator.LOCATOR_ICON_CONTAINER_CLASS);
 	locator.setProperty( Locator.LOCATOR_ICON_CLASS, getClass().getName());
@@ -148,8 +142,9 @@ public void addComponent(JMainConsole console, String locator$) {
 //	    editorLocator$=Locator.append(editorLocator$,Locator.LOCATOR_DATA,Locator.compressText(locator$));
 	    editorLocator$=Locator.append(editorLocator$,Locator.LOCATOR_TITLE,"Component label");
 	    editorLocator$=Locator.append(editorLocator$,JTextEditor.TEXT_TITLE,"Add contact component");
-	    //String icon$=Support.readHandlerIcon(null,JEntitiesPanel.class, "edit.png");
-	    //editorLocator$=Locator.append(editorLocator$,Locator.LOCATOR_ICON,icon$);
+	    if(entihome$!=null)
+	    	 editorLocator$=Locator.append(editorLocator$,Entigrator.ENTIHOME,entihome$);	
+	  
 	    String responseLocator$=getLocator();
 	    responseLocator$=Locator.append(responseLocator$, BaseHandler.HANDLER_METHOD, "response");
 	    responseLocator$=Locator.append(responseLocator$, Entigrator.ENTIHOME, entihome$);
