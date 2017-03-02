@@ -29,6 +29,7 @@ import gdt.data.entity.BaseHandler;
 import gdt.data.entity.BondDetailHandler;
 import gdt.data.entity.EdgeHandler;
 import gdt.data.entity.EntityHandler;
+import gdt.data.entity.NodeHandler;
 import gdt.data.entity.facet.ExtensionHandler;
 import gdt.data.entity.facet.FieldsHandler;
 import gdt.data.grain.Core;
@@ -50,10 +51,8 @@ import gdt.jgui.entity.JEntityFacetPanel;
 import gdt.jgui.entity.JEntityPrimaryMenu;
 import gdt.jgui.entity.JReferenceEntry;
 import gdt.jgui.entity.bonddetail.JBondDetailPanel;
-import gdt.jgui.entity.bookmark.JBookmarksFacetOpenItem;
 import gdt.jgui.entity.graph.JGraphRenderer;
 import gdt.jgui.tool.JTextEditor;
-
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
@@ -138,7 +137,7 @@ String selectMode$=SELECT_MODE_OUT;
 String message$;
 Sack entity;
 boolean ignoreOutdate=false;
-static boolean debug=true;
+static boolean debug=false;
 /**
  * The default constructor.
  */
@@ -212,7 +211,7 @@ public JContext instantiate(JMainConsole console, String locator$) {
 			 if(entity.getElementItem("fhandler",BondDetailHandler.class.getName())!=null)
 				  ipa=getItemsAtDetail(console, entity);
 			 else
-    		  ipa=getItems(console,entity);
+    		     ipa=getItems(console,entity);
 			 if(SELECT_MODE_IN.equals(selectMode$)){
 					InNodeComparator inc=new InNodeComparator();
 					inc.entigrator=entigrator;
@@ -230,12 +229,13 @@ public JContext instantiate(JMainConsole console, String locator$) {
         	//setSelection();
 			 	try{
 			 		pos=Integer.parseInt(locator.getProperty(POSITION));
+			 		if(debug)
 			 		System.out.println("JBondsPanel:instantiate:pos="+pos);
 			 		select(pos);
 					}catch(Exception e){
 							Logger.getLogger(getClass().getName()).info(e.toString());
 					}
-			 System.out.println("JBondsPanel:instantiate:FINISH");
+			
         	return this;
         }catch(Exception e){
         Logger.getLogger(getClass().getName()).severe(e.toString());
@@ -247,9 +247,12 @@ private JItemPanel[] getItems(JMainConsole console,Sack entity){
 	try{
 		ArrayList<JBondItem>ipl=new ArrayList<JBondItem>();
 		Core[] ca=entity.elementGet("bond");
+		
 		if(ca!=null){
+			 if(debug)
+				 System.out.println("JBondspanel:getItems:bonds="+ca.length);
 			//ca=Core.sortAtType(ca);
-			JBondItem ip;
+			//JBondItem ip;
 			String ipLocator$;
 			Properties ipLocator;
 			//String icon$;
@@ -259,35 +262,35 @@ private JItemPanel[] getItems(JMainConsole console,Sack entity){
 			String title$;
 			String edgeLabel$=null;
 			String edgeKey$;
-			//=entity.getProperty("label");
-			//Core edge;
-			//JItemPanel bip=new JItemPanel();
-			JBondDetailPanel bdp=new JBondDetailPanel();
-			 ipLocator$=bdp.getLocator();
-			 ipLocator=Locator.toProperties(ipLocator$);
+			 String bondIcon$= ExtensionHandler.loadIcon(entigrator,EdgeHandler.EXTENSION_KEY,"bond.png");
+			JBondItem ip=new JBondItem();
+			 if(debug)
+				 System.out.println("JBondspanel:getItems:0");
+			 ipLocator$=ip.getLocator();
+			 if(debug)
+				 System.out.println("JBondspanel:getItems:ip locator="+ipLocator$);
+			ipLocator=Locator.toProperties(ipLocator$);
 			for(Core aCa:ca){
 				  try{
 					 outLabel$=null;
 					 inLabel$=null;
-					  ipLocator.setProperty(Entigrator.ENTIHOME, entihome$);
-					  
-					  ipLocator.setProperty(EntityHandler.ENTITY_KEY, entityKey$);
-					  if(isEdgeEntity()){
+					 ipLocator.setProperty(Entigrator.ENTIHOME, entihome$);
+					 ipLocator.setProperty(EntityHandler.ENTITY_KEY, entityKey$);
+					 if(isEdgeEntity()){
 						  ipLocator.setProperty(EDGE_KEY, entityKey$);
 						  edgeLabel$=entity.getProperty("label");
 					  }else{
-						 
 						  edgeKey$=entity.getElementItemAt("edge",aCa.name);
-						 
 						  if(edgeKey$!=null){ 
 							  edgeLabel$=entigrator.indx_getLabel(edgeKey$);
-						
 						     ipLocator.setProperty(EDGE_KEY, entity.getElementItemAt("edge",aCa.name));
 						  }
 					  }
 					
-					  if(aCa.name!=null)
+					 if(aCa.name!=null)
 					   ipLocator.setProperty(BOND_KEY,aCa.name);
+					 if(debug)
+							 System.out.println("JBondspanel:getItems:bond="+aCa.name);
 					  if(aCa.value!=null){
 					     ipLocator.setProperty(BOND_IN_NODE_KEY,aCa.value);
 					     inLabel$=entigrator.indx_getLabel(aCa.value);   
@@ -301,7 +304,14 @@ private JItemPanel[] getItems(JMainConsole console,Sack entity){
 					  ipLocator.setProperty(Locator.LOCATOR_TYPE, LOCATOR_TYPE_BOND);
 					  ipLocator.setProperty(Locator.LOCATOR_CHECKABLE, Locator.LOCATOR_TRUE);
 					  ipLocator$=Locator.toString(ipLocator);
-					  ip=new JBondItem(console,ipLocator$); 
+					  if(debug)
+							 System.out.println("JBondspanel:getItems:bond item locator="+ipLocator$);
+					  ip=new JBondItem();
+					  //ip=(JBondItem)constr.newInstance(console,ipLocator$);
+					  ip.setIcon(bondIcon$);
+					  ip.instantiate(console, ipLocator$);
+					  if(debug)
+							 System.out.println("JBondspanel:getItems:bond:2");
 					  ipl.add(ip);	  
 					   }catch(Exception ee){
 						   Logger.getLogger(JBondsPanel.class.getName()).info(ee.toString());
@@ -362,8 +372,10 @@ private JItemPanel[] getItemsAtDetail(JMainConsole console,Sack detail){
 					  ipLocator.setProperty(Locator.LOCATOR_TYPE, LOCATOR_TYPE_BOND);
 					  ipLocator.setProperty(Locator.LOCATOR_CHECKABLE, Locator.LOCATOR_TRUE);
 					  ipLocator$=Locator.toString(ipLocator);
+					 if(debug)
 					  System.out.println("JBondsPanel:getItemsAtDetail:ipLocator="+ipLocator$);
-					  ip=new JBondItem(console,ipLocator$); 
+					  ip=new JBondItem();
+					  ip.instantiate(console, ipLocator$);
 					  ipl.add(ip);	  
 					   }catch(Exception ee){
 						   Logger.getLogger(JBondsPanel.class.getName()).info(ee.toString());
@@ -410,6 +422,15 @@ menu.addMenuListener(new MenuListener(){
 				   System.out.println("JGraphEditor:graph menu item:entity key="+entityKey$+" entihome="+entihome$);
 			   grLocator.setProperty(Entigrator.ENTIHOME,entihome$);
 			   grLocator.setProperty(EntityHandler.ENTITY_KEY,entityKey$);
+			  /*
+			   if(isNodeEntity()||isEdgeEntity()){
+				   String[] nla=listNodeLabels();
+				   if(nla==null||nla.length<1)
+					   return;
+				   grLocator.setProperty(JRequester.REQUESTER_ACTION,JGraphRenderer.ACTION_SCOPE_RELATIONS);
+				   grLocator.setProperty(JGraphRenderer.SHOWN_NODES_LABELS,Locator.toString(nla));
+			   }
+			   */
 			   JConsoleHandler.execute(console, Locator.toString(grLocator));
 			  // grLocator.setProperty(JRequester.REQUESTER_ACTION,JGraphRenderer.ACTION_SHOW_VIEW);
 			}
@@ -488,27 +509,27 @@ menu.addMenuListener(new MenuListener(){
 			if(debug)
 				System.out.println("JBondsPanel:new:nb locator="+nbLocator$);
 			JConsoleHandler.execute(console, nbLocator$);
-			//System.out.println("JBondsPanel:new:"+locator$);
-			/*
-			Entigrator entigrator=console.getEntigrator(entihome$);	
-			entity=entigrator.getEntityAtKey(entityKey$);
-			if(!entity.existsElement("bond"))
-					entity.createElement("bond");
-			String bondKey$=Identity.key();
-			entity.putElementItem("bond", new Core(null,bondKey$,null));
-
-		    entigrator.replace(entity);
-		    close();
-		    JBondsPanel bp=new JBondsPanel();
-			String bpLocator$=bp.getLocator();
-			bpLocator$=Locator.append(bpLocator$, Entigrator.ENTIHOME, entihome$);
-			bpLocator$=Locator.append(bpLocator$,EntityHandler.ENTITY_KEY,entityKey$);
-			JConsoleHandler.execute(console, bpLocator$);
-		*/
+			
 		}
 	} );
 	menu.add(newItem);
 	}
+	if(isNodeEntity()||isDetailEntity()){ 
+		JMenuItem refreshItem = new JMenuItem("Refresh");
+		refreshItem.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				refresh();
+				JBondsPanel bp=new JBondsPanel();
+				String bpLocator$=bp.getLocator();
+				bpLocator$=Locator.append(bpLocator$, Entigrator.ENTIHOME, entihome$);
+				bpLocator$=Locator.append(bpLocator$,EntityHandler.ENTITY_KEY,entityKey$);
+				JConsoleHandler.execute(console, bpLocator$);
+				
+			}
+		} );
+		menu.add(refreshItem);
+		}
 	if(isGraphEntity()){
 		JMenuItem showItem = new JMenuItem("Show");
 		 showItem.addActionListener(new ActionListener() {
@@ -664,7 +685,13 @@ return menu;
 	 */
 	@Override
 	public void close() {
-		  
+		try{
+			Entigrator entigrator=console.getEntigrator(entihome$);
+			Sack entity=entigrator.getEntityAtKey(entityKey$);
+			entigrator.replace(entity);
+			}catch(Exception e){
+				Logger.getLogger(getClass().getName()).severe(e.toString());;
+			}	  
 	}
 	/**
 	 * Response on the call from another context
@@ -929,7 +956,18 @@ private boolean isDetailEntity(){
     try{
    	 Entigrator entigrator=console.getEntigrator(entihome$);
    	 Sack entity=entigrator.getEntityAtKey(entityKey$);
-   	 if(entity.getProperty("detail")!=null)
+   	 if(entity.getProperty("bond.detail")!=null)
+   			 return true;
+    }catch(Exception e){
+   	 Logger.getLogger(JBondsPanel.class.getName()).severe(e.toString());
+    }
+    return false;
+}
+private boolean isNodeEntity(){
+    try{
+   	 Entigrator entigrator=console.getEntigrator(entihome$);
+   	 Sack entity=entigrator.getEntityAtKey(entityKey$);
+   	 if(entity.getProperty("node")!=null)
    			 return true;
     }catch(Exception e){
    	 Logger.getLogger(JBondsPanel.class.getName()).severe(e.toString());
@@ -1076,5 +1114,36 @@ public String getFacetOpenItem() {
 public String getFacetIcon() {
 	
 	return "bonds.png";
+}
+private void refresh(){
+	try{
+		if(isNodeEntity())
+			NodeHandler.refresh(console.getEntigrator(entihome$),entityKey$); 
+		if(isDetailEntity())
+			BondDetailHandler.refresh(console.getEntigrator(entihome$),entityKey$); 
+	}catch(Exception e){
+     Logger.getLogger(getClass().getName()).severe(e.toString());		
+	}
+}
+private String[] listNodeLabels(){
+	try{
+		Core []ca =entity.elementGet("bond");
+		Entigrator entigrator=console.getEntigrator(entihome$);
+		ArrayList<String>sl=new ArrayList<String>();
+		String label$;
+		if(ca!=null)
+			for(Core c:ca){
+				label$=entigrator.indx_getLabel(c.type);
+				if(label$!=null&&!sl.contains(label$))
+					sl.add(label$);
+				label$=entigrator.indx_getLabel(c.value);
+				if(label$!=null&&!sl.contains(label$))
+					sl.add(label$);
+			}
+		return sl.toArray(new String[0]);
+	}catch(Exception e){
+		Logger.getLogger(getClass().getName()).severe(e.toString());	
+	}
+	return null;
 }
 }

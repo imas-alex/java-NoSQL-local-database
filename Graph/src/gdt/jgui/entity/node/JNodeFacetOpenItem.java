@@ -24,6 +24,7 @@ import java.util.List;
 import java.util.Properties;
 import java.util.logging.Logger;
 import javax.swing.JPopupMenu;
+import javax.swing.tree.DefaultMutableTreeNode;
 
 import org.apache.commons.codec.binary.Base64;
 
@@ -53,11 +54,12 @@ import gdt.jgui.entity.edge.JBondsPanel;
 
 import gdt.jgui.entity.fields.JFieldsFacetOpenItem;
 import gdt.jgui.entity.graph.JGraphRenderer;
+import gdt.jgui.entity.graph.JWebGraph;
 
 
 public class JNodeFacetOpenItem extends JFieldsFacetOpenItem {
 	private static final long serialVersionUID = 1L;
-	boolean debug=true;
+	boolean debug=false;
 	public JNodeFacetOpenItem(){
 		super();
 	}
@@ -198,6 +200,9 @@ public String getFacetIconName() {
 @Override
 public String getWebView(Entigrator entigrator, String locator$) {
 	try{
+		if(debug)
+			System.out.println("JNodeFacetOpenItem:locator="+locator$);
+			
 		Properties locator=Locator.toProperties(locator$);
 		String webHome$=locator.getProperty(WContext.WEB_HOME);
 		String entityKey$=locator.getProperty(EntityHandler.ENTITY_KEY);
@@ -231,6 +236,7 @@ public String getWebView(Entigrator entigrator, String locator$) {
 	    String navUrl$=webHome$+"?"+WContext.WEB_LOCATOR+"="+Base64.encodeBase64URLSafeString(navLocator$.getBytes());
 	    sb.append("<li class=\"menu_item\"><a href=\""+navUrl$+"\">Base</a></li>");
 	    sb.append("<li id=\"graph\" class=\"menu_item\" onclick=\"graph()\"><a href=\"#\">Graph</a></li>");
+	    sb.append("<li class=\"menu_item\"><a href=\""+WContext.ABOUT+"\">About</a></li>");
 	    sb.append("</ul>");
 	    sb.append("<table><tr><td>Base:</td><td><strong>");
 	    sb.append(entigrator.getBaseName());
@@ -244,27 +250,46 @@ public String getWebView(Entigrator entigrator, String locator$) {
 	    sb.append(getItems( webHome$,entigrator,entity));
         sb.append("<script>");
 	    sb.append("function onLoad() {");
-	    sb.append("initBack(\""+this.getClass().getName()+"\",\""+webRequester$+"\");");
+	    if(debug)
+			System.out.println("JNodeFacetOpenItem:0");
+	    //sb.append("initBack(\""+this.getClass().getName()+"\",\""+webRequester$+"\");");
+	    sb.append("initBack(\"gdt.jgui.entity.node.JNodeFacetOpenItem\",\""+webRequester$+"\");");
 	    sb.append("}");
+	    if(debug)
+			System.out.println("JNodeFacetOpenItem:0.1");
+	  
 	    sb.append("function graph(){");
-	    JGraphRenderer gr=new JGraphRenderer();
-	    String graphLocator$=gr.getLocator();
+	   
+	  //  JGraphRenderer gr=new JGraphRenderer();
+	    if(debug)
+			System.out.println("JNodeFacetOpenItem:1");
+	   
+	    //String graphLocator$=gr.getLocator();
+	    //if(debug)
+		//	System.out.println("JNodeFacetOpenItem:graph locator 0="+graphLocator$);
+			
+	  
 	    Properties graphLocator=new Properties();
 	    graphLocator.setProperty(Entigrator.ENTIHOME,entigrator.getEntihome());
 	    graphLocator.setProperty(EntityHandler.ENTITY_KEY,entityKey$);
 	    graphLocator.setProperty(EntityHandler.ENTITY_LABEL,entityLabel$);
 	    graphLocator.setProperty(WContext.WEB_HOME,webHome$);
 	    graphLocator.setProperty(JGraphRenderer.SELECTED_NODE_LABEL,entityLabel$);
-	    graphLocator.setProperty(BaseHandler.HANDLER_CLASS, JGraphRenderer.class.getName());
+	    if(debug)
+			System.out.println("JNodeFacetOpenItem:1");
+	
+	    graphLocator.setProperty(BaseHandler.HANDLER_CLASS, JWebGraph.class.getName());
 	    graphLocator.setProperty( JRequester.REQUESTER_ACTION, JGraphRenderer.ACTION_RELATIONS);
-	    graphLocator$=Locator.toString(graphLocator);
+	    String graphLocator$=Locator.toString(graphLocator);
 	    if(debug)
 			System.out.println("JNodeFacetOpenItem:graph locator="+graphLocator$);
 			
 	    String graphUrl$=webHome$+"?"+WContext.WEB_LOCATOR+"="+Base64.encodeBase64URLSafeString(graphLocator$.getBytes());
 	    sb.append(" window.location.assign(\""+graphUrl$+"\");");
 	    sb.append("}");
+	    
 	    sb.append("window.localStorage.setItem(\""+this.getClass().getName()+"\",\""+Base64.encodeBase64URLSafeString(locator$.getBytes())+"\");");
+	    
 	 	    sb.append("</script>");
 	    sb.append("</body>");
 	    sb.append("</html>");
@@ -281,6 +306,15 @@ private String getItems(String webHome$,Entigrator entigrator,Sack entity){
 			System.out.println("JNodeFacetOpenItem:getItems:node="+entity.getProperty("label"));
 		StringBuffer sb=new StringBuffer();	
 		Core[] ca=entity.elementGet("bond");
+		if(debug){
+			if(ca==null){
+			System.out.println("JNodeFacetOpenItem:getItems:no bonds");
+			return null;
+			}
+			else
+				System.out.println("JNodeFacetOpenItem:getItems:ca="+ca.length);
+		}
+		
 		String edgeKey$;
 		boolean isOut=true;
 		String entityKey$=entity.getKey();
@@ -299,7 +333,11 @@ private String getItems(String webHome$,Entigrator entigrator,Sack entity){
 			}
 		}
 		if(ca!=null){
+			
 			ArrayList<Core> cl=new ArrayList<Core>(Arrays.asList(ca));
+			if(debug)
+				System.out.println("JNodeFacetOpenItem:getItems:cl="+cl.size());
+		
 			if(isOut){
 			BondComparatorByValue bc=new BondComparatorByValue();
 			bc.entigrator=entigrator;
@@ -312,6 +350,8 @@ private String getItems(String webHome$,Entigrator entigrator,Sack entity){
 			}
 			ca=cl.toArray(new Core[0]);
 			String icon$=ExtensionHandler.loadIcon(entigrator, EdgeHandler.EXTENSION_KEY, "bond.png");
+			
+		
 			for(Core aCa:ca){
 				  try{
   				   edgeKey$=entity.getElementItemAt("edge",aCa.name);
@@ -321,6 +361,8 @@ private String getItems(String webHome$,Entigrator entigrator,Sack entity){
 				  }
 			}
 		}
+		if(debug)
+			System.out.println("JNodeFacetOpenItem:getItems:sb="+sb.toString());
 	return sb.toString();	
 	}catch(Exception e){
         Logger.getLogger(JBondsPanel.class.getName()).severe(e.toString());
@@ -331,7 +373,8 @@ private static String getItem(Entigrator entigrator,String icon$, String entityK
 	try{
 	String iconTerm$="<img src=\"data:image/png;base64,"+WUtils.scaleIcon(icon$)+
 			  "\" width=\"24\" height=\"24\" alt=\"image\">";
-    String outLabel$=entigrator.indx_getLabel(bond.type);
+    
+	String outLabel$=entigrator.indx_getLabel(bond.type);
     String inLabel$=entigrator.indx_getLabel(bond.value);
     String edgeLabel$=entigrator.indx_getLabel(edgeKey$);
 	String outHref$= getEntityReference( entigrator, webHome$, bond.type);
@@ -458,4 +501,8 @@ private static class BondComparatorByValue implements Comparator<Core>{
 		}
 	
 }
+	@Override
+	public DefaultMutableTreeNode[] getDigest(Entigrator entigrator,String locator$) {
+		return null;
+	}
 }

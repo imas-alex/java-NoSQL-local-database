@@ -23,6 +23,7 @@ import java.util.Comparator;
 import java.util.Properties;
 import java.util.logging.Logger;
 import javax.swing.JPopupMenu;
+import javax.swing.tree.DefaultMutableTreeNode;
 
 import org.apache.commons.codec.binary.Base64;
 
@@ -34,7 +35,6 @@ import gdt.data.entity.EdgeHandler;
 import gdt.data.grain.Core;
 import gdt.data.grain.Locator;
 import gdt.data.grain.Sack;
-import gdt.data.grain.Support;
 import gdt.data.store.Entigrator;
 import gdt.jgui.base.JBaseNavigator;
 import gdt.jgui.base.JBasesPanel;
@@ -49,12 +49,13 @@ import gdt.jgui.entity.JEntityFacetPanel;
 import gdt.jgui.entity.bonddetail.JBondDetailFacetOpenItem;
 import gdt.jgui.entity.fields.JFieldsFacetOpenItem;
 import gdt.jgui.entity.graph.JGraphRenderer;
+import gdt.jgui.entity.graph.JWebGraph;
 import gdt.jgui.entity.node.JNodeFacetOpenItem;
 
 
 public class JEdgeFacetOpenItem extends JFieldsFacetOpenItem implements WContext{
 	private static final long serialVersionUID = 1L;
-	private static boolean debug=true;
+	private static boolean debug=false;
 	public static String SORT="sort";
 	public static String SORT_TARGET="sort target";
 	public static String SORT_SOURCE="sort source";
@@ -112,12 +113,13 @@ public void removeFacet() {
 @Override
 public void openFacet(JMainConsole console,String locator$) {
 	try{
-		System.out.println("JBondsFacetOpenItem:openFacet:locator="+locator$);
+		if(debug)
+		System.out.println("JEdgeFacetOpenItem:openFacet:locator="+locator$);
 		Properties locator=Locator.toProperties(locator$);
 		String entihome$=locator.getProperty(Entigrator.ENTIHOME);
 		String entityKey$=locator.getProperty(EntityHandler.ENTITY_KEY);
 		String responseLocator$=getLocator();
-		System.out.println("JBondsFacetOpenItem:openFacet:1");	
+			
 		Properties responseLocator=Locator.toProperties(responseLocator$);
 		responseLocator.setProperty(Entigrator.ENTIHOME, entihome$);
 		responseLocator.setProperty(EntityHandler.ENTITY_KEY, entityKey$);
@@ -212,7 +214,7 @@ public String getWebView(Entigrator entigrator, String locator$) {
 	    sb.append("<li id=\"graph\" onclick=\"graph()\"><a href=\"#\">Graph</a></li>");
 	    sb.append("</ul>");
 	    sb.append("</li>");
-	  
+	    sb.append("<li class=\"menu_item\"><a href=\""+WContext.ABOUT+"\">About</a></li>");
 	    sb.append("</ul>");
 	    sb.append("<table><tr><td>Base:</td><td><strong>");
 	    sb.append(entigrator.getBaseName());
@@ -248,7 +250,7 @@ public String getWebView(Entigrator entigrator, String locator$) {
 	   sb.append("window.location.assign(href);");
 	   sb.append("}");
 	   sb.append("function graph(){");
-	   JGraphRenderer gr=new JGraphRenderer();
+	   JWebGraph gr=new JWebGraph();
 	   String grLocator$=gr.getLocator();
 	   Properties grLocator=Locator.toProperties(grLocator$);
 	   grLocator.setProperty(Entigrator.ENTIHOME, entigrator.getEntihome());
@@ -279,8 +281,6 @@ public String getWebView(Entigrator entigrator, String locator$) {
 			System.out.println("JEdgeFacetOpenItem:getWebView:locator="+grLocator$);
 	   byte[]ba=grLocator$.getBytes();
 	    sb.append(" var locator=\""+Base64.encodeBase64String(ba)+"\";");
-    
-   	//sb.append("console.log(locator);");
    	   sb.append(" var href=\""+webHome$+"?"+WContext.WEB_LOCATOR+"=\"+locator;");
 	   sb.append("window.location.assign(href);");
 	    sb.append("}");
@@ -336,10 +336,10 @@ private static String getItem(Entigrator entigrator,String entityKey$,String web
 	//		  "\" width=\"24\" height=\"24\" alt=\"image\">";
     String outLabel$=entigrator.indx_getLabel(bond.type);
     String inLabel$=entigrator.indx_getLabel(bond.value);
-    String edgeLabel$=entigrator.indx_getLabel(entityKey$);
+ //   String edgeLabel$=entigrator.indx_getLabel(entityKey$);
 	String outHref$= getEntityReference( entigrator, webHome$, bond.type);
 	String inHref$= getEntityReference( entigrator, webHome$, bond.value);
-	String edgeHref$= getEntityReference( entigrator, webHome$, entityKey$);
+//	String edgeHref$= getEntityReference( entigrator, webHome$, entityKey$);
 	StringBuffer sb=new StringBuffer();
 	
 	sb.append("<tr><td><a href=\""+outHref$+"\">"+outLabel$+"</a></td>");
@@ -457,5 +457,9 @@ private static class BondComparatorByValue implements Comparator<Core>{
 		}
 	
 }
+	@Override
+	public DefaultMutableTreeNode[] getDigest(Entigrator entigrator,String locator$) {
+		return null;
+	}
 }
 

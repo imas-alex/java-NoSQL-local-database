@@ -37,6 +37,7 @@ import gdt.jgui.console.JConsoleHandler;
 import gdt.jgui.console.JContext;
 
 import gdt.jgui.console.JMainConsole;
+import gdt.jgui.entity.bonddetail.JBondDetailFacetOpenItem;
 import gdt.jgui.entity.node.JNodeFacetAddItem;
 import gdt.jgui.entity.node.JNodeFacetOpenItem;
 import gdt.jgui.tool.AutocompleteJComboBox;
@@ -51,7 +52,7 @@ public class JNewBond extends JPanel implements JContext{
 	AutocompleteJComboBox nodeSelector;
 	JTextField out=new JTextField();
 	JTextField in=new JTextField();
-	boolean debug=true;
+	boolean debug=false;
 	ArrayList<Core>bl=new ArrayList<Core>();;
 	Stack<Core[]>undo=new Stack<Core[]>();
 	JTextArea log;
@@ -373,29 +374,23 @@ public class JNewBond extends JPanel implements JContext{
 			if(!inNode.existsElement("edge"))
 				inNode.createElement("edge");
 			inNode.putElementItem("edge", new Core(null,bond.name,entityKey$));
-			/*
+			
 			if(!outNode.existsElement("fhandler"))
 				outNode.createElement("fhandler");
-			outNode.putElementItem("fhandler", new Core(null, NodeHandler.class.getName(),NodeHandler.EXTENSION_KEY));
+			outNode.putElementItem("fhandler", new Core(null, BondDetailHandler.class.getName(),BondDetailHandler.EXTENSION_KEY));
 			if(!inNode.existsElement("fhandler"))
 				inNode.createElement("fhandler");
-			inNode.putElementItem("fhandler", new Core(null, NodeHandler.class.getName(),NodeHandler.EXTENSION_KEY));
+			inNode.putElementItem("fhandler", new Core(null, BondDetailHandler.class.getName(),BondDetailHandler.EXTENSION_KEY));
+
 			if(!outNode.existsElement("jfacet"))
 				outNode.createElement("jfacet");
-			outNode.putElementItem("jfacet", new Core(JNodeFacetAddItem.class.getName(), NodeHandler.class.getName(),JNodeFacetOpenItem.class.getName()));
-			
-			if(!inNode.existsElement("fhandler"))
-				inNode.createElement("fhandler");
-			inNode.putElementItem("fhandler", new Core(null, NodeHandler.class.getName(),NodeHandler.EXTENSION_KEY));
+			outNode.putElementItem("jfacet", new Core(null, BondDetailHandler.class.getName(),JBondDetailFacetOpenItem.class.getName()));
 			if(!inNode.existsElement("jfacet"))
 				inNode.createElement("jfacet");
-			inNode.putElementItem("jfacet", new Core(JNodeFacetAddItem.class.getName(), NodeHandler.class.getName(),JNodeFacetOpenItem.class.getName()));
-			*/
+			inNode.putElementItem("jfacet", new Core(null,BondDetailHandler.class.getName(),JBondDetailFacetOpenItem.class.getName()));
+			
 			entigrator.replace(outNode);
 			entigrator.replace(inNode);
-			//entigrator.ent_assignProperty(outNode, "node",outNode.getProperty("label"));
-			//entigrator.ent_assignProperty(inNode, "node",inNode.getProperty("label"));
-		
 		}
 		entigrator.replace(edge);
 		}catch(Exception e){

@@ -18,6 +18,8 @@ package gdt.data.entity;
  */
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Properties;
 import java.util.logging.Logger;
 
@@ -40,7 +42,7 @@ public class EdgeHandler extends FieldsHandler{
 	String entihome$;
 	String entityKey$;
 	public final static String EDGE="edge";
-	public final static boolean debug=true;
+	public final static boolean debug=false;
 	/**
 	 * Default constructor
 	 */
@@ -234,6 +236,31 @@ public static String[] getEdgesKeys(Entigrator entigrator, String[] nodes){
 			}
 		}
 		 return sl.toArray(new String[0]);
+	}catch(Exception e){
+		Logger.getLogger(EdgeHandler.class.getName()).severe(e.toString());	
+	}
+	return null;
+	}
+public static String[] getDetailKeys(Entigrator entigrator,String edgeKey$, String[] nodes){
+	try{
+		if(nodes==null||edgeKey$==null)
+			return null;
+		List<String> nl = Arrays.asList(nodes);
+		ArrayList<Core>bl=new ArrayList<Core>();
+		ArrayList<String>dl=new ArrayList<String>();
+		Sack edge=entigrator.getEntityAtKey(edgeKey$);
+		Core[] ba=edge.elementGet("bond");
+		Core [] da=edge.elementGet("detail");
+		if(ba==null)
+			return null;
+		for(Core b:ba){
+			if(nl.contains(b.type)&&nl.contains(b.value)){
+				for(Core d:da)
+					if(b.name.equals(d.type))
+						dl.add(d.value);
+			}
+		}
+		 return dl.toArray(new String[0]);
 	}catch(Exception e){
 		Logger.getLogger(EdgeHandler.class.getName()).severe(e.toString());	
 	}

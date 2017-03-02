@@ -1,4 +1,5 @@
 package gdt.data.extension;
+import java.io.BufferedInputStream;
 /*
  * Copyright 2016 Alexander Imas
  * This file is extension of JEntigrator.
@@ -17,12 +18,11 @@ package gdt.data.extension;
     along with JEntigrator.  If not, see <http://www.gnu.org/licenses/>.
  */
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.InputStream;
-import java.net.URL;
-import java.net.URLClassLoader;
 import java.net.URLDecoder;
+import java.util.ArrayList;
+import java.util.jar.JarOutputStream;
 import java.util.logging.Logger;
 
 import gdt.data.entity.facet.ExtensionHandler;
@@ -97,7 +97,10 @@ public class Main implements ExtensionMain{
              	     os.close();
                      is.close();
                }
-               }	   
+               }
+               String source$=jar$;
+               String target$=folder$+"/res.jar";
+               extractResources(source$,target$);
                entigrator.save(extension);
             
                 }catch(Exception e ){
@@ -148,14 +151,30 @@ public class Main implements ExtensionMain{
         	 extension.createElement("content.fhandler");
          else
         	 extension.clearElement("content.fhandler");
-         extension.putElementItem("content.fhandler", new Core(null,"gdt.data.entity.NodeHandler",EXTENSION_KEY));
-         extension.putElementItem("content.fhandler", new Core(null,"gdt.data.entity.EdgeHandler",EXTENSION_KEY));
-         extension.putElementItem("content.fhandler", new Core(null,"gdt.data.entity.GraphHandler",EXTENSION_KEY));
-         extension.putElementItem("content.fhandler", new Core(null,"gdt.data.entity.BondDetailHandler",EXTENSION_KEY));
+         extension.putElementItem("content.fhandler", new Core("gdt.data.entity.facet.FieldsHandler","gdt.data.entity.NodeHandler",EXTENSION_KEY));
+         extension.putElementItem("content.fhandler", new Core("gdt.data.entity.facet.FieldsHandler","gdt.data.entity.EdgeHandler",EXTENSION_KEY));
+         extension.putElementItem("content.fhandler", new Core("gdt.data.entity.facet.FieldsHandler","gdt.data.entity.GraphHandler",EXTENSION_KEY));
+         extension.putElementItem("content.fhandler", new Core("gdt.data.entity.FacetHandler","gdt.data.entity.BondDetailHandler",EXTENSION_KEY));
+         
          if(!extension.existsElement("content.jfacet"))
         	 extension.createElement("content.jfacet");
          else
         	 extension.clearElement("content.jfacet");
+        
+         extension.putElementItem("content.jfacet", new Core(null,"gdt.jgui.entity.node.JNodeFacetAddItem",null));	
+         extension.putElementItem("content.jfacet", new Core(null,"gdt.jgui.entity.graph.JGraphNodes",null));
+         extension.putElementItem("content.jfacet", new Core(null,"gdt.jgui.entity.graph.JGraphEditor",null));
+  		 extension.putElementItem("content.jfacet", new Core(null,"gdt.jgui.entity.graph.JEdgesPanel",null));
+  		 extension.putElementItem("content.jfacet", new Core(null,"gdt.jgui.entity.edge.JNewBond",null));	
+  		 extension.putElementItem("content.jfacet", new Core(null,"gdt.jgui.entity.edge.JBondItem",null));	
+  		 extension.putElementItem("content.jfacet", new Core(null,"gdt.jgui.entity.bonddetail.JBondDetailRenderer",null));	
+  		 extension.putElementItem("content.jfacet", new Core(null,"gdt.jgui.entity.bonddetail.JBondDetailPanel",null));	
+  		 extension.putElementItem("content.jfacet", new Core("gdt.jgui.entity.node.JNodeFacetAddItem","gdt.data.entity.NodeHandler","gdt.jgui.entity.node.JNodeFacetOpenItem"));
+  		 extension.putElementItem("content.jfacet", new Core("gdt.jgui.entity.graph.JGraphFacetAddItem","gdt.data.entity.GraphHandler","gdt.jgui.entity.graph.JGraphFacetOpenItem"));
+  		 extension.putElementItem("content.jfacet", new Core("gdt.jgui.entity.edge.JEdgeFacetAddItem","gdt.data.entity.EdgeHandler","gdt.jgui.entity.edge.JEdgeFacetOpenItem"));
+  		 extension.putElementItem("content.jfacet", new Core(null,"gdt.data.entity.BondDetailHandler","gdt.jgui.entity.bonddetail.JBondDetailFacetOpenItem"));
+         
+         /*
          extension.putElementItem("content.jfacet", new Core("gdt.jgui.entity.node.JNodeFacetAddItem","gdt.data.entity.NodeHandler","gdt.jgui.entity.node.JNodeFacetOpenItem"));
          extension.putElementItem("content.jfacet", new Core("gdt.jgui.entity.edge.JEdgeFacetAddItem","gdt.data.entity.EdgeHandler","gdt.jgui.entity.edge.JEdgeFacetOpenItem"));
          extension.putElementItem("content.jfacet", new Core("gdt.jgui.entity.graph.JGraphFacetAddItem","gdt.data.entity.GraphHandler","gdt.jgui.entity.graph.JGraphFacetOpenItem"));
@@ -165,16 +184,70 @@ public class Main implements ExtensionMain{
          extension.putElementItem("content.jfacet", new Core(null,"gdt.jgui.entity.graph.JEdgesPanel",null));
          extension.putElementItem("content.jfacet", new Core(null,"gdt.jgui.entity.graph.JGraphViewSelector",null));
          extension.putElementItem("content.jfacet", new Core(null,"gdt.jgui.entity.graph.JGraphViews",null));
+         */
          if(!extension.existsElement("content.jrenderer"))
         	 extension.createElement("content.jrenderer");
          else
         	 extension.clearElement("content.jrenderer");
+         extension.putElementItem("content.jrenderer", new Core("gdt.jgui.console.JItemsListPanel","gdt.data.entity.NodeHandler","gdt.jgui.entity.node.JNodeEditor"));
+         extension.putElementItem("content.jrenderer", new Core("gdt.jgui.console.JItemsListPanel","gdt.data.entity.GraphHandler","gdt.jgui.entity.graph.JGraphEditor"));
+         extension.putElementItem("content.jrenderer", new Core("gdt.jgui.console.JItemsListPanel","gdt.data.entity.EdgeHandler","gdt.jgui.entity.edge.JBondsPanel"));
+         extension.putElementItem("content.jrenderer", new Core("gdt.jgui.console.JItemsListPanel","gdt.data.entity.BondDetailHandler","gdt.jgui.entity.edge.JBondsDetailRenderer"));
+        /*
          extension.putElementItem("content.jrenderer", new Core(null,"gdt.data.entity.NodeHandler","gdt.jgui.entity.node.JNodeEditor"));
          extension.putElementItem("content.jrenderer", new Core(null,"gdt.data.entity.EdgeHandler","gdt.jgui.entity.edge.JBondsPanel"));
          extension.putElementItem("content.jrenderer", new Core(null,"gdt.data.entity.GraphHandler","gdt.jgui.entity.graph.JGraphViewSelector"));
          extension.putElementItem("content.jrenderer", new Core(null,"gdt.data.entity.BondDetailHandler","gdt.jgui.entity.edge.JBondsPanel"));
-       
+         */
+         if(!extension.existsElement("content.super"))
+        	 extension.createElement("content.super");
+         else
+        	 extension.clearElement("content.super");
+         extension.putElementItem("content.jrenderer", new Core(null,"gdt.jgui.entity.node.JNodeFacetOpenItem","gdt.jgui.console.JFacetOpenItem"));
+         extension.putElementItem("content.jrenderer", new Core(null,"gdt.jgui.entity.node.JNodeFacetAddItem","gdt.jgui.console.JFacetOpenItem"));
+         extension.putElementItem("content.jrenderer", new Core(null,"gdt.jgui.entity.graph.JWebGraph","gdt.jgui.console.WContext"));
+         extension.putElementItem("content.jrenderer", new Core(null,"gdt.jgui.entity.graph.JGraphRenderer","gdt.jgui.console.JContext"));
+         extension.putElementItem("content.jrenderer", new Core(null,"gdt.jgui.entity.graph.JGraphFacetOpenItem","gdt.jgui.console.JFacetOpenItem"));
+         extension.putElementItem("content.jrenderer", new Core(null,"gdt.jgui.entity.edge.JNewBond","gdt.jgui.console.JContext"));
+         extension.putElementItem("content.jrenderer", new Core(null,"gdt.jgui.entity.edge.JEdgeFacetOpenItem","gdt.jgui.console.JFacetOpenItem"));
+         extension.putElementItem("content.jrenderer", new Core(null,"gdt.jgui.entity.edge.JBondItem","gdt.jgui.console.JItemPanel"));
+         extension.putElementItem("content.jrenderer", new Core(null,"gdt.jgui.entity.bonddetail.JBondDetailRenderer","gdt.jgui.console.JFacetRenderer"));
+         extension.putElementItem("content.jrenderer", new Core(null,"gdt.jgui.entity.bonddetail.JBondDetailPanel","gdt.jgui.entity.JEntitiesPanel"));
+         extension.putElementItem("content.jrenderer", new Core(null,"gdt.jgui.entity.bonddetail.JBondDetailFacetOpenItem","gdt.jgui.console.JFacetOpenItem"));
          
          return extension;
+	}
+	public static void  extractResources(String source$,String target$){
+		try{
+			java.util.jar.JarFile source = new java.util.jar.JarFile(source$);
+			File targetFile=new File(target$);
+			if(!targetFile.exists())
+				targetFile.createNewFile();
+			JarOutputStream target = new JarOutputStream(new FileOutputStream(targetFile));
+			java.util.Enumeration<java.util.jar.JarEntry> enumEntries = source.entries();
+			BufferedInputStream in;
+			while (enumEntries.hasMoreElements()) {
+				java.util.jar.JarEntry entry = (java.util.jar.JarEntry) enumEntries.nextElement();
+			    if(entry.getName().startsWith("res/")){
+			//      System.out.println("Main:ExtractResources:entry name="+entry.getName()+" isDirectory="+entry.isDirectory()+" size="+entry.getSize());
+			      target.putNextEntry(entry);
+			      in = new BufferedInputStream(source.getInputStream(entry));
+			      byte[] buffer = new byte[1024];
+			      while (true)
+			      {
+			        int count = in.read(buffer);
+			        if (count == -1)
+			          break;
+			        target.write(buffer, 0, count);
+			      }
+			      target.closeEntry();
+
+			    }
+			}
+			source.close();
+			target.close();
+		}catch(Exception e){
+			Logger.getLogger("Graph:gdt.data.extension.Main:extractResources").severe(e.toString());
+		}
 	}
 }

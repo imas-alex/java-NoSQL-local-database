@@ -40,7 +40,7 @@ public class NodeHandler extends FieldsHandler{
 	String entihome$;
 	String entityKey$;
 	public final static String NODE="node";
-	public final static boolean debug=true;
+	public final static boolean debug=false;
 	/**
 	 * Default constructor
 	 */
@@ -461,6 +461,34 @@ public static Bond[] getScopeBonds(Entigrator entigrator, String[] scope,String 
 	}
 	return null;
 }
-
+public static void refresh(Entigrator entigrator,String entityKey$){
+	try{
+		String[]ea=entigrator.indx_listEntities("entity", "edge");
+		if(ea==null)
+			return;
+		Sack node=entigrator.getEntityAtKey(entityKey$);
+		node.removeElement("bond");
+		node.removeElement("edge");
+		node.createElement("bond");
+		node.createElement("edge");
+		Sack edge;
+		Core[] ca;
+		
+		for(String e:ea){
+			edge=entigrator.getEntityAtKey(e);
+			ca=edge.elementGet("bond");
+			if(ca!=null)
+			for(Core c:ca){
+				if(entityKey$.equals(c.type)||entityKey$.equals(c.value)){
+					node.putElementItem("bond", c);
+					node.putElementItem("edge", new Core(null,c.name,e));
+				}
+			}
+		}
+		entigrator.replace(node);
+	}catch(Exception e){
+		Logger.getLogger(NodeHandler.class.getName()).severe(e.toString());	
+	}
+}
 }
 

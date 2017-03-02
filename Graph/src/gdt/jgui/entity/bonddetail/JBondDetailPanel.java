@@ -71,6 +71,7 @@ public class JBondDetailPanel extends JEntitiesPanel {
 	protected JMenu menu1;
 	String message$;
 	Sack entity;
+	boolean debug=false;
 	/**
 	 * Get the context locator.
 	 * @return the context locator.
@@ -151,7 +152,8 @@ public class JBondDetailPanel extends JEntitiesPanel {
 	@Override
 	public JContext instantiate(JMainConsole console, String locator$) {
 		try{
-			//System.out.println("JBondDetailPanel:instantiate:locator="+locator$);
+			if(debug)
+			System.out.println("JBondDetailPanel:instantiate:locator="+locator$);
 			this.console=console;
 			 this.locator$=locator$;
 			 Properties locator=Locator.toProperties(locator$);
@@ -170,6 +172,9 @@ public class JBondDetailPanel extends JEntitiesPanel {
 				 if("edge".equals(host.getProperty("entity")))
 					 entity=host;
 			 }
+			 if(debug)
+					System.out.println("JBondDetailPanel:instantiate:edge key="+edgeKey$);
+					
 			 if(entity==null)
 				 return this;
 			 Core[] ca=entity.elementGet("detail");
@@ -179,17 +184,30 @@ public class JBondDetailPanel extends JEntitiesPanel {
 			subtitle$=entigrator.indx_getLabel(bond.type)+" --("+entity.getProperty("label")+")-> "+entigrator.indx_getLabel(bond.value);
 			saveSelection( console, entihome$, edgeKey$, bondKey$);		 
 					// entigrator.getEntityAtKey(entityKey$);
-             ArrayList<String>sl=new ArrayList<String>();
+			 if(debug)
+					System.out.println("JBondDetailPanel:instantiate:found bond="+bondKey$);
+			
+			ArrayList<String>sl=new ArrayList<String>();
+			String label$;
 			for(Core c:ca)
-               if(bondKey$.equals(c.type))
-            	   sl.add(entigrator.indx_getLabel(c.value));
+               if(bondKey$.equals(c.type)){
+            	   label$=entigrator.indx_getLabel(c.value);
+            	   if(label$!=null)
+            	     sl.add(label$);
+               }
             if(sl.size()>0){
 			Collections.sort(sl);
             String list$=Locator.toString(sl.toArray(new String[0]));
             locator$=Locator.append(locator$, EntityHandler.ENTITY_LIST, list$);
             }
 			super.instantiate(console, locator$);
+			 if(debug)
+					System.out.println("JBondDetailPanel:instantiate:1");
+			
             JItemPanel[] ipa=getItems();
+            if(debug)
+				System.out.println("JBondDetailPanel:instantiate:2");
+            if(ipa!=null){
             String ip$;
             for(JItemPanel ip:ipa){
             	ip$=ip.getLocator();
@@ -198,6 +216,7 @@ public class JBondDetailPanel extends JEntitiesPanel {
             	ip.setLocator(ip$);
             }
 			putItems(ipa);
+            }
 	   }catch(Exception e){
 			Logger.getLogger(getClass().getName()).info(e.toString());
 		}	 
@@ -380,6 +399,7 @@ public class JBondDetailPanel extends JEntitiesPanel {
 		for(String s:sa){
 			BondDetailHandler.deleteDetail(entigrator, s);
 		}
+		
 	}catch(Exception e){
 		Logger.getLogger(getClass().getName()).severe(e.toString());	
 		}

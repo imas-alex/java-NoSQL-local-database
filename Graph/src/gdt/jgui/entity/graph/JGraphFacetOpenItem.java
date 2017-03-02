@@ -59,7 +59,7 @@ import gdt.jgui.tool.JEntityEditor;
 
 public class JGraphFacetOpenItem extends JFieldsFacetOpenItem implements WContext{
 	private static final long serialVersionUID = 1L;
-	private static final boolean debug=true;
+	private static final boolean debug=false;
 	private static String ACTION_ENTITY="action entity";
 	private static String ACTION_RELATIONS="action relations";
 	private static String ACTION_EXPAND="action expand";
@@ -271,7 +271,7 @@ public String getWebView(Entigrator entigrator, String locator$) {
     	  if(debug)
        		 System.out.println("JGraphFacetOpenItem:getWebView:nodes="+nodes$);
        	
-    	  JGraphRenderer gr=new JGraphRenderer();
+    	  JWebGraph gr=new JWebGraph();
     	  String grLocator$=gr.getLocator();
     	  Properties grLocator=Locator.toProperties(grLocator$);
     	  grLocator.setProperty(WContext.WEB_HOME,webHome$);
@@ -291,7 +291,7 @@ public String getWebView(Entigrator entigrator, String locator$) {
       }
       return null;
 }
-
+/*
 public String getWebViewOld(Entigrator entigrator, String locator$) {
 	try{
 		Properties locator=Locator.toProperties(locator$);
@@ -441,6 +441,7 @@ public String getWebViewOld(Entigrator entigrator, String locator$) {
 	}
 	return null;
 }
+*/
 private static String getGraph( String dataSet$){
 	try{
 	        StringBuffer sb=new StringBuffer();	

@@ -37,6 +37,7 @@ public class BondDetailHandler extends FacetHandler{
 private Logger LOGGER=Logger.getLogger(BondDetailHandler.class.getName());
 public static final String EXTENSION_KEY="_Tm142C8Sgti2iAKlDEcEXT2Kj1E";
 public final static String BOND_DETAIL="bond detail";
+static boolean debug=false;
 	public BondDetailHandler(){
 		
 	}
@@ -128,16 +129,17 @@ public static void deleteDetail(Entigrator entigrator, String locator$){
     		if(c.type.equals(bondKey$)&&c.value.equals(detailKey$)){
     		
     			edge.removeElementItem("detail", c.name);
-    			break;
+    			//break;
     		}
-    entigrator.save(edge);
+    entigrator.replace(edge);
     if(detail!=null)	
     	if(detail.elementGet("bond")==null){
     		detail.removeElementItem("fhandler", BondDetailHandler.class.getName());
-    		entigrator.save(detail);
+    		detail.removeElementItem("jfacet", BondDetailHandler.class.getName());
+    		entigrator.replace(detail);
     		entigrator.ent_takeOffProperty(detail, "detail");
     	}else
-    		entigrator.save(detail);
+   entigrator.replace(detail);
 	}catch(Exception e){
 		Logger.getLogger(BondDetailHandler.class.getName()).severe(e.toString());
 	}
@@ -149,14 +151,46 @@ public static void deleteDetail(Entigrator entigrator, String locator$){
  *  @param detilKey$ detail's key 
  * @return true if already attached false otherwise.
  */	
-private static boolean isDetailAlreadyAttached(Sack edge,String bondKey$,String detailKey$){
+private static boolean isDetailAlreadyAttached(Entigrator entigrator,Sack edge,String bondKey$,String detailKey$){
 	try{
-		
+		if(debug)
+			System.out.println("BondDetailHandler:isDetailAlreadyAttached:bond="+bondKey$+" detail="+detailKey$);
+		boolean edgeModified=false;
+		boolean entryFound=false;
 		Core[] ca=edge.elementGet("detail");
 		if(ca!=null)
 			for(Core c:ca)
-				if(bondKey$.equals(c.type)&&detailKey$.equals(c.value))
-					return true;
+				if(bondKey$.equals(c.type)&&detailKey$.equals(c.value)){
+				   entryFound=true; 	
+				   Sack detail=entigrator.getEntityAtKey(detailKey$);
+				   
+				   if(detail==null){
+					   edge.removeElementItem("detail", c.name);
+					   edgeModified=true;
+				   }else{
+					   if(debug)
+							System.out.println("BondDetailHandler:isDetailAlreadyAttached:try detail="+detail.getProperty("label"));
+					 
+					   if(detail.getElementItem("bond", c.type)!=null){
+						   if(debug)
+								System.out.println("BondDetailHandler:isDetailAlreadyAttached:bond found");
+						   return true;
+					   }
+					   else{
+						   if(debug)
+								System.out.println("BondDetailHandler:isDetailAlreadyAttached:bond not found");
+						 
+						   edge.removeElementItem("detail", c.name);
+						   edgeModified=true;
+					   }
+				   }
+					
+				}
+		if(!entryFound)
+			return false;
+		if(!edgeModified)
+			return true;
+		entigrator.replace(edge);
 	}catch(Exception e){
 			
 	}
@@ -169,13 +203,20 @@ private static boolean isDetailAlreadyAttached(Sack edge,String bondKey$,String 
  */	
 public static void addDetail(Entigrator entigrator, String locator$){
 	try{
-	//System.out.println("BondDetailHandler:addDetail:locator="+locator$);	
+		if(debug)
+		System.out.println("BondDetailHandler:addDetail:locator="+locator$);	
 	Properties locator=Locator.toProperties(locator$);
 	String detailKey$=locator.getProperty(EntityHandler.ENTITY_KEY);
 	String edgeKey$=locator.getProperty(JBondsPanel.EDGE_KEY);
+	Sack edge=entigrator.getEntityAtKey(edgeKey$);
 	String bondKey$=locator.getProperty(JBondsPanel.BOND_KEY);
+	 if(isDetailAlreadyAttached(entigrator,edge,bondKey$,detailKey$)){
+		 if(debug)
+			 System.out.println("BondDetailHandler:addDetail:already attached"); 
+		 return;
+	 }
 	Sack detail=entigrator.getEntityAtKey(detailKey$);
-    Sack edge=entigrator.getEntityAtKey(edgeKey$);
+
     if(!detail.existsElement("bond"))
     	detail.createElement("bond");
     if(!detail.existsElement("edge"))
@@ -185,11 +226,18 @@ public static void addDetail(Entigrator entigrator, String locator$){
     Core bond=edge.getElementItem("bond", bondKey$);
     detail.putElementItem("bond", bond);
     detail.putElementItem("edge", new Core(null,bondKey$,edgeKey$));
-    if(!isDetailAlreadyAttached(edge,bondKey$,detailKey$))
+  /*
+    if(!isDetailAlreadyAttached(entigrator,edge,bondKey$,detailKey$))
     	edge.putElementItem("detail", new Core(bondKey$,Identity.key(),detailKey$));
-    entigrator.save(edge);
-   	detail.putElementItem("fhandler",new Core(null, BondDetailHandler.class.getName(),EXTENSION_KEY));
-   entigrator.save(detail);
+    else
+    	System.out.println("BondDetailHandler:addDetail:already attached="+detailKey$);
+    	*/	
+    edge.putElementItem("detail", new Core(bondKey$,Identity.key(),detailKey$));
+    entigrator.replace(edge);
+   detail.putElementItem("fhandler",new Core(null, BondDetailHandler.class.getName(),EXTENSION_KEY));
+   detail.putElementItem("jfacet",new Core(null, "gdt.data.entity.BondDetailHandler","gdt.jgui.entity.bonddetail.JBondDetailFacetOpenItem"));
+   
+   entigrator.replace(detail);
    entigrator.ent_assignProperty(detail, "detail", detail.getProperty("label"));
  	}catch(Exception e){
 		Logger.getLogger(BondDetailHandler.class.getName()).severe(e.toString());
@@ -205,5 +253,35 @@ No operation here
 public void completeMigration(Entigrator entigrator) {
 	// TODO Auto-generated method stub
 	
+}
+public static void refresh(Entigrator entigrator,String entityKey$){
+	try{
+		String[]ea=entigrator.indx_listEntities("entity", "edge");
+		if(ea==null)
+			return;
+		Sack detail=entigrator.getEntityAtKey(entityKey$);
+		detail.removeElement("bond");
+		detail.removeElement("edge");
+		detail.createElement("bond");
+		detail.createElement("edge");
+		Sack edge;
+		Core[] ca;
+		Core bond;
+		for(String e:ea){
+			edge=entigrator.getEntityAtKey(e);
+			ca=edge.elementGet("detail");
+			if(ca!=null)
+			for(Core c:ca){
+				if(entityKey$.equals(c.value)){
+					bond=edge.getElementItem("bond",c.type);
+					detail.putElementItem("bond",bond);
+					detail.putElementItem("edge", new Core(null,c.type,e));
+				}
+			}
+		}
+		entigrator.replace(detail);
+	}catch(Exception e){
+		Logger.getLogger(BondDetailHandler.class.getName()).severe(e.toString());	
+	}
 }
 }

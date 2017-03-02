@@ -19,33 +19,25 @@ package gdt.jgui.entity.graph;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
-import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Graphics2D;
-import java.awt.GridLayout;
 import java.awt.Image;
 import java.awt.Paint;
-import java.awt.Point;
 import java.awt.geom.Point2D;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
-import java.awt.event.KeyAdapter;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
-import java.awt.geom.Point2D;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
@@ -70,8 +62,6 @@ import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
 import javax.swing.event.MenuEvent;
 import javax.swing.event.MenuListener;
 import javax.swing.event.PopupMenuEvent;
@@ -80,15 +70,11 @@ import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.collections15.Transformer;
 import org.apache.commons.collections15.functors.ConstantTransformer;
 
-import edu.uci.ics.jung.algorithms.layout.AbstractLayout;
 import edu.uci.ics.jung.algorithms.layout.FRLayout;
 import edu.uci.ics.jung.algorithms.layout.GraphElementAccessor;
-import edu.uci.ics.jung.algorithms.layout.KKLayout;
 import edu.uci.ics.jung.algorithms.layout.Layout;
-import edu.uci.ics.jung.algorithms.layout.SpringLayout2;
 import edu.uci.ics.jung.algorithms.layout.util.RandomLocationTransformer;
 import edu.uci.ics.jung.graph.DirectedSparseGraph;
-import edu.uci.ics.jung.graph.Graph;
 import edu.uci.ics.jung.graph.util.EdgeType;
 import edu.uci.ics.jung.samples.VertexImageShaperDemo.DemoVertexIconShapeTransformer;
 import edu.uci.ics.jung.samples.VertexImageShaperDemo.DemoVertexIconTransformer;
@@ -102,8 +88,7 @@ import edu.uci.ics.jung.visualization.control.ScalingControl;
 import edu.uci.ics.jung.visualization.decorators.EllipseVertexShapeTransformer;
 import edu.uci.ics.jung.visualization.decorators.PickableEdgePaintTransformer;
 import edu.uci.ics.jung.visualization.decorators.PickableVertexPaintTransformer;
-import edu.uci.ics.jung.visualization.decorators.ToStringLabeller;
-import edu.uci.ics.jung.visualization.layout.ObservableCachingLayout;
+
 import edu.uci.ics.jung.visualization.picking.PickedState;
 import edu.uci.ics.jung.visualization.renderers.DefaultEdgeLabelRenderer;
 import edu.uci.ics.jung.visualization.renderers.DefaultVertexLabelRenderer;
@@ -113,7 +98,7 @@ import gdt.data.entity.EdgeHandler;
 import gdt.data.entity.EntityHandler;
 import gdt.data.entity.GraphHandler;
 import gdt.data.entity.NodeHandler;
-import gdt.data.entity.facet.ExtensionHandler;
+
 import gdt.data.entity.facet.FieldsHandler;
 import gdt.data.grain.Core;
 import gdt.data.grain.Identity;
@@ -122,22 +107,15 @@ import gdt.data.grain.Sack;
 import gdt.data.grain.Support;
 import gdt.data.store.Entigrator;
 import gdt.data.store.StoreAdapter;
-import gdt.jgui.base.JBaseNavigator;
 import gdt.jgui.console.JConsoleHandler;
 import gdt.jgui.console.JContext;
 import gdt.jgui.console.JFacetRenderer;
-import gdt.jgui.console.JItemPanel;
 import gdt.jgui.console.JMainConsole;
 import gdt.jgui.console.JRequester;
-import gdt.jgui.console.WContext;
-import gdt.jgui.console.WUtils;
-import gdt.jgui.console.JItemsListPanel.ItemPanelComparator;
-import gdt.jgui.entity.JEntitiesPanel;
 import gdt.jgui.entity.JEntityFacetPanel;
 import gdt.jgui.entity.JEntityPrimaryMenu;
-import gdt.jgui.entity.bonddetail.JBondDetailFacetOpenItem;
+import gdt.jgui.entity.bonddetail.JBondDetailPanel;
 import gdt.jgui.entity.edge.JBondsPanel;
-import gdt.jgui.tool.AutocompleteJComboBox;
 import gdt.jgui.tool.JTextEditor;
 /**
  * This context visualize the graph.
@@ -146,7 +124,8 @@ import gdt.jgui.tool.JTextEditor;
  */
 
 public class JGraphRenderer extends JPanel implements JContext , JRequester
-, MouseMotionListener,WContext{
+, MouseMotionListener{
+//, MouseMotionListener,WContext{
 	/**
 	 * 
 	 */
@@ -158,14 +137,13 @@ public class JGraphRenderer extends JPanel implements JContext , JRequester
     private String entityKey$;
     private String entityLabel$;
     private Sack graphEntity;
-   private String locator$;
-   private static String ACTION_ENTITY="action entity";
+   public static String ACTION_ENTITY="action entity";
 	public static String ACTION_RELATIONS="action relations";
 	public static String ACTION_SCOPE_RELATIONS="action scope relations";
 	public static String ACTION_NETWORK_RELATIONS="action network relations";
 	public static String ACTION_EDGE="action edge";
 	public  static final String ACTION_EXPAND="action expand";
-	private static String ACTION_NETWORK="action network";
+	public static String ACTION_NETWORK="action network";
 	public static String SELECTED_NODE_LABEL="selected node label";
 	public static final String SHOWN_NODES_LABELS="shown nodes labels";
 	public static String SELECTED_BOND_KEY="selected bond key";
@@ -185,7 +163,7 @@ public class JGraphRenderer extends JPanel implements JContext , JRequester
 
     Timer timer;
     DirectedSparseGraph<Number, Number> graph;
-    static boolean debug=true;
+    static boolean debug=false;
 
     protected JButton switchLayout;
     
@@ -202,13 +180,15 @@ public class JGraphRenderer extends JPanel implements JContext , JRequester
    // final SpringLayout2 <Number, Number> layout;
     final Map<Number,String> vLabels = new HashMap<Number,String>();
     String edge$;
-    //String message$;
+    String locator$;
 /**
  * The default constructor
  */
     public JGraphRenderer()
   	{
-  	    super();
+    	super();
+    	if(debug)
+			System.out.println("JGraphRenderer: 0");	
   	    setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
   	    undo=new Stack<Core[]>();
   	  v=new HashMap<String,Number>();
@@ -735,25 +715,7 @@ private void entity(int n){
 		fp$=Locator.append(fp$, Entigrator.ENTIHOME, entihome$);
 		fp$=Locator.append(fp$, EntityHandler.ENTITY_KEY,scope[n] );
 		JConsoleHandler.execute(console, fp$);
-			 
-			 /*
-		Entigrator entigrator=console.getEntigrator(entihome$);
-		Sack graphEntity=entigrator.getEntityAtKey(entityKey$);
-		Core[]ca=graphEntity.elementGet("vertex");
-		String v$=String.valueOf(v);
-		for(Core c:ca)
-			if(v$.equals(c.value)){
-				JEntityFacetPanel fp=new JEntityFacetPanel();
-				String fp$=fp.getLocator();
-				fp$=Locator.append(fp$, Entigrator.ENTIHOME, entihome$);
-				fp$=Locator.append(fp$, EntityHandler.ENTITY_KEY, c.name);
-				if(scope!=null){
-					
-				}
-					
-				JConsoleHandler.execute(console, fp$);
-			}
-			*/
+	      
 	}catch(Exception e){
 		LOGGER.severe(e.toString());
 	}
@@ -786,25 +748,7 @@ private void init(){
          return;
 	 }
 	 if(graphEntity!=null&&"graph".equals(graphEntity.getProperty("entity"))){
-	/*
-     Core [] nodes=graphEntity.elementGet("node");
-	 String nodeKey$;
-	 ArrayList<String>nkl=new ArrayList<String>();
-	 
-	 if(nodes!=null){
-		 Map<String,Number>ln=new HashMap<String,Number>();
-		 for (int i = 0; i <nodes.length; i++){
-			 ln.put(nodes[i].name,i);
-			 nodeKey$=entigrator.indx_keyAtLabel(nodes[i].name);
-			 if(!nkl.contains(nodeKey$))
-				 nkl.add(nodeKey$);
-		 }
-		 scope=nkl.toArray(new String[0]);
-		 visualize(entigrator,scope,null);
-		 relocate(nodes,ln);
-         repaint();	
-         return;
-	 }else*/
+	
 		 Core[] ca=graphEntity.elementGet("jbookmark");
 		 if(ca==null)
 			 return;
@@ -824,7 +768,9 @@ private void init(){
 		 visualize(entigrator,scope,null);	 
 		 return;
  }
- if(graphEntity!=null&&(graphEntity.getProperty("node")!=null))
+ if(graphEntity!=null&&(graphEntity.getProperty("node")!=null)
+		 //||graphEntity.getProperty("bond.detail")!=null
+		 )
 		 //||(graphEntity!=null&&"edge".equals(graphEntity.getProperty("entity"))))
  {
 		 Core[] ca=graphEntity.elementGet("bond");
@@ -837,11 +783,32 @@ private void init(){
 			 if(c.value!=null&&!sl.contains(c.value))
 				 sl.add(c.value);
 		 }
-		 scope=NodeHandler.getScopeExpandedNodeKeys(entigrator, null,sl.toArray(new String[0]));
+		 //scope=NodeHandler.getScopeExpandedNodeKeys(entigrator, null,sl.toArray(new String[0]));
+		  
+		 scope=sl.toArray(new String[0]);
+		 //scope=NodeHandler.(entigrator, null,sl.toArray(new String[0]));
 		 visualize(entigrator,scope,null);	 
 		 return; 
  }
- 
+ //if(graphEntity!=null&&(graphEntity.getProperty("node")!=null)
+	 if(graphEntity.getProperty("bond.detail")!=null)
+		 {
+		 Core[] ca=graphEntity.elementGet("bond");
+		 if(ca==null)
+			 return;
+		 ArrayList<String>sl=new ArrayList<String>();
+		 
+		 for(Core c:ca){
+			 
+			 if(c.type!=null&&!sl.contains(c.type))
+				 sl.add(c.type);
+			 if(c.value!=null&&!sl.contains(c.value))
+				 sl.add(c.value);
+		 }
+		 scope=sl.toArray(new String[0]);
+		 visualize(entigrator,scope,null);	 
+		 return; 
+ }
  if(graphEntity!=null&&"edge".equals(graphEntity.getProperty("entity"))){
 	 Core[] ca=graphEntity.elementGet("bond");
 	 if(ca==null)
@@ -853,6 +820,10 @@ private void init(){
 		 if(c.value!=null&&!sl.contains(c.value))
 			 sl.add(c.value);
 	 }
+	// scope=sl.toArray(new String[0]);
+	 
+	// visualize(entigrator,scope,null);
+	
 	 ArrayList<String>nl=new ArrayList<String>();
 	 for(String s:sl)
 		  nl.add(entigrator.indx_getLabel(s));
@@ -863,12 +834,17 @@ private void init(){
 	  if(scopeLabels==null||scopeLabels.length<1)
 		  return;
 	 nl.clear();
-	 for(String s:scopeLabels)
+	 for(String s:scopeLabels){
+		// System.out.println("JGraphRenderer:init.edge:s="+s+" l="+entigrator.indx_keyAtLabel(s)); 
 	   nl.add(entigrator.indx_keyAtLabel(s));
-	  JGraphRenderer.this.scope=nl.toArray(new String[0]);
-	  visualize(entigrator,nl.toArray(new String[0]),entityKey$);
-	 //scope=NodeHandler.getScopeExpandedNodeKeys(entigrator, null,sl.toArray(new String[0]));
-	 //visualize(entigrator,scope,null);	 
+	   
+	 }
+	 // JGraphRenderer.this.scope=nl.toArray(new String[0]);
+	 // visualize(entigrator,nl.toArray(new String[0]),entityKey$);
+	//scope=NodeHandler.getScopeExpandedNodeKeys(entigrator, null,sl.toArray(new String[0]));
+	 scope=nl.toArray(new String[0]);
+	 
+	 visualize(entigrator,scope,graphEntity.getKey());	
 	 return;
 } 
 
@@ -964,16 +940,25 @@ public  void visualize(Entigrator entigrator,final String[] scope ,String edgeKe
 	 ArrayList<String>el=new ArrayList<String>();
 	 String edgeLabel$;
 		 for(int j=0;j<ba.length;j++){
-			 //if(debug)
-			//	 System.out.println("JGraphRenderer:visualize:add edge  by keys out="+ba[j].outNodeKey$+ " in="+ba[j].inNodeKey$);
-			    if(edge$!=null&&!edge$.equals(ba[j].edgeKey$))
+			 if(debug)
+				 System.out.println("JGraphRenderer:visualize:add edge  by keys out="+ba[j].outNodeKey$+ " in="+ba[j].inNodeKey$);
+			try{
+			 if(edge$!=null&&!edge$.equals(ba[j].edgeKey$)){
+				// if(debug)
+				//	 System.out.println("JGraphRenderer:visualize:skip edge="+edge$);
+				
 			    	continue;
+			 }
 			     out=v.get(ba[j].outNodeKey$);
 			     vLabel$=entigrator.indx_getLabel(ba[j].outNodeKey$);
+			     if(vLabel$==null)
+			    	 continue;
 			     if(!ll.contains(vLabel$))
 			    	 ll.add(vLabel$);
 			     in=v.get(ba[j].inNodeKey$);
 			     vLabel$=entigrator.indx_getLabel(ba[j].inNodeKey$);
+			     if(vLabel$==null)
+			    	 continue;
 			     if(!ll.contains(vLabel$))
 			    	 ll.add(vLabel$);
 			     edgeLabel$=entigrator.indx_getLabel(ba[j].edgeKey$);
@@ -982,13 +967,17 @@ public  void visualize(Entigrator entigrator,final String[] scope ,String edgeKe
 			     e.put(j,edgeLabel$);
 				 if(!ekl.contains(ba[j].edgeKey$))
 					 ekl.add(ba[j].edgeKey$);
-				// System.out.println("JGraphRenderer:visualize:add edge out="+out+ " in="+in+" number="+j);
+				if(debug) 
+				 System.out.println("JGraphRenderer:visualize:add edge out="+out+ " in="+in+" number="+j);
 				 b.put(j, ba[j]);
 				 graph.addEdge(j, out, in, EdgeType.DIRECTED);
+			}catch(Exception ee){
+				System.out.println("JGraphRenderer:visualize:bond="+ba[j]);
+			}
 		 	}
 	Collections.sort(el);	 
 	 if(debug)
-			 System.out.println("JGraphRenderer:visualize: ekl="+ekl.size());
+			 System.out.println("JGraphRenderer:visualize: el="+el.size());
 	 
     layout = new FRLayout<Number, Number>(graph);
 	// layout = new KKLayout<Number, Number>(graph);
@@ -1000,6 +989,7 @@ public  void visualize(Entigrator entigrator,final String[] scope ,String edgeKe
         vv.getRenderContext().setVertexFillPaintTransformer(vpf);
         vv.getRenderContext().setEdgeDrawPaintTransformer(new PickableEdgePaintTransformer<Number>(vv.getPickedEdgeState(), Color.black, Color.cyan));
         vv.setBackground(Color.white);
+       
         final Transformer<Number,String> vertexStringerImpl = 
                 new VertexStringerImpl<Number,String>(vLabels);
             vv.getRenderContext().setVertexLabelTransformer(vertexStringerImpl);
@@ -1013,12 +1003,12 @@ public  void visualize(Entigrator entigrator,final String[] scope ,String edgeKe
                 
                 vertexIconShapeTransformer.setIconMap(iconMap);
                 vertexIconTransformer.setIconMap(iconMap);
-                
                 vv.getRenderContext().setVertexShapeTransformer(vertexIconShapeTransformer);
                 vv.getRenderContext().setVertexIconTransformer(vertexIconTransformer);
                  PickedState<Number> ps = vv.getPickedVertexState();
                 ps.addItemListener(new PickWithIconListener<Number>(vertexIconTransformer));
-      
+                if(debug)
+          			 System.out.println("JGraphRenderer:visualize: 2");         
                 //vv.setVertexToolTipTransformer(new ToStringLabeller<Number>());
                // vv.getRenderContext().setEdgeLabelTransformer(new ToStringLabeller<Number>());
                 vv.getRenderContext().setEdgeFontTransformer(new
@@ -1036,20 +1026,22 @@ public  void visualize(Entigrator entigrator,final String[] scope ,String edgeKe
            
                 MousePopupListener mpl=new MousePopupListener();
                 vv.addMouseListener(mpl);
+                if(debug)
+         			 System.out.println("JGraphRenderer:visualize: 3");         
+              
                 JPanel controls = new JPanel();
                 controls.setLayout(new BoxLayout(controls, BoxLayout.X_AXIS));
                 //
                   
                 //
-                
-                Collections.sort(ll);
-                String[] la=ll.toArray(new String[0]);
+               Collections.sort(ll);
+               String[] la=ll.toArray(new String[0]);
+            	
                 final JComboBox <String>nodesBox =new JComboBox<String>(la);
                 nodesBox.addItemListener(new ItemListener() {
 					@Override
 					public void itemStateChanged(ItemEvent e) {
 						if(ItemEvent.SELECTED==e.getStateChange()){
-						  System.out.println("JGraphRenderer:searh box item="+e.getItem());
 						  
 						  Entigrator entigrator=console.getEntigrator(entihome$);
 						  String nodeKey$=entigrator.indx_keyAtLabel((String)e.getItem());
@@ -1080,7 +1072,7 @@ public  void visualize(Entigrator entigrator,final String[] scope ,String edgeKe
                 nodePanel.add(nodesBox);
                 nodePanel.add(nodeMenu);
                 controls.add(nodePanel);
-           
+               
                 final JComboBox <String>edgesBox =new JComboBox<String>(el.toArray(new String[0]));
                 edgesBox.addItemListener(new ItemListener() {
 					@Override
@@ -1118,7 +1110,7 @@ public  void visualize(Entigrator entigrator,final String[] scope ,String edgeKe
                 		  String[] scopeLabels=EdgeHandler.filterNodesAtEdge(entigrator, nodeLabels, edgeLabel$);
                 		  if(scopeLabels==null||scopeLabels.length<1)
                 			  return;
-                		  undoPush();
+                		 undoPush();
                 		 nl.clear();
                 		 for(String s:scopeLabels)
                 		   nl.add(entigrator.indx_keyAtLabel(s));
@@ -1126,8 +1118,6 @@ public  void visualize(Entigrator entigrator,final String[] scope ,String edgeKe
                 		  edge$= entigrator.indx_keyAtLabel(edgeLabel$);
                 		  visualize(entigrator,nl.toArray(new String[0]),edge$);
                 		  edgesBox.setModel(new DefaultComboBoxModel<String>(new String[]{edgeLabel$}));
-                		 
-                		  // revalidate();
           				  repaint();
                 		  } 
                 		} );
@@ -1141,6 +1131,8 @@ public  void visualize(Entigrator entigrator,final String[] scope ,String edgeKe
                 add(controls, BorderLayout.SOUTH);
                 revalidate();
 				repaint();
+				         
+             
 }
 private JPopupMenu getEdgeMenu(final Number n){
 	  final JPopupMenu	popup = new JPopupMenu();
@@ -1306,11 +1298,16 @@ private JPopupMenu getNodeMenu(final String nodeKey$){
 					public void actionPerformed(ActionEvent e) {
 						try{
 							Entigrator entigrator=console.getEntigrator(entihome$);
+							
 							String nodeLabel$=entigrator.indx_getLabel(nodeKey$);
-							 for(int i=0;i<vLabels.size();i++)
-	                			  if(nodeLabel$.equals(vLabels.get(i))){
-							         entity(i);
-	                			  }
+							if(debug)
+								System.out.println("JGraphRenderer:entity popup:node key="+nodeKey$+" label="+nodeLabel$);
+							 JEntityFacetPanel fp=new JEntityFacetPanel();
+							 String fp$=fp.getLocator();
+							fp$=Locator.append(fp$, Entigrator.ENTIHOME, entihome$);
+							fp$=Locator.append(fp$, EntityHandler.ENTITY_KEY,nodeKey$);
+							JConsoleHandler.execute(console, fp$);
+							
 						}catch(Exception ee){
 							Logger.getLogger(getClass().getName()).info(ee.toString());
 						}
@@ -1355,30 +1352,44 @@ private void openEdge(int n){
 }
 private void displayDetails(Number n){
 	try{
-//		System.out.println("JGraphRenderer:displayDetails:b="+b);
+		if(debug)
+		   System.out.println("JGraphRenderer:displayDetails:n="+n+" b="+b.size());
 		Entigrator entigrator=console.getEntigrator(entihome$);
 		Bond bond=b.get(n);
-		
 		Sack edge=entigrator.getEntityAtKey(bond.edgeKey$);
+		
 		ArrayList<String>sl=new ArrayList<String>();
 		Core[] ca=edge.elementGet("detail");
+		if(debug)
+			   System.out.println("JGraphRenderer:displayDetail:ca="+ca.length);
 		if(ca==null)
 			return;
 		for(Core c:ca){
 			if(bond.bondKey$.equals(c.type))
    		   sl.add(entigrator.indx_getLabel(c.value));
 		}
-		if(sl.size()<1)
-			return;
+		String sa$=null;
+		if(sl.size()>0){
+				
 		Collections.sort(sl);
 		String[] sa=sl.toArray(new String[0]);
-		String sa$=Locator.toString(sa);
-		   JEntitiesPanel jep=new JEntitiesPanel();
+		sa$=Locator.toString(sa);
+		}
+		   //JEntitiesPanel jep=new JEntitiesPanel();
+		JBondDetailPanel jep=new JBondDetailPanel();
 		   String jepLocator$=jep.getLocator();
-		   jepLocator$=Locator.append(jepLocator$, Entigrator.ENTIHOME, entihome$);
-		   jepLocator$=Locator.append(jepLocator$,EntityHandler.ENTITY_LIST,sa$);
-		   jepLocator$=Locator.append(jepLocator$,EntityHandler.ENTITY_KEY,entityKey$);
-		   JConsoleHandler.execute(console, jepLocator$);
+		   Properties jepLocator=Locator.toProperties(jepLocator$);
+		   jepLocator.setProperty(Entigrator.ENTIHOME, entihome$);
+		   //jepLocator$=Locator.append(jepLocator$, Entigrator.ENTIHOME, entihome$);
+		   if(sa$!=null)
+		      //jepLocator$=Locator.append(jepLocator$,EntityHandler.ENTITY_LIST,sa$);
+			   jepLocator.setProperty(EntityHandler.ENTITY_LIST,sa$);
+		   jepLocator.setProperty(EntityHandler.ENTITY_KEY,entityKey$);
+		   jepLocator.setProperty(JBondsPanel.BOND_KEY,bond.bondKey$);
+		   jepLocator.setProperty(JBondsPanel.EDGE_KEY,bond.edgeKey$);
+		   if(debug)
+			   System.out.println("JGraphRenderer:displayDetail:jepLocator="+Locator.toString(jepLocator));
+		   JConsoleHandler.execute(console, Locator.toString(jepLocator));
 		
 	}catch(Exception e){
 		Logger.getLogger(JGraphRenderer.class.getName()).severe(e.toString());
@@ -1498,801 +1509,19 @@ public void activate() {
 	// TODO Auto-generated method stub
 	
 }
-@Override
-public String getWebConsole(Entigrator arg0, String arg1) {
-	// TODO Auto-generated method stub
-	return null;
-}
-@Override
-public String getWebView(Entigrator entigrator, String locator$) {
-	try{
-		//boolean initSelector=false;
-		Properties locator=Locator.toProperties(locator$);
-		String webHome$=locator.getProperty(WContext.WEB_HOME);
-		String entityLabel$=locator.getProperty(EntityHandler.ENTITY_LABEL);
-		String edgeLabel$=locator.getProperty(JBondsPanel.EDGE_LABEL);
-		String webRequester$=locator.getProperty(WContext.WEB_REQUESTER);
-		String action$=locator.getProperty(JRequester.REQUESTER_ACTION);
-		String filteredNodeLabels$=null;
-		String[] sa=null;
-		String shownLabels$=locator.getProperty(SHOWN_NODES_LABELS);
-		String nodeLabel$=locator.getProperty(SELECTED_NODE_LABEL);
-		if(shownLabels$!=null)
-		 sa=Locator.toArray(shownLabels$);
-		else
-			sa=new String[]{entityLabel$}; 
-		 
-		if(debug)
-			System.out.println("JGraphRenderer:web home="+webHome$+ " locator="+locator$);
-			
-		if(ACTION_ENTITY.equals(action$)){
-			//String nodeLabel$=locator.getProperty(SELECTED_NODE_LABEL);
-			if(debug)
-				System.out.println("JGraphRenderer:selected node="+nodeLabel$);
-			if(nodeLabel$!=null){
 
-			String nodeKey$=entigrator.indx_keyAtLabel(nodeLabel$);   
-		    Properties foiLocator=new Properties();
-		    foiLocator.setProperty(WContext.WEB_HOME,webHome$);
-		    foiLocator.setProperty(WContext.WEB_REQUESTER,webRequester$);
-		   	foiLocator.setProperty(BaseHandler.HANDLER_CLASS,JEntityFacetPanel.class.getName());
-	    	foiLocator.setProperty(Entigrator.ENTIHOME,entigrator.getEntihome());
-	    	foiLocator.setProperty(EntityHandler.ENTITY_KEY,nodeKey$);
-			foiLocator.setProperty(EntityHandler.ENTITY_LABEL,nodeLabel$);
-			JEntityFacetPanel efp=new JEntityFacetPanel();
-			 return efp.getWebView(entigrator, Locator.toString(foiLocator));
-			}
-		}
-		
-		entityKey$=entigrator.indx_keyAtLabel(entityLabel$);
-		    Sack entity=entigrator.getEntityAtKey(entityKey$);
-	    //    Core[]	ca=entity.elementGet("field");
-		StringBuffer sb=new StringBuffer();
-		sb.append("<!DOCTYPE html PUBLIC \"-//W3C//DTD HTML 4.01//EN\" \"http://www.w3.org/TR/html4/strict.dtd\">");
-		sb.append("<html>");
-		sb.append("<head>");
-		
-		sb.append(WUtils.getMenuBarScript());
-		sb.append(WUtils.getMenuBarStyle());
-		
-		sb.append("<script>");
-		sb.append(WUtils.getSegment(entigrator,"vis","vis.min.js"));
-		sb.append(WUtils.getSegment(entigrator,"vis","vis-network.min.js"));
-		sb.append(WUtils.getSegment(entigrator,"context.menu","js"));
-		sb.append("</script>");
-		
-		sb.append("<style>");
-		sb.append(WUtils.getSegment(entigrator,"vis","vis.min.css"));
-		sb.append(WUtils.getSegment(entigrator,"context.menu","css"));
-		sb.append("</style>");
-		sb.append("</head>");
-	    sb.append("<body onload=\"onLoad()\" >");
-	    sb.append("<ul class=\"menu_list\">");
-	    sb.append("<li class=\"menu_item\"><a id=\"back\">Back</a></li>");
-	    sb.append("<li class=\"menu_item\"><a href=\""+webHome$+"\">Home</a></li>");
-	    String navLocator$=Locator.append(locator$, BaseHandler.HANDLER_CLASS, JBaseNavigator.class.getName());
-	    navLocator$=Locator.append(navLocator$, Entigrator.ENTIHOME, entigrator.getEntihome());
-	    String navUrl$=webHome$+"?"+WContext.WEB_LOCATOR+"="+Base64.encodeBase64URLSafeString(navLocator$.getBytes());
-	    sb.append("<li class=\"menu_item\"><a href=\""+navUrl$+"\">Base</a></li>");
-	   // sb.append("<li class=\"menu_item\"><a href=\""+navUrl$+"\">Base</a></li>");
-	    sb.append("<li class=\"dropdown\">");
-	    sb.append("<a href=\"javascript:void(0)\" class=\"dropbtn\">Context</a>");
-	    sb.append("<ul class=\"dropdown-content\">");
-	    sb.append("<li id=\"scope\" onclick=\"graphScope()\"><a href=\"#\">Scope</a></li>");
-	    sb.append("<li id=\"network\" onclick=\"graphNetwork()\"><a href=\"#\">Network</a></li>");
-	    sb.append("</ul>");
-	    sb.append("</li>");
-	    sb.append("</ul>");
-	    sb.append("<table><tr><td>Base:</td><td><strong>");
-	    sb.append(entigrator.getBaseName());
-	    sb.append("</strong></td></tr><tr><td>Entity: </td><td><strong>");
-	    sb.append(entityLabel$);
-	    sb.append("</strong></td></tr>");
-	    sb.append("<tr><td>Facet: </td><td><strong>Node</strong></td></tr>");
-	    sb.append("<tr><td>Context: </td><td><strong>Graph</strong></td></tr></table>");
-	   
-	    sb.append("<table>");
-	   
-	   //initSelector=true;
-	    
-	    if(ACTION_EDGE.equals(action$)&&shownLabels$!=null){
-	    	sa=EdgeHandler.filterNodesAtEdge(entigrator, sa, edgeLabel$);
-	    	filteredNodeLabels$=Locator.toString(sa);
-	    }
-	    sb.append("<tr><td><button onclick=\"showNodeMenu()\">Node</button></td>");
-	    sb.append("<td><select id=\"nselector\" size=\"1\" onchange=\"selectNode()\">");
-	    if(sa!=null)
-	    for(String s:sa){
-	    		//System.out.println("JDesignPanel:getWebView:property name="+propertyName$+" candidate="+s);
-	    		s=s.replaceAll("\"", "&quot;");
-            	s=s.replaceAll("'", "&#39;");
-    		    sb.append("<option value=\""+s+"\">"+s+"</option>");
-	    		}
-	    sb.append("</select>");
-	    sb.append("</td>");
-	    if(!ACTION_EDGE.equals(action$)){
-	    sb.append("<td><button onclick=\"showEdge()\">Edge</button></td>");
-		    sb.append("<td><select id=\"eselector\" size=\"1\" onchange=\"selectEdge()\">");
-		    ArrayList<String>el=new ArrayList<String>();
-	        Sack node;
-			Core[] ca;
-			String eLabel$;
-			for(String n:sa){
-				node=entigrator.ent_getAtLabel(n);
-				if(node==null)
-					continue;
-				ca=node.elementGet("edge");
-				if(ca==null)
-					continue;
-				for(Core c:ca){
-					eLabel$=entigrator.indx_getLabel(c.value);
-					if(eLabel$!=null){	
-					if(!el.contains(eLabel$))
-						el.add(eLabel$);
-					}
-				}
-				Collections.sort(el);
-			}
-	        for(String s:el){
-	            sb.append("<option value=\""+s+"\">"+s+"</option>");
-    		}
-		    sb.append("</select>");
-		    sb.append("</td>");
-		    sb.append("<td>");
-		    sb.append("<input type=\"checkbox\" id=\"newTab\">New tab");
-		    sb.append("</td>");
-	    }
-		    sb.append("</tr>");
-	    sb.append("</table>");
-	    sb.append("<pre id=\"eventSpan\"></pre>");
-	    sb.append("<div id=\"panel\"></div>");
-	   // sb.append("<div id=\"pin\"></div>");
-	    sb.append("<ul id=\"nodeMenu\" class=\"dropdown-content\">");
-	    sb.append("<li id=\"entity\" onclick=\"entity()\"><a href=\"#\">Entity</a></li>");
-	    sb.append("<li id=\"relations\" onclick=\"relations()\"><a href=\"#\">Relations</a></li>");
-	    sb.append("<li id=\"expand\" onclick=\"expand()\"><a href=\"#\">Expand</a></li>");
-	    sb.append("<li id=\"nw\" onclick=\"nw()\"><a href=\"#\">Network</a></li>");
-	    sb.append("</ul>");
-	    sb.append("<ul id=\"edgeMenu\" class=\"dropdown-content\">");
-	    sb.append("<li id=\"details\" onclick=\"details()\"><a href=\"#\">Details</a></li>");
-	    sb.append("</ul>");
-	    if(debug)
-			System.out.println("JGraphRenderer:getWebView:5");
-	    if(action$==null)
-	    	action$=ACTION_RELATIONS;
-	    if(ACTION_RELATIONS.equals(action$)){
-	    	//String nodeLabel$=locator.getProperty(SELECTED_NODE_LABEL);
-			if(debug)
-				System.out.println("JGraphRenderer:relations:selected node="+nodeLabel$);
-			if(nodeLabel$!=null){
-				// sb.append(getRelations(entigrator,entityKey$,nodeLabel$));
-				sb.append(getGraph(getRelations(entigrator,  nodeLabel$)));
-				//sb.append(getGraph(getScopeExpansion(entigrator,  nodeLabel$,shownLabels$)));
-			}
-	    }
-	    if(ACTION_NETWORK_RELATIONS.equals(action$)){
-	    	//String nodeLabel$=locator.getProperty(SELECTED_NODE_LABEL);
-	    	
-			if(debug)
-				System.out.println("JGraphRenderer:network relations:selected node="+nodeLabel$ +" shown labels="+shownLabels$);
-			
-				// sb.append(getRelations(entigrator,entityKey$,nodeLabel$));
-				sb.append(getGraph(getNetworkRelations(entigrator,  nodeLabel$,shownLabels$)));
-				 
-			
-	    }
-	    if(ACTION_SCOPE_RELATIONS.equals(action$)){
-	    	//String nodeLabel$=locator.getProperty(SELECTED_NODE_LABEL);
-			if(debug)
-				System.out.println("JGraphRenderer:scope relations:selected node="+nodeLabel$+" schown labels="+shownLabels$);
-				sb.append(getGraph(getScopeRelations(entigrator,  nodeLabel$,shownLabels$)));
-				 
-			
-	    }
-	    if(ACTION_EXPAND.equals(action$)){
-	    	//String nodeLabel$=locator.getProperty(SELECTED_NODE_LABEL);
-	    	//shownLabels$=locator.getProperty(SHOWN_NODES_LABELS);
-	    	if(debug)
-				System.out.println("JGraphRenderer:expansion:selected selection="+nodeLabel$+" nodes="+shownLabels$);
-				// sb.append(getRelations(entigrator,entityKey$,nodeLabel$));
-				sb.append(getGraph(getExpansion(entigrator, nodeLabel$,shownLabels$)));
-				 
-	    }
-	    if(ACTION_NETWORK.equals(action$)){
-	    	//String nodeLabel$=locator.getProperty(SELECTED_NODE_LABEL);
-	    	// shownLabels$=locator.getProperty(SHOWN_NODES_LABELS);
-	    	if(debug)
-				System.out.println("JGraphRenderer:network:selected selection="+nodeLabel$+" nodes="+shownLabels$);
-				// sb.append(getRelations(entigrator,entityKey$,nodeLabel$));
-				sb.append(getGraph(getNetwork(entigrator, nodeLabel$,shownLabels$)));
-				 
-	    }
-	    if(ACTION_EDGE.equals(action$)){
-	    	//String nodeLabel$=locator.getProperty(SELECTED_NODE_LABEL);
-	    	
-	    	if(debug)
-				System.out.println("JGraphRenderer:edge:label="+edgeLabel$+" selected selection="+nodeLabel$+" nodes="+shownLabels$);
-				// sb.append(getRelations(entigrator,entityKey$,nodeLabel$));
-				sb.append(getGraph(getEdge(entigrator, edgeLabel$,filteredNodeLabels$)));
-				 
-	    }
-    	
-
-        sb.append("<script>");
-        sb.append("var selectedNodeLabel='';");
-        sb.append("var selection=new Array();");
-        sb.append(" var shownNodesLabels;");
-        sb.append(" var bondKey;");
-        sb.append(" var edgeLabel;");
-        sb.append(" var network;");
-       // sb.append("var na=new Array();"); 
-       // sb.append("var ea=new Array();"); 
-	    sb.append("function onLoad() {");
-	    sb.append("initBack(\""+this.getClass().getName()+"\",\""+webRequester$+"\");");
-	    sb.append("}");
-	    
-	    sb.append("function entity(){");
-	    locator$=Locator.append(locator$, JRequester.REQUESTER_ACTION, ACTION_ENTITY);
-	    sb.append(" var locator=\""+locator$+"\";");
-    	sb.append(" locator=appendProperty(locator,\""+SELECTED_NODE_LABEL+"\",selectedNodeLabel);");
-    	sb.append(" locator=appendProperty(locator,\""+WContext.WEB_REQUESTER+"\",\""+getClass().getName()+"\");");
-    	sb.append("console.log(locator);");
-    	sb.append(" var href=\""+webHome$+"?"+WContext.WEB_LOCATOR+"=\"+window.btoa(locator);");
-    	//sb.append("console.log(href);");
-    	sb.append("window.location.assign(href);");
-	    sb.append("}");
-
-	    sb.append("function relations(){");
-	    
-	    //locator$=Locator.append(locator$, JRequester.REQUESTER_ACTION, ACTION_RELATIONS);
-	    sb.append(" var locator=\""+locator$+"\";");
-    	sb.append(" locator=appendProperty(locator,\""+SELECTED_NODE_LABEL+"\",selectedNodeLabel);");
-    	sb.append(" locator=appendProperty(locator,\""+EntityHandler.ENTITY_LABEL+"\",selectedNodeLabel);");
-    	sb.append(" locator=appendProperty(locator,\""+WContext.WEB_REQUESTER+"\",\""+getClass().getName()+"\");");
-    	sb.append(" locator=appendProperty(locator,\""+JRequester.REQUESTER_ACTION+"\",\""+ACTION_RELATIONS+"\");");
-    	sb.append(" locator=appendProperty(locator,\""+BaseHandler.HANDLER_CLASS+"\",\""+ JGraphRenderer.class.getName()+"\");");
-    	//sb.append("console.log(locator);");
-    	sb.append(" var href=\""+webHome$+"?"+WContext.WEB_LOCATOR+"=\"+window.btoa(locator);");
-    	sb.append("window.location.assign(href);");
-	    sb.append("}");
-	    
-	    sb.append("function expand(){");
-	    sb.append(" var locator=\""+locator$+"\";");
-	    locator$=Locator.append(locator$, JRequester.REQUESTER_ACTION, ACTION_EXPAND);
-    	sb.append(" locator=appendProperty(locator,\""+SELECTED_NODE_LABEL+"\",selectedNodeLabel);");
-    	sb.append(" locator=appendProperty(locator,\""+SHOWN_NODES_LABELS+"\",shownNodesLabels);");
-    	sb.append(" locator=appendProperty(locator,\""+WContext.WEB_REQUESTER+"\",\""+getClass().getName()+"\");");
-    	sb.append(" locator=appendProperty(locator,\""+JRequester.REQUESTER_ACTION+"\",\""+ACTION_EXPAND+"\");");
-    	sb.append(" locator=appendProperty(locator,\""+BaseHandler.HANDLER_CLASS+"\",\""+ JGraphRenderer.class.getName()+"\");");
-    	//sb.append("console.log(nodeLabels);");
-    	sb.append(" var href=\""+webHome$+"?"+WContext.WEB_LOCATOR+"=\"+window.btoa(locator);");
-    	sb.append("window.location.assign(href);");
-	    sb.append("}");
-	    
-	    sb.append("function nw(){");
-	    sb.append(" var locator=\""+locator$+"\";");
-	    locator$=Locator.append(locator$, JRequester.REQUESTER_ACTION, ACTION_EXPAND);
-    	sb.append(" locator=appendProperty(locator,\""+SELECTED_NODE_LABEL+"\",selectedNodeLabel);");
-    	sb.append(" locator=appendProperty(locator,\""+SHOWN_NODES_LABELS+"\",shownNodesLabels);");
-    	sb.append(" locator=appendProperty(locator,\""+WContext.WEB_REQUESTER+"\",\""+getClass().getName()+"\");");
-    	sb.append(" locator=appendProperty(locator,\""+JRequester.REQUESTER_ACTION+"\",\""+ACTION_NETWORK+"\");");
-    	sb.append(" locator=appendProperty(locator,\""+BaseHandler.HANDLER_CLASS+"\",\""+ JGraphRenderer.class.getName()+"\");");
-    	//sb.append("console.log(nodeLabels);");
-    	sb.append(" var href=\""+webHome$+"?"+WContext.WEB_LOCATOR+"=\"+window.btoa(locator);");
-    	sb.append("window.location.assign(href);");
-	    sb.append("}");
-	    
-	    sb.append("function details(){");
-	    
-	    
-	    JBondDetailFacetOpenItem bdi=new JBondDetailFacetOpenItem();
-	    String bdiLocator$=bdi.getLocator();
-	    Properties bdiLocator=Locator.toProperties(bdiLocator$);
-	     bdiLocator.setProperty(WContext.WEB_HOME, webHome$);
-	    bdiLocator.setProperty(Entigrator.ENTIHOME, entigrator.getEntihome());
-	    bdiLocator.setProperty(WContext.WEB_REQUESTER, getClass().getName());
-	    bdiLocator.setProperty(BaseHandler.HANDLER_CLASS,JBondDetailFacetOpenItem.class.getName());
-	    sb.append(" var locator=\""+Locator.toString(bdiLocator)+"\";");
-    	sb.append(" locator=appendProperty(locator,\""+JBondsPanel.EDGE_LABEL+"\",edgeLabel);");
-    	sb.append(" locator=appendProperty(locator,\""+JBondsPanel.BOND_KEY+"\",bondKey);");
-    	sb.append("console.log('locator='+locator);");
-    	sb.append(" var href=\""+webHome$+"?"+WContext.WEB_LOCATOR+"=\"+window.btoa(locator);");
-    	sb.append(" var win = window.open(href, '_blank');");
-    	sb.append(" win.focus();");
-    	//sb.append("window.location.assign(href);");
-	    sb.append("}");
-
-	    sb.append("function showNodeMenu(){");
-	    sb.append("var selector = document.getElementById(\"nselector\");");
-	    sb.append("selectedNodeLabel = selector.options[selector.selectedIndex].text;");
-	    sb.append("var menu= document.getElementById(\"nodeMenu\");");
-		sb.append("menu.style.display = 'inline-block';"); 
-		sb.append("menu.style.position = \"absolute\";");
-		sb.append("var nodePosition = network.getPositions([selectedNodeLabel]);");
-		sb.append("var nodeXY = network.canvasToDOM({x: nodePosition[selectedNodeLabel].x, y: nodePosition[selectedNodeLabel].y});");
-		sb.append("menu.style.left =nodeXY.x+'px';");
-		sb.append("menu.style.top =nodeXY.y+'px';");
-	   sb.append("}");
-	    
-	    sb.append("function selectNode(){");
-	    sb.append("var menu= document.getElementById(\"nodeMenu\");");
-		sb.append("menu.style.display = 'none';"); 
-	    sb.append("}");
-	    sb.append("function showEdge(){");
-	    sb.append("var selector = document.getElementById(\"eselector\");");
-	    sb.append("edgeLabel = selector.options[selector.selectedIndex].text;");
-	    sb.append(" var locator=\""+locator$+"\";");
-	    locator$=Locator.append(locator$, JRequester.REQUESTER_ACTION, ACTION_EDGE);
-    	//sb.append(" locator=appendProperty(locator,\""+SELECTED_NODE_LABEL+"\",selectedNodeLabel);");
-    	sb.append(" locator=appendProperty(locator,\""+SHOWN_NODES_LABELS+"\",shownNodesLabels);");
-    	sb.append(" locator=appendProperty(locator,\""+WContext.WEB_REQUESTER+"\",\""+getClass().getName()+"\");");
-    	sb.append(" locator=appendProperty(locator,\""+JRequester.REQUESTER_ACTION+"\",\""+ACTION_EDGE+"\");");
-    	sb.append(" locator=appendProperty(locator,\""+BaseHandler.HANDLER_CLASS+"\",\""+ JGraphRenderer.class.getName()+"\");");
-    	sb.append(" locator=appendProperty(locator,\""+JBondsPanel.EDGE_LABEL+"\",edgeLabel);");
-    	//sb.append("console.log(nodeLabels);");
-    	sb.append(" var href=\""+webHome$+"?"+WContext.WEB_LOCATOR+"=\"+window.btoa(locator);");
-    	sb.append("if(document.getElementById(\"newTab\").checked){");
-    	sb.append(" window.open(href, '_blank');");
-    	sb.append(" }else{");
-    	sb.append("window.location.assign(href);}");
-	    sb.append("}");
-         
-	    sb.append("function graphScope(){");
-	    sb.append(" var locator=\""+locator$+"\";");
-    	sb.append(" locator=appendProperty(locator,\""+SELECTED_NODE_LABEL+"\",selectedNodeLabel);");
-    	sb.append(" locator=appendProperty(locator,\""+SHOWN_NODES_LABELS+"\",shownNodesLabels);");
-    	sb.append(" locator=appendProperty(locator,\""+EntityHandler.ENTITY_LABEL+"\",selectedNodeLabel);");
-    	sb.append(" locator=appendProperty(locator,\""+WContext.WEB_REQUESTER+"\",\""+getClass().getName()+"\");");
-    	sb.append(" locator=appendProperty(locator,\""+JRequester.REQUESTER_ACTION+"\",\""+ACTION_SCOPE_RELATIONS+"\");");
-    	sb.append(" locator=appendProperty(locator,\""+BaseHandler.HANDLER_CLASS+"\",\""+ JGraphRenderer.class.getName()+"\");");
-    	//sb.append("console.log(locator);");
-    	sb.append(" var href=\""+webHome$+"?"+WContext.WEB_LOCATOR+"=\"+window.btoa(locator);");
-    	sb.append("window.location.assign(href);");
-
-	    sb.append("}");
-	    
-	    sb.append("function graphNetwork(){");
-	    sb.append(" var locator=\""+locator$+"\";");
-    	sb.append(" locator=appendProperty(locator,\""+SELECTED_NODE_LABEL+"\",selectedNodeLabel);");
-    	sb.append(" locator=appendProperty(locator,\""+SHOWN_NODES_LABELS+"\",shownNodesLabels);");
-    	sb.append(" locator=appendProperty(locator,\""+EntityHandler.ENTITY_LABEL+"\",selectedNodeLabel);");
-    	sb.append(" locator=appendProperty(locator,\""+WContext.WEB_REQUESTER+"\",\""+getClass().getName()+"\");");
-    	sb.append(" locator=appendProperty(locator,\""+JRequester.REQUESTER_ACTION+"\",\""+ACTION_NETWORK_RELATIONS+"\");");
-    	sb.append(" locator=appendProperty(locator,\""+BaseHandler.HANDLER_CLASS+"\",\""+ JGraphRenderer.class.getName()+"\");");
-    	//sb.append("console.log(locator);");
-    	sb.append(" var href=\""+webHome$+"?"+WContext.WEB_LOCATOR+"=\"+window.btoa(locator);");
-    	sb.append("window.location.assign(href);");
-	
-	    sb.append("}");
-    sb.append("window.localStorage.setItem(\""+this.getClass().getName()+"\",\""+Base64.encodeBase64URLSafeString(locator$.getBytes())+"\");");
-	 	    sb.append("</script>");
-	    sb.append("</body>");
-	    sb.append("</html>");
-	    return sb.toString();
-        
-	}catch(Exception e){
-		Logger.getLogger(JGraphRenderer.class.getName()).severe(e.toString());	
-	}
-	return null;
-}
-private static String getGraph( String dataSet$){
-	try{
-	        StringBuffer sb=new StringBuffer();	
-			sb.append("<script type=\"text/javascript\">");
-			//sb.append("var nl = new Array();");
-			sb.append(dataSet$);
-		  // create a network
-						sb.append(" var heights = window.innerHeight;");
-						sb.append(" document.getElementById(\"panel\").style.height = heights -50 + \"px\";");
-						sb.append(" var container = document.getElementById('panel');");
-						
-						sb.append(" var data = {");
-						sb.append("nodes: nodes,");
-						sb.append("edges: edges");
-						sb.append("};");
-						sb.append("var options = {interaction:{hover:true}};");
-						sb.append("network = new vis.Network(container, data, options);");
-						sb.append("network.on(\"startStabilizing\", function (params) {");
-						sb.append(" document.getElementById('eventSpan').innerHTML = '<h3>Starting Stabilization</h3>';");
-						   // console.log("started")
-						sb.append("});");
-						sb.append(" network.on(\"stabilized\", function (params) {");
-						
-						sb.append("document.getElementById('eventSpan').innerHTML = '<h3>Stabilized! Iterations('+params.iterations+') Nodes ('+nodes.length+') Edges ('+ edges.length+') </h3>'; ");
-								
-								// "Nodes ('+nodes.length+') Edges ('+ edges.length+')</h3>')';");
-
-						  //  console.log("stabilized!", params);
-						sb.append(" });");
-						sb.append(" network.on(\"click\", function (params) {");
-						sb.append("console.log('on click Event:', params);");
-						//sb.append("selectedNodeLabel=nodes.get(params.nodes[0]).label;");
-						sb.append("var menu= document.getElementById(\"nodeMenu\");");
-						//sb.append("menu.style.display = 'none';"); 
-						//sb.append("menu.style.position = \"absolute\";");
-						//sb.append("menu.style.left = params.pointer.DOM.x+'px';");
-						//sb.append("menu.style.top = params.pointer.DOM.y+'px';");
-						sb.append(" });");
-						sb.append(" network.on(\"selectNode\", function (params) {");
-						sb.append("console.log('selectNode Event:', params);");
-						sb.append("selectedNodeLabel=nodes.get(params.nodes[0]).label;");
-						sb.append("var menu= document.getElementById(\"nodeMenu\");");
-						sb.append("menu.style.display = 'inline-block';"); 
-						sb.append("menu.style.position = \"absolute\";");
-						sb.append("menu.style.left = params.pointer.DOM.x+'px';");
-						sb.append("menu.style.top = params.pointer.DOM.y+'px';");
-						
-						sb.append(" });");
-						sb.append(" network.on(\"deselectNode\", function (params) {");
-						sb.append("console.log('selectNode Event:', params);");
-						sb.append("var menu= document.getElementById(\"nodeMenu\");");
-						sb.append("menu.style.display = 'none';"); 
-						sb.append(" });");
-						sb.append("network.on(\"selectEdge\", function (params) {");
-						sb.append("console.log('selectEdge Event:', params);");
-						sb.append("console.log(edges.get(params.edges[0]).id);");
-						sb.append("bondKey=edges.get(params.edges[0]).id;");
-						sb.append("edgeLabel=edges.get(params.edges[0]).label;");
-						sb.append("var menu= document.getElementById(\"edgeMenu\");");
-						sb.append("var cnt=params.nodes.length;");
-						sb.append(" if(cnt<1)");
-						sb.append("menu.style.display = 'inline-block';");
-						sb.append(" else ");
-						sb.append("menu.style.display = 'none';");
-						sb.append("menu.style.position = \"absolute\";");
-						sb.append("menu.style.left = params.pointer.DOM.x+'px';");
-						sb.append("menu.style.top = params.pointer.DOM.y+'px';");
-						sb.append("});");
-						sb.append("network.on(\"deselectEdge\", function (params) {");
-						sb.append("console.log('deselectEdge Event:', params);");
-						sb.append("var menu= document.getElementById(\"edgeMenu\");");
-						sb.append("menu.style.display = 'none';"); 
-						sb.append("});");
-						sb.append("</script>");
-						return sb.toString();
-	
-	}catch(Exception e){
-		Logger.getLogger(JGraphFacetOpenItem.class.getName()).severe(e.toString());	
-	}
-	return null;
-	
-}
-private static String getRelations(Entigrator entigrator, String nodeLabel$){
-	try{
-		 
-		 String nodeKey$=entigrator.indx_keyAtLabel(nodeLabel$);
-		 String[] eka=NodeHandler.getRelatedNodeKeys(entigrator, nodeKey$);
-		 return getDatasets(entigrator,eka);			
-	}catch(Exception e){
-		Logger.getLogger(JGraphRenderer.class.getName()).severe(e.toString());	
-	}
-	return null;
-	}
-private static String getNetworkRelations(Entigrator entigrator, String nodeLabel$,String shownLabels$){
-	try{
-		ArrayList<String>nkl=new ArrayList<String>();
-		String nk$=null;
-		if(nodeLabel$!=null){
-		   nk$=entigrator.indx_keyAtLabel(nodeLabel$);
-		if(nk$!=null)
-			nkl.add(nk$);
-		}
-		if(shownLabels$!=null){
-		String[] sna=Locator.toArray(shownLabels$);	
-		for(String s:sna){
-			nk$=entigrator.indx_keyAtLabel(s);
-			if(nk$!=null&&!nkl.contains(nk$))
-				nkl.add(nk$);
-		}
-		}
-		if(nkl.size()<1)
-			return null;
-		String[] nka=NodeHandler.getNetwordNodeKeys(entigrator, nkl.toArray(new String[0]));
-		 return getDatasets(entigrator,nka);	
-		// return getDatasets(entigrator,nkl.toArray(new String[0]));	
-	}catch(Exception e){
-		Logger.getLogger(JGraphRenderer.class.getName()).severe(e.toString());	
-	}
-	return null;
-	}
-private static String getScopeRelations(Entigrator entigrator, String nodeLabel$,String shownLabels$){
-	try{
-		ArrayList<String>nkl=new ArrayList<String>();
-		String nodeKey$=entigrator.indx_keyAtLabel(nodeLabel$);
-		if(nodeKey$!=null)
-			nkl.add(nodeKey$);
-		if(shownLabels$!=null){
-		String[] sna=Locator.toArray(shownLabels$);
-		String nk$;
-		for(String s:sna){
-			nk$=entigrator.indx_keyAtLabel(s);
-			if(nk$!=null&&!nkl.contains(nk$))
-				nkl.add(nk$);
-		}
-		}
-		String[] nka=NodeHandler.getScopeExpandedNodeKeys(entigrator,nodeKey$, nkl.toArray(new String[0]));
-		 return getDatasets(entigrator,nka);			
-	}catch(Exception e){
-		Logger.getLogger(JGraphRenderer.class.getName()).severe(e.toString());	
-	}
-	return null;
-	}
-private static String getExpansion(Entigrator entigrator, String nodeLabel$,String shownNodeslabels$){
-	try{
-		
-		 String nodeKey$=entigrator.indx_keyAtLabel(nodeLabel$);
-		 String[] scope=new String[0];
-		 if(shownNodeslabels$!=null){
-		 String[]sna=Locator.toArray(shownNodeslabels$);
-		 scope=new String[sna.length];
-		 for(int i=0;i<sna.length;i++)
-			 scope[i]=entigrator.indx_keyAtLabel(sna[i]);
-		 }
-			if(debug)
-				 System.out.println("JGraphRenderer:getExpansion:scope="+scope.length);
-
-		 String[] eka=NodeHandler.getExpandedNodeKeys(entigrator, nodeKey$, scope);
-		 return getDatasets(entigrator,eka);
-
-	}catch(Exception e){
-		Logger.getLogger(JGraphRenderer.class.getName()).severe(e.toString());	
-	}
-	return null;
-	}
-private static String getScopeExpansion(Entigrator entigrator, String nodeLabel$,String shownNodeslabels$){
-	try{
-		
-		 String nodeKey$=entigrator.indx_keyAtLabel(nodeLabel$);
-		 String[] scope=new String[0];
-		 if(shownNodeslabels$!=null){
-		 String[]sna=Locator.toArray(shownNodeslabels$);
-		 scope=new String[sna.length];
-		 for(int i=0;i<sna.length;i++)
-			 scope[i]=entigrator.indx_keyAtLabel(sna[i]);
-		 }
-			if(debug)
-				 System.out.println("JGraphRenderer:getScopeExpansion:scope"+scope.length);
-
-		 String[] eka=NodeHandler.getScopeExpandedNodeKeys(entigrator, nodeKey$, scope);
-		 return getDatasets(entigrator,eka);
-
-	}catch(Exception e){
-		Logger.getLogger(JGraphRenderer.class.getName()).severe(e.toString());	
-	}
-	return null;
-	}
-private static String getEdge(Entigrator entigrator, String edgeLabel$,String shownNodeslabels$){
-	try{
-		 
-		String[] scope=new String[0];
-		 
-		 String[]sna=Locator.toArray(shownNodeslabels$);
-		 scope=new String[sna.length];
-		 for(int i=0;i<sna.length;i++)
-			 scope[i]=entigrator.indx_keyAtLabel(sna[i]);
-		 
-		if(debug)
-				 System.out.println("JGraphRenderer:getEdge:scope"+scope.length+" edge label="+edgeLabel$);
-		 return getDatasets(entigrator,scope,edgeLabel$);
-
-	}catch(Exception e){
-		Logger.getLogger(JGraphRenderer.class.getName()).severe(e.toString());	
-	}
-	return null;
-	}
-private static String getNetwork(Entigrator entigrator, String nodeLabel$,String shownNodeslabels$){
-	try{
-		String nodeKey$=null;
-		if(nodeLabel$!=null)
-		  nodeKey$=entigrator.indx_keyAtLabel(nodeLabel$);
-		 String[] scope=new String[0];
-		 if(shownNodeslabels$!=null){
-		 String[]sna=Locator.toArray(shownNodeslabels$);
-		 scope=new String[sna.length];
-		 for(int i=0;i<sna.length;i++)
-			 scope[i]=entigrator.indx_keyAtLabel(sna[i]);
-		 }
-			if(debug)
-				 System.out.println("JGraphRenderer:getNetwork:scope="+scope.length);
-
-		 String[] eka=NodeHandler.getNetwordNodeKeys(entigrator, nodeKey$, scope);
-		 return getDatasets(entigrator,eka);
-
-	}catch(Exception e){
-		Logger.getLogger(JGraphRenderer.class.getName()).severe(e.toString());	
-	}
-	return null;
-	}
-private static String getDatasets(Entigrator entigrator,String[] scope){
-	try{
-		 Bond[] ba=NodeHandler.getScopeBonds(entigrator, scope);
-		 if(debug)
-			 System.out.println("JGraphRenderer:getDatasets:bonds="+ba.length);
-		 StringBuffer sb=new StringBuffer();
-		 String outIcon$;
-		 String inIcon$;
-		 String outNodeLabel$;
-		 String inNodeLabel$;
-		 String edgeLabel$;
-		 
-		 ArrayList<String>nl=new ArrayList<String>();
-		 ArrayList<String>el=new ArrayList<String>();
-		 ArrayList<String>dl=new ArrayList<String>();
-		 //ArrayList<String>bl=new ArrayList<String>();
-		 for(Bond b:ba){
-			 	outIcon$=getNodeIcon(entigrator,b.outNodeKey$);
-				inIcon$=getNodeIcon(entigrator,b.inNodeKey$);
-				outNodeLabel$=entigrator.indx_getLabel(b.outNodeKey$);
-				inNodeLabel$=entigrator.indx_getLabel(b.inNodeKey$);
-				edgeLabel$=entigrator.indx_getLabel(b.edgeKey$);
-				
-//				if(debug)
-	//				 System.out.println("JGraphRenderer:getExpansion:out="+outNodeLabel$+ "in="+inNodelabel$);
-				if(!dl.contains(outNodeLabel$)){
-				nl.add("{id: '"+outNodeLabel$+"',label: '"+outNodeLabel$+"', title: '"+outNodeLabel$+"',image: \"data:image/png;base64,"+outIcon$+"\" ,shape :'image' },");
-				dl.add(outNodeLabel$);
-				}
-				if(!dl.contains(inNodeLabel$)){
-					nl.add("{id: '"+inNodeLabel$+"',label: '"+inNodeLabel$+"', title: '"+inNodeLabel$+"',image: \"data:image/png;base64,"+inIcon$+"\" ,shape :'image' },");
-					dl.add(inNodeLabel$);
-					}
-				 el.add("{id: '"+b.bondKey$+"',from: '"+outNodeLabel$+"', to: '"+inNodeLabel$+"',label: '"+edgeLabel$+"', font: {align: 'top'}},");
-		 }
-		 //
-		 
-		 sb.append(" var selector = document.getElementById(\"nselector\");");
-		 sb.append(" if (selector!=null){");
-		 sb.append(" if (selector.options != null) 	selector.options.length = 0;");	
-		 sb.append(" var option;");
-		 Collections.sort(dl);
-		 for(String l:dl){
-		 sb.append(" option = document.createElement(\"option\");");
-		 sb.append(" option.text = \""+l+"\";");
-		 sb.append(" selector.add(option);");
-		 }
-		 sb.append(" };");
-		 //
-		 sb.append(" var nodes = new vis.DataSet([");
-		 for(String s:nl)
-			 sb.append(s);
-		 sb.setLength(sb.length() - 1);
-		 sb.append("]);");
-		 String labels$=Locator.toString(dl.toArray(new String[0]));
-		 sb.append(" shownNodesLabels=\""+labels$+"\";");
-   		sb.append("console.log('labels='+shownNodesLabels);");
-		 sb.append(" var edges = new vis.DataSet([");
-		 for(String s:el)
-			 sb.append(s);
-		 sb.setLength(sb.length() - 1);
-		 sb.append("]);");
-		return sb.toString();
-	}catch(Exception e){
-		Logger.getLogger(JGraphRenderer.class.getName()).severe(e.toString());	
-	}
-	return null;
-	}
-private static String getDatasets(Entigrator entigrator,String[] scope,String edgeLabel$){
-	try{
-       if(debug)
-    	   System.out.println("JGraphRenderer:getDatasets:scope:"+scope.length+" edge label="+edgeLabel$);
-		String[] fn=scope;
-				//EdgeHandler.filterNodesAtEdge(entigrator, scope, edgeLabel$);  
-		Bond[] ba=NodeHandler.getScopeBonds(entigrator, scope); 
-		 StringBuffer sb=new StringBuffer();
-		 String outIcon$;
-		 String inIcon$;
-		 String outNodeLabel$;
-		 String inNodeLabel$;
-		 String edgeKey$=entigrator.indx_keyAtLabel(edgeLabel$);
-		 
-		 ArrayList<String>nl=new ArrayList<String>();
-		 ArrayList<String>el=new ArrayList<String>();
-		 ArrayList<String>dl=new ArrayList<String>();
-		 //ArrayList<String>bl=new ArrayList<String>();
-		 for(Bond b:ba){
-			    if(!edgeKey$.equals(b.edgeKey$))
-			    	continue;
-			 	outIcon$=getNodeIcon(entigrator,b.outNodeKey$);
-				inIcon$=getNodeIcon(entigrator,b.inNodeKey$);
-				outNodeLabel$=entigrator.indx_getLabel(b.outNodeKey$);
-				inNodeLabel$=entigrator.indx_getLabel(b.inNodeKey$);
-				edgeLabel$=entigrator.indx_getLabel(b.edgeKey$);
-				
-//				if(debug)
-	//				 System.out.println("JGraphRenderer:getExpansion:out="+outNodeLabel$+ "in="+inNodelabel$);
-				if(!dl.contains(outNodeLabel$)){
-				nl.add("{id: '"+outNodeLabel$+"',label: '"+outNodeLabel$+"', title: '"+outNodeLabel$+"',image: \"data:image/png;base64,"+outIcon$+"\" ,shape :'image' },");
-				dl.add(outNodeLabel$);
-				}
-				if(!dl.contains(inNodeLabel$)){
-					nl.add("{id: '"+inNodeLabel$+"',label: '"+inNodeLabel$+"', title: '"+inNodeLabel$+"',image: \"data:image/png;base64,"+inIcon$+"\" ,shape :'image' },");
-					dl.add(inNodeLabel$);
-					}
-				 el.add("{id: '"+b.bondKey$+"',from: '"+outNodeLabel$+"', to: '"+inNodeLabel$+"',label: '"+edgeLabel$+"', font: {align: 'top'}},");
-		 }
-		 //
-		 
-		 sb.append(" var selector = document.getElementById(\"nselector\");");
-		 sb.append(" if (selector!=null){");
-		 sb.append(" if (selector.options != null) 	selector.options.length = 0;");	
-		 sb.append(" var option;");
-		 Collections.sort(dl);
-		 for(String l:dl){
-		 sb.append(" option = document.createElement(\"option\");");
-		 sb.append(" option.text = \""+l+"\";");
-		 sb.append(" selector.add(option);");
-		 }
-		 sb.append(" };");
-		 //
-		 sb.append(" var nodes = new vis.DataSet([");
-		 for(String s:nl)
-			 sb.append(s);
-		 sb.setLength(sb.length() - 1);
-		 sb.append("]);");
-		 String labels$=Locator.toString(dl.toArray(new String[0]));
-		 sb.append(" shownNodesLabels=\""+labels$+"\";");
-   		sb.append("console.log('labels='+shownNodesLabels);");
-		 sb.append(" var edges = new vis.DataSet([");
-		 for(String s:el)
-			 sb.append(s);
-		 sb.setLength(sb.length() - 1);
-		 sb.append("]);");
-		return sb.toString();
-	}catch(Exception e){
-		Logger.getLogger(JGraphRenderer.class.getName()).severe(e.toString());	
-	}
-	return null;
-	}
-
-private static String getNodeIcon(Entigrator entigrator,String nodeKey$){
+public static String getNodeIcon(Entigrator entigrator,String nodeKey$){
 try{
 	//Core [] ca=entigrator.indx_getMarks(new String[]{nodeKey$});
 	String header$=entigrator.getEntihome()+"/"+StoreAdapter.HEADERS+"/"+nodeKey$;
-    Sack header=Sack.parseXML(header$);
+    if(!new File(header$).exists())
+    	return null;
+	Sack header=Sack.parseXML(header$);
     String nodeLabel$=header.getElementItem("key", nodeKey$).type;
    // if(debug)
    // System.out.println("JGraphRenderer:getNodeIcon:header="+header$+" key="+nodeKey$+" label="+nodeLabel$);
     String iconFile$=header.getElementItem("label", nodeLabel$).type;
 	return entigrator.readIconFromIcons(iconFile$);
-}catch(Exception e){
-	Logger.getLogger(JGraphRenderer.class.getName()).info(e.toString());	
-}
-return null;
-}
-private static String getNetworkUrl(Entigrator entigrator,String webHome$,String nodeLabel$,String shownLabels$){
-try{
-	
-	ArrayList<String>nkl=new ArrayList<String>();
-	String nk$=entigrator.indx_keyAtLabel(nodeLabel$);
-	if(nk$!=null)
-		nkl.add(nk$);
-	if(shownLabels$!=null){
-	String[] sna=Locator.toArray(shownLabels$);	
-	for(String s:sna){
-		nk$=entigrator.indx_keyAtLabel(s);
-		if(nk$!=null&&!nkl.contains(nk$))
-			nkl.add(nk$);
-	}
-	}
-	String[] nka=NodeHandler.getNetwordNodeKeys(entigrator, nkl.toArray(new String[0]));
-	nkl.clear();
-	for(String s:nka){
-		nkl.add(entigrator.indx_getLabel(s));
-	}
-	JGraphRenderer gr=new JGraphRenderer();
-	String grLocator$=gr.getLocator();
-	Properties grLocator=Locator.toProperties(grLocator$);
-	grLocator.setProperty(Entigrator.ENTIHOME,entigrator.getEntihome());
-	grLocator.setProperty(EntityHandler.ENTITY_LABEL,nodeLabel$);
-	grLocator.setProperty(SHOWN_NODES_LABELS,Locator.toString(nkl.toArray(new String[0])));
-	grLocator.setProperty(WContext.WEB_HOME,webHome$);
-	grLocator.setProperty(WContext.WEB_REQUESTER,JGraphRenderer.class.getName());
-	grLocator.setProperty(JRequester.REQUESTER_ACTION,ACTION_RELATIONS);
-	grLocator$=Locator.toString(grLocator);
-	if(debug)
-		System.out.println("JGraphRenderer:getNetworkUrl:locator="+grLocator$);
-	byte[] ba=grLocator$.getBytes();
-	return webHome$+"?"+WContext.WEB_LOCATOR+"="+Base64.encodeBase64String(ba);
 }catch(Exception e){
 	Logger.getLogger(JGraphRenderer.class.getName()).info(e.toString());	
 }

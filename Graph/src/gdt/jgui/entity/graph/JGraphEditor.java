@@ -4,6 +4,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.Properties;
+import java.util.Stack;
+import java.util.logging.Logger;
 
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
@@ -11,18 +13,30 @@ import javax.swing.JOptionPane;
 import javax.swing.event.MenuEvent;
 import javax.swing.event.MenuListener;
 
+import org.apache.commons.codec.binary.Base64;
+
+import gdt.data.entity.BaseHandler;
+import gdt.data.entity.EdgeHandler;
 import gdt.data.entity.EntityHandler;
 import gdt.data.entity.GraphHandler;
 import gdt.data.entity.NodeHandler;
+import gdt.data.entity.facet.BookmarksHandler;
 import gdt.data.grain.Core;
 import gdt.data.grain.Identity;
 import gdt.data.grain.Locator;
+import gdt.data.grain.Sack;
 import gdt.data.store.Entigrator;
 import gdt.jgui.console.JConsoleHandler;
 import gdt.jgui.console.JContext;
 import gdt.jgui.console.JMainConsole;
 import gdt.jgui.console.JRequester;
+import gdt.jgui.entity.JEntitiesPanel;
+import gdt.jgui.entity.JEntityPrimaryMenu;
+import gdt.jgui.entity.JReferenceEntry;
+import gdt.jgui.entity.bookmark.JBookmarkItem;
 import gdt.jgui.entity.bookmark.JBookmarksEditor;
+import gdt.jgui.tool.JIconSelector;
+import gdt.jgui.tool.JTextEditor;
 
 public class JGraphEditor extends JBookmarksEditor{
 	 public JGraphEditor() {
@@ -32,8 +46,9 @@ public class JGraphEditor extends JBookmarksEditor{
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
+	private static final String ACTION_CREATE_GRAPH="action create graph";
 	//protected JMenuItem[] mia;
-	boolean debug=true;
+	boolean debug=false;
 	@Override
 	public JMenu getContextMenu() {
 		menu=super.getContextMenu();
@@ -234,5 +249,156 @@ public class JGraphEditor extends JBookmarksEditor{
 	    }catch(Exception e){
 	    	LOGGER.severe(e.toString());
 	    }
+	}
+
+	@Override
+	public String newEntity(JMainConsole console, String locator$) {
+		try{
+			Properties locator=Locator.toProperties(locator$);
+			String entihome$=locator.getProperty(Entigrator.ENTIHOME);
+			JTextEditor textEditor=new JTextEditor();
+		    String teLocator$=textEditor.getLocator();
+		    teLocator$=Locator.append(teLocator$, Entigrator.ENTIHOME,entihome$);
+		    teLocator$=Locator.append(teLocator$, JTextEditor.TEXT_TITLE,"New graph");
+		    String text$="NewGraph"+Identity.key().substring(0, 4);
+		    teLocator$=Locator.append(teLocator$, JTextEditor.TEXT,text$);
+		    JGraphEditor ge=new JGraphEditor();
+		    String geLocator$=ge.getLocator();
+		    geLocator$=Locator.append(geLocator$, Entigrator.ENTIHOME,entihome$);
+		    geLocator$=Locator.append(geLocator$, EntityHandler.ENTITY_KEY,entityKey$);
+		    geLocator$=Locator.append(geLocator$, BaseHandler.HANDLER_METHOD,"response");
+		    geLocator$=Locator.append(geLocator$, JRequester.REQUESTER_ACTION,ACTION_CREATE_GRAPH);
+		    String requesterResponseLocator$=Locator.compressText(geLocator$);
+		    teLocator$=Locator.append(teLocator$,JRequester.REQUESTER_RESPONSE_LOCATOR,requesterResponseLocator$);
+		    JConsoleHandler.execute(console, teLocator$);
+		}catch(Exception ee){   
+			LOGGER.severe(ee.toString());
+		}
+		return null;
+	}
+	@Override
+	public void response(JMainConsole console, String locator$) {
+		try{
+			Properties locator=Locator.toProperties(locator$);
+			String action$=locator.getProperty(JRequester.REQUESTER_ACTION);
+			if(ACTION_CREATE_GRAPH.equals(action$)){
+				String entihome$=locator.getProperty(Entigrator.ENTIHOME);
+				String entityKey$=locator.getProperty(EntityHandler.ENTITY_KEY);
+				String text$=locator.getProperty(JTextEditor.TEXT);
+				Entigrator entigrator=console.getEntigrator(entihome$);  
+				Sack graph=entigrator.ent_new("graph", text$);
+				graph=entigrator.ent_assignProperty(graph, "graph", graph.getProperty("label"));
+				   graph=entigrator.ent_assignProperty(graph, "bookmarks", graph.getProperty("label"));
+				   graph.putAttribute(new Core(null,"icon","graph.png"));
+				   graph.createElement("fhandler");
+				   graph.putElementItem("fhandler", new Core(null,"gdt.data.entity.facet.FieldsHandler",null));
+				   graph.putElementItem("fhandler", new Core(null,"gdt.data.entity.facet.BookmarksHandler",null));
+				   graph.putElementItem("fhandler", new Core(null,"gdt.data.entity.GraphHandler","_Tm142C8Sgti2iAKlDEcEXT2Kj1E"));
+				   graph.createElement("jfacet");
+				   graph.putElementItem("jfacet", new Core("gdt.jgui.entity.fields.JFieldsFacetAddItem","gdt.data.entity.facet.FieldsHandler",null));
+				   graph.putElementItem("jfacet", new Core("gdt.jgui.entity.bookmark.JBookmarksFacetAddItem","gdt.jgui.entity.bookmark.JBookmarksFacetOpenItem",null));
+				   graph.putElementItem("jfacet", new Core(null,"gdt.data.entity.GraphHandler","gdt.jgui.entity.graph.JGraphFacetOpenItem"));
+				 
+				   entigrator.save(graph);
+				   entigrator.saveHandlerIcon(JGraphEditor.class, "graph.png");
+				   entityKey$=graph.getKey();
+				   JGraphEditor ge=new JGraphEditor();
+				   String geLocator$=ge.getLocator();
+				   geLocator$=Locator.append(geLocator$, Entigrator.ENTIHOME, entihome$);
+				   geLocator$=Locator.append(geLocator$, EntityHandler.ENTITY_KEY, entityKey$);
+				   JEntityPrimaryMenu.reindexEntity(console, geLocator$);
+				   Stack<String> s=console.getTrack();
+				   s.pop();
+				   console.setTrack(s);
+				   entigrator.store_replace();
+				   JConsoleHandler.execute(console, geLocator$);
+				   return;
+				}
+			
+			String requesterResponseLocator$=locator.getProperty(JRequester.REQUESTER_RESPONSE_LOCATOR);
+	        byte[] ba=Base64.decodeBase64(requesterResponseLocator$); 
+			String gm=new String(ba,"UTF-8");
+		    Properties bmLocator=Locator.toProperties(gm);
+			String entihome$=bmLocator.getProperty(Entigrator.ENTIHOME);
+			String entityKey$=bmLocator.getProperty(EntityHandler.ENTITY_KEY);
+			String bookmarkKey$=locator.getProperty(BOOKMARK_KEY);
+			String text$=locator.getProperty(JTextEditor.TEXT);
+			Entigrator entigrator=console.getEntigrator(entihome$);
+			entity=entigrator.getEntityAtKey(entityKey$);
+			Core bookmark=entity.getElementItem("jbookmark", bookmarkKey$);
+
+			if(JBookmarkItem.ACTION_RENAME.equals(action$)){
+			bookmark.type=text$;
+
+			}
+			if(JBookmarkItem.ACTION_SET_ICON.equals(action$)){
+				String icon$=locator.getProperty(JIconSelector.ICON);
+				String bookmarkLocator$=bookmark.value;
+				bookmarkLocator$=Locator.append(bookmarkLocator$, Locator.LOCATOR_ICON_CONTAINER,Locator.LOCATOR_ICON_CONTAINER_ICONS);
+				bookmarkLocator$=Locator.append(bookmarkLocator$, Locator.LOCATOR_ICON_FILE,icon$);
+				bookmark.value=  bookmarkLocator$;
+			}
+			entity.putElementItem("jbookmark", bookmark);
+			entigrator.save(entity);
+			String bmeLocator$=getLocator();
+			bmeLocator$=Locator.append(bmeLocator$, Entigrator.ENTIHOME, entihome$);
+			bmeLocator$=Locator.append(bmeLocator$, EntityHandler.ENTITY_KEY, entityKey$);
+			JConsoleHandler.execute(console, bmeLocator$);
+		}catch(Exception e){
+			LOGGER.severe(e.toString());
+		}
+		}
+	@Override
+	public void collectReferences(Entigrator entigrator, String entityKey$, ArrayList<JReferenceEntry> rel) {
+		try{
+			entity=entigrator.getEntityAtKey(entityKey$);
+			Core[] ca=entity.elementGet("jbookmark");
+			if(ca!=null){
+			String memberKey$;
+			ArrayList<String>sl=new ArrayList<String>();
+			sl.add(entityKey$);
+			sl.add("_v6z8CVgemqMI6Bledpc7F1j0pVY");
+			sl.add("_Tm142C8Sgti2iAKlDEcEXT2Kj1E");
+			sl.add("_35a4Gr4U9MGmswmMRFtgK2erNo8");
+			for(Core c:ca){
+				try{
+					memberKey$=Locator.getProperty(c.value, EntityHandler.ENTITY_KEY);
+					if(memberKey$==null)
+						continue;
+					if(!sl.contains(memberKey$))
+						sl.add(memberKey$);
+				}catch(Exception ee){
+					Logger.getLogger(getClass().getName()).info(ee.toString());
+				}
+			}
+    		String [] na=NodeHandler.getNetwordNodeKeys(entigrator,sl.toArray(new String[0]));
+			if(na!=null)
+				for(String n:na)
+					if(!sl.contains(n))
+						sl.add(n);
+			String[] sa=EdgeHandler.getEdgesKeys( entigrator, sl.toArray(new String[0]));
+			String[] da;
+			if(sa!=null)
+				for(String s:sa){
+					if(!sl.contains(s))
+						sl.add(s);
+					da=EdgeHandler.getDetailKeys(entigrator,s, na);
+					if(da!=null)
+						for(String d:da){
+							if(!sl.contains(d))
+								sl.add(d);
+				}
+			}
+			for(String s:sl){
+				try{
+					JReferenceEntry.getReference(entigrator,s, rel);
+			}catch(Exception ee){
+					Logger.getLogger(getClass().getName()).info(ee.toString());
+				}
+			}
+			}
+		}catch(Exception e){
+			Logger.getLogger(getClass().getName()).severe(e.toString());
+		}
 	}
 }

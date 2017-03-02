@@ -146,6 +146,7 @@ public void addComponent(JMainConsole console, String locator$) {
 	    editorLocator$=Locator.append(editorLocator$, JTextEditor.TEXT, label$+".node."+Identity.key().substring(0,4));
 	    editorLocator$=Locator.append(editorLocator$,Locator.LOCATOR_TITLE,"Component label");
 	    editorLocator$=Locator.append(editorLocator$,JTextEditor.TEXT_TITLE,"Add node component");
+        editorLocator$=Locator.append(editorLocator$,Entigrator.ENTIHOME,entihome$);
 	    String responseLocator$=getLocator();
 	    responseLocator$=Locator.append(responseLocator$, BaseHandler.HANDLER_METHOD, "response");
 	    responseLocator$=Locator.append(responseLocator$, Entigrator.ENTIHOME, entihome$);

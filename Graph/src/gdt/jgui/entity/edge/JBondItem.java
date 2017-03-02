@@ -21,16 +21,15 @@ import java.awt.event.ActionListener;
 import java.util.Properties;
 import java.util.logging.Logger;
 
+
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPopupMenu;
-import javax.swing.event.MenuEvent;
-import javax.swing.event.MenuListener;
 import javax.swing.event.PopupMenuEvent;
 import javax.swing.event.PopupMenuListener;
 
 import gdt.data.entity.BaseHandler;
-import gdt.data.entity.BondDetailHandler;
+
 import gdt.data.entity.EdgeHandler;
 import gdt.data.entity.EntityHandler;
 import gdt.data.entity.NodeHandler;
@@ -40,46 +39,81 @@ import gdt.data.grain.Locator;
 import gdt.data.grain.Sack;
 import gdt.data.store.Entigrator;
 import gdt.jgui.console.JConsoleHandler;
+import gdt.jgui.console.JContext;
 import gdt.jgui.console.JItemPanel;
 import gdt.jgui.console.JItemsListPanel;
 import gdt.jgui.console.JMainConsole;
-import gdt.jgui.console.JRequester;
 import gdt.jgui.entity.JEntityFacetPanel;
+import gdt.jgui.entity.bonddetail.JBondDetailPanel;
 import gdt.jgui.entity.node.JNodeFacetAddItem;
 import gdt.jgui.entity.node.JNodeFacetOpenItem;
 /**
  *This class represents a bond item in the list.
  * @author imasa
  *
- */
+ */ 
 public class JBondItem extends JItemPanel{
 	private static final long serialVersionUID = 1L;
 	private boolean isCommitted=false;
-	private int pos=0; 
+	private int pos=0;
+	boolean debug=false;
+	String entihome$;
+	String entityKey$;
+	String bondKey$;
+	String edgeKey$;
+	String bondInNodeKey$;
+	String bondOutNodeKey$;
+	public JBondItem(){
+		super();
+		title$="bond"; 
+	}
+	
+	//public JBondItem(final JMainConsole console,final String locator$){
+	public void setIcon(String icon$){
+		this.icon$=icon$;
+	}
 	/**
 	 * The constructor.
 	 * @param console the main console.
 	 * @param locator$ the locator string.
 	 */
-	public JBondItem(final JMainConsole console,final String locator$){
-		super(console,locator$);
-		isCommitted=isCommitted(console,locator$);
-//		System.out.println("JBondItem:is committed="+isCommitted);
-		Properties locator=Locator.toProperties(JBondItem.this.locator$);
-		String entihome$=locator.getProperty(Entigrator.ENTIHOME);
+	public JItemPanel instantiate(final JMainConsole console,final String locator$){
+		this.console=console;
+		this.locator$=locator$;
+		//super(console,locator$);
+		if(debug)
+			System.out.println("JBondItem:instantiate:locator="+locator$);
+	//		System.out.println("JBondItem:is committed="+isCommitted);
+		Properties locator=Locator.toProperties(locator$);
+		entihome$=locator.getProperty(Entigrator.ENTIHOME);
+		entityKey$=locator.getProperty(EntityHandler.ENTITY_KEY);
 	//	String edgeKey$=locator.getProperty(JBondsPanel.EDGE_KEY);
-		String bondKey$=locator.getProperty(JBondsPanel.BOND_KEY);
+		bondKey$=locator.getProperty(JBondsPanel.BOND_KEY);
+		edgeKey$=locator.getProperty(JBondsPanel.EDGE_KEY);
+		bondInNodeKey$=locator.getProperty(JBondsPanel.BOND_IN_NODE_KEY);
+		bondOutNodeKey$=locator.getProperty(JBondsPanel.BOND_OUT_NODE_KEY);
+		title.setText(title$);
+		title$=locator.getProperty(Locator.LOCATOR_TITLE);
+		if(title$!=null)
+			title.setText(title$);
 	//	System.out.println("JBondItem:bond key"+bondKey$);
 		Entigrator entigrator=console.getEntigrator(entihome$);
-		if(isCommitted){
-		   icon$= ExtensionHandler.loadIcon(entigrator,EdgeHandler.EXTENSION_KEY,"bond.png");
-		}else{
-		  icon$= ExtensionHandler.loadIcon(entigrator,EdgeHandler.EXTENSION_KEY,"draft.png");
-		}
-		
+		if(debug)
+			System.out.println("JBondItem:instantiate:1");
+		//if(isCommitted){
+		if(icon$!=null)
+		  icon$= ExtensionHandler.loadIcon(entigrator,EdgeHandler.EXTENSION_KEY,"bond.png");
+		//}else{
+		 // icon$= ExtensionHandler.loadIcon(entigrator,EdgeHandler.EXTENSION_KEY,"draft.png");
+		//}
+		if(debug)
+			System.out.println("JBondItem:instantiate:icon loaded");
 		resetIcon();
+		
 	//	JBondsPanel.saveSelection( console, entihome$, edgeKey$, bondKey$);
 		popup = new JPopupMenu();
+		if(debug)
+			System.out.println("JBondItem:make popup menu");
 		popup.addPopupMenuListener(new PopupMenuListener(){
 
 			@Override
@@ -89,7 +123,7 @@ public class JBondItem extends JItemPanel{
 			//	System.out.println("JBondsItem:position="+ JBondItem.this.getBounds().y);
 				popup.removeAll();
 				isCommitted=isCommitted(console,locator$);
-				Properties locator=Locator.toProperties(JBondItem.this.locator$);
+				Properties locator=Locator.toProperties(locator$);
 				String entihome$=locator.getProperty(Entigrator.ENTIHOME);
 				Entigrator entigrator=console.getEntigrator(entihome$);
 				if(isCommitted){
@@ -109,7 +143,7 @@ public class JBondItem extends JItemPanel{
 				public void actionPerformed(ActionEvent e) {
 					try{
 					//	System.out.println("JBondsItem:popup.locator="+locator$);
-						Properties locator=Locator.toProperties(JBondItem.this.locator$);
+						Properties locator=Locator.toProperties(locator$);
 						String entihome$=locator.getProperty(Entigrator.ENTIHOME);
 						String entityKey$=locator.getProperty(EntityHandler.ENTITY_KEY);
 						String bondKey$=locator.getProperty(JBondsPanel.BOND_KEY);
@@ -138,7 +172,7 @@ public class JBondItem extends JItemPanel{
 				@Override
 				public void actionPerformed(ActionEvent e) {
 					try{
-						Properties locator=Locator.toProperties(JBondItem.this.locator$);
+						Properties locator=Locator.toProperties(locator$);
 						String entihome$=locator.getProperty(Entigrator.ENTIHOME);
 						String entityKey$=locator.getProperty(EntityHandler.ENTITY_KEY);
 						String bondKey$=locator.getProperty(JBondsPanel.BOND_KEY);
@@ -167,7 +201,7 @@ public class JBondItem extends JItemPanel{
 				@Override
 				public void actionPerformed(ActionEvent e) {
 					try{
-						Properties locator=Locator.toProperties(JBondItem.this.locator$);
+						Properties locator=Locator.toProperties(locator$);
 						String entihome$=locator.getProperty(Entigrator.ENTIHOME);
 						String entityKey$=locator.getProperty(EntityHandler.ENTITY_KEY);
 						String bondKey$=locator.getProperty(JBondsPanel.BOND_KEY);
@@ -203,7 +237,7 @@ public class JBondItem extends JItemPanel{
 							       JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
 							   if (response != JOptionPane.YES_OPTION) 
 							       return;
-						Properties locator=Locator.toProperties(JBondItem.this.locator$);
+						Properties locator=Locator.toProperties(locator$);
 						String entihome$=locator.getProperty(Entigrator.ENTIHOME);
 						String entityKey$=locator.getProperty(EntityHandler.ENTITY_KEY);
 						String bondKey$=locator.getProperty(JBondsPanel.BOND_KEY);
@@ -246,7 +280,7 @@ public class JBondItem extends JItemPanel{
 				public void actionPerformed(ActionEvent e) {
 					try{
 					
-					Properties locator=Locator.toProperties(JBondItem.this.locator$);
+					Properties locator=Locator.toProperties(locator$);
 					String entihome$=locator.getProperty(Entigrator.ENTIHOME);
 					String entityKey$=locator.getProperty(EntityHandler.ENTITY_KEY);
 					String bondKey$=locator.getProperty(JBondsPanel.BOND_KEY);
@@ -280,7 +314,7 @@ public class JBondItem extends JItemPanel{
 				public void actionPerformed(ActionEvent e) {
 					try{
 					
-					Properties locator=Locator.toProperties(JBondItem.this.locator$);
+					Properties locator=Locator.toProperties(locator$);
 					String entihome$=locator.getProperty(Entigrator.ENTIHOME);
 					String entityKey$=locator.getProperty(EntityHandler.ENTITY_KEY);
 					String bondKey$=locator.getProperty(JBondsPanel.BOND_KEY);
@@ -317,7 +351,7 @@ public class JBondItem extends JItemPanel{
 					public void actionPerformed(ActionEvent e) {
 						try{
 						
-						Properties locator=Locator.toProperties(JBondItem.this.locator$);
+						Properties locator=Locator.toProperties(locator$);
 						String entihome$=locator.getProperty(Entigrator.ENTIHOME);
 						String entityKey$=locator.getProperty(EntityHandler.ENTITY_KEY);
 						String bondKey$=locator.getProperty(JBondsPanel.BOND_KEY);
@@ -376,7 +410,7 @@ public class JBondItem extends JItemPanel{
 					
 				    });
 		   }
-		  }// end hosted by edge
+		  }
 //		  System.out.println("JBondItem:finish");
 	
 			
@@ -392,7 +426,9 @@ public class JBondItem extends JItemPanel{
 				
 			}
 		});
+		return this;
 	}
+	
 	private String getNodeKeyFromClipboard(){
 		try{
 		String[] sa=console.clipboard.getContent();
@@ -533,5 +569,43 @@ public class JBondItem extends JItemPanel{
 		}
 			return false;
 	}
-
+	@Override
+	public String getLocator() {
+		if(debug)
+			System.out.println("JBondItem:getLocator.BEGIN");
+		    Properties locator=new Properties();
+		    locator.setProperty(Locator.LOCATOR_TYPE, JContext.CONTEXT_TYPE);
+		    locator.setProperty(JContext.CONTEXT_TYPE,"bond item");
+		    if(debug)
+				System.out.println("JBondItem:getLocator.0");
+		    if(entihome$!=null)
+		       locator.setProperty(Entigrator.ENTIHOME,entihome$);
+		    if(debug)
+				System.out.println("JBondItem:getLocator.1");
+		    locator.setProperty(Locator.LOCATOR_ICON_CONTAINER,Locator.LOCATOR_ICON_CONTAINER_CLASS);
+			locator.setProperty(Locator.LOCATOR_ICON_CLASS,getClass().getName());
+			locator.setProperty(Locator.LOCATOR_ICON_FILE,"bond.png");
+			locator.setProperty(Locator.LOCATOR_ICON_LOCATION,EdgeHandler.EXTENSION_KEY);
+		    if(entityKey$!=null)
+			       locator.setProperty(EntityHandler.ENTITY_KEY,entityKey$);
+		    if(bondKey$!=null)
+			       locator.setProperty(JBondsPanel.BOND_KEY,bondKey$);
+		    if(edgeKey$!=null)
+			       locator.setProperty(JBondsPanel.EDGE_KEY,edgeKey$);
+		    if(bondInNodeKey$!=null)
+			       locator.setProperty(JBondsPanel.BOND_IN_NODE_KEY,bondInNodeKey$);
+		    if(bondOutNodeKey$!=null)
+			       locator.setProperty(JBondsPanel.BOND_OUT_NODE_KEY,bondOutNodeKey$);
+		  
+		    if(debug)
+				System.out.println("JBondItem:getLocator.2");
+		    locator.setProperty(Locator.LOCATOR_TITLE,title$);
+		   locator.setProperty(BaseHandler.HANDLER_SCOPE,JConsoleHandler.CONSOLE_SCOPE);
+		   //locator.setProperty(BaseHandler.HANDLER_CLASS,JBondItem.class.getName());
+		   locator.setProperty(BaseHandler.HANDLER_CLASS,JBondDetailPanel.class.getName());
+		   
+		   if(debug)
+				System.out.println("JBondItem:getLocator.locator="+Locator.toString(locator));
+		   return Locator.toString(locator);
+	}
 }
