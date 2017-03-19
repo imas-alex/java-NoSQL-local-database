@@ -55,6 +55,8 @@ import gdt.data.grain.Locator;
 import gdt.data.grain.Sack;
 import gdt.data.grain.Support;
 import gdt.data.store.Entigrator;
+import gdt.jgui.base.JBaseNavigator;
+import gdt.jgui.base.ProgressDialog;
 import gdt.jgui.console.JConsoleHandler;
 import gdt.jgui.console.JContext;
 import gdt.jgui.console.JFacetRenderer;
@@ -93,6 +95,7 @@ private JSplitPane splitPane;
 private int dividerLocation=-1;
 private boolean setDivider=true;
 boolean debug=false;
+Entigrator entigrator;
 /**
  * The default constructor.
  */
@@ -137,6 +140,13 @@ boolean debug=false;
 								@Override
 								public void actionPerformed(ActionEvent e) {
 								  run();
+								  /*
+									entigrator=console.getEntigrator(entihome$);
+									entigrator.store_block();
+									ProgressDialog pd=new ProgressDialog(console.getFrame(),Run,"Wait for run..");	
+							    	pd.setLocationRelativeTo(JProcedurePanel.this);
+							    	pd.setVisible(true);
+							    	*/
 								}
 							} );
 							menu.add(runItem);
@@ -665,7 +675,9 @@ private String[] run(){
 	  Object obj=cls.newInstance();
 	  Method method = obj.getClass().getDeclaredMethod("run",JMainConsole.class,String.class,Integer.class);
 	  Integer dividerLocation=new Integer(splitPane.getDividerLocation());
+	    
 	  method.invoke(obj,console,entihome$,dividerLocation);
+	  
 	}catch(Exception e){
 		Logger.getLogger(getClass().getName()).severe(e.toString());
 	}
@@ -759,4 +771,6 @@ private class ShowListener implements ComponentListener{
 		// TODO Auto-generated method stub
 		return "procedure.png";
 	}
+	
+
 }

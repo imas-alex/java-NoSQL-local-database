@@ -60,7 +60,7 @@ public class JItemPanel extends JPanel {
 	protected JLabel title ;
 	protected Timer timer	;
 	protected JPopupMenu popup;
-	
+	boolean debug=true;
 	
 /**
  * The constructor.
@@ -68,6 +68,8 @@ public class JItemPanel extends JPanel {
  * @param locator$ the item's locator.
  */
 	public JItemPanel(JMainConsole console,String locator$){
+		if(debug)
+			System.out.println("JItemPanel:locator="+locator$);
 		this.console=console;
 		this.locator$=locator$;
 		setLayout(new BoxLayout(this, BoxLayout.X_AXIS));

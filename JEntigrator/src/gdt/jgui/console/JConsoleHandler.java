@@ -246,22 +246,45 @@ public static JFacetRenderer getFacetRenderer(Entigrator entigrator,String fhand
 		}
 		return null;
 }
+public static JFacetRenderer getFacetRenderer(Entigrator entigrator,FacetHandler fh){
+	  System.out.println("JConsoleHandler:getFacetRenderer:handler="+fh.getClass().getName());	
+	if(FieldsHandler.class.getName().equals(fh.getClass().getName()))
+		   return new JFieldsEditor();
+	if(FolderHandler.class.getName().equals(fh.getClass().getName()))
+			return new JFolderPanel();
+	if(WebsetHandler.class.getName().equals(fh.getClass().getName()))
+		return new JWeblinkEditor();
+	if(BookmarksHandler.class.getName().equals(fh.getClass().getName()))
+		return new JBookmarksEditor();
+	if(IndexHandler.class.getName().equals(fh.getClass().getName()))
+		return new JIndexPanel();
+	if(ExtensionHandler.class.getName().equals(fh.getClass().getName()))
+		return new JExtensionRenderer();
+	if(QueryHandler.class.getName().equals(fh.getClass().getName()))
+		return new JQueryPanel();
+	if(ProcedureHandler.class.getName().equals(fh.getClass().getName()))
+		return new JProcedurePanel();
+	String extension$=fh.getLocation();
+	return getExtensionFacetRenderer(entigrator,fh.getClass().getName(), extension$);
+}
 public static JFacetRenderer getExtensionFacetRenderer(Entigrator entigrator,String fhandler$,String extension$){
-//	  System.out.println("JConsoleHandler:getFacetRenderer:handler="+fhandler$);	
+	if(debug)  
+	 System.out.println("JConsoleHandler:getExtensionFacetRenderer:handler="+fhandler$+" extension="+extension$);	
 	try{
 			Sack extension=entigrator.getEntityAtKey(extension$);
-	//		System.out.println("ConsoleHandler:getFacetRenderer:extension="+extension.getProperty("label"));
+			System.out.println("JConsoleHandler:getFacetRenderer:extension="+extension.getProperty("label"));
 			Core[]ca=extension.elementGet("content.jfacet");
 			if(ca==null)
 				return null;
 			for(Core aCa:ca)
 				     if(aCa.name.equals(fhandler$)){
-		//		    System.out.println("ConsoleHandler:getFacetRenderer:aca.value="+aCa.value);	 
-				    	 JFacetOpenItem facetOpenItem=(JFacetOpenItem)getHandlerInstance(entigrator,aCa.value);
+				   if(debug) 	 
+				    System.out.println("ConsoleHandler:getFacetRenderer:aca.value="+aCa.value);	 
+				    JFacetOpenItem facetOpenItem=(JFacetOpenItem)getHandlerInstance(entigrator,aCa.value,extension$);
 					String facetRenderer$= facetOpenItem.getFacetRenderer();
 					if(debug)
 					System.out.println("JConsoleHandler:getFacetRenderer:facet renderer="+facetRenderer$);	 
-						return (JFacetRenderer)ExtensionHandler.loadHandlerInstance( entigrator,extension.getKey(), facetRenderer$);
+					return (JFacetRenderer)ExtensionHandler.loadHandlerInstance( entigrator,extension$, facetRenderer$);
 				}
 			}catch(Exception e){
 				Logger.getLogger(JConsoleHandler.class.getName()).severe(e.toString());
@@ -560,7 +583,7 @@ try{
 				  if(entityKey$!=null){
 					  String entityType$=entigrator.getEntityType(entityKey$);
 					  FacetHandler fh=BaseHandler.getHandler(entigrator, entityType$);
-					  JFacetRenderer facetRenderer=getFacetRenderer(entigrator, fh.getClass().getName()); 
+					  JFacetRenderer facetRenderer=getFacetRenderer(entigrator, fh); 
    					  return  Support.readHandlerIcon(entigrator, facetRenderer.getClass(), facetRenderer.getFacetIcon());
 				
 				  }

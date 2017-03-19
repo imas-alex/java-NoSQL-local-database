@@ -59,7 +59,7 @@ private Logger LOGGER=Logger.getLogger(ExtensionHandler.class.getName());
  *  @param locator$ entity's locator 
  * @return true if applied false otherwise.
  */	
-static boolean debug=false;
+static boolean debug=true;
 	@Override
 	public boolean isApplied(Entigrator entigrator, String locator$) {
 		try{
@@ -116,7 +116,10 @@ static boolean debug=false;
 		try{
 		if(debug)
 			System.out.println("ExtensionHandler:loadHandlerInstance:extension="+extension$+" handler="+handlerClass$);
-		Object obj=null;
+		Object obj=entigrator.getHandler(handlerClass$);
+		if(obj!=null)
+			return obj;
+			
 		Sack extension=entigrator.getEntityAtKey(extension$);
 			String lib$=extension.getElementItemAt("field", "lib");
 			String jar$="jar:file:" +entigrator.getEntihome()+"/"+extension$+"/"+lib$+"!/";
@@ -189,6 +192,7 @@ static boolean debug=false;
 				System.out.println("ExtensionHandler:loadHandlerInstance:"+ee.toString());
 				return null;
 			}
+			entigrator.putHandler(handlerClass$,obj);
 		    return obj;
 		}catch(Exception e){
 			Logger.getLogger(ExtensionHandler.class.getName()).severe(e.toString());
@@ -217,11 +221,21 @@ static boolean debug=false;
 		Class sh=null;
 		ClassLoader shLoader;
 		URLClassLoader cl;
+		Object obj;
 		for(Core c:ca){
 			try{
+				
 				if(debug)
 					System.out.println("ExtensionHandler:listExtensionHandlers:facet handler="+c.name);				
-			
+				obj=entigrator.getHandler(c.name);
+				if(obj!=null){
+					if(debug)
+						System.out.println("ExtensionHandler:listExtensionHandlers:obj="+obj.getClass().getName());				
+					if(obj instanceof FacetHandler){	
+					fl.add((FacetHandler)obj);
+					continue;
+					}
+				}
 				 if(c.type==null||"null".equals(c.type))
 					 cl= new URLClassLoader(urls);
 				 else{
@@ -240,6 +254,7 @@ static boolean debug=false;
 			  }
 			   entigrator.putHandler(c.name, cls);
 			fh=(FacetHandler)cls.newInstance();
+			entigrator.putHandler(c.name, fh);
 			fl.add(fh);
 			}catch(Exception ee){
 				Logger.getLogger(ExtensionHandler.class.getName()).severe("load class: "+ee.toString());
@@ -534,5 +549,10 @@ static boolean debug=false;
 	public void completeMigration(Entigrator entigrator) {
 		// TODO Auto-generated method stub
 		
+	}
+	@Override
+	public String getLocation() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }

@@ -61,6 +61,7 @@ public abstract class FacetHandler {
      * @return  the type of the facet handler..
      */	
     public abstract String getType();
+    public abstract String getLocation();
     /**
      * Get the class name of the facet handler.  
      * @return  the class name of the facet handler..

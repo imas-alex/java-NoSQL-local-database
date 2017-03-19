@@ -654,6 +654,7 @@ public JFieldsEditor() {
 			Entigrator entigrator=console.getEntigrator(entihome$);
 			String text$=locator.getProperty(JTextEditor.TEXT);
 			if(ACTION_NEW_ENTITY.equals(action$)){
+				if(debug)
 				System.out.println("JFieldsEditor:response:new entity");
 				Sack newEntity=entigrator.ent_new("fields", text$);
 				

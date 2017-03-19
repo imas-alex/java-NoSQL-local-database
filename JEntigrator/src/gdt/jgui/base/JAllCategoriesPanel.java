@@ -30,6 +30,7 @@ import org.apache.commons.codec.binary.Base64;
 import gdt.data.entity.BaseHandler;
 import gdt.data.entity.EntityHandler;
 import gdt.data.entity.FacetHandler;
+import gdt.data.entity.facet.ExtensionHandler;
 import gdt.data.grain.Locator;
 import gdt.data.grain.Support;
 import gdt.data.store.Entigrator;
@@ -54,7 +55,7 @@ public class JAllCategoriesPanel extends JItemsListPanel implements WContext {
 String entihome$;
 Hashtable<String,JItemPanel> items;
 	private static final long serialVersionUID = 1L;
-	boolean debug=false;
+	boolean debug=true;
 	boolean ignoreOutdate=false;
 	/**
 	 * Default constructor
@@ -93,8 +94,8 @@ Hashtable<String,JItemPanel> items;
 	
 	@Override
 	public JContext instantiate(JMainConsole console, String locator$) {
-      
-		//System.out.println("BaseNavigator:instantiate:locator="+Locator.remove(locator$,Locator.LOCATOR_ICON));
+		 if(debug)
+		System.out.println("JAllCategoriesPanel::instantiate:locator="+locator$);
 		Properties locator=Locator.toProperties(locator$);
 		entihome$=locator.getProperty(Entigrator.ENTIHOME);
 		if(entihome$!=null){
@@ -106,6 +107,9 @@ Hashtable<String,JItemPanel> items;
 		
 		 Entigrator entigrator=console.getEntigrator(entihome$);
 		 FacetHandler[] fha=BaseHandler.listAllHandlers(entigrator);
+		 if(debug)
+			  System.out.println("JAllCategoriesPanel:instantiate:fha="+fha.length);
+			 
 		 if(fha!=null){
 			 JFacetRenderer facetRenderer;
 			 Properties cpLocator;
@@ -115,50 +119,45 @@ Hashtable<String,JItemPanel> items;
 			 cp=new JCategoryPanel();
 			  cpLocator$=cp.getLocator();
 			  if(debug)
-			  System.out.println("AllCategoriesPanel:instantiate:cpLocator="+cpLocator$);
+			  System.out.println("JAllCategoriesPanel:instantiate:cpLocator="+cpLocator$);
 			  cpLocator=Locator.toProperties(cpLocator$);
 			  cpLocator.setProperty(Entigrator.ENTIHOME,entihome$);
 			 String fh$;
-			 for(FacetHandler fh:fha){
+			 String extension$;
+			 String frLocator$;
+		for(FacetHandler fh:fha){
 				 try{
 			  fh$=fh.getClassName();
 			 if(debug) 
-			     System.out.println("AllCategoriesPanel:instantiate:fh="+fh.getClass().getName());		 
-			  itemPanel=getItem(fh$);
-			   if(itemPanel==null){
-			  {
-			  
-			  facetRenderer=JConsoleHandler.getFacetRenderer(entigrator, fh.getClass().getName());
-			if(debug)
-			  System.out.println("AllCategoriesPanel:instantiate:renderer="+facetRenderer.getClass().getName());		 
-			 
+			     System.out.println("JAllCategoriesPanel:instantiate:fh="+fh.getClass().getName());		 
+			  facetRenderer=JConsoleHandler.getFacetRenderer(entigrator, fh);	  
+			  frLocator$=facetRenderer.getLocator();
+			  if(debug)
+			  System.out.println("JAllCategoriesPanel:instantiate:renderer locator="+frLocator$);		 
 			  cpLocator.setProperty(JCategoryPanel.RENDERER,facetRenderer.getClass().getName());
-			  cpLocator$=Locator.toString(cpLocator);
+			  cpLocator.setProperty(Locator.LOCATOR_ICON_FILE,facetRenderer.getFacetIcon());
+			
+			  extension$=fh.getLocation();
+			  if(extension$!=null){
+				  cpLocator.setProperty(ExtensionHandler.EXTENSION,extension$);
+				  cpLocator.setProperty(Locator.LOCATOR_ICON_CLASS_LOCATION,extension$);
+			  }
+			 // cpLocator$=Locator.toString(cpLocator);
 			  if(debug)
 			 System.out.println("AllCategoriesPanel:instantiate:category panel(begin)="+cpLocator$);		 
 			  cpLocator.setProperty(JFacetRenderer.ONLY_ITEM,Locator.LOCATOR_TRUE);
-			  cp.instantiate(console, cpLocator$);
-			  
+			  cpLocator.setProperty(Locator.LOCATOR_TITLE,facetRenderer.getCategoryTitle());
 			  if(debug)
-			  System.out.println("AllCategoriesPanel:instantiate:finish category panel(finish)="+cpLocator$); 
+			  System.out.println("AllCategoriesPanel:instantiate:finish category panel(finish)="+cpLocator$);
+			  if(debug)
+			  System.out.println("JAllCategoriesPanel:instantiate:cpLocator(2)="+cpLocator$);
+			  cp.instantiate(console, Locator.toString(cpLocator));
 			  cpLocator$=cp.getLocator();
-			  cpLocator$=Locator.append(cpLocator$,Locator.LOCATOR_ICON_CONTAINER,Locator.LOCATOR_ICON_CONTAINER_CLASS);
-			  cpLocator$=Locator.append(cpLocator$,Locator.LOCATOR_ICON_CLASS,facetRenderer.getClass().getName());
-			  cpLocator$=Locator.append(cpLocator$,Locator.LOCATOR_ICON_FILE,facetRenderer.getFacetIcon());
-			  String handlerLocation$=Locator.getProperty(fh.getLocator(),BaseHandler.HANDLER_LOCATION);
-			  if(handlerLocation$!=null)
-				  cpLocator$=Locator.append(cpLocator$,Locator.LOCATOR_ICON_CLASS_LOCATION,handlerLocation$);
-			  entigrator.putLocator(fh$, cpLocator$);
-			  }
-			  if(debug)
-			  System.out.println("AllCategoriesPanel:instantiate:cpLocator(2)="+cpLocator$);
 			  itemPanel=new JItemPanel(console,cpLocator$);
 			  putItem(fh$, itemPanel);
-			   }
 			   if(itemPanel!=null&&
 				   !ipl.contains(itemPanel))
 				      ipl.add(itemPanel); 
-			
      		   }catch(Exception e){
      				Logger.getLogger(getClass().getName()).info(e.toString());
      			}	 
@@ -315,7 +314,7 @@ Hashtable<String,JItemPanel> items;
 				     //  fHandler$=fh.getClassName();
 				       if(debug) 
 				    	   System.out.println("JAllCategoriesPanel:getWebView:facet handler="+fh.getClass().getName());		 
-				       facetRenderer=JConsoleHandler.getFacetRenderer(entigrator, fh.getClass().getName());
+				       facetRenderer=JConsoleHandler.getFacetRenderer(entigrator, fh);
                    	   fTitle$=facetRenderer.getCategoryTitle();
                    	   fIcon$=facetRenderer.getCategoryIcon(entigrator);
                    	 if(debug) 

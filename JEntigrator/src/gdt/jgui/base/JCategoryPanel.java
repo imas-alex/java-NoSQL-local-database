@@ -35,6 +35,7 @@ import org.apache.commons.codec.binary.Base64;
 import gdt.data.entity.BaseHandler;
 import gdt.data.entity.EntityHandler;
 import gdt.data.entity.FacetHandler;
+import gdt.data.entity.facet.ExtensionHandler;
 import gdt.data.grain.Core;
 import gdt.data.grain.Locator;
 import gdt.data.grain.Sack;
@@ -67,11 +68,13 @@ public class JCategoryPanel extends JItemsListPanel implements WContext{
 	String renderer$;
 	String entityType$;
 	String categoryTitle$;
+	String iconClass$;
+	String iconFile$;
 	JMenu menu;
 	JMenuItem deleteItem;
 	JMenuItem copyItem;
 	private JMenuItem[] mia;
-	static boolean debug=false; 
+	static boolean debug=true; 
 	boolean ignoreOutdate=false;
 	boolean refresh=false;
 	/**
@@ -93,20 +96,35 @@ public class JCategoryPanel extends JItemsListPanel implements WContext{
 	    locator.setProperty(JItemsListPanel.POSITION,String.valueOf(getPosition()));
 	    if(entihome$!=null)
 	    	locator.setProperty(Entigrator.ENTIHOME,entihome$);
-	    if(renderer$!=null)
+	    if(renderer$!=null){
 		    	locator.setProperty(RENDERER,renderer$);
+	    }
 	    if(entityType$!=null){
 	    	locator.setProperty(EntityHandler.ENTITY_TYPE,entityType$);
 	    if(entihome$!=null){
 	 	    Entigrator entigrator=console.getEntigrator(entihome$);	
 	    	locator.setProperty(Locator.LOCATOR_ICON_CONTAINER,Locator.LOCATOR_ICON_CONTAINER_CLASS);
-	    	
+	if(debug)
+		System.out.println("JCategoryPanel:getLocator:1");
 	    	FacetHandler fh=BaseHandler.getHandler(entigrator, entityType$);
-	    	JFacetRenderer fr=JConsoleHandler.getFacetRenderer(entigrator, fh.getClass().getName());
+	    	
+	    	if(debug)
+	    		if(fh!=null)
+		    		System.out.println("JCategoryPanel:getLocator:fh="+fh.getClass().getName());
+		    		else
+		    			System.out.println("JCategoryPanel:getLocator:cannot get handler for entity type=="+entityType$);
+		    	
+	    	JFacetRenderer fr=JConsoleHandler.getFacetRenderer(entigrator, fh);
+	    	if(debug)
+	    		if(fr!=null)
+	    		System.out.println("JCategoryPanel:getLocator:fr="+fr.getClass().getName());
+	    		else
+	    			System.out.println("JCategoryPanel:getLocator:cannot get renderer for hanler=="+fh.getClass().getName());
+	    	
 	    	locator.setProperty(Locator.LOCATOR_ICON_CLASS,fr.getClass().getName());
 	    	locator.setProperty(Locator.LOCATOR_ICON_FILE,fr.getFacetIcon());
-	    	 }
-	    	
+	    	categoryTitle$=fr.getCategoryTitle();
+	    }
 	    }
 		if(categoryTitle$!=null) 
 		   locator.setProperty(Locator.LOCATOR_TITLE, categoryTitle$);
@@ -115,6 +133,12 @@ public class JCategoryPanel extends JItemsListPanel implements WContext{
 	   
 	    locator.setProperty(BaseHandler.HANDLER_SCOPE,JConsoleHandler.CONSOLE_SCOPE);
 	    locator.setProperty(BaseHandler.HANDLER_CLASS,getClass().getName());
+	    locator.setProperty(Locator.LOCATOR_ICON_CONTAINER,Locator.LOCATOR_ICON_CONTAINER_CLASS);
+		
+		if(iconFile$!=null)
+		locator.setProperty(Locator.LOCATOR_ICON_FILE,iconFile$);
+	    if(debug)
+    		System.out.println("JCategoryPanel:getLocator finish:locator="+locator.toString());	
 	    return Locator.toString(locator);
 	}
 	/**
@@ -125,19 +149,26 @@ public class JCategoryPanel extends JItemsListPanel implements WContext{
 	 */	
 	@Override
 	public JContext instantiate(JMainConsole console, String locator$) {
+		if(debug)
+			System.out.println("JCategoryPanel:instantiate:locator="+locator$);
+			
 		clearItems();
 		try{
 		this.console=console;
-		if(debug)
-		System.out.println("JCategoryPanel:instantiate:locator="+locator$);
 		Properties locator=Locator.toProperties(locator$);
 		entihome$=locator.getProperty(Entigrator.ENTIHOME);
 		Entigrator entigrator=console.getEntigrator(entihome$);
 		renderer$=locator.getProperty(RENDERER);
-			JFacetRenderer facetRenderer=(JFacetRenderer)JConsoleHandler.getHandlerInstance(entigrator, renderer$);
+		String extension$=locator.getProperty(ExtensionHandler.EXTENSION);
+		JFacetRenderer facetRenderer=null;
+		if(extension$==null)
+			facetRenderer=(JFacetRenderer)JConsoleHandler.getHandlerInstance(entigrator, renderer$);
+		else
+			facetRenderer=(JFacetRenderer)JConsoleHandler.getHandlerInstance(entigrator,renderer$, extension$);
 		if(facetRenderer==null){
-			if(debug)
+			//if(debug)
 			 System.out.println("JCategoryPanel:instantiate:ERROR:cannot load renderer="+renderer$);
+			 return null;
 			
 		}
 		String frLocator$=facetRenderer.getLocator();
@@ -150,6 +181,9 @@ public class JCategoryPanel extends JItemsListPanel implements WContext{
 		 System.out.println("JCategoryPanel:instantiate:entity type="+entityType$+" category="+categoryTitle$);
 		this.locator$=getLocator();
 		String onlyItem$=locator.getProperty(JFacetRenderer.ONLY_ITEM);
+		if(debug)
+			 System.out.println("JCategoryPanel:instantiate:entity type="+entityType$+" category="+categoryTitle$+" only item="+onlyItem$);
+			
 		if(Locator.LOCATOR_TRUE.equals(onlyItem$))
 		    return this;   
 		  JItemPanel[] ipa=listCategoryMembers(console, this.locator$);
@@ -345,6 +379,7 @@ public class JCategoryPanel extends JItemsListPanel implements WContext{
 	       JEntityFacetPanel em;
 	       Properties emLocator;
 		   String iconFile$;
+		   FacetHandler[] fha=BaseHandler.listAllHandlers(entigrator);
 	       for(Core c:ca){
 			   try{
 				   if(debug)
@@ -364,10 +399,10 @@ public class JCategoryPanel extends JItemsListPanel implements WContext{
 				   }else{
 						String type$=entigrator.getEntityType(c.name);
 						boolean found=false;	
-						FacetHandler[] fha=BaseHandler.listAllHandlers(entigrator);
+						
 				    	   for(FacetHandler fh:fha){
 				    		if(type$.equals(fh.getType())){
-				    			 JFacetRenderer facetRenderer=JConsoleHandler.getFacetRenderer(entigrator, fh.getClass().getName());
+				    			 JFacetRenderer facetRenderer=JConsoleHandler.getFacetRenderer(entigrator, fh);
 				    			 emLocator.setProperty(Locator.LOCATOR_ICON_CONTAINER,Locator.LOCATOR_ICON_CONTAINER_CLASS);
 				    			 emLocator.setProperty(Locator.LOCATOR_ICON_CLASS,facetRenderer.getClass().getName());
 				    			 emLocator.setProperty(Locator.LOCATOR_ICON_FILE,facetRenderer.getFacetIcon());
@@ -494,7 +529,7 @@ public class JCategoryPanel extends JItemsListPanel implements WContext{
 		if(categoryTitle$!=null)
 			return categoryTitle$;
 		else
-		return "Category panel";
+		 return "Category panel";
 	}
 	/**
 	 * Get context subtitle.
@@ -626,7 +661,7 @@ public class JCategoryPanel extends JItemsListPanel implements WContext{
 			 FacetHandler[] fha=BaseHandler.listAllHandlers(entigrator);
 			 JFacetRenderer facetRenderer;
 			 for(FacetHandler fh:fha){
-				 facetRenderer=JConsoleHandler.getFacetRenderer(entigrator, fh.getClass().getName());
+				 facetRenderer=JConsoleHandler.getFacetRenderer(entigrator, fh);
 				 if(facetRenderer!=null&&entityType$.equals(facetRenderer.getEntityType()))
 					 return facetRenderer.getCategoryIcon(entigrator);
 			 }

@@ -138,6 +138,7 @@ public class Entigrator {
    public static final String SAVE_ID="save id";
    private StoreAdapter storeAdapter;
    Hashtable <String,Object>handlers;
+   Hashtable <String,Object>type2handler;
    /**
 	   * The lock message.	
 	   */
@@ -202,6 +203,7 @@ public class Entigrator {
         entitiesCache=new EntitiesCache(this);
         storeAdapter=new StoreAdapter(this);
     	handlers=new Hashtable<String,Object>();
+    	type2handler=new Hashtable<String,Object>();
         
     	// makeQuickMap();
       
@@ -856,8 +858,11 @@ public String[] indx_listEntities(Properties criteria) {
     
     private void prp_deleteWrongValueEntries(String propertyName$, String propertyValue$) {
         try {
-        	if("label".equals(propertyName$))
+        	if("label".equals(propertyName$)){
+        		//storeAdapter.indx_deleteWrongLabel(String label$){
+        		storeAdapter.indx_deleteWrongLabel(propertyValue$);
         		return;
+        	}
         	if(debug)
             	System.out.println("Entigrator:prp_deleteWrongValueEntries:property name="+propertyName$+ " value="+propertyValue$);
         	
@@ -1086,7 +1091,7 @@ public Sack ent_reindex(Sack entity) {
         	LOGGER.severe(":ent_reindex:"+e.toString());
         }
         entity.putAttribute(new Core(null,"key",entity.getKey()));
-        save(entity);
+        replace(entity);
         if(entity.getProperty("entity")!=null)
             entity=ent_assignProperty(entity, entity.getProperty("entity"), entity.getProperty("label"));
         entity=col_clearComponents(entity);
@@ -2707,6 +2712,26 @@ public Object getHandler(String handler$){
 	}
 	return null;
 }
+public void putHandlerAtType(String type$,Object handler){
+	try{
+		 if(debug)
+		System.out.println("Entigrator:putHandlerAtType:handler="+type$);
+		type2handler.put(type$, handler);
+	}catch(Exception e){
+		Logger.getLogger(getClass().getName()).severe(e.toString());
+	}
+}
+public Object getHandlerAtType(String type$){
+	try{
+		if(debug)
+		System.out.println("Entigrator:getHandlerAtType:handler="+type$);
+		return type2handler.get(type$);
+	}catch(Exception e){
+		Logger.getLogger(getClass().getName()).severe(e.toString());
+	}
+	return null;
+}
+
 public boolean keyExistsInCache(String entityKey$){
 	if(entitiesCache.get(entityKey$)!=null)
 		return true;

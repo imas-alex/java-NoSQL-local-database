@@ -239,12 +239,17 @@ public static String createBlankDatabase(String entihome$){
 public static FacetHandler getHandler(Entigrator entigrator,String entityType$){
 	if(entigrator==null||entityType$==null)
 		return null;
+	FacetHandler fh=(FacetHandler)entigrator.getHandlerAtType(entityType$);
+	if(fh!=null)
+		return fh;
 	FacetHandler[] fha=listAllHandlers(entigrator);
 	if(fha==null||fha.length<1)
 		return null;
-	for(FacetHandler fh:fha)
-		if(entityType$.equals(fh.getType()))
+	for(FacetHandler h:fha)
+		if(entityType$.equals(h.getType())){
+			entigrator.putHandlerAtType(entityType$, h);
 			return fh;
+		}
 	return null;
 }
 }

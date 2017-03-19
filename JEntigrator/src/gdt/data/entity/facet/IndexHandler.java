@@ -149,5 +149,10 @@ public class IndexHandler extends FacetHandler{
 		}
 		
 	}
+	@Override
+	public String getLocation() {
+		// TODO Auto-generated method stub
+		return null;
+	}
 
 }

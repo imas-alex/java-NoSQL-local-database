@@ -437,6 +437,24 @@ public Sack ent_assignLabel(Sack entity,String label$){
 	}
 	return entity;
 }
+public boolean indx_deleteWrongLabel(String label$){
+	try{
+		
+		Core entry=quickMap.getElementItem("label", label$);
+		Sack candidate=entigrator.getEntityAtKey(entry.value);
+		if(candidate!=null)
+			return false;
+		File header=new File(entigrator.getEntihome() +"/"+HEADERS+"/"+entry.value);
+		if(header!=null)
+			header.delete();
+		quickMap.removeElementItem("label", label$);
+		quickMap.removeElementItem("key", entry.value);
+		map_save();
+	}catch(Exception e){
+    	LOGGER.severe(":indx_deleteWrongLabel:"+e.toString());
+	}
+	return false;
+}
 public boolean ent_save(Entigrator entigrator,Sack entity){
 	try{
 		 if(debug)

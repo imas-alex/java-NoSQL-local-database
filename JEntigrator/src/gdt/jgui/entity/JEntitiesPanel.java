@@ -32,6 +32,7 @@ import org.apache.commons.codec.binary.Base64;
 import gdt.data.entity.BaseHandler;
 import gdt.data.entity.EntityHandler;
 import gdt.data.entity.FacetHandler;
+import gdt.data.grain.Core;
 import gdt.data.grain.Locator;
 import gdt.data.grain.Sack;
 import gdt.data.store.Entigrator;
@@ -48,6 +49,7 @@ import gdt.jgui.console.JMainConsole;
 import gdt.jgui.console.ReloadDialog;
 import gdt.jgui.console.WContext;
 import gdt.jgui.console.WUtils;
+import gdt.jgui.console.JItemsListPanel.ItemPanelComparator;
 /**
  * Displays the list of entities.
  * @author imasa
@@ -399,7 +401,107 @@ public String getTitle() {
 	public String getType() {
 		return "Entities";
 	}
+	
 	public static JItemPanel[] listEntitiesAtList(JMainConsole console,String locator$){
+		try{
+			   Properties locator=Locator.toProperties(locator$);
+			   String list$=locator.getProperty(EntityHandler.ENTITY_LIST);
+			   String[]la=Locator.toArray(list$);
+			  
+			   if(la==null){
+				   Logger.getLogger(JEntitiesPanel.class.getName()).info("empty list");
+				   return null;
+			   }
+			   String entityKey$;
+			   String entityLocator$;
+			   String entihome$=locator.getProperty(Entigrator.ENTIHOME);
+			   Entigrator entigrator=console.getEntigrator(entihome$);
+			   //
+			   ArrayList <String>sl=new ArrayList<String>();
+			   for(String aLa:la){
+				 
+				if(debug)
+					   System.out.println("JEntitiesPanel: listEntitiesAtLabelList:aLa="+aLa);	   
+				      entityLocator$=EntityHandler.getEntityLocatorAtLabel(entigrator, aLa);
+				   if(entityLocator$==null){
+				       entityLocator$=EntityHandler.getEntityLocatorAtKey(entigrator, aLa);
+				       entityKey$=aLa;
+				   }else
+					   entityKey$=entigrator.indx_keyAtLabel(aLa);
+				  if(!sl.contains(entityKey$))
+					  sl.add(entityKey$);
+				   
+				   }
+		String[]  sa=sl.toArray(new String[0]);
+			   if(sa.length<1)
+				   return null;
+ 		   ArrayList<JItemPanel>ipl=new ArrayList<JItemPanel>();
+		   JItemPanel itemPanel;
+	       String emLocator$;
+	       Core [] ca=entigrator.indx_getMarks(sa);
+	       if(debug)
+				System.out.println("JEntitiesPanel: listEntitiesAtLabelList:ca="+ca.length);
+				
+	       JEntityFacetPanel em;
+	       Properties emLocator;
+		   String iconFile$;
+		   FacetHandler[] fha=BaseHandler.listAllHandlers(entigrator);
+	       for(Core c:ca){
+			   try{
+				   if(debug)
+						System.out.println("JCategoryPanel:listCategoryMembers:c type="+c.type+" name="+c.name+" value="+c.value);
+			   em=new JEntityFacetPanel();
+			   emLocator$=em.getLocator();
+			   emLocator=Locator.toProperties(emLocator$);
+			   emLocator.setProperty(Entigrator.ENTIHOME , entihome$);
+			   emLocator.setProperty(EntityHandler.ENTITY_KEY ,c.name);
+			   emLocator.setProperty(Locator.LOCATOR_CHECKABLE, Locator.LOCATOR_TRUE);
+			   emLocator.setProperty(Locator.LOCATOR_TITLE, c.value);
+			   emLocator.setProperty(BaseHandler.HANDLER_SCOPE, JConsoleHandler.CONSOLE_SCOPE);
+			   iconFile$=entigrator.ent_getIconAtKey(c.name);
+			   if(iconFile$!=null&&!"sack.gif".equals(iconFile$)&&!"null".equals(iconFile$)){
+				   emLocator.setProperty(Locator.LOCATOR_ICON_CONTAINER,Locator.LOCATOR_ICON_CONTAINER_ICONS);
+				   emLocator.setProperty(Locator.LOCATOR_ICON_FILE,iconFile$);
+				   }else{
+						String type$=entigrator.getEntityType(c.name);
+						boolean found=false;	
+						
+				    	   for(FacetHandler fh:fha){
+				    		if(type$.equals(fh.getType())){
+				    			 JFacetRenderer facetRenderer=JConsoleHandler.getFacetRenderer(entigrator, fh);
+				    			 emLocator.setProperty(Locator.LOCATOR_ICON_CONTAINER,Locator.LOCATOR_ICON_CONTAINER_CLASS);
+				    			 emLocator.setProperty(Locator.LOCATOR_ICON_CLASS,facetRenderer.getClass().getName());
+				    			 emLocator.setProperty(Locator.LOCATOR_ICON_FILE,facetRenderer.getFacetIcon());
+				    			 found=true;
+				    			 break;
+				    		}
+				    	   }
+				    	   if(!found){
+				    		 emLocator.setProperty(Locator.LOCATOR_ICON_CONTAINER,Locator.LOCATOR_ICON_CONTAINER_CLASS);
+				    		 emLocator.setProperty(Locator.LOCATOR_ICON_CLASS,JEntitiesPanel.class.getName());
+				    		 emLocator.setProperty(Locator.LOCATOR_ICON_FILE,"facet.png");
+				    		
+				    	   }
+				    	     	   
+				   }
+			   itemPanel=new JItemPanel(console,Locator.toString(emLocator));
+	    	   	ipl.add(itemPanel); 
+			   }catch(Exception ee){
+				   Logger.getLogger(JCategoryPanel.class.getName()).info(ee.toString());
+			   }
+		   }
+		   Collections.sort(ipl,new ItemPanelComparator());
+		   return ipl.toArray(new JItemPanel[0]);
+					   
+		}catch(Exception e) {
+        	Logger.getLogger(JEntitiesPanel.class.getName()).severe(e.toString());
+            return null;
+        }
+		
+			   
+	}
+	/*
+	 public static JItemPanel[] listEntitiesAtList(JMainConsole console,String locator$){
 		try{
 			   Properties locator=Locator.toProperties(locator$);
 			   String list$=locator.getProperty(EntityHandler.ENTITY_LIST);
@@ -417,6 +519,7 @@ public String getTitle() {
 			   String entityLocator$;
 			   int i=0;
 			   String entityKey$;
+			   FacetHandler[] fha=BaseHandler.listAllHandlers(entigrator);
 		   for(String aLa:la){
 			   try{
 			if(debug)
@@ -447,13 +550,13 @@ public String getTitle() {
 					if(debug)   
 						   System.out.println("JEntitiesPanel: listEntitiesAtLabelList:entity type="+type$);	
 					boolean found=false;	
-					FacetHandler[] fha=BaseHandler.listAllHandlers(entigrator);
+//					FacetHandler[] fha=BaseHandler.listAllHandlers(entigrator);
 			    	   for(FacetHandler fh:fha){
 			    		if(debug)   
 							   System.out.println("JEntitiesPanel: listEntitiesAtLabelList:handler type="+fh.getType());	
 						
 			    		if(type$.equals(fh.getType())){
-			    			 JFacetRenderer facetRenderer=JConsoleHandler.getFacetRenderer(entigrator, fh.getClass().getName());
+			    			 JFacetRenderer facetRenderer=JConsoleHandler.getFacetRenderer(entigrator, fh);
 			    			 emLocator.setProperty(Locator.LOCATOR_ICON_CONTAINER,Locator.LOCATOR_ICON_CONTAINER_CLASS);
 			    			 emLocator.setProperty(Locator.LOCATOR_ICON_CLASS,facetRenderer.getClass().getName());
 			    			 emLocator.setProperty(Locator.LOCATOR_ICON_FILE,facetRenderer.getFacetIcon());
@@ -482,6 +585,8 @@ public String getTitle() {
             return null;
         }
 	}
+	
+	 */
 	/**
 	 * Complete the context. No action.
 	 */

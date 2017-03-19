@@ -122,5 +122,10 @@ private void adaptLabel(Entigrator entigrator){
 		// TODO Auto-generated method stub
 		
 	}
+	@Override
+	public String getLocation() {
+		// TODO Auto-generated method stub
+		return null;
+	}
 
 }
