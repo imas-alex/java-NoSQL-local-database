@@ -37,8 +37,10 @@ import java.lang.reflect.Method;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.List;
 import java.util.Properties;
 import java.util.Stack;
 import java.util.logging.Logger;
@@ -54,10 +56,15 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
+import javax.swing.RowSorter;
+import javax.swing.SortOrder;
 import javax.swing.event.MenuEvent;
 import javax.swing.event.MenuListener;
+import javax.swing.event.RowSorterEvent;
+import javax.swing.event.RowSorterListener;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableCellRenderer;
+import javax.swing.table.TableRowSorter;
 import gdt.data.entity.BaseHandler;
 import gdt.data.entity.EntityHandler;
 import gdt.data.entity.facet.FolderHandler;
@@ -73,13 +80,13 @@ import gdt.jgui.console.JContext;
 import gdt.jgui.console.JFacetRenderer;
 import gdt.jgui.console.JMainConsole;
 import gdt.jgui.console.JRequester;
-import gdt.jgui.console.WContext;
 import gdt.jgui.entity.JEntitiesPanel;
 import gdt.jgui.entity.JEntityFacetPanel;
 import gdt.jgui.entity.JEntityPrimaryMenu;
 import gdt.jgui.entity.JReferenceEntry;
 import gdt.jgui.entity.folder.JFolderFacetAddItem;
 import gdt.jgui.entity.folder.JFolderFacetOpenItem;
+import gdt.jgui.entity.view.JViewPanel;
 import gdt.jgui.tool.JTextEditor;
 /**
  * This class represents the query context
@@ -90,21 +97,27 @@ import gdt.jgui.tool.JTextEditor;
 public class JQueryPanel extends JPanel implements JFacetRenderer,JRequester{
 	
 	private static final long serialVersionUID = 1L;
-	private static final String LABEL_KEY="_UTqVuBCJrzhoJNrgqBhZDCNpimo";
 	private static final String ACTION_CREATE_QUERY="action create query";
-	public  static final String QUERY_ALL_ENTITIES_KEY ="_2DOtCo5e_S6ARWU0H_MtyFnnPThE";
 	private Logger LOGGER=Logger.getLogger(getClass().getName());
+	private JComboBox<String> componentComboBox; 
 	private JComboBox<String> elementComboBox; 
 	private JComboBox<String> itemNameFieldComboBox;
 	private JComboBox<String> itemNameComboBox;
 	private JComboBox<String> itemValueComboBox;
+	private JComboBox<String> itemTypeComboBox;
 	private JTable table;
+	JScrollPane scrollPane;
+	private TableRowSorter<DefaultTableModel> sorter;
 	protected String entihome$;
 	protected String entityKey$;
 	protected String entityLabel$;
+	protected Sack entity=null;
 	protected JMainConsole console;
+	protected Entigrator entigrator;
 	private JMenu menu;
-	static boolean debug=false;
+	static boolean debug=true;
+	protected ArrayList <String>queryScope;
+	protected ArrayList <String>elementScope;
 	/**
 	 * The default constructor.
 	 */
@@ -115,12 +128,43 @@ public class JQueryPanel extends JPanel implements JFacetRenderer,JRequester{
 		gridBagLayout.columnWeights = new double[]{0.0, 1.0, Double.MIN_VALUE};
 		gridBagLayout.rowWeights = new double[]{0.0, 0.0, 0.0, 0.0};
 		setLayout(gridBagLayout);
+		
+		JLabel lblComponent = new JLabel("Component");
+		
+		GridBagConstraints gbc_lblComponent = new GridBagConstraints();
+		gbc_lblComponent.insets = new Insets(5, 5, 5, 5);
+		gbc_lblComponent.gridx = 0;
+		gbc_lblComponent.gridy = 0;
+		gbc_lblComponent.anchor=GridBagConstraints.FIRST_LINE_START;
+		add(lblComponent, gbc_lblComponent);
+		
+		componentComboBox = new JComboBox<String>();
+		GridBagConstraints gbc_componentComboBox = new GridBagConstraints();
+		gbc_componentComboBox.fill = GridBagConstraints.HORIZONTAL;
+		gbc_componentComboBox.insets = new Insets(0, 0, 5, 0);
+		gbc_componentComboBox.gridx = 1;
+		gbc_componentComboBox.gridy = 0;
+		gbc_componentComboBox.anchor=GridBagConstraints.FIRST_LINE_START;
+		add(componentComboBox, gbc_componentComboBox);
+		componentComboBox.addItemListener(new ItemListener() {
+			@Override
+			public void itemStateChanged(ItemEvent e) {
+				try{
+					if (e.getStateChange() == ItemEvent.SELECTED) 
+					initElementSelector();
+					initItemValueSelector();
+				}catch(Exception ee){
+					LOGGER.severe(ee.toString());
+				}
+			}
+		 });
+		
 		JLabel lblElement = new JLabel("Element");
 		
 		GridBagConstraints gbc_lblElement = new GridBagConstraints();
 		gbc_lblElement.insets = new Insets(5, 5, 5, 5);
 		gbc_lblElement.gridx = 0;
-		gbc_lblElement.gridy = 0;
+		gbc_lblElement.gridy = 1;
 		gbc_lblElement.anchor=GridBagConstraints.FIRST_LINE_START;
 		add(lblElement, gbc_lblElement);
 		
@@ -129,14 +173,16 @@ public class JQueryPanel extends JPanel implements JFacetRenderer,JRequester{
 		gbc_elementComboBox.fill = GridBagConstraints.HORIZONTAL;
 		gbc_elementComboBox.insets = new Insets(0, 0, 5, 0);
 		gbc_elementComboBox.gridx = 1;
-		gbc_elementComboBox.gridy = 0;
+		gbc_elementComboBox.gridy = 1;
 		gbc_elementComboBox.anchor=GridBagConstraints.FIRST_LINE_START;
 		add(elementComboBox, gbc_elementComboBox);
 		elementComboBox.addItemListener(new ItemListener() {
 			@Override
 			public void itemStateChanged(ItemEvent e) {
 				try{
+					if (e.getStateChange() == ItemEvent.SELECTED) 
 					initItemNameSelector();
+					initItemValueSelector();
 				}catch(Exception ee){
 					LOGGER.severe(ee.toString());
 				}
@@ -146,7 +192,7 @@ public class JQueryPanel extends JPanel implements JFacetRenderer,JRequester{
 		GridBagConstraints gbc_lblItemField = new GridBagConstraints();
 		gbc_lblItemField.insets = new Insets(5, 5, 5, 5);
 		gbc_lblItemField.gridx = 0;
-		gbc_lblItemField.gridy = 1;
+		gbc_lblItemField.gridy = 2;
 		gbc_lblItemField.anchor=GridBagConstraints.FIRST_LINE_START;
 		
 		add(lblItemNameField, gbc_lblItemField);
@@ -156,15 +202,16 @@ public class JQueryPanel extends JPanel implements JFacetRenderer,JRequester{
 		gbc_itemNameFieldComboBox.insets = new Insets(0, 0, 5, 0);
 		gbc_itemNameFieldComboBox.fill = GridBagConstraints.HORIZONTAL;
 		gbc_itemNameFieldComboBox.gridx = 1;
-		gbc_itemNameFieldComboBox.gridy = 1;
+		gbc_itemNameFieldComboBox.gridy = 2;
 		gbc_itemNameFieldComboBox.anchor=GridBagConstraints.FIRST_LINE_START;
 		add(itemNameFieldComboBox, gbc_itemNameFieldComboBox);
 		itemNameFieldComboBox.addItemListener(new ItemListener() {
 			@Override
 			public void itemStateChanged(ItemEvent e) {
 				try{
-					initItemNameSelector();
-					initItemValueSelector();
+					if (e.getStateChange() == ItemEvent.SELECTED) 
+						initItemNameSelector();
+					    initItemValueSelector();
 				}catch(Exception ee){
 					LOGGER.severe(ee.toString());
 				}
@@ -174,7 +221,7 @@ public class JQueryPanel extends JPanel implements JFacetRenderer,JRequester{
 		GridBagConstraints gbc_lblItemtitle = new GridBagConstraints();
 		gbc_lblItemtitle.insets = new Insets(5, 5, 5, 5);
 		gbc_lblItemtitle.gridx = 0;
-		gbc_lblItemtitle.gridy = 2;
+		gbc_lblItemtitle.gridy = 3;
 		gbc_lblItemtitle.anchor=GridBagConstraints.FIRST_LINE_START;
 		add(itemTitle, gbc_lblItemtitle);
 
@@ -183,7 +230,7 @@ public class JQueryPanel extends JPanel implements JFacetRenderer,JRequester{
 		gbc_itemComboBox.insets = new Insets(0, 0, 5, 0);
 		gbc_itemComboBox.fill = GridBagConstraints.HORIZONTAL;
 		gbc_itemComboBox.gridx = 1;
-		gbc_itemComboBox.gridy = 2;
+		gbc_itemComboBox.gridy = 3;
 		gbc_itemComboBox.anchor=GridBagConstraints.FIRST_LINE_START;
 		add(itemNameComboBox, gbc_itemComboBox);
 		itemNameComboBox.addItemListener(new ItemListener() {
@@ -191,6 +238,7 @@ public class JQueryPanel extends JPanel implements JFacetRenderer,JRequester{
 			public void itemStateChanged(ItemEvent e) {
 				try{
 					initItemValueSelector();
+					initType();
 				}catch(Exception ee){
 					LOGGER.severe(ee.toString());
 				}
@@ -202,8 +250,15 @@ public class JQueryPanel extends JPanel implements JFacetRenderer,JRequester{
 		gbc_lblItemValue.insets = new Insets(5, 5, 5, 5);
 		gbc_lblItemValue.weighty=0.0;
 		gbc_lblItemValue.gridx = 0;
-		gbc_lblItemValue.gridy = 3;
+		gbc_lblItemValue.gridy = 4;
 		gbc_lblItemValue.anchor=GridBagConstraints.FIRST_LINE_START;
+		itemValue.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+			   System.out.println("JQueryPanel:item titel="+itemNameComboBox.getSelectedItem()+" value="+itemValueComboBox.getSelectedItem());
+			   selectRow(itemNameComboBox.getSelectedItem().toString(),itemValueComboBox.getSelectedItem().toString());
+			}
+		});
 		add(itemValue, gbc_lblItemValue);
 
 		itemValueComboBox = new JComboBox<String>();
@@ -211,41 +266,42 @@ public class JQueryPanel extends JPanel implements JFacetRenderer,JRequester{
 		gbc_itemValueComboBox.insets = new Insets(0, 0, 5, 0);
 		gbc_itemValueComboBox.fill = GridBagConstraints.HORIZONTAL;
 		gbc_itemValueComboBox.gridx = 1;
-		gbc_itemValueComboBox.gridy = 3;
+		gbc_itemValueComboBox.gridy = 4;
 		gbc_itemValueComboBox.anchor=GridBagConstraints.FIRST_LINE_START;
 		add(itemValueComboBox, gbc_itemValueComboBox);
-		table = new JTable();
-		JScrollPane scrollPane = new JScrollPane(table, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-		table.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
-
-   	  table.addMouseListener(new java.awt.event.MouseAdapter() {
-   	    @Override
-   	    public void mouseClicked(java.awt.event.MouseEvent evt) {
-   	        int row = table.rowAtPoint(evt.getPoint());
-   	        int col = table.columnAtPoint(evt.getPoint());
-   	        System.out.println("JQueryPanel:cell click:row="+row+" column="+col);
-   	        if(col==1){
-   	        	String label$=(String)table.getValueAt(row, 1);
-   	        	System.out.println("JQueryPanel:cell click:label="+label$);
-   	            Entigrator entigrator=console.getEntigrator(entihome$);
-   	            String entity$=entigrator.indx_keyAtLabel(label$);
-   	            JEntityFacetPanel efp=new  JEntityFacetPanel();
-   	            String efpLocator$=efp.getLocator();
-   	         efpLocator$=Locator.append(efpLocator$, Entigrator.ENTIHOME, entihome$);
-   	      efpLocator$=Locator.append(efpLocator$, EntityHandler.ENTITY_KEY, entity$);
-   	      JConsoleHandler.execute(console, efpLocator$);
-   	        }
-   	        }
-   	    });
+		
+		JLabel itemType = new JLabel("Item type");
+		GridBagConstraints gbc_lblItemType = new GridBagConstraints();
+		gbc_lblItemType.insets = new Insets(5, 5, 5, 5);
+		gbc_lblItemType.weighty=0.0;
+		gbc_lblItemType.gridx = 0;
+		gbc_lblItemType.gridy = 5;
+		gbc_lblItemType.anchor=GridBagConstraints.FIRST_LINE_START;
+		add(itemType, gbc_lblItemType);
+		
+		itemTypeComboBox = new JComboBox<String>();
+		GridBagConstraints gbc_itemTypeComboBox = new GridBagConstraints();
+		gbc_itemTypeComboBox.insets = new Insets(0, 0, 5, 0);
+		gbc_itemTypeComboBox.fill = GridBagConstraints.HORIZONTAL;
+		gbc_itemTypeComboBox.gridx = 1;
+		gbc_itemTypeComboBox.gridy = 5;
+		gbc_itemTypeComboBox.anchor=GridBagConstraints.FIRST_LINE_START;
+		add(itemTypeComboBox, gbc_itemTypeComboBox);
+		 scrollPane = new JScrollPane( JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+		
 		GridBagConstraints gbc_scroll_panel = new GridBagConstraints();
 		gbc_scroll_panel.anchor = GridBagConstraints.NORTH;
 		gbc_scroll_panel.gridwidth = 2;
 		gbc_scroll_panel.weighty=1.0;
-		gbc_scroll_panel.fill = GridBagConstraints.HORIZONTAL;
+		//gbc_scroll_panel.fill = GridBagConstraints.HORIZONTAL;
+		gbc_scroll_panel.fill = GridBagConstraints.BOTH;
 		gbc_scroll_panel.gridx = 0;
-		gbc_scroll_panel.gridy =4;
+		gbc_scroll_panel.gridy =6;
 		add(scrollPane, gbc_scroll_panel);
+		//add(scrollPane);
+		//scrollPane.setMinimumSize( scrollPane.getPreferredSize() );
 		scrollPane.setMinimumSize( scrollPane.getPreferredSize() );
+		//table.setFillsViewportHeight(true);
 	}
 	/**
 	 * Get the panel to insert into the main console.
@@ -268,12 +324,21 @@ public class JQueryPanel extends JPanel implements JFacetRenderer,JRequester{
 				menu.removeAll();
 				if(debug)
 				System.out.println("JQueryPanel:getConextMenu:menu selected");
-					 JMenuItem selectItem = new JMenuItem("Select");
+				 JMenuItem initItem = new JMenuItem("Init selector");
+					initItem.addActionListener(new ActionListener() {
+						@Override
+						public void actionPerformed(ActionEvent e) {
+						  initComponentSelector();
+						}
+					} );
+					menu.add(initItem);	 
+				JMenuItem selectItem = new JMenuItem("Select");
 						selectItem.addActionListener(new ActionListener() {
 							@Override
 							public void actionPerformed(ActionEvent e) {
-							  showHeader();
-							  showContent();
+							 initTable();
+								// if(showHeader())
+							  //showContent();
 							}
 						} );
 						menu.add(selectItem);
@@ -282,8 +347,10 @@ public class JQueryPanel extends JPanel implements JFacetRenderer,JRequester{
 							@Override
 							public void actionPerformed(ActionEvent e) {
 							    clearHeader();
+							   /*
 							    showHeader();
 								showContent();
+								*/
 							}
 						} );
 						menu.add(clearHeader);
@@ -331,7 +398,16 @@ public class JQueryPanel extends JPanel implements JFacetRenderer,JRequester{
 						    removeColumn();
 						}
 					} );
-					menu.add(removeColumn);
+				menu.add(removeColumn);
+				
+				JMenuItem setType = new JMenuItem("Set type");
+				setType.addActionListener(new ActionListener() {
+					@Override
+					public void actionPerformed(ActionEvent e) {
+					    setType();
+					}
+				} );
+			menu.add(setType);
 					ListSelectionModel lsm = table.getSelectionModel();
 					if(!lsm.isSelectionEmpty()){
 					JMenuItem excludeRows = new JMenuItem("Exclude rows ");
@@ -353,8 +429,9 @@ public class JQueryPanel extends JPanel implements JFacetRenderer,JRequester{
 					                }
 					            }
 					            entigrator.save(query);
-					            showHeader();
-								showContent();
+					           // showHeader();
+								//showContent();
+					            initTable();
 						}
 					} );
 					menu.add(excludeRows);
@@ -385,16 +462,26 @@ public class JQueryPanel extends JPanel implements JFacetRenderer,JRequester{
 			 return menu;
 		 }
 	private String[] select(){
-		Entigrator entigrator=console.getEntigrator(entihome$);
-		Sack query=entigrator.getEntity(entityKey$);
-		return select( entigrator,query);
+		//Entigrator entigrator=console.getEntigrator(entihome$);
+		//Sack query=entigrator.getEntity(entityKey$);
+		//return select( entigrator,query);
+		return select( entigrator,entity);
 		
 	}
 	public static String[] select(Entigrator entigrator,Sack query){
 		try{
+			if(debug)
+	 			System.out.println("JQueryPanel.select:SELECT");
 			String entihome$=entigrator.getEntihome();
 			String entityKey$=query.getKey();
+			if(debug)
+	 			System.out.println("JQueryPanel.select:query="+entityKey$);
 			File queryHome=new File(entihome$+"/"+entityKey$);
+			File classFile=new File(entihome$+"/"+entityKey$+"/"+entityKey$+".class");
+			if(!classFile.exists())
+				return null;
+			if(debug)
+	 			System.out.println("JQueryPanel.select:1");
 			URL url = queryHome.toURI().toURL();
 		    URL[] urls = new URL[]{url};
 		    ClassLoader parentLoader = JMainConsole.class.getClassLoader();
@@ -405,6 +492,8 @@ public class JQueryPanel extends JPanel implements JFacetRenderer,JRequester{
  	      Object value=method.invoke(obj,entigrator);
  	     
  	      String[] sa=(String[])value;
+ 	     if(debug)
+	 			System.out.println("JQueryPanel.select:sa="+sa.length);
  	      String []ea=query.elementList("exclude");
  	      if(ea==null){
  	    	 if(debug)
@@ -427,6 +516,7 @@ public class JQueryPanel extends JPanel implements JFacetRenderer,JRequester{
 		}
 		return null;
 	}
+	
 /**
  * Get the context locator.
  * @return the context locator.
@@ -469,31 +559,39 @@ public class JQueryPanel extends JPanel implements JFacetRenderer,JRequester{
 			Properties locator=Locator.toProperties(locator$);
 			entihome$=locator.getProperty(Entigrator.ENTIHOME);
 			entityKey$=locator.getProperty(EntityHandler.ENTITY_KEY);
-			Entigrator entigrator=console.getEntigrator(entihome$);
+			entigrator=console.getEntigrator(entihome$);
 			entityLabel$=locator.getProperty(EntityHandler.ENTITY_LABEL);
 			if(entityLabel$==null)
 				entityLabel$=entigrator.indx_getLabel(entityKey$);
 			 if(Locator.LOCATOR_TRUE.equals(locator.getProperty(JFacetRenderer.ONLY_ITEM)))
 				 return this;
-			Sack entity=entigrator.getEntityAtKey(entityKey$);
+			entity=entigrator.getEntityAtKey(entityKey$);
             entityLabel$=entity.getProperty("label");
-            if(debug)
-    			System.out.println("JQueryPanel.instantiate:1");    
-            initElementSelector();
-            if(debug)
-    			System.out.println("JQueryPanel.instantiate:2");   
             initItemNameFieldSelector();
-            if(debug)
-    			System.out.println("JQueryPanel.instantiate:3");   
-            initItemNameSelector();
-            initItemValueSelector();
-            showHeader();
-            showContent();
+            initItemTypeSelector();
+            initComponentSelector();
+            initTable();
+           // showHeader();
 		}catch(Exception e){
 	        Logger.getLogger(getClass().getName()).severe(e.toString());
 		}
 		return this;
 	}
+public void instantiate(Entigrator entigrator, String locator$) {
+	try{
+	if(debug)
+		System.out.println("JQueryPanel.instantiate:locator="+locator$);
+		Properties locator=Locator.toProperties(locator$);
+		this.entigrator=entigrator;
+		entihome$=entigrator.getEntihome();
+		entityLabel$=locator.getProperty(EntityHandler.ENTITY_LABEL);
+		entityKey$=entigrator.indx_keyAtLabel(entityLabel$);
+		entity=entigrator.getEntityAtKey(entityKey$);
+	}catch(Exception e){
+        Logger.getLogger(getClass().getName()).severe(e.toString());
+	}
+	
+}
 /**
  * Get context title.
  * @return the context title.
@@ -733,25 +831,37 @@ public class JQueryPanel extends JPanel implements JFacetRenderer,JRequester{
 	}
 private void initElementSelector(){
     DefaultComboBoxModel<String> model=new DefaultComboBoxModel<String>();
-	String[]sa=select();
-	if(sa==null){
+	//String[]sa=select();
+     itemNameComboBox.setModel(model);
+     itemValueComboBox.setModel(model);
+    if(queryScope==null||queryScope.size()<1){
 		elementComboBox.setModel(model);
 		return;
 	}
+	if(elementScope==null)
+		elementScope=new ArrayList<String>();
+	else
+		elementScope.clear();
 	 if(debug)
 			System.out.println("JQueryPanel. initElementSelector:1");
-  
+  String component$=(String)componentComboBox.getSelectedItem();
+  if(component$==null)
+	  return;
 	try{
 		Entigrator entigrator=console.getEntigrator(entihome$);
 		ArrayList <String>sl=new ArrayList<String>();
 		Sack entity;
         String[] ea;		
-		for(String s:sa){
+		for(String s:queryScope){
 			 if(debug)
 					System.out.println("JQueryPanel. initElementSelector:s="+s);
 			entity=entigrator.getEntityAtKey(s);
 			if(entity==null)
 				continue;
+			if(!component$.equals(entity.getProperty("entity")))
+				continue;
+			if(!elementScope.contains(s))
+				elementScope.add(s);
 			ea=entity.elementsList();
 			if(ea!=null)
 				for (String e:ea)
@@ -762,6 +872,89 @@ private void initElementSelector(){
 		for(String s:sl)
 			model.addElement(s);
 		elementComboBox.setModel(model);
+		System.out.println("JQueryPanel. initElementSelector:element scope:"+elementScope.size());
+	}catch(Exception e){
+		Logger.getLogger(getClass().getName()).severe(e.toString());
+	}
+}
+/*
+private void initScopeMember(Entigrator entigrator,Sack member){
+	try{
+		String entityType$=member.getProperty("entity");
+		if(entityType$==null)
+			return;
+		if(!entity.existsElement("entity"))
+			entity.createElement("entity");
+		entity.putElementItem("entity", new Core(null,entityType$,null));
+		String[] ea=member.elementsList();
+		Core[] ca;
+		if(ea!=null){
+			if(!entity.existsElement("element"))
+				entity.createElement("element");
+			String elementKey$;
+		    for(String e:ea){
+		    	elementKey$=Identity.key();
+		    	entity.putElementItem("element", new Core(entityType$,elementKey$,e));
+		    	ca=member.elementGet(e);
+		    	if(ca!=null){
+		    		}
+		    	}
+		    
+		}
+	}catch(Exception e){
+		Logger.getLogger(getClass().getName()).severe(e.toString());
+	}
+}
+*/
+private void initComponentSelector(){
+	queryScope=new ArrayList<String>(Arrays.asList(select()));
+	DefaultComboBoxModel<String> model=new DefaultComboBoxModel<String>();
+	
+	String[]sa=select();
+	if(sa==null){
+		componentComboBox.setModel(model);
+		return;
+	}
+	 if(debug)
+			System.out.println("JQueryPanel. initComponentSelector:1");
+  
+	try{
+		Entigrator entigrator=console.getEntigrator(entihome$);
+		ArrayList <String>sl=new ArrayList<String>();
+		Sack member;
+		String entityType$;
+		String memberType$;
+        String[] ca;
+		for(String s:sa){
+			 if(debug)
+					System.out.println("JQueryPanel. initComponentSelector:s="+s);
+		     member=entigrator.getEntityAtKey(s);
+		     if(member==null)
+		    	 continue;
+		     if(!queryScope.contains(s))
+		    	 queryScope.add(s);
+			 memberType$=entigrator.getEntityType(s);
+			if(memberType$!=null)
+				 if(!sl.contains(memberType$))	
+					sl.add(memberType$);
+			ca=entigrator.ent_listComponentsCascade(member);
+			if(ca!=null)
+				for(String c:ca){
+					if(!queryScope.contains(c))
+				    	 queryScope.add(c);
+					 entityType$=entigrator.getEntityType(c);
+						if(entityType$!=null)
+							 if(!sl.contains(entityType$))	
+								sl.add(entityType$);
+				}
+		}
+		
+		Collections.sort(sl);
+		for(String s:sl)
+			model.addElement(s);
+		componentComboBox.setModel(model);
+	    entigrator.replace(entity);
+	    initElementSelector();
 	}catch(Exception e){
 		Logger.getLogger(getClass().getName()).severe(e.toString());
 	}
@@ -772,75 +965,112 @@ private void initItemNameFieldSelector(){
     model.addElement("type");
     itemNameFieldComboBox.setModel(model);
 }
+private void initItemTypeSelector(){
+    DefaultComboBoxModel<String> model=new DefaultComboBoxModel<String>();
+    model.addElement("String");
+    model.addElement("int");
+    model.addElement("long");
+    model.addElement("float");
+    model.addElement("double");
+    model.addElement("date");
+    itemTypeComboBox.setModel(model);
+}
 private void initItemNameSelector(){
     DefaultComboBoxModel<String> model=new DefaultComboBoxModel<String>();
     try{
+    String component$=(String)componentComboBox.getSelectedItem();	
     String element$=(String)elementComboBox.getSelectedItem();
     String constituent$=(String)itemNameFieldComboBox.getSelectedItem();
     Entigrator entigrator=console.getEntigrator(entihome$);
-    String[]sa=select();
+    //String[]sa=select();
+    if(elementScope==null||elementScope.size()<1)
+    	return;
+    String[]sa=elementScope.toArray(new String[0]);
+   if(debug)
+	   System.out.println("initItemNameSelector:element scope="+elementScope.size());
     ArrayList <String>sl=new ArrayList<String>();
 	Sack entity;
-    String[] ia;
-    String item$;
-    Core item;
+    Core[] ca;
 	for(String s:sa){
+		try{
 		entity=entigrator.getEntityAtKey(s);
 		if(entity==null)
 			continue;
-		ia=entity.elementList(element$);
-		if(ia!=null)
-			for(String i:ia){
-	          item$=null;
-			  item=entity.getElementItem(element$, i);		
-			  if("name".equals(constituent$))
-			     item$=item.name;
-			  if("type".equals(constituent$))
-				     item$=item.type;
-			 if(item$!=null&&!sl.contains(item$))	
-				sl.add(item$);
-			}
+		if(!component$.equals(entity.getProperty("entity")))
+			continue;
+		ca=entity.elementGet(element$);
+		 if(debug)
+			   System.out.println("initItemNameSelector:element="+element$+" ca="+ca.length+" constituent="+constituent$);
+		if(ca==null)
+			continue;
+		for(Core c:ca){
+			if("type".equals(constituent$))
+				if(!sl.contains(c.type))	
+			sl.add(c.type);
+		if("name".equals(constituent$))
+			if(!sl.contains(c.name))
+			    sl.add(c.name);
+		}
+		}catch(Exception ee){
+			System.out.println("JQuerypanel:initItemNameSelector:"+ee.toString());	
+		}
 	}
 	Collections.sort(sl);
+	if(debug)
+		   System.out.println("initItemNameSelector:sl="+sl.size());
+	 DefaultComboBoxModel<String> mod=new DefaultComboBoxModel<String>();
 	for(String s:sl)
-		model.addElement(s);
-    itemNameComboBox.setModel(model);
+		   mod.addElement(s);
+    itemNameComboBox.setModel(mod);
+    
     }catch(Exception e){
     	Logger.getLogger(getClass().getName()).severe(e.toString());
     	itemNameComboBox.setModel(model);
     }
+    initType();
 }
 private void initItemValueSelector(){
     DefaultComboBoxModel<String> model=new DefaultComboBoxModel<String>();
+    itemValueComboBox.setModel(model);
+    if(debug)
+		 System.out.println("JQueryPanel:initItemValueSelector:BEGIN");
     try{
+    String component$=(String)componentComboBox.getSelectedItem();	
     String element$=(String)elementComboBox.getSelectedItem();
-    String field$=(String)itemNameFieldComboBox.getSelectedItem();
+    String constituent$=(String)itemNameFieldComboBox.getSelectedItem();
     String itemName$=(String)itemNameComboBox.getSelectedItem();
     Entigrator entigrator=console.getEntigrator(entihome$);
-    String[]sa=select();
+   // String[]sa=select();
+    String[]sa=elementScope.toArray(new String[0]);
+    if(sa==null)
+    	return;
+    	
+    if(debug)
+		 System.out.println("JQueryPanel:initItemValueSelector:element scope="+sa.length);
     ArrayList <String>sl=new ArrayList<String>();
 	Sack entity;
-    String[] ia;
-    
-    String value$;
-    Core item;
+    Core [] ca;
 	for(String s:sa){
+		if(!component$.equals(entigrator.getEntityType(s)))
+			continue;
 		entity=entigrator.getEntityAtKey(s);
 		if(entity==null)
 			continue;
-		ia=entity.elementList(element$);
-		if(ia!=null)
-			for(String i:ia){
-	          value$=null;
-			  item=entity.getElementItem(element$, i);		
-			  if("name".equals(field$)&&itemName$.equals(item.name))
-				  value$=item.value;
-			     
-			  if("type".equals(field$)&&itemName$.equals(item.type))
-				     value$=item.value;
-			 if(value$!=null&&!sl.contains(value$))	
-				sl.add(value$);
-			}
+		if(!component$.equals(entity.getProperty("entity")))
+			continue;
+		ca=entity.elementGet(element$);
+		if(ca==null)
+			continue;
+		for(Core c:ca){
+			if("type".equals(constituent$))
+				if(itemName$.equals(c.type))
+					if(!sl.contains(c.value))
+						sl.add(c.value);
+			if("name".equals(constituent$))
+				if(itemName$.equals(c.name))
+					if(!sl.contains(c.value))
+						sl.add(c.value);	
+		}
 	}
 	Collections.sort(sl);
 	for(String s:sl)
@@ -851,25 +1081,144 @@ private void initItemValueSelector(){
     	itemValueComboBox.setModel(model);
     }
 }
+
+private void initTable(){
+	 try{
+		 JTable originTable=getTable(entigrator, entity);
+		 if(debug)
+			 System.out.println("JQueryPanel:initTable:origin table rows="+originTable.getRowCount());
+		 DefaultTableModel originModel=(DefaultTableModel)originTable.getModel();
+		 DefaultTableModel model=new DefaultTableModel();
+		 int originColumns=originModel.getColumnCount();
+		 if(debug)
+			 System.out.println("JQueryPanel:initTable:origin table columns="+originColumns);
+		
+		 String[] headers=new String[originColumns+1];
+		 headers[0]="number";
+		 for(int i=1;i<originColumns+1;i++)
+			 headers[i]=originModel.getColumnName(i-1);
+		 if(debug)
+			 System.out.println("JQueryPanel:initTable:1");
+	
+		 model.setColumnIdentifiers(headers);
+		 int originRows=originModel.getRowCount();
+		 String [] row;
+		 for(int i=0;i<originRows;i++){
+			 row=new String[originColumns+1];
+			 row[0]=String.valueOf(i);
+			 //model.setValueAt(String.valueOf(i),i,0);
+			 for(int j=1;j<originColumns+1;j++){
+				 row[j]=(String)originModel.getValueAt(i, j-1);
+			 }
+			 model.addRow(row);
+		 }
+		 table=new JTable(model);
+		 table.setAutoCreateRowSorter(true);
+		 table.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
+		 table.addMouseListener(new java.awt.event.MouseAdapter() {
+	   	    @Override
+	   	    public void mouseClicked(java.awt.event.MouseEvent evt) {
+	   	       try{
+	   	    	int row = table.rowAtPoint(evt.getPoint());
+	   	        int col = table.columnAtPoint(evt.getPoint());
+//	   	        System.out.println("JQueryPanel:cell click:row="+row+" column="+col);
+	   	        if(col==1){
+	   	        	String label$=(String)table.getValueAt(row, 1);
+	   	        	//System.out.println("JQueryPanel:cell click:label="+label$);
+	   	            Entigrator entigrator=console.getEntigrator(entihome$);
+	   	            String entity$=entigrator.indx_keyAtLabel(label$);
+	   	            JEntityFacetPanel efp=new  JEntityFacetPanel();
+	   	            String efpLocator$=efp.getLocator();
+	   	         efpLocator$=Locator.append(efpLocator$, Entigrator.ENTIHOME, entihome$);
+	   	      efpLocator$=Locator.append(efpLocator$, EntityHandler.ENTITY_KEY, entity$);
+	   	      JConsoleHandler.execute(console, efpLocator$);
+	   	        }
+	   	       }catch(Exception e){
+	   	    	   System.out.println("JQueryPanel:initTable:mouse clicked:"+e.toString());
+	   	       }
+	   	        }
+	   	    });
+		  sorter = new TableRowSorter<>(model);
+		  table.setRowSorter(sorter);
+		  sorter.addRowSorterListener(new RowSorterListener() {
+				    @Override
+				    public void sorterChanged(RowSorterEvent evt) {
+				    	//if(debug)
+						//	System.out.println("JQueryPanel:show content:sorter changed="+evt.toString());
+							
+				    	int indexOfNoColumn = 0;
+				        for (int i = 0; i < table.getRowCount(); i++) {
+				            table.setValueAt(i + 1, i, indexOfNoColumn);
+				        }
+				    }
+				});
+			
+			int cnt=model.getColumnCount();
+		    String column$;
+		    Core[]ca=entity.elementGet("header.alias");
+		    for(int i=1;i<cnt;i++){
+		 	   column$=model.getColumnName(i);
+		 	    for(Core c:ca){
+		 	    	if(debug)
+		 	    		System.out.println("JQueryPanel:initTable:c type="+c.type+" value="+c.value); 
+		 		   if(c.value.equals(column$)){
+		 			 if("int".equals(c.type)){
+		 				if(debug)
+		 			  		System.out.println("JQueryPanel:initTable:set int comparator: i="+i);
+		 				 sorter.setComparator(i,new JViewPanel.IntComparator());
+		 			 }
+		 			 if("long".equals(c.type))
+		 				 sorter.setComparator(i,new JViewPanel.LongComparator());
+		 			 if("float".equals(c.type))
+		 				 sorter.setComparator(i,new JViewPanel.FloatComparator());
+		 			 if("double".equals(c.type))
+		 				 sorter.setComparator(i,new JViewPanel.DoubleComparator());
+		 		   }
+		 		   
+		 	   }
+		    }
+
+			scrollPane.getViewport().add(table);	
+	  }catch(Exception e){
+	    	Logger.getLogger(getClass().getName()).severe(e.toString());
+	    
+	    }
+}
 private void addHeader(){
 	 try{
 		 if(debug)
 			 System.out.println("JQueryPanel:addHeader:BEGIN");
 		 Entigrator entigrator=console.getEntigrator(entihome$);
-		 Sack query=entigrator.getEntityAtKey(entityKey$);
 		 String headerKey$=Identity.key();
 		 String itemName$=(String)itemNameComboBox.getSelectedItem();
-		 Core[]ca=query.elementGet("header.item");
+		 if(!entity.existsElement("header.item"))
+			 entity.createElement("header.item");
+		
+		 if(!entity.existsElement("header.element"))
+			 entity.createElement("header.element");
+		 if(!entity.existsElement("header.component"))
+			 entity.createElement("header.component");
+		 if(!entity.existsElement("header.alias"))
+			 entity.createElement("header.alias");
+		
+		 Core[]ca=entity.elementGet("header.item");
+		 if(ca!=null)
 		 for(Core c:ca)
 			 if(itemName$.equals(c.value))
 				 return;
-	    query.putElementItem("header.item", new Core((String)itemNameFieldComboBox.getSelectedItem(),headerKey$,(String)itemNameComboBox.getSelectedItem()));
-	    ca=query.elementGet("header.element");
-	    query.putElementItem("header.element", new Core(String.valueOf(ca.length),headerKey$,(String)elementComboBox.getSelectedItem()));
-	    orderColumns();
-		entigrator.replace(query); 
-		showHeader();
-		showContent();
+	    entity.putElementItem("header.item", new Core((String)itemNameFieldComboBox.getSelectedItem(),headerKey$,(String)itemNameComboBox.getSelectedItem()));
+	    entity.putElementItem("header.alias", new Core("string",headerKey$,(String)itemNameComboBox.getSelectedItem()));
+	    ca=entity.elementGet("header.element");
+	    if(ca!=null)
+	    entity.putElementItem("header.element", new Core(String.valueOf(ca.length),headerKey$,(String)elementComboBox.getSelectedItem()));
+	    else
+	    	entity.putElementItem("header.element", new Core("0",headerKey$,(String)elementComboBox.getSelectedItem()));
+	    entity.putElementItem("header.component", new Core(null,headerKey$,(String)componentComboBox.getSelectedItem()));
+	   // orderColumns();
+		entigrator.replace(entity); 
+		//if(showHeader())
+		//showContent();
+		initTable();
 	 }catch(Exception e){
 	    	Logger.getLogger(getClass().getName()).severe(e.toString());
     }
@@ -889,72 +1238,33 @@ private class SimpleHeaderRenderer extends JLabel implements TableCellRenderer {
         return this;
     }
 }
-private void orderColumns(){
-	try{
-	    Entigrator entigrator=console.getEntigrator(entihome$);
-	    Sack query=entigrator.getEntityAtKey(entityKey$);
-	    Core[]ca=query.elementGet("header.item");
-	    // ca=Core.sortAtValue(ca);
-	     ArrayList<String>sl=new ArrayList<String>();
-	     int i=0;
-	     for(Core c:ca)
-	     	if(c.value!=null){
-	     		sl.add(c.value);
-	     	}
-	      Collections.sort(sl,new ItemComparator());
-	      Core element;
-	      for(String s:sl){
-	     	//System.out.println("JQueryPanel.showHeader:item="+s);
-	     	 for(Core c:ca){
-	     		 if(s.equals(c.value)){
-	     			 element=query.getElementItem("header.element", c.name);
-	     			 element.type=String.valueOf(i++);
-	     			 query.putElementItem("header.element", element); 
-	     		 }
-	     	 }
-	      }
-	      entigrator.save(query);
-	}catch(Exception e ){
-		LOGGER.severe(e.toString());
-	}
-}
-private void showHeader(){
+/*
+private boolean showHeader(){
 	try{
     Entigrator entigrator=console.getEntigrator(entihome$);
-    Sack query=entigrator.getEntityAtKey(entityKey$);
+    if(debug)        
+	       System.out.println("JQueryPanel:showHeader:BEGIN");
+    entity=entigrator.get(entity);
+    Core[]ca=entity.elementGet("header.element");
+    if(ca==null){
+    	if(debug)        
+ 	       System.out.println("JQueryPanel:showHeader:header.element is empty");
+    	return false;
+    }
+    ca=Core.sortAtIntType(ca);
     
-    if(!query.existsElement("header.item")){
-		 query.createElement("header.item");
-		 query.putElementItem("header.item", new Core("name",entityKey$,"number"));
-		 query.putElementItem("header.item", new Core("type",LABEL_KEY,"label"));
-    }
-    if(!query.existsElement("header.element")){
-		query.createElement("header.element");
-		 query.putElementItem("header.element", new Core("0",entityKey$,"none"));
-		 query.putElementItem("header.element", new Core("1",LABEL_KEY,"property"));
-    }
-    Core[]ca=query.elementGet("header.item");
     ArrayList<String>sl=new ArrayList<String>();
     int i=0;
-    for(Core c:ca)
-    	if(c.value!=null){
-    		sl.add(c.value);
+    sl.add("num");
+    String header$;
+    for(Core c:ca){
+    	header$=entity.getElementItemAt("header.alias", c.name);
+    	if(header$!=null)
+    		sl.add(header$);
+    	
     	}
-     Collections.sort(sl,new ItemComparator());
-     Core element;
-     for(String s:sl){
-//    	System.out.println("JQueryPanel.showHeader:item="+s);
-    	 for(Core c:ca){
-    		 if(s.equals(c.value)){
-    			 element=query.getElementItem("header.element", c.name);
-  //  			 System.out.println("JQueryPanel.showHeader:order="+i);
-    			 element.type=String.valueOf(i++);
-    			 query.putElementItem("header.element", element); 
-    			 break;
-    		 }
-    	 }
-     }
-   entigrator.save(query);
+    if(debug)        
+	       System.out.println("JQueryPanel:showHeader:sl="+sl.size());
   DefaultTableModel model=new DefaultTableModel(
 			  null
 			  ,
@@ -967,163 +1277,382 @@ private void showHeader(){
 		    public void mouseClicked(MouseEvent e) {
 		    	try{
 		    	int col = table.columnAtPoint(e.getPoint());
-		    	String col$=String.valueOf(col);
-		//    	String itemName$ = table.getColumnName(col);
-	            
-	//	       System.out.println("Column index=" + col+" item="+ itemName$);
+		    	String col$=String.valueOf(col-1);
+		    	if(col==0)
+		    		col$="";
+		    	
+		    	String itemName$ = table.getColumnName(col);
+	      if(debug)        
+		       System.out.println("Column index=" + col+" name="+itemName$);
 		        String element$=null;
-		  //      String field$=null;
 		        Entigrator entigrator=console.getEntigrator(entihome$);
 		        Sack query=entigrator.getEntityAtKey(entityKey$);
 		        Core[] ca=query.elementGet("header.element");
 		        String headerKey$=null;
 		//      System.out.println("JQueryPanel:header listener:item name="+itemName$);
 		        for(Core c:ca)
+		        	
 		        		if(col$.equals(c.type)){
 		        			element$=c.value;
 		        			 headerKey$=c.name;
 		        			break;
 		        		}
-		        
+		        if(debug)        
+				       System.out.println("Column index=" + col+" name="+itemName$+" header="+headerKey$);
+		       if(headerKey$==null)
+		    	   return;
+		    	   
+		       if(debug)        
+			       System.out.println("JQueryPanel:showHeader:1");		     
 		        Core item=query.getElementItem("header.item", headerKey$);		
-		        	
+		        String component$=query.getElementItemAt("header.component", headerKey$);	
 		 //       System.out.println("JQueryPanel:header listener:element=" +element$ + " item=" + itemName$+" field="+field$);
+		      
+		        if(componentComboBox.getItemCount()<1)
+		        	initComponentSelector();
 		        
-		        setSelection(elementComboBox,element$);
+		        setSelection(componentComboBox,component$);
+		        setSelection(elementComboBox,element$);   //
+			  
 		        setSelection(itemNameComboBox,item.value);
 		        
 		        setSelection(itemNameFieldComboBox,item.type);
+		      
 		    	}catch(Exception ee){
 		    		Logger.getLogger(JQueryPanel.class.getName()).severe(ee.toString());
 		    	}
 		    }
 		});
+	  if(debug)        
+	       System.out.println("JQueryPanel:showHeader:return true");	
+	  return true;
 	}catch(Exception e ){
 		LOGGER.severe(e.toString());
 	}
+	return false;
 }
-private static String[] getRow(Sack entity,Sack query,int num){
-	try{	
-	//	 System.out.println("JQuerypanel:getRow:num="+num);
-		Core[]ca=query.elementGet("header.item");
-	    ArrayList<String>sl=new ArrayList<String>(); 
-	    sl.add(String.valueOf(num));
-	    sl.add(entity.getProperty("label"));
-		Properties props=new Properties();
-		String value$="";
-		String element$;
-		Core[] va;
-		 for(Core c:ca){
-			 element$=query.getElementItemAt("header.element", c.name);
-		//	 System.out.println("JQuerypanel:getRow:element="+element$+" field="+c.type);
-			 if("name".equals(c.type)){
-				 value$=entity.getElementItemAt(element$,c.value);
-				 if(value$==null)
-					 value$="";
-			 }else{
-					value$="";
-				va=entity.elementGet(element$);
-				if(va!=null)
-				{
-			//	System.out.println("JQuerypanel:getRow:va="+va.length);
-				for(Core v:va){
-				//	System.out.println("JQuerypanel:getRow:v.type="+v.type+" c.value="+c.value);
-					if(c.value.equals(v.type)){
-			           value$=v.value;
-    				    break;
-					}
-				}}
-			 }
-			 props.put(c.value,value$);
-	//		 System.out.println("JQuerypanel:getRow:put name="+c.value+" value="+value$);	 
-	         
-		 }
-		//System.out.println("JQuerypanel:getRow:value="+value$);	 
-		 
-		va=query.elementGet("header.element");
-		String[]sva=new String[va.length];
+*/
+private static String getColumnValue(Entigrator entigrator, Sack entity,String element$,String itemType$, String itemValue$ ){
+	try{
+		if(debug)
+			  System.out.println("JQuerypanel:getColumnValue:element="+element$+" item type="+itemType$+" value="+itemValue$);
+		if("name".equals(itemType$)){
+			 return entity.getElementItemAt(element$,itemValue$);
+		 }else{
+		Core[]	va=entity.elementGet(element$);
+			if(va!=null)
+			{
+		//	System.out.println("JQuerypanel:getRow:va="+va.length);
+			for(Core v:va){
+			//	System.out.println("JQuerypanel:getRow:v.type="+v.type+" c.value="+c.value);
+				if(itemValue$.equals(v.type)){
+		           return v.value;
+				}
+			}
+		  }
+		 } 
 		
-		int col;
-		for(Core v:va){
-			value$=props.getProperty(query.getElementItemAt("header.item", v.name));
-			if(value$==null)
-				value$="";
-			col=Integer.parseInt(v.type);
-			sva[col]=value$;
-			if(query.getKey().equals(v.name))
-				sva[col]=String.valueOf(num);
-		}
-		
-		// System.out.println("JQuerypanel:getRow:FINISH");
-		 return sva;
-	    }catch(Exception e ){
-	Logger.getLogger(JQueryPanel.class.getName()).severe(e.toString());
-}
+	}catch(Exception e){
+		Logger.getLogger(JQueryPanel.class.getName()).severe(e.toString());
+	}
 	return null;
 }
+private String[] getRow(Entigrator entigrator,ArrayList<String>rowScope,int num){
+	try{
+		Core[] ca=entity.elementGet("header.element");
+		ca=Core.sortAtIntType(ca);
+		if(ca==null)		return null;
+		ArrayList<String>sl=new ArrayList<String>();
+		String value$;
+		sl.add(String.valueOf(num));
+		boolean empty=true;
+		for(Core c:ca){
+			value$=getColumnValue(entigrator, c.name, rowScope);
+			if(value$==null)
+				value$="";
+			else
+				empty=false;
+			sl.add(value$);
+		}
+	if(empty)
+		return null;
+	return sl.toArray(new String[0]);	
+	}catch(Exception e){
+		Logger.getLogger(JQueryPanel.class.getName()).severe(e.toString());
+	}
+	return null;
+}
+private String getColumnValue(Entigrator entigrator,String headerKey$, ArrayList<String>rowScope){
+	try{
+		String element$=entity.getElementItemAt("header.element", headerKey$);
+		String component$=entity.getElementItemAt("header.component", headerKey$);
+		Core item=entity.getElementItem("header.item", headerKey$);
+		String constituent$=item.type;
+		String item$=item.value;
+		Sack member;
+		for(String r:rowScope){
+			member=entigrator.getEntityAtKey(r);
+			if(member==null)
+				continue;
+			if(!component$.equals(member.getProperty("entity")))
+				continue;
+			if("name".equals(constituent$))
+				return member.getElementItemAt(element$, item$);
+			else{
+				Core []ca=member.elementGet(element$);
+				if(ca!=null)
+					for(Core c:ca)
+						if(item$.equals(c.type))
+							return c.value;
+			}
+		}
+	}catch(Exception e ){
+		Logger.getLogger(JQueryPanel.class.getName()).severe(e.toString());
+	}
+		return null;
+}
+private static void addRow(Entigrator entigrator,String[]row,Sack query,Sack member,DefaultTableModel model){
+	 try{
+		 
+		 String entityType$=member.getProperty("entity");
+			Core[] ca=query.elementGet("header.component");
+			ArrayList <Core> ikl=new ArrayList<Core>();
+			for(Core c:ca)
+				if(entityType$.equals(c.value))
+					ikl.add(c);
+			Core[] ika=ikl.toArray(new Core[0]);
+			ca=query.elementGet("header.element");
+			ca=Core.sortAtIntType(ca);
+			ikl.clear();
+			int index;
+			String element$;
+			String name$;
+			String value$=null;
+			String component$;
+			String field$;
+			String[] newRow=new String[row.length];
+				 for(int i=0;i<row.length;i++)
+					 newRow[i]=row[i];
+			Core item;	
+			Core []va;
+			for(int i=0;i<ca.length;i++){
+				value$=null;
+				component$=query.getElementItemAt("header.component", ca[i].name);
+				if(!component$.equals(member.getProperty("entity")))
+					continue;
+				element$=ca[i].value;
+				item=query.getElementItem("header.item", ca[i].name);
+				name$=item.value;
+				field$=item.type;
+				index=i;
+				va=member.elementGet(element$);
+				if(va!=null)
+					for(Core v:va){
+						if("type".equals(field$))
+							if(name$.equals(v.type))
+								value$=v.value;
+						if("name".equals(field$))
+							if(name$.equals(v.name))
+								value$=v.value;		
+								
+					}
+						
+				//for(Core ik:ika)
+				//if(ik.name.equals(ca[i].name)){
+					//index=Integer.parseInt(c.type);
+					
+					
+					//value$=member.getElementItemAt(element$, name$);
+					if(debug)
+						System.out.println("JQueryPanel:addRow:member="+member.getProperty("label")+" element="+element$+" field="+name$+" value="+value$+" index="+index);
+					newRow[index]=value$;
+				//}
+			}
+		 String[] sa=entigrator.ent_listComponents(member);
+		if(sa!=null){
+			Sack newMember;
+			for(String s:sa){
+				newMember=entigrator.getEntityAtKey(s);
+				if(newMember!=null){
+					addRow(entigrator,newRow,query,newMember,model);
+				}
+			}
+		}else{
+		    model.addRow(newRow);
+		    if(debug){
+		    	for(int i=0;i<newRow.length;i++)
+				   System.out.print("["+i+"]="+newRow[i]+" ");
+		       System.out.println();
+		    }
+			}
+	 }catch(Exception e){
+		 Logger.getLogger(JQueryPanel.class.getName()).severe(e.toString());
+	 }
+}
+private static JTable getTable(Entigrator entigrator,Sack query){
+	try{
+	    String[] sa=select(entigrator,query);
+       DefaultTableModel model=new DefaultTableModel();
+       JTable table=new JTable(model);
+       TableRowSorter<DefaultTableModel> sorter = new TableRowSorter<>(model);
+   	   table.setRowSorter(sorter);
+       Core[] hea=query.elementGet("header.element");
+       hea=Core.sortAtIntType(hea);
+       ArrayList <String>headers=new ArrayList<String>();
+       Core alias;
+       String columnType$;
+       for(int i=0;i<hea.length;i++)
+             headers.add(query.getElementItem("header.alias", hea[i].name).value);
+       if(debug){
+    	   System.out.println("JQueryPanel:getTable: headers="+headers.size());
+       }
+        model.setColumnIdentifiers(headers.toArray(new String[0]) );
+        for(int i=0;i<hea.length;i++){
+            alias=query.getElementItem("header.alias", hea[i].name);
+            columnType$=alias.type;
+			//System.out.println("JQueryPanel:setSorter: column name="+model.getColumnName(i));
+			if("int".equals(columnType$))
+ 				 sorter.setComparator(i,new JViewPanel.IntComparator());
+ 			 if("long".equals(columnType$))
+ 				 sorter.setComparator(i,new JViewPanel.LongComparator());
+ 			 if("float".equals(columnType$))
+ 				 sorter.setComparator(i,new JViewPanel.FloatComparator());
+ 			 if("double".equals(columnType$))
+ 				 sorter.setComparator(i,new JViewPanel.DoubleComparator());
+      }
+       int columnCount=model.getColumnCount();
+       Sack member;
+       String[]	row=new String[columnCount];
+       //
+       if(debug){
+    	   System.out.println("JQueryPanel:getTable: row="+row.length+" model="+model.getColumnCount());
+       }
+       //
+       for(String s:sa){
+          member=entigrator.getEntityAtKey(s);
+    	 if(member==null)
+    		 continue;
+    	 addRow(entigrator, row, query, member, model); 
+       }
+       return table;
+   	}catch(Exception e){
+		Logger.getLogger(JQueryPanel.class.getName()).severe(e.toString());
+	}
+	return null;
+}
+/*
 private void showContent(){
 	try{
-	 	
-     String[] sa=select();
-     Entigrator entigrator=console.getEntigrator(entihome$);
-     Sack query=entigrator.getEntityAtKey(entityKey$);
-     ArrayList <String>sl=new ArrayList<String>();
-     String label$;
-     for(String s:sa){
-    	 label$=entigrator.indx_getLabel(s);
-    	 if(label$==null){
-    		 if(debug)
-    		    System.out.println("JQueryPanel:showContent:cannot get  label for key="+s);
-    		 continue;
-    	 }
-    	 sl.add(label$);
-     }
-     Collections.sort(sl,new SortIgnoreCase());
-     Sack entity;
-     String entity$;
+	    String[] sa=select();
+        Sack rowMember;
+     ArrayList <String>rowScope=new ArrayList<String>();
+     ArrayList <String>ensemble=new ArrayList<String>();
+     String[] ma;
+     String[] ta;
      String[] row;
-     StringBuffer sb;
      int num=0;
+     ArrayList<String[]>rows=new ArrayList<String[]>();
      DefaultTableModel model=(DefaultTableModel)table.getModel();
-     for(String s:sl){
-    	// System.out.println("JQueryPanel:showContent:label="+s);
-    	 entity$=entigrator.indx_keyAtLabel(s);
-    	 entity=entigrator.getEntityAtKey(entity$);
-    	 if(entity==null){
-    		 if(debug)
-    		 System.out.println("JQueryPanel:showContent:cannot get entity="+entity$);
+     Core[] ca=entity.elementGet("header.component");
+     ArrayList<String> components=new ArrayList<String>();
+//     System.out.println("JQueryPanel:showContent:1");
+     for(Core c:ca)
+    	 if(!components.contains(c.value))
+    		 components.add(c.value);
+     for(String s:sa){
+    	
+    	 rowScope.clear();
+    	 ensemble.clear();
+    	 rowMember=entigrator.getEntityAtKey(s);
+    	 if(rowMember==null)
     		 continue;
+      	 ma=entigrator.ent_getEnsemble(rowMember);
+    	 String component$;
+      	 if(ma!=null)
+    		for(String m:ma){
+    		 component$=entigrator.getEntityType(m);
+    		 if(components.contains(component$))
+    		   if(!ensemble.contains(m))	
+    		       ensemble.add(m);
+    		}
+    	 row=getRow(entigrator, ensemble, num);
+    	 if(row!=null)
+    	 if(!containsRow(rows,row)){
+    		 rows.add(row);
+    		 num++;
     	 }
-    	 row=getRow(entity, query,num++);
-    	 if(row==null){
-    		 if(debug)
-    		 System.out.println("JQueryPanel:showContent:cannot get row num="+num);
-    		 continue;
-    	 }
-    	 model.addRow(row);
-    	 sb=new StringBuffer();
-    	 for(String r:row)
-    	   sb.append(r+";");
-//    	 System.out.println("JQueryPanel:showContent:"+sb.toString());
      }
-	}catch(Exception e){
+     if(rows.size()>0)
+		 for(String[] r:rows)
+			 model.addRow(r);
+     
+      sorter = new TableRowSorter<>(model);
+	table.setRowSorter(sorter);
+	sorter.addRowSorterListener(new RowSorterListener() {
+		    @Override
+		    public void sorterChanged(RowSorterEvent evt) {
+		    	if(debug)
+					System.out.println("JQueryPanel:show content:sorter changed="+evt.toString());
+					
+		    	int indexOfNoColumn = 0;
+		        for (int i = 0; i < table.getRowCount(); i++) {
+		            table.setValueAt(i + 1, i, indexOfNoColumn);
+		        }
+		    }
+		});
+	int cnt=model.getColumnCount();
+    String column$;
+    ca=entity.elementGet("header.alias");
+    for(int i=1;i<cnt;i++){
+    	
+ 	   column$=model.getColumnName(i);
+ 	    for(Core c:ca){
+ 	//	  System.out.println("JQueryPanel:showContent:c type="+c.type+" value="+c.value); 
+ 		   if(c.value.equals(column$)){
+ 			 if("int".equals(c.type)){
+ 				if(debug)
+ 			  		System.out.println("JQueryPanel:showContent:set int comparator: i="+i);
+ 				 sorter.setComparator(i,new JViewPanel.IntComparator());
+ 			 }
+ 			 if("long".equals(c.type))
+ 				 sorter.setComparator(i,new JViewPanel.LongComparator());
+ 			 if("float".equals(c.type))
+ 				 sorter.setComparator(i,new JViewPanel.FloatComparator());
+ 			 if("double".equals(c.type))
+ 				 sorter.setComparator(i,new JViewPanel.DoubleComparator());
+ 		   }
+ 		   
+ 	   }
+    }
+
+   	}catch(Exception e){
 		LOGGER.severe(e.toString());
 	}
 }
+*/
 private void clearHeader(){
 	int response = JOptionPane.showConfirmDialog(this, "Clear header ?", "Confirm",
 	        JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
    if (response == JOptionPane.YES_OPTION) {
         try{
+        	//DefaultTableModel model=new DefaultTableModel();
+        	 DefaultTableModel model=new DefaultTableModel(
+       			  null
+       			  ,
+       				new String[]{"num"}
+       			);
+         	  table.setModel(model);
+        	
+        	
         	Entigrator entigrator=console.getEntigrator(entihome$);
         	Sack query=entigrator.getEntityAtKey(entityKey$);
         	query.removeElement("header.element");
+        	query.removeElement("header.component");
+        	//query.removeElement("header.container");
         	query.removeElement("header.item");
+        	query.removeElement("header.alias");
         	query.removeElement("exclude");
-        	entigrator.save(query);
-        	DefaultTableModel model=new DefaultTableModel();
-        	table.setModel(model);
-        	
+        	entigrator.replace(query);
 	    } catch(Exception e){
 	    	LOGGER.severe(e.toString());
 	    }
@@ -1131,32 +1660,67 @@ private void clearHeader(){
 }
 private void removeColumn(){
 	String itemName$=(String)itemNameComboBox.getSelectedItem();
-	if("label".equals(itemName$))
-		return;
 	int response = JOptionPane.showConfirmDialog(this, "Remove column '"+itemName$+"' ?", "Confirm",
 	        JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
    if (response == JOptionPane.YES_OPTION) {
         try{
         	Entigrator entigrator=console.getEntigrator(entihome$);
-        	Sack query=entigrator.getEntityAtKey(entityKey$);
+        	entity=entigrator.getEntityAtKey(entityKey$);
         	
-           	Core[] ca=query.elementGet("header.item");
+           	Core[] ca=entity.elementGet("header.item");
         	for(Core c:ca){
         		if(itemName$.equals(c.value)){
-        			query.removeElementItem("header.element", c.name);
-                	query.removeElementItem("header.item",c.name);	
+        			entity.removeElementItem("header.element", c.name);
+                	entity.removeElementItem("header.item",c.name);	
+                	entity.removeElementItem("header.component", c.name);
+                	entity.removeElementItem("header.alias", c.name);
         		}
         	}
-        	entigrator.save(query);
-        	DefaultTableModel model=new DefaultTableModel();
-        	table.setModel(model);
-        	showHeader();
-        	showContent();
+        	entigrator.replace(entity);
+        	//showHeader();
+        	initTable();
 	    } catch(Exception e){
 	    	LOGGER.severe(e.toString());
 	    }
 }
 }
+private void setType(){
+	try{
+	        String itemName$=(String)itemNameComboBox.getSelectedItem();
+	    	Entigrator entigrator=console.getEntigrator(entihome$);
+        	entity=entigrator.getEntityAtKey(entityKey$);
+        	String itemKey$=entity.getElementItemAtValue("header.item", itemName$);
+        	String itemType$=(String)itemTypeComboBox.getSelectedItem();
+        	Core alias=entity.getElementItem("header.alias", itemKey$);
+        	alias.type=itemType$;
+        	entity.putElementItem("header.alias",alias);
+        	entigrator.replace(entity);
+        	
+	    } catch(Exception e){
+	    	LOGGER.severe(e.toString());
+	    }
+}
+private void initType(){
+	try{
+	        String itemName$=(String)itemNameComboBox.getSelectedItem();
+	    if(debug)
+	    	System.out.println("JQueryPanel.initType:item name="+itemName$);
+	        Entigrator entigrator=console.getEntigrator(entihome$);
+        	entity=entigrator.getEntityAtKey(entityKey$);
+        	String itemKey$=entity.getElementItemAtValue("header.item", itemName$);
+        	//String itemType$=(String)itemTypeComboBox.getSelectedItem();
+        	Core alias=entity.getElementItem("header.alias", itemKey$);
+        	 if(debug)
+     	    	System.out.println("JQueryPanel.initType:item type="+alias.type);
+        	int cnt=itemTypeComboBox.getModel().getSize();
+        	for(int i=0;i<cnt;i++)
+        		if(alias.type.equals(itemTypeComboBox.getItemAt(i)))
+        	      itemTypeComboBox.setSelectedIndex(i);
+	    } catch(Exception e){
+	    	LOGGER.severe(e.toString());
+	    }
+}
+/*
 private void setSelection(JComboBox <String>comboBox,String item$){
 	 ComboBoxModel<String> model=comboBox.getModel();
 	 if (model != null) {
@@ -1172,6 +1736,7 @@ private void setSelection(JComboBox <String>comboBox,String item$){
         }
     }
 }
+*/
 static class ItemComparator implements Comparator<String>{
     @Override
     public int compare(String l1$, String l2$) {
@@ -1181,10 +1746,6 @@ static class ItemComparator implements Comparator<String>{
     		l1$="$$$$a";
     	if(l2$.equals("number"))
     		l2$="$$$$a";
-    	if(l1$.equals("label"))
-    		l1$="$$$$b";
-    	if(l2$.equals("label"))
-    		l2$="$$$$b";
     	int ret=l1$.compareToIgnoreCase(l2$);
     		return 	ret;
     	}catch(Exception e){
@@ -1304,18 +1865,19 @@ public void activate() {
 	// TODO Auto-generated method stub
 	
 }
-public static String getViewItems(Entigrator entigrator,String locator$){
+public  static String getWebItems(Entigrator entigrator,String locator$){
 	try{
 		//	System.out.println("IndexPanel.instantiate:locator="+locator$);
 			
 			Properties locator=Locator.toProperties(locator$);
 			String entityLabel$=locator.getProperty(EntityHandler.ENTITY_LABEL);
+			String sortColumnName$=locator.getProperty(JViewPanel.SORT_COLUMN_NAME);
 			String entityKey$=entigrator.indx_keyAtLabel(entityLabel$);
 		    Sack  query=entigrator.getEntityAtKey(entityKey$);
 			 StringBuffer sb=new StringBuffer();
 			 sb.append("<table style=\"text-align: left;  background-color: transparent;\"  border=\"1\" cellpadding=\"2\" cellspacing=\"2\">");
 			 sb.append(getWebHeader(query));
-			 sb.append(getWebItems(entigrator,query));
+			 sb.append(getWebItems(entigrator,query,sortColumnName$));
 	         sb.append("</table>"); 
 			return sb.toString(); 
 		}catch(Exception e){
@@ -1325,17 +1887,25 @@ public static String getViewItems(Entigrator entigrator,String locator$){
 }
 private static String getWebHeader(Sack query){
 	try{
-		Core[] ca=query.elementGet("header.item");
+		Core[] ca=query.elementGet("header.element");
 		ArrayList<String>sl=new ArrayList<String>();
 		StringBuffer sb=new StringBuffer();
 		sb.append("<tr>");
-		sb.append("<td><strong>number</strong></td><td><strong>label</strong></td>");
-		for(Core c:ca)
-			if(!"number".equals(c.value)&&!"label".equals(c.value)){
-				sl.add(c.value);
-			}
-		Collections.sort(sl,new SortIgnoreCase());
-		for(String s:sl){
+		sb.append("<td><strong>number</strong></td></td>");
+		ca=Core.sortAtIntType(ca);
+		String value$;
+		//
+//		for(Core c:ca)
+//			System.out.println("JQueryPanel:getWebHeader:c type="+c.type+" name="+c.name+" value="+c.value);
+		//
+		for(Core c:ca){
+			value$=query.getElementItemAt("header.item", c.name);
+				if(!"number".equals(value$))
+				  sb.append("<td  onclick=\"headerClick('"+value$+"')\" style=\"text-decoration:underline;\"><strong>"+value$+"</strong></td>");
+	
+			
+		}
+	for(String s:sl){
 			sb.append("<td><strong>"+s+"</strong></td>");
 		}
 		sb.append("</tr>");
@@ -1345,45 +1915,60 @@ private static String getWebHeader(Sack query){
 	}
 	return null;
 }
-public static String getWebItems(Entigrator entigrator,Sack query){
+public  static String getWebItems(Entigrator entigrator,Sack query,String sortColumnName$){
 	try{
-		String[] sa=select(entigrator,query);
-	     ArrayList <String>sl=new ArrayList<String>();
-	     String label$;
-	     for(String s:sa){
-	    	 label$=entigrator.indx_getLabel(s);
-	    	 if(label$==null){
-	    		 if(debug)
-	    		    System.out.println("JQueryPanel:showContent:cannot get  label for key="+s);
-	    		 continue;
-	    	 }
-	    	 sl.add(label$);
-	     }
-	     Collections.sort(sl,new SortIgnoreCase());
-	     Sack entity;
-	     String entity$;
-	     StringBuffer sb=new StringBuffer();
-	     int num=0;
-	     String row$;
-	     for(String s:sl){
-	    	// System.out.println("JQueryPanel:showContent:label="+s);
-	    	 entity$=entigrator.indx_keyAtLabel(s);
-	    	 entity=entigrator.getEntityAtKey(entity$);
-	    	 if(entity==null){
-	    		 if(debug)
-	    		 System.out.println("JQueryPanel:showContent:cannot get entity="+entity$);
-	    		 continue;
-	    	 }
-         	 row$=getWebItem(entity, query, num++);
-         	 if(debug)
-         	 System.out.println("JQueryPanel:getWebItems:row="+row$);
-         	 sb.append(row$);
-	     }
-	     return sb.toString();
-	}catch(Exception e){
-		 Logger.getLogger(JQueryPanel.class.getName()).severe(e.toString());
-	}
-	return null;
+		Sack id2key=entigrator.getEntityAtKey(entigrator.indx_keyAtLabel("id2key"));
+		JTable table=getTable(entigrator, query);
+		int columns= table.getColumnCount();
+		  int sortColumnIndex=-1;
+		  if(sortColumnName$!=null){
+			  for(int j=0;j<columns;j++)
+				  if(sortColumnName$.equals(table.getColumnName(j))){
+					  sortColumnIndex=j;
+					  break;
+				  }
+			  List <RowSorter.SortKey> sortKeys = new ArrayList<RowSorter.SortKey>();
+			  sortKeys.add(new RowSorter.SortKey(sortColumnIndex, SortOrder.ASCENDING));
+			  TableRowSorter sorter=(TableRowSorter)table.getRowSorter();
+			  sorter.setSortKeys(sortKeys);
+			  sorter.sort();
+		  }
+		  StringBuffer sb=new StringBuffer();
+			//sb.append("<tr>");
+			//sb.append("<td><strong>number</strong></td></td>");
+		  int rows= table.getRowCount();
+		  String columnName$;
+		  String valueId$;
+		  String valueKey$=null;
+		  String valueLabel$;
+		  for(int i=0;i<rows;i++){
+			  sb.append("<tr>");
+			  sb.append("<td>"+String.valueOf(i)+"</td>");
+			  for(int j=0;j<columns;j++){
+				  columnName$=table.getColumnName(j);
+				  valueId$=(String)table.getValueAt(i,j);
+				  valueLabel$=null;
+				  valueKey$=null;
+				  try{
+				  valueKey$=id2key.getElementItemAt(columnName$, valueId$);
+				  }catch(Exception ee){}
+				  if(valueKey$==null)
+				     sb.append("<td>"+valueId$+"</td>");
+				  else{
+					  if(debug)
+						  System.out.println("JQueryPanel:getWebItems: column name="+columnName$+" id="+valueId$+" key="+valueKey$+" label="+valueLabel$);
+					  sb.append("<td  onclick=\"keyClick('"+valueKey$+"')\" style=\"text-decoration:underline;\"><strong>"+valueId$+"</strong></td>");
+				  }
+			  }
+			  sb.append("</tr>");
+		  }
+		  return sb.toString();
+			}catch(Exception e){
+				 Logger.getLogger(JViewPanel.class.getName()).severe(e.toString());
+			}
+			
+			return null;
+			
 }
 public static class SortIgnoreCase implements Comparator<Object> {
     public int compare(Object o1, Object o2) {
@@ -1391,26 +1976,6 @@ public static class SortIgnoreCase implements Comparator<Object> {
         String s2 = (String) o2;
         return s1.toLowerCase().compareTo(s2.toLowerCase());
     }
-}
-private static String getWebItem(Sack entity,Sack query,int num){
-	String[] sa=getRow(entity,query, num);
-	if(sa==null)
-		return null;
-	StringBuffer sb=new StringBuffer();
-	sb.append("<tr>");
-	//for(String s:sa){
-	for(int i=0;i<sa.length;i++){
-		if(sa[i].startsWith("http://")||sa[i].startsWith("https://"))
-			sb.append("<td><a href=\""+sa[i]+"\">"+sa[i]+"</a></td>");
-		else{
-		if(i==1)
-			sb.append("<td  onclick=\"labelClick('"+sa[i]+"')\" style=\"text-decoration:underline;\"><strong>"+sa[i]+"</strong></td>");
-		else
-			sb.append("<td>"+sa[i]+"</td>");
-		}
-	}
-	sb.append("</tr>");
-	return sb.toString();
 }
 
 @Override
@@ -1423,4 +1988,96 @@ public String getFacetIcon() {
 	// TODO Auto-generated method stub
 	return "query.png";
 }
+ private boolean containsRow(ArrayList <String[]> scope,String[] row){
+	 if(scope.size()<1)
+		 return false;
+	 RowComparator rowComparator=new RowComparator(); 
+	 for(String[] r:scope){
+		  if(rowComparator.compare(r, row)==0){
+			
+			  return true;
+		  }
+	 }
+	 return false;
+ }
+ class RowComparator implements Comparator<String[]> {
+	 
+    @Override
+    public int compare(String[] row1, String[]row2) {
+        int cnt=row1.length-row2.length;
+        if(cnt!=0)
+        	return -1;
+        for(int i=1;i<row1.length;i++)
+        	if(!row1[i].equals(row2[i]))
+        		return -1;
+       // System.out.println("r1="+row1+" r2="+row2);
+        return 0;
+    }
+}
+ class IntComparator implements Comparator<String> {
+	    @Override
+	    public int compare(String a, String b) {
+	        try{
+	    	Integer a1=new Integer(a);
+	    	Integer a2=new Integer(b);
+	        return a1.compareTo(a2);
+	        }catch(Exception e){
+	        	return 0;
+	        }
+	    }
+	}
+ class LongComparator implements Comparator<String> {
+	    @Override
+	    public int compare(String a, String b) {
+	        try{
+	    	Long a1=new Long(a);
+	    	Long a2=new Long(b);
+	        return a1.compareTo(a2);
+	        }catch(Exception e){
+	        	return 0;
+	        }
+	    }
+	}
+ class FloatComparator implements Comparator<String> {
+	    @Override
+	    public int compare(String a, String b) {
+	        try{
+	    	Float a1=new Float(a);
+	    	Float a2=new Float(b);
+	        return a1.compareTo(a2);
+	        }catch(Exception e){
+	        	return 0;
+	        }
+	    }
+	}
+ class DoubleComparator implements Comparator<String> {
+	    @Override
+	    public int compare(String a, String b) {
+	        try{
+	    	Double a1=new Double(a);
+	    	Double a2=new Double(b);
+	        return a1.compareTo(a2);
+	        }catch(Exception e){
+	        	return 0;
+	        }
+	    }
+	}
+ private void selectRow(String itemTitle$,String itemValue$){
+	 try{
+		 int colCnt=table.getColumnCount();
+		 int rowCnt=table.getRowCount();
+		 for(int i=0;i<colCnt;i++){
+			 if (itemTitle$.equals(table.getColumnName(i)))
+			   for(int j=0;j<rowCnt;j++){
+				    if(itemValue$.equals(table.getValueAt(j, i)))
+				    	table.setRowSelectionInterval(j, j);
+			 }
+		 }
+			 
+		 
+		 
+	 }catch(Exception e){
+		 Logger.getLogger(getClass().getName()).severe(e.toString());
+	 }
+ }
 }

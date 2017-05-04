@@ -50,6 +50,7 @@ import gdt.jgui.console.JRequester;
 import gdt.jgui.console.WContext;
 import gdt.jgui.console.WUtils;
 import gdt.jgui.entity.query.JQueryFacetOpenItem;
+import gdt.jgui.entity.view.JViewFacetOpenItem;
 import gdt.jgui.tool.JEntityEditor;
 /**
  * Display a list of all facets assigned to the entity.
@@ -482,8 +483,20 @@ public String getWebView(Entigrator entigrator,String locator$) {
 		String basesList$=locator.getProperty(WContext.BASES);
 		String[] sa=Locator.toArray(basesList$);
 		String webHome$=locator.getProperty(WContext.WEB_HOME);
+	
 		String entityLabel$=locator.getProperty(EntityHandler.ENTITY_LABEL);
 		String entityKey$=locator.getProperty(EntityHandler.ENTITY_KEY);
+		/*
+		String action$=locator.getProperty(JRequester.REQUESTER_ACTION);
+		if(JViewFacetOpenItem.ACTION_OPEN_ID.equals(action$)){
+			try{
+				String idName$=JViewFacetOpenItem.ID_NAME;
+				String idValue$=JViewFacetOpenItem.ID_VALUE;
+				Sack id2key=entigrator.getEntityAtKey(entigrator.indx_keyAtLabel("id2key"));
+				entityKey$=id2key.getElementItemAt(idName$, idValue$);
+			}catch(Exception ee){}
+		}
+		*/
 		if(entityKey$==null)
 			entityKey$=entigrator.indx_keyAtLabel(entityLabel$);
 		if(entityLabel$==null)

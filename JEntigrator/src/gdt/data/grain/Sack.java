@@ -36,6 +36,7 @@ import java.util.logging.Logger;
 import javax.xml.parsers.*;
 import org.w3c.dom.*;
 import gdt.data.btree.BTree;
+import gdt.data.store.Entigrator;
 /**
 * The sack is a basic persistent data structure in the application.
 * It serves as a container for entities and index maps.
@@ -58,7 +59,7 @@ public class Sack extends Identity {
    	 * @param fname$ the path of the file. 
 	 * @return a sack.   
    	 */
-      public static Sack parseXML(String fname$) {
+      public static Sack parseXML(Entigrator entigrator,String fname$) {
     	  if(debug)
     	    System.out.println("Sack:parseXML:fname="+fname$); 
     	  final Logger LOGGER= Logger.getLogger(Sack.class.getName());
@@ -78,8 +79,29 @@ public class Sack extends Identity {
             }
             RandomAccessFile raf=new RandomAccessFile(fname$, "rw");
             FileChannel channel = raf.getChannel();
-            FileLock fl =   channel.tryLock();
-            if (fl == null) {
+            //FileLock fl =null;
+            FileLock fl=entigrator.getFileLock(fname$);
+          //  boolean success=false;
+            int n=0;
+            while(fl==null)
+            try{
+            	
+            	n++;
+            	if(n>10){
+            		System.out.println("Sack:parseXML:fatal:cannot lock file="+fname$);
+            		entigrator.removeFileLock(fname$);
+            		return null;
+            	}
+            		fl=channel.tryLock();
+            		entigrator.putFileLock(fname$, fl);
+            		if(debug)
+            		System.out.println("Sack:parseXML:lock channel="+fl.channel().toString());
+            		
+            			
+            }catch(java.nio.channels.OverlappingFileLockException ee){
+            	System.out.println("Sack:parseXML:try lock file="+fname$+"::"+ee.toString());
+            	Thread.currentThread().sleep(10);
+            }
                 int cnt = 0;
                 while (fl == null) {
                     try {
@@ -91,6 +113,7 @@ public class Sack extends Identity {
                          //   System.out.println("Sack:parseXML:cannot parse file" + fname);
                         	LOGGER.severe(":parseXML:cannot parse file" + fname$);
                         	channel.close();
+                        	entigrator.removeFileLock(fname$);
                             return null;
                         }
                     } catch (Exception e) {
@@ -101,10 +124,12 @@ public class Sack extends Identity {
                                 LOGGER.severe(":parseXML: delete wrong file=" + fname$);
                             } catch (Exception eee) {
                             	 LOGGER.severe(":parseXML:cannot delete wrong file=" + fname$);
+                            	 entigrator.removeFileLock(fname$);
+                            	 return null;
                             }
                         }
                     }
-                }
+              
 
             }
             InputStream is = Channels.newInputStream(channel);
@@ -146,10 +171,21 @@ public class Sack extends Identity {
                         }
                     }
             }
+            channel.close();
             raf.close();
+            entigrator.removeFileLock(fname$);
             return ret;
         } catch (Exception e) {
-        	LOGGER.severe(e.toString()+":"+fname$);
+        	LOGGER.severe("cannot parse,delete file:"+fname$);
+        	try{
+        		
+        		new File(fname$).delete();
+        		
+        	}catch(Exception ee){
+        		LOGGER.severe(ee.toString());
+        		
+        	}
+        	entigrator.removeFileLock(fname$);
         	return null;
         }
     }

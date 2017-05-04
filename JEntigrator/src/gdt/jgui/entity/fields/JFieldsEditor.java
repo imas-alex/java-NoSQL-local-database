@@ -74,7 +74,7 @@ import org.apache.commons.codec.binary.Base64;
 public class JFieldsEditor extends JPanel implements JFacetRenderer,JRequester
 {
 	private static final long serialVersionUID = 1L;
-	private Logger LOGGER=Logger.getLogger(JFieldsEditor.class.getName());
+	protected Logger LOGGER=Logger.getLogger(JFieldsEditor.class.getName());
 	public static final String CELL_FIELD_NAME="cell field name";
 	public static final String CELL_FIELD_VALUE="cell field value";
 	public static final String CELL_FIELD="cell field";
@@ -88,17 +88,17 @@ protected String entityKey$;
 protected String entityLabel$;
 protected String requesterResponseLocator$;
 protected String text$;
-private JTable table;
-private JScrollPane scrollPane;
-private Sack entity;
-private Entigrator entigrator;
+protected JTable table;
+protected JScrollPane scrollPane;
+protected Sack entity;
+protected Entigrator entigrator;
 protected JMainConsole console;
 protected JMenu menu;
-JMenuItem deleteItemsItem;
-JMenuItem editCellItem;
-JMenuItem copyItem;
-JMenuItem cutItem;
-JMenuItem pasteItem;
+protected JMenuItem deleteItemsItem;
+protected JMenuItem editCellItem;
+protected JMenuItem copyItem;
+protected JMenuItem cutItem;
+protected JMenuItem pasteItem;
 protected JMenuItem doneItem;
 protected JMenuItem[] postMenu;
 protected String message$;
@@ -386,7 +386,7 @@ public JFieldsEditor() {
 		return this;
 		
 	}
-	private void sort(String header$){
+	protected void sort(String header$){
 		try{
 //			System.out.println("EntityEditor.sort:header="+header$);
 			Core[] ca=entity.elementGet("field");
@@ -399,7 +399,7 @@ public JFieldsEditor() {
 			LOGGER.severe(e.toString());
 		}
 	}
-	private void replaceTable( Core[] ca){
+	protected void replaceTable( Core[] ca){
 		try{
 			table=(JTable)scrollPane.getViewport().getView();
 			DefaultTableModel model=(DefaultTableModel)table.getModel();
@@ -438,7 +438,7 @@ public JFieldsEditor() {
 	public void close() {
 		activate();	
 	}
-	private boolean hasEditingCell(){
+	protected boolean hasEditingCell(){
 		try{
 			
 			JTable table=(JTable)scrollPane.getViewport().getView();
@@ -450,7 +450,7 @@ public JFieldsEditor() {
 		}
 		return false;
 	}
-	private String getEditCellLocator() {
+	protected String getEditCellLocator() {
         try{
 		save();
         String locator$=getLocator();
@@ -502,7 +502,7 @@ public JFieldsEditor() {
 			LOGGER.severe(e.toString());
 		}
 	}
-	private boolean hasSelectedRows(){
+	protected boolean hasSelectedRows(){
 		try{
 			JTable table=(JTable)scrollPane.getViewport().getView();
 			int[] i=table.getSelectedRows();
@@ -514,7 +514,7 @@ public JFieldsEditor() {
 			return false;
 		}
 	}
-	private void addRow(){
+	protected void addRow(){
 		try{
 			JTable table=(JTable)scrollPane.getViewport().getView();
 			DefaultTableModel model=(DefaultTableModel)table.getModel();
@@ -523,7 +523,7 @@ public JFieldsEditor() {
 			LOGGER.severe(e.toString());
 		}
 	}
-	private void deleteRows(){
+	protected void deleteRows(){
 		try{
 			JTable table=(JTable)scrollPane.getViewport().getView();
 			DefaultTableModel tableModel=(DefaultTableModel)table.getModel();
@@ -561,7 +561,7 @@ public JFieldsEditor() {
 			LOGGER.severe(e.toString());
 		}
 	}
-	private void copy(boolean cut){
+	protected void copy(boolean cut){
 		try{
 		JTable table=(JTable)scrollPane.getViewport().getView();
 		DefaultTableModel model=(DefaultTableModel)table.getModel();
@@ -600,7 +600,7 @@ public JFieldsEditor() {
 		LOGGER.severe(e.toString());
 	}
 	}
-	private boolean hasFieldsToPaste(){
+	protected boolean hasFieldsToPaste(){
 		try{
 			String[]sa= console.clipboard.getContent();
 			

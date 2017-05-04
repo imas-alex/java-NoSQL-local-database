@@ -72,7 +72,7 @@ import org.apache.commons.codec.binary.Base64;
 */
 public class JBaseNavigator extends JItemsListPanel implements WContext{
 	private static final long serialVersionUID = 1L;
-	boolean debug=false;
+	boolean debug=true;
 private Logger LOGGER=Logger.getLogger(JBaseNavigator.class.getName());
 	String entihome$;
 	boolean keep=true;
@@ -320,7 +320,8 @@ private Logger LOGGER=Logger.getLogger(JBaseNavigator.class.getName());
 	Runnable Reindex=new Runnable(){
 	public void run(){
 		Entigrator entigrator=console.getEntigrator(entihome$);
-		entigrator.store_block();
+		entigrator.setSingleMode(true);
+		entigrator.setBulkMode(true);
 		entigrator.indx_reindex(null);
 		String [] sa=entigrator.indx_listEntities();
 		Sack entity;
@@ -337,7 +338,8 @@ private Logger LOGGER=Logger.getLogger(JBaseNavigator.class.getName());
 		}
 		//System.out.println("Entigrator:Reindex:finish");
 		
-		entigrator.store_unblock();
+		entigrator.setSingleMode(false);
+		entigrator.setBulkMode(false);
 	}
 	};
 	/**
@@ -577,13 +579,19 @@ Runnable Paste=new Runnable(){
 		int max=0;
 		for(String s:sa){
 			label$=entigrator.indx_getLabel(s);
+			if(label$==null)
+				continue;
+			try{
 			cnt=Integer.parseInt(label$.substring(5, label$.length()));
+			}catch(Exception ee){}
 			if (cnt>max){
 				max=cnt;
 			}
 		}
 		cnt=max+1;
 	}
+	if(debug)
+		System.out.println("JBasenavigator:Paste:BEGIN");
 	Sack undo=entigrator.ent_new("undo", "undo_"+String.valueOf(cnt));
 	entigrator.save(undo);
 	entigrator.ent_reindex(undo);
@@ -607,10 +615,15 @@ Runnable Paste=new Runnable(){
 	File oldIcons=new File(entigrator.getEntihome()+"/"+Entigrator.ICONS);
 	String entityBodies$=entigrator.getEntihome()+"/"+Entigrator.ENTITY_BASE+"/data/";
     String icon$;
+    if(debug)
+		System.out.println("JBasenavigator:Paste:jrea="+jrea.length);
 	for(JReferenceEntry jre:jrea){
 		try{
+			 if(debug)
+					System.out.println("JBasenavigator:Paste:jre type="+jre.type+" name="+jre.name+" value="+jre.value);
 		if(keep&&entigrator.indx_getLabel(jre.name)!=null)
 			continue;
+		
 		oldEntity=new File(entityBodies$+jre.name);
 		if(oldEntity.exists()){
 			if(!undoBodies.exists())
@@ -640,12 +653,14 @@ Runnable Paste=new Runnable(){
 		}
 		
 		undo.putElementItem("entity", new Core(Locator.getProperty(jre.value,Entigrator.ENTIHOME),jre.name,jre.value));
+		if(debug)
+			System.out.println("JBasenavigator:Paste:source entihome="+jre.type+" entity="+jre.name);
 	    sourceEntity=new File(jre.type+"/"+Entigrator.ENTITY_BASE+"/data/"+jre.name);
 	   //  System.out.println("BaseNavigator:source entity="+sourceEntity.getPath());
 	    if(!oldEntity.exists())
 	    	oldEntity.createNewFile();
 	    FileExpert.copyFile(sourceEntity,oldEntity);
-	    pastedEntity=Sack.parseXML(oldEntity.getPath());
+	    pastedEntity=Sack.parseXML(entigrator,oldEntity.getPath());
 	    entigrator.ent_reindex(pastedEntity);
 	    pastedEntity.putAttribute(new Core(null,JReferenceEntry.ORIGIN_ENTIHOME,jre.type));
 	    entigrator.save(pastedEntity);
@@ -673,6 +688,8 @@ Runnable Paste=new Runnable(){
 	    	oldEntityHome=new File(entihome$+"/"+jre.name);
 	    	if(!oldEntityHome.exists())
 	    		oldEntityHome.mkdir();
+	    	if(debug)
+	    		System.out.println("JBasenavigator:Paste:source="+sourceEntityHome.getPath()+" target="+oldEntityHome.getPath());
 	    	FileExpert.copyAll(sourceEntityHome.getPath(), oldEntityHome.getPath());
 	    }
 		}catch(Exception e){

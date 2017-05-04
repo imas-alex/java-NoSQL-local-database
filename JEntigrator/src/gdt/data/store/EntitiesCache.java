@@ -76,13 +76,17 @@ public synchronized Sack get(String entityKey$){
 		 if(debug)
 		System.out.println("EntitiesCache:get:entity="+entityKey$);
 		Sack entity= (Sack)Support.getValue(entityKey$, entities);
-	boolean reload=false;
+	  
+		if(entity!=null)
+	    	return entity;
+		
+		boolean reload=false;
 		if(entity==null)
 			reload=true;
 	if(!reload)
 		reload=entigrator.ent_outdated(entity);
 	if(reload){
-		entity=Sack.parseXML(entigrator.getEntihome() + "/" + Entigrator.ENTITY_BASE + "/data/"+entityKey$);
+		entity=Sack.parseXML(entigrator,entigrator.getEntihome() + "/" + Entigrator.ENTITY_BASE + "/data/"+entityKey$);
      	if(entity!=null){	
 		put(entity);
      	}

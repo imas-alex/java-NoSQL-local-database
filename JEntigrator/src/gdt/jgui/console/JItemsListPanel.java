@@ -28,6 +28,7 @@ import java.util.logging.Logger;
 
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollBar;
 import javax.swing.BoxLayout;
@@ -89,6 +90,7 @@ public  abstract class JItemsListPanel extends JPanel implements JContext{
     protected JMenuItem selectItem;
     JMenuItem unselectItem;
     JMenuItem recentItem;
+    JMenuItem countItem;
     protected JMenu menu;
     protected JMenuItem[] mia;
     protected String locator$;
@@ -110,7 +112,7 @@ public  abstract class JItemsListPanel extends JPanel implements JContext{
 			}
 		} );
 		menu.add(selectItem);
-		 unselectItem = new JMenuItem("Unselect all");
+		unselectItem = new JMenuItem("Unselect all");
 		   unselectItem.addActionListener(new ActionListener() {
 				@Override
 				public void actionPerformed(ActionEvent e) {
@@ -121,8 +123,23 @@ public  abstract class JItemsListPanel extends JPanel implements JContext{
 			      }
 				}
 			} );
+		//
+		   countItem = new JMenuItem("Count all");
+		   countItem.addActionListener(new ActionListener() {
+				@Override
+				public void actionPerformed(ActionEvent e) {
+			      int cnt=0;  
+				JItemPanel[] ipa=getItems();
+			      if(ipa!=null)
+			    	  cnt=ipa.length;
+			      JOptionPane.showMessageDialog(JItemsListPanel.this, String.valueOf(cnt));
+			      
+				}
+			} );
+		
+		   //
 		   
-			menu.add(unselectItem);
+			menu.add(countItem);
 			 recentItem = new JMenuItem("Put as recent");
 			   recentItem.addActionListener(new ActionListener() {
 					@Override

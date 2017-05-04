@@ -39,6 +39,7 @@ public class JReferenceEntry extends Core{
 	private static final String FACET_CLASS_NAME="facet class name";
 	private static final String BREAK_PROCEEDING="break proceeding";
 	public static final String ORIGIN_ENTIHOME="origin_entihome";
+	static boolean debug=true;
     public JReferenceEntry(Entigrator entigrator,String entityKey$,String facetClassName$){
  	   type=entigrator.getEntihome();
  	   name=entityKey$;
@@ -129,10 +130,18 @@ public class JReferenceEntry extends Core{
 	   ArrayList< JReferenceEntry>rel=new ArrayList< JReferenceEntry>();
 	   try{
 			for(String s:sa){
+				try{
+				if(debug)
 				System.out.println("JReferenceEntry:collectReferences:entity key="+s);
 				getReference(entigrator, s, rel);
+				}catch(Exception ee){
+					if(debug)
+						System.out.println("JReferenceEntry:collectReferences:ee="+ee.toString());
+				}
 						
 			}
+			
+	
 			boolean done;
 			Stack <JReferenceEntry> res=new Stack<JReferenceEntry>();
 			JReferenceEntry jre;
@@ -149,7 +158,8 @@ public class JReferenceEntry extends Core{
 				  done=false;
 			  }else
 				  done=true;
-			}while(!done);
+			 }while(!done);
+			
 		   }catch(Exception e){
 			   Logger.getLogger(JReferenceEntry.class.getName()).severe((e.toString()));
 		   }   

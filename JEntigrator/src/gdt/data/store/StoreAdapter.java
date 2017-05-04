@@ -21,11 +21,12 @@ public class StoreAdapter {
 //	Sack headers;
 	Sack storeState;
 	Entigrator entigrator;
-	int delay=1000;
+	int delay=100;
 	String saveId$;
 	boolean debug=false;
 
 	boolean singleMode=false;
+	boolean bulkMode=false;
 	public StoreAdapter(Entigrator entigrator){
 		this.entigrator=entigrator;
 		saveId$=map_load();
@@ -38,7 +39,7 @@ private String  map_load(){
 		File  mapFile=new File(entigrator.getEntihome()+"/"+QUICK_MAP);	
       if(mapFile.exists()){
     	  //store_lock();  
-		quickMap=Sack.parseXML(entigrator.getEntihome()+"/"+QUICK_MAP);
+		quickMap=Sack.parseXML(entigrator,entigrator.getEntihome()+"/"+QUICK_MAP);
       if(quickMap!=null){
     	  if(debug)
     	  System.out.println("StoreAdapter:map_load: found and loaded");
@@ -100,7 +101,7 @@ private void map_build(){
    	//	Core label;
    	//	Core key;
    		for(String s:sa){
-   			header=Sack.parseXML(headersHome$+s);
+   			header=Sack.parseXML(entigrator,headersHome$+s);
    			if(header==null)
    				continue;
    			map_insert(header);
@@ -172,7 +173,7 @@ public boolean store_replace(){
 		 if(debug)
 		System.out.println("StoreAdapter:store_replace:save id="+newKey$);
 		
-		storeState=Sack.parseXML(entigrator.getEntihome() +"/"+STORE_STATE);
+		storeState=Sack.parseXML(entigrator,entigrator.getEntihome() +"/"+STORE_STATE);
 		storeState.putAttribute(new Core(null,Entigrator.LOCK_TIME,String.valueOf(System.currentTimeMillis())));
 		storeState.saveXML(entigrator.getEntihome() +"/"+STORE_STATE);
 		quickMap.putAttribute(new Core(null,Entigrator.SAVE_ID,newKey$));
@@ -182,7 +183,19 @@ public boolean store_replace(){
         System.out.println("StoreAdapter:store_replace:time="+String.valueOf(System.currentTimeMillis()-begin));
         storeState.putAttribute(new Core(null,Entigrator.SAVE_ID,newKey$));
         storeState.removeAttribute(Entigrator.LOCK_TIME);
-		storeState.saveXML(entigrator.getEntihome()+"/"+STORE_STATE);
+        boolean success=false;
+        int n=0;
+		while(!success)
+        try{
+        n++;
+        if(n>10){
+        	System.out.println("StoreAdapter:store_replace:fatal error");
+        }
+        storeState.saveXML(entigrator.getEntihome()+"/"+STORE_STATE);
+        success=true;
+		}catch(java.nio.channels.OverlappingFileLockException ee){
+			LOGGER.severe("try n="+n+"::"+ ee.toString());
+		}
 		store_release();
 		return true;
 	}catch(Exception e){
@@ -194,8 +207,12 @@ public boolean store_replace(){
 private Sack store_getState(){
 	 if(debug)
 	System.out.println("StroreAdapter:store_getState");
-	
-	 return Sack.parseXML(entigrator.getEntihome()+"/"+STORE_STATE);
+	try{
+	 return Sack.parseXML(entigrator,entigrator.getEntihome()+"/"+STORE_STATE);
+	}catch(Exception e){
+		LOGGER.severe(e.toString());
+	}
+	return null;
 }
 private void map_update(){
 	try{
@@ -205,7 +222,6 @@ private void map_update(){
 		String mapId$=null;
 		if(quickMap==null){
 		    map_load();
-		    
 		    if(debug)
 		    System.out.println("StoreAdapter:map_update:map reloaded");
 		    return;
@@ -260,7 +276,7 @@ private void buildHeaders(){
    		Sack header;
    		for(String aSa:sa){
            	header=null; 
-          	entity=Sack.parseXML(entigrator.getEntihome()+  "/" + Entigrator.ENTITY_BASE + "/data/" + aSa);
+          	entity=Sack.parseXML(entigrator,entigrator.getEntihome()+  "/" + Entigrator.ENTITY_BASE + "/data/" + aSa);
            	if(entity==null){
            	  try{	
            		File entityFile= new File(entigrator.getEntihome()+  "/" + Entigrator.ENTITY_BASE + "/data/" + aSa);
@@ -333,7 +349,7 @@ public String indx_getLabel(String key$) {
 		if(key$==null)
 			return null;
 		String header$=entigrator.getEntihome()+"/"+StoreAdapter.HEADERS+"/"+key$;
-	    Sack header=Sack.parseXML(header$);
+	    Sack header=Sack.parseXML(entigrator,header$);
 	    String label$=header.getElementItem("key", key$).type;
 		if(label$!=null){
 	    Core key=quickMap.getElementItem("key", key$);
@@ -351,7 +367,7 @@ public String ent_getIconAtKey(String key$) {
 	try{
 		//System.out.println("StroreAdapter:ent_getIconAtKey:key="+key$);
 		String icon$=null;
-		Sack header=Sack.parseXML(entigrator.getEntihome() +"/"+HEADERS+"/"+key$);
+		Sack header=Sack.parseXML(entigrator,entigrator.getEntihome() +"/"+HEADERS+"/"+key$);
 		if(header!=null){
 		Core key=header.getElementItem("key", key$);
 		if(key!=null&&key.type!=null){
@@ -359,7 +375,7 @@ public String ent_getIconAtKey(String key$) {
  			return icon$;
 		}
 		}
-		Sack entity=Sack.parseXML(entigrator.getEntihome() + "/" + Entigrator.ENTITY_BASE + "/data/"+key$);
+		Sack entity=Sack.parseXML(entigrator,entigrator.getEntihome() + "/" + Entigrator.ENTITY_BASE + "/data/"+key$);
              icon$=entity.getAttributeAt("icon");
             if(icon$!=null){
              	if(header!=null){
@@ -379,7 +395,7 @@ public String ent_getIconAtKey(String key$) {
    }
 public String getEntityIcon(String key$){
 	try{
-		Sack header=Sack.parseXML(entigrator.getEntihome() +"/"+HEADERS+"/"+key$);
+		Sack header=Sack.parseXML(entigrator,entigrator.getEntihome() +"/"+HEADERS+"/"+key$);
 		Core key=null;
 		if(header!=null)
 				key=header.getElementItem("key", key$);
@@ -388,7 +404,7 @@ public String getEntityIcon(String key$){
 			quickMap.putElementItem("label", label);
  			return label.type;
 		}
-		Sack entity=Sack.parseXML(entigrator.getEntihome() + "/" + Entigrator.ENTITY_BASE + "/data/"+key$);
+		Sack entity=Sack.parseXML(entigrator,entigrator.getEntihome() + "/" + Entigrator.ENTITY_BASE + "/data/"+key$);
         String label$=entity.getProperty("label");
         String iconFile$=entity.getAttributeAt("icon");
             if(label$!=null){
@@ -463,7 +479,7 @@ public boolean ent_save(Entigrator entigrator,Sack entity){
 		String header$=entigrator.getEntihome()+"/"+HEADERS+"/"+entity.getKey();
         File headerFile=new File(header$);
             if(headerFile.exists())
-            		header=Sack.parseXML(header$);
+            		header=Sack.parseXML(entigrator,header$);
             if(header==null){
             	header=new Sack();
                 header.createElement("label");
@@ -485,9 +501,15 @@ public boolean ent_save(Entigrator entigrator,Sack entity){
             }
             header.saveXML(header$);
             entity.saveXML(entigrator.getEntihome() + "/" + Entigrator.ENTITY_BASE + "/data/"+entity.getKey());
-            map_update();
+           
+            if(!bulkMode){
+            	if(!singleMode)
+                   map_update();
             map_insert(header);
             map_save();
+            }else
+            	 map_insert(header);
+            	
             return true;
 	}catch(Exception e){
 		LOGGER.severe(e.toString());
@@ -497,7 +519,7 @@ public boolean ent_save(Entigrator entigrator,Sack entity){
 public String  store_saveId(){
 	 if(debug)
 	System.out.println("StoreAdapter:store_saveId:begin");
-	storeState=Sack.parseXML(entigrator.getEntihome() +"/"+STORE_STATE);
+	storeState=Sack.parseXML(entigrator,entigrator.getEntihome() +"/"+STORE_STATE);
 	if(storeState==null){
 		return null;
 	}else
@@ -511,7 +533,7 @@ private boolean store_lock(){
 		System.out.println("StoreAdapter:store_lock:save id="+saveId$);
 		File state=new File(entigrator.getEntihome() +"/"+STORE_STATE);
 		if(state.exists())
-			storeState=Sack.parseXML(entigrator.getEntihome() +"/"+STORE_STATE);
+			storeState=Sack.parseXML(entigrator,entigrator.getEntihome() +"/"+STORE_STATE);
 		if(storeState==null)
 		{
 			if(debug)
@@ -537,7 +559,7 @@ private boolean store_release(){
 		 if(debug)
 		System.out.println("StoreAdapter:store_release:BEGIN");
 		if(new File(entigrator.getEntihome() +"/"+STORE_STATE).exists())
-	    	storeState=Sack.parseXML(entigrator.getEntihome() +"/"+STORE_STATE);
+	    	storeState=Sack.parseXML(entigrator,entigrator.getEntihome() +"/"+STORE_STATE);
 		if(storeState==null)
 			store_lock();
 		saveId$=quickMap.getAttributeAt(Entigrator.SAVE_ID);
@@ -556,7 +578,7 @@ public String store_reload(){
 	try{
 		 if(debug)
 		System.out.println("StoreAdapter:store_reload");
-		quickMap=Sack.parseXML(entigrator.getEntihome() +"/"+QUICK_MAP);
+		quickMap=Sack.parseXML(entigrator,entigrator.getEntihome() +"/"+QUICK_MAP);
 		return quickMap.getAttributeAt(Entigrator.SAVE_ID);
 	}catch(Exception e){
 		LOGGER.severe(e.toString());
@@ -568,7 +590,7 @@ public boolean store_outdated(){
 		 if(debug)
 		System.out.println("StoreAdapter:store_outdated:BEGIN");
 		saveId$=quickMap.getAttributeAt(Entigrator.SAVE_ID);
-		 storeState=Sack.parseXML(entigrator.getEntihome() +"/"+STORE_STATE);
+		 storeState=Sack.parseXML(entigrator,entigrator.getEntihome() +"/"+STORE_STATE);
 		
 		 if(saveId$.equals(storeState.getAttributeAt(Entigrator.SAVE_ID)))
 				return false;
@@ -586,7 +608,8 @@ private boolean store_isLocked(){
 		 File state=new File(entigrator.getEntihome() +"/"+STORE_STATE);
 		if(!state.exists())
 			return false;
-		storeState=Sack.parseXML(entigrator.getEntihome() +"/"+STORE_STATE);
+		storeState=Sack.parseXML(entigrator,entigrator.getEntihome() +"/"+STORE_STATE);
+		/*
 		if(storeState==null){
 			Thread.sleep(10);
 			storeState=Sack.parseXML(entigrator.getEntihome() +"/"+STORE_STATE);
@@ -599,8 +622,9 @@ private boolean store_isLocked(){
 				Thread.sleep(10);
 				storeState=Sack.parseXML(entigrator.getEntihome() +"/"+STORE_STATE);
 		}
+		*/
 		if(storeState==null)
-				return true;
+				return false;
 		if(!storeState.getAttributeAt(Entigrator.SAVE_ID).equals(quickMap.getAttributeAt(Entigrator.SAVE_ID)))
 		{
 			 if(debug)
@@ -621,6 +645,8 @@ private boolean store_isLocked(){
 
 
 public boolean ent_existsAtKey(String entityKey$){
+	if(debug)
+		System.out.println("StoreAdapter:ent_existsAtKey.entity key="+entityKey$);
 	map_update();
 	if(quickMap.getElementItem("key", entityKey$)!=null)
 		return true;
@@ -628,6 +654,9 @@ public boolean ent_existsAtKey(String entityKey$){
 		return false;
 }
 public boolean ent_existsAtLabel(String label$){
+	if(debug)
+		System.out.println("StoreAdapter:ent_existsAtLabel:entity label="+label$);
+
 	map_update();
 	if(quickMap.getElementItem("label", label$)!=null)
 		return true;
@@ -674,11 +703,11 @@ public Core[] indx_getMarks(String[] keys) {
        return null;
     }
 public Sack ent_getAtKey(String entityKey$){
-	return Sack.parseXML(entigrator.getEntihome() + "/" + Entigrator.ENTITY_BASE + "/data/"+entityKey$);
+	return Sack.parseXML(entigrator,entigrator.getEntihome() + "/" + Entigrator.ENTITY_BASE + "/data/"+entityKey$);
 }
 public Sack ent_getAtLabel(String label$){
 	String entityKey$=quickMap.getElementItemAt("label", label$);
-	return Sack.parseXML(entigrator.getEntihome() + "/" + Entigrator.ENTITY_BASE + "/data/"+entityKey$);
+	return Sack.parseXML(entigrator,entigrator.getEntihome() + "/" + Entigrator.ENTITY_BASE + "/data/"+entityKey$);
 }
 public String[] indx_getLabels(String[] keys) {
 	ArrayList<String>sl=new ArrayList<String>();
@@ -711,7 +740,10 @@ public String[] indx_listAllLabels() {
     }
    }
 public String[] indx_listAllKeys() {
-    try{
+	if(debug)
+		System.out.println("StoreAdapter:indx_listAllKeys");
+
+	try{
         map_update(); 
     	String[]sa=quickMap.elementListNoSorted("key");
              return sa;
@@ -721,7 +753,10 @@ public String[] indx_listAllKeys() {
     }
    }
 public String[] indx_listEntitiesAtType(String entityType$) {
-    try{
+	if(debug)
+		System.out.println("StoreAdapter: indx_listEntitiesAtType:entity type="+entityType$);
+
+	try{
     	map_update();
        String[]sa=quickMap.elementList("key");
        if(sa==null)
@@ -741,11 +776,17 @@ public String[] indx_listEntitiesAtType(String entityType$) {
    }
 public boolean ent_outdated(Sack entity){
 	try{
-		
-		Sack header=Sack.parseXML(entigrator.getEntihome()+"/"+HEADERS+"/"+entity.getKey());
+		if(debug)
+			System.out.println("StoreAdapter: ent_outdated:entity ="+entity.getKey());
+	
+		Sack header=Sack.parseXML(entigrator,entigrator.getEntihome()+"/"+HEADERS+"/"+entity.getKey());
 		String entSaveId$=entity.getAttributeAt(Entigrator.SAVE_ID);
+		if(debug)
+			System.out.println("StoreAdapter: ent_outdated:entity save id="+entSaveId$);
+	
 		if(entSaveId$==null){
 			ent_save(entigrator,entity);
+			
 			return false;
 		}
 		String headerSaveId$=header.getAttributeAt(Entigrator.SAVE_ID);
@@ -775,12 +816,89 @@ public void store_refresh(){
 	if(debug)
 		System.out.println("StoreAdapter:store_refresh:store save id="+saveId$);
 }
+/**
 public void store_block(){
 	singleMode=true;
 
 }
 public void store_unblock(){
 	singleMode=false;
+}
+*/
+public void setSingleMode(boolean set){
+	if(set)
+		singleMode=true;
+	else
+		singleMode=false;
+}
+public void setBulkMode(boolean set){
+	if(set)
+		bulkMode=true;
+	else{
+		bulkMode=false;
+		map_save();
+	}
+}
+public void ent_releaseKey(String key$){
+	try{
+		if(key$==null)
+			return;
+		
+		File file = new File( entigrator.getEntihome() +"/"+Entigrator.ENTITY_BASE+ "/data/" + key$);
+	    if(file.exists()&&file.canWrite()){
+		   file.delete();
+		   Core key=quickMap.getElementItem("key", key$);
+		if(key!=null)
+		   quickMap.removeElementItem("label", key.value);
+	    quickMap.removeElementItem("key", key$);
+	    
+	    File header=new File(entigrator.getEntihome()+"/"+HEADERS+"/"+key$);
+	    if(header.exists())
+	 	   header.delete();
+	    store_replace();
+	    if(debug)
+	    System.out.println("StoreAdapter:ent_releaseKey:FINISH");
+	    }
+		}catch(Exception e){
+			LOGGER.severe(e.toString());
+		}
+		
+}
+public void ent_releaseLabel(String label$){
+	try{
+		 if(debug)
+			    System.out.println("StoreAdapter:ent_releaseLabel:"+label$);
+		if(label$==null)
+			return;
+		Core label=quickMap.getElementItem("label", label$);
+		if(label==null){
+			if(debug)
+			    System.out.println("StoreAdapter:ent_releaseLabel:not exists:"+label$);	
+			return;
+		}
+		Sack entity=Sack.parseXML(entigrator,entigrator.getEntihome() +"/"+Entigrator.ENTITY_BASE+ "/data/" + label.value);
+		if(entity!=null){
+			if(debug)
+			    System.out.println("StoreAdapter:ent_releaseLabel:exists entity=:"+label.value);	
+			
+			return;
+		}
+		File file = new File( entigrator.getEntihome() +"/"+Entigrator.ENTITY_BASE+ "/data/" + label.value);
+		if(file.exists())
+			   file.delete();
+		File header=new File(entigrator.getEntihome()+"/"+HEADERS+"/"+label.value);
+		if(header.exists())
+		 	   header.delete();
+  	    quickMap.removeElementItem("label", label$);
+	    quickMap.removeElementItem("key", label.value);
+	    store_replace();
+	    if(debug)
+	    System.out.println("StoreAdapter:ent_releaseLabel:FINISH");
+	    
+		}catch(Exception e){
+			LOGGER.severe(e.toString());
+		}
+		
 }
 }
 

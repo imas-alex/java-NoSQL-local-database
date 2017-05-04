@@ -22,6 +22,7 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.lang.management.ManagementFactory;
+import java.nio.channels.FileLock;
 //import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -139,6 +140,7 @@ public class Entigrator {
    private StoreAdapter storeAdapter;
    Hashtable <String,Object>handlers;
    Hashtable <String,Object>type2handler;
+   Hashtable <String,FileLock>fileLocks;
    /**
 	   * The lock message.	
 	   */
@@ -170,7 +172,7 @@ public class Entigrator {
                 badIndex = true;
               }
             else {
-                propertyIndex = Sack.parseXML(entihome$ + "/" + PROPERTY_INDEX);
+                propertyIndex = Sack.parseXML(this,entihome$ + "/" + PROPERTY_INDEX);
                 if (propertyIndex == null)
                     badIndex = true;
                 else {
@@ -190,7 +192,7 @@ public class Entigrator {
                 indx_reindex(null);
             }
             if (propertyIndex == null)
-                propertyIndex = Sack.parseXML(entihome$ + "/" + PROPERTY_INDEX);
+                propertyIndex = Sack.parseXML(this,entihome$ + "/" + PROPERTY_INDEX);
             if (propertyIndex == null) {
                 //System.out.println("Entigrator:constructor:cannot get property index");
             	LOGGER.severe(":cannot get property index");
@@ -204,7 +206,7 @@ public class Entigrator {
         storeAdapter=new StoreAdapter(this);
     	handlers=new Hashtable<String,Object>();
     	type2handler=new Hashtable<String,Object>();
-        
+    	fileLocks=new Hashtable<String,FileLock>();
     	// makeQuickMap();
       
                
@@ -232,7 +234,7 @@ public class Entigrator {
                 else
                     path$ = path$ + "/" + base$ + "/data/" + sack.getKey();
                 //System.out.println("Entigrator:get:path="+path$);
-                return Sack.parseXML(path$);
+                return Sack.parseXML(this,path$);
         } catch (Exception e) {
            // System.out.println("Entigrator:get:cannot find sack=" + sack.getKey());
             LOGGER.severe(":get:cannot find sack=" + sack.getKey());
@@ -370,7 +372,7 @@ public class Entigrator {
             return null;
         }
         try {
-            return Sack.parseXML(memberPath$);
+            return Sack.parseXML(this,memberPath$);
         } catch (Exception e) {
           	LOGGER.severe(":getMember:"+e.toString());
             return null;
@@ -403,7 +405,7 @@ public class Entigrator {
             return null;
         }
         try {
-            return Sack.parseXML(memberPath$);
+            return Sack.parseXML(this,memberPath$);
         } catch (Exception e) {
         	LOGGER.severe(":getEntity:"+e.toString());
             return null;
@@ -930,8 +932,9 @@ public String[] indx_listEntities(Properties criteria) {
             return null;
         }
         if ("label".equals(propertyName$)) {
-            LOGGER.severe(":ent_takeOffProperty:cannot delete label");
-        	return entity;
+            //LOGGER.severe(":ent_takeOffProperty:cannot delete label");
+        	
+            return entity;
         }
         if (propertyName$ == null) {
         	LOGGER.severe(":ent_takeOffProperty:property name is null");
@@ -1023,7 +1026,17 @@ public void indx_reindex(Indicator indicator) {
             }
             ent_reindex(candidate);
         }
-        
+       /*
+        String[] 
+        for (String aSa : sa) {
+        	candidate = storeAdapter.ent_getAtKey(aSa); 
+            if(candidate==null){
+            	System.out.println("Entigrator:indx_reindex:cannot get aSa="+aSa);
+                continue;
+            }
+       
+        }
+       */ 
       //  System.out.println("Entigrator:indx_reindex:finish all");
     }
 
@@ -1032,6 +1045,43 @@ public void indx_reindex(Indicator indicator) {
  *  @param entity the entity.
  *  @return the entity.
  */  
+public Sack ent_makeEnsemble(Sack entity){
+	try{
+	if(entity.existsElement("ensemble"))
+		entity.clearElement("ensemble");
+	else
+		entity.createElement("ensemble");
+	ArrayList<String>sl=new ArrayList<String>();
+	sl.add(entity.getKey());
+	String[] sa=ent_listComponentsCascade(entity);
+	if(sa!=null)
+		for(String s:sa)
+			if(!sl.contains(s))
+				sl.add(s);
+	sa=ent_listContainersCascade(entity);
+	if(sa!=null)
+		for(String s:sa)
+			if(!sl.contains(s))
+				sl.add(s);
+	for(String s:sl)
+		entity.putElementItem("ensemble",new Core(null,s,null));
+	replace (entity);
+	}catch(Exception e){
+		LOGGER.severe(e.toString());
+	}
+	return entity;
+}
+public String[] ent_getEnsemble(Sack entity){
+	try{
+		if(!entity.existsElement("ensemble"))
+			entity=ent_makeEnsemble(entity);
+		   return entity.elementListNoSorted("ensemble");
+	}catch(Exception e){
+		LOGGER.severe(e.toString());
+	}
+	return null;
+}
+
 public Sack ent_reindex(Sack entity) {
     
 	progress++;
@@ -1052,25 +1102,40 @@ public Sack ent_reindex(Sack entity) {
         String key$=null;
         Sack candidate;
         for (Core aCa : ca) {
-            if (aCa.type != null && aCa.value != null&&!"label".equals(aCa.type)) {
+        	  if(debug)
+        	        System.out.println("Entigrator:ent_reindex:assign property="+aCa.value);
+        	     
+        	if (aCa.type != null && aCa.value != null&&!"label".equals(aCa.type)) {
             	entity = ent_assignProperty(entity, aCa.type, aCa.value);
             }
             if ("label".equals(aCa.type)){
             	label$=aCa.value;
-            	entity.removeElementItem("property", aCa.name);
+            	//entity.removeElementItem("property", aCa.name);
+            	
             }
+            if(debug)
+    	        System.out.println("Entigrator:ent_reindex:finish assign property="+aCa.value);
+    	 
         }
+        if(debug)
+	        System.out.println("Entigrator:ent_reindex:label="+label$);
+	 
         if(label$==null)
         	label$=entity.getKey();
         key$=indx_keyAtLabel(label$);
-        if(key$!=null){
+        if(debug)
+	        System.out.println("Entigrator:ent_reindex:found key=label="+label$);
+        if(key$!=null&&(!entity.getKey().equals(key$))){
         	candidate=getMember("entity.base",key$);
         	if(candidate!=null)
                if(!entity.getKey().equals(key$))
         	      label$=label$+entity.getKey().substring(0, 4);
         }
-        entity.putElementItem("property", new Core("label",entity.getKey(),label$));
-        Sack header=null;       
+       entity=ent_assignLabel(entity, label$);
+        //entity.putElementItem("property", new Core("label",entity.getKey(),label$));
+       if(debug)
+	        System.out.println("Entigrator:update header"); 
+       Sack header=null;       
         String header$=getEntihome()+"/"+StoreAdapter.HEADERS+"/"+entity.getKey();
         try{
         File headerFile=new File(header$);
@@ -1639,7 +1704,11 @@ public String col_addComponent(Sack container, Sack component) {
         Core containerRecord = new Core(container.getProperty("label"), key$, container.getKey());
         component.putElementItem("container", containerRecord);
         container.putElementItem("component.type", new Core(component.getProperty("entity"), key$, component.getProperty("component")));
-       replace(component);
+       if(component.existsElement("ensemble"))
+    	   component.removeElement("ensemble");
+        replace(component);
+        if(container.existsElement("ensemble"))
+     	   container.removeElement("ensemble");
        replace(container);
         return key$;
     }
@@ -1790,7 +1859,7 @@ private boolean col_existsContainer(Sack container, Sack component) {
             File propFile;
 
             for (String aSa : sa) {
-                map = Sack.parseXML(mapBase$ + "/" + aSa);
+                map = Sack.parseXML(this,mapBase$ + "/" + aSa);
                 if (map == null)
                     try {
                         new File(mapBase$ + "/" + aSa).delete();
@@ -1842,7 +1911,7 @@ private boolean col_existsContainer(Sack container, Sack component) {
             Sack property;
             String property$;
             for (String aSa : sa) {
-                property = Sack.parseXML(propertyBase$ + "/" + aSa);
+                property = Sack.parseXML(this,propertyBase$ + "/" + aSa);
                 if (property == null)
                     try {
                         new File(propertyBase$ + "/" + aSa).delete();
@@ -1961,6 +2030,10 @@ private boolean col_existsContainer(Sack container, Sack component) {
         	LOGGER.severe(":prp_deletePropertyValue:argument is null");
         	return;
         }
+       if("label".equals(propertyName$)){
+    	   ent_releaseLabel(propertyValue$);
+    	   return;
+       }
        Sack property = indx_getProperty(propertyName$);
         if (property == null){
         	LOGGER.severe(":prp_deletePropertyValue:cannot find property");
@@ -2183,10 +2256,16 @@ private boolean col_existsContainer(Sack container, Sack component) {
     	}
     }
     /**
-     * Delete an entity from the database. 
-     *  @param entity the entity.
-     *  @return true if deleted.
+     * Release a wrong entity key from the database. 
+     *  @param key$ the entity key.
+     * 
      */
+    public void ent_releaseKey(String key$){
+    	storeAdapter.ent_releaseKey(key$);
+    }
+    public void ent_releaseLabel(String label$){
+    	storeAdapter.ent_releaseLabel(label$);
+    }
     public boolean deleteEntity(Sack entity) {
        //return storeAdapter.deleteEntity(entity);
     	
@@ -2258,7 +2337,9 @@ private boolean col_existsContainer(Sack container, Sack component) {
         } catch (Exception ee) {
         //	LOGGER.info(":deleteEntity:"+ee.toString());
         }
-       store_replace();
+        storeAdapter.store_replace();
+        ent_releaseKey(key$);
+       //store_replace();
        return true;
     }
     /**
@@ -2366,14 +2447,28 @@ public String[] ent_listContainers(Sack entity) {
             sa[i] = (String) s.pop();
         return sa;
     }
+    public String[] ent_listContainersCascade(Sack entity) {
+        if (entity == null)
+            return null;
 
+        Stack<String> s = new Stack<String>();
+        ent_listContainersCascade(entity, s);
+        int cnt = s.size();
+        if (cnt < 1)
+            return null;
+        String[] sa = new String[cnt];
+        for (int i = 0; i < cnt; i++)
+            sa[i] = (String) s.pop();
+        return sa;
+    }
   private  void ent_listComponentsCascade(Sack entity, Stack<String> s) {
         String[] sa = ent_listComponents(entity);
         if (sa == null)
             return;
         Sack component ;
         for (String aSa : sa) {
-            component = getMember("entity.base", aSa);
+            component =getEntityAtKey(aSa); 
+            		//getMember("entity.base", aSa);
             if (component == null) {
                 continue;
             }
@@ -2381,6 +2476,21 @@ public String[] ent_listContainers(Sack entity) {
             ent_listComponentsCascade(component, s);
         }
     }
+  private  void ent_listContainersCascade(Sack entity, Stack<String> s) {
+      String[] sa = ent_listContainers(entity);
+      if (sa == null)
+          return;
+      Sack container ;
+      for (String aSa : sa) {
+          container =getEntityAtKey(aSa); 
+        		  //getMember("entity.base", aSa);
+          if (container == null) {
+              continue;
+          }
+          Support.addItem(aSa, s);
+          ent_listContainersCascade(container, s);
+      }
+  }
   /**
    * Get the path of the entity home directory 
    *  @param entity$ the entity key.
@@ -2662,7 +2772,7 @@ public Class<?> getClass(String key$){
 	return (Class<?>)Support.getValue(key$, classesCache);
 }
 public Sack ent_reload(String entityKey$){
-	Sack entity= Sack.parseXML(entihome$+"/"+ Entigrator.ENTITY_BASE +"/data/"+entityKey$);
+	Sack entity= Sack.parseXML(this,entihome$+"/"+ Entigrator.ENTITY_BASE +"/data/"+entityKey$);
 	if(entity!=null)
 		entitiesCache.put(entity);
 	return entity;
@@ -2721,10 +2831,26 @@ public void putHandlerAtType(String type$,Object handler){
 		Logger.getLogger(getClass().getName()).severe(e.toString());
 	}
 }
+public boolean handlersIsEmpty(){
+	return type2handler.isEmpty();
+		
+}
+public FacetHandler[] getAllFacetHandlers(){
+	if( type2handler.isEmpty())
+		return null;
+	ArrayList<Object> ol = new ArrayList<Object>(type2handler.values());
+	ArrayList<FacetHandler>fhl=new ArrayList<FacetHandler>();
+	for(Object o:ol ){
+		if(o instanceof FacetHandler)
+			fhl.add((FacetHandler)o);
+	}
+	return fhl.toArray(new FacetHandler[0]);
+	
+}
 public Object getHandlerAtType(String type$){
 	try{
 		if(debug)
-		System.out.println("Entigrator:getHandlerAtType:handler="+type$);
+		System.out.println("Entigrator:getHandlerAtType:handler type="+type$);
 		return type2handler.get(type$);
 	}catch(Exception e){
 		Logger.getLogger(getClass().getName()).severe(e.toString());
@@ -2762,11 +2888,19 @@ public boolean store_outdated(){
 public void store_refresh(){
 	storeAdapter.store_refresh();
 }
+/*
 public void store_block(){
 	storeAdapter.store_block();
 }
 public void store_unblock(){
 	storeAdapter.store_unblock();
+}
+*/
+public void setSingleMode(boolean set){
+     storeAdapter.setSingleMode(set);
+}
+public void setBulkMode(boolean set){
+	 storeAdapter.setBulkMode(set);
 }
 public static Map<String, String> getQueryMap(String query)
 {
@@ -2779,6 +2913,42 @@ public static Map<String, String> getQueryMap(String query)
         map.put(name, value);
     }
     return map;
+}
+public FileLock getFileLock(String fname$){
+	try{
+		if(fileLocks==null)
+			fileLocks=new Hashtable<String,FileLock>();
+		if(debug){
+		System.out.println("Entigrator:getFileLock:file="+fname$);
+		if(fileLocks==null)
+			System.out.println("Entigrator:getFileLock:file locks is null");
+		}
+		return (FileLock)Support.getValue(fname$, fileLocks);
+				//fileLocks.get(fname$);
+	}catch(Exception e){
+		Logger.getLogger(getClass().getName()).severe(e.toString());
+	}
+	return null;
+}
+public void putFileLock(String fname$,FileLock fl){
+	try{
+		 if(debug)
+		System.out.println("Entigrator:putFileLock:fname="+fname$);
+		//if(fname$!=null&&fl!=null)
+		 fileLocks.put(fname$, fl);
+	}catch(Exception e){
+		Logger.getLogger(getClass().getName()).severe(e.toString());
+	}
+}
+public void removeFileLock(String fname$){
+	try{
+		
+		if(fname$!=null)
+		Support.removeKey(fname$, fileLocks);
+			//fileLocks.remove(fname$);
+	}catch(Exception e){
+		Logger.getLogger(getClass().getName()).severe(e.toString());
+	}
 }
 }
 

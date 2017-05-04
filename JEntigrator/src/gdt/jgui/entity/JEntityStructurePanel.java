@@ -84,7 +84,7 @@ public class JEntityStructurePanel extends JPanel implements JContext,WContext{
     boolean isRoot=true;
     boolean isFirst=true;
 	String selection$;
-	static boolean debug=false;
+	static boolean debug=true;
 	/**
 	 * The default constructor.
 	 */
@@ -355,19 +355,23 @@ public class JEntityStructurePanel extends JPanel implements JContext,WContext{
 			Entigrator entigrator=console.getEntigrator(entihome$);
 			Sack parent=entigrator.getEntityAtKey(entityKey$);
 			String[] sa=entigrator.ent_listComponents(parent);
+			
 			if(sa!=null){
 				Sack child;
 				String childLocator$;
 				DefaultMutableTreeNode childNode;
 				for(String aSa:sa){
-					child=entigrator.getEntityAtKey(aSa);
-					childLocator$=EntityHandler.getEntityLocator(entigrator, child);
+					//child=entigrator.getEntityAtKey(aSa);
+					//childLocator$=EntityHandler.getEntityLocator(entigrator, child);
+					childLocator$=EntityHandler.getEntityLocatorAtKey(entigrator,aSa);
 					childNode=new DefaultMutableTreeNode();
 					childNode.setUserObject(childLocator$);
 					parentNode.add(childNode);
-					addChildren(childNode);
+					//addChildren(childNode);
 				}
+				
 			}
+			
 		}catch(Exception e){
 			Logger.getLogger(JEntityStructurePanel.class.getName()).severe(e.toString());
 		}
@@ -578,9 +582,12 @@ public class JEntityStructurePanel extends JPanel implements JContext,WContext{
 		    }
 
 		    public void mouseClicked(MouseEvent e) {
-		    	//System.out.println("EntityStructurePanel:MousePopupListener:mouse clicked.is root="+isRoot);
+		    
+		    	
+		    	int y=scrollPane.getVerticalScrollBar().getValue();
+		    	//System.out.println("EntityStructurePanel:MousePopupListener:mouse clicked:y="+y+" e="+e.getY());
 		    	if(!isRoot&&isPopup)
-		         		 popup.show(JEntityStructurePanel.this, e.getX(), e.getY());
+		         		 popup.show(JEntityStructurePanel.this, e.getX(), e.getY()-y);
 		      
 		    }
 
@@ -605,8 +612,11 @@ public class JEntityStructurePanel extends JPanel implements JContext,WContext{
 		    isFirst=false;
 		    if(parent==null||parent.isRoot())
 		    	  isFirst=true;
+		    else
+		    	addChildren(node);	
 		    Object userObject=node.getUserObject();
         	selection$=(String)userObject;
+        	
 		    		  }
 }
 	@Override

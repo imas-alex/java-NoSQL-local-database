@@ -24,6 +24,7 @@ import gdt.data.entity.facet.FolderHandler;
 import gdt.data.entity.facet.IndexHandler;
 import gdt.data.entity.facet.ProcedureHandler;
 import gdt.data.entity.facet.QueryHandler;
+import gdt.data.entity.facet.ViewHandler;
 import gdt.data.entity.facet.WebsetHandler;
 import gdt.data.grain.Core;
 import gdt.data.grain.Locator;
@@ -89,7 +90,7 @@ public class BaseHandler {
 		 *  
 		 * @return The locator string.
 		 */	 
-	static boolean debug=false;
+	static boolean debug=true;
 	public static String getLocator(){
 			Properties locator=new Properties();
 			locator.setProperty(Locator.LOCATOR_TITLE, "Base handler");
@@ -161,33 +162,70 @@ public static String execute(Entigrator entigrator,String locator$){
  */	 
 public static FacetHandler[] listAllHandlers( Entigrator entigrator){
 	try{
-	ArrayList<FacetHandler>fl=new ArrayList<FacetHandler>();
+	FacetHandler[] fha=entigrator.getAllFacetHandlers();
+		if(fha!=null)
+		   return fha;
+	
+		ArrayList<FacetHandler>fl=new ArrayList<FacetHandler>();
 	if(debug)
 	System.out.println("BaseHandler:listAllHandlers:BEGIN");
-	fl.add(new FieldsHandler());
-	fl.add(new FolderHandler());
-	fl.add(new WebsetHandler());
-	fl.add(new BookmarksHandler());
-	fl.add(new IndexHandler());
-	fl.add(new ExtensionHandler());
-	fl.add(new QueryHandler());
-	fl.add(new ProcedureHandler());
+	FieldsHandler fh=new FieldsHandler();
+	fl.add(fh);
+	entigrator.putHandlerAtType(fh.getType(),fh);
+	FolderHandler foh=new FolderHandler();
+	fl.add(foh);
+	entigrator.putHandlerAtType(foh.getType(),foh);
+
+	WebsetHandler wh=new WebsetHandler();
+	fl.add(wh);
+	entigrator.putHandlerAtType(wh.getType(),wh);
+    
+	BookmarksHandler bh=new BookmarksHandler();
+	fl.add(bh);
+	entigrator.putHandlerAtType(bh.getType(),bh);
+	
+	IndexHandler ih=new IndexHandler();
+	fl.add(ih);
+	entigrator.putHandlerAtType(ih.getType(),ih);
+	
+	ExtensionHandler eh=new ExtensionHandler();
+	fl.add(eh);
+	entigrator.putHandlerAtType(eh.getType(),eh);
+	
+	QueryHandler qh=new QueryHandler();
+	fl.add(qh);
+	entigrator.putHandlerAtType(qh.getType(),qh);
+	
+	ProcedureHandler ph=new ProcedureHandler();
+	fl.add(ph);
+	entigrator.putHandlerAtType(ph.getType(),ph);
+	
+	ViewHandler vh=new ViewHandler();
+	fl.add(vh);
+	entigrator.putHandlerAtType(vh.getType(),vh);
+	
+
 	if(debug)
 	System.out.println("BaseHandler:listAllHandlers:END EMBEDDED");
 	
-	FacetHandler[] fha=ExtensionHandler.listExtensionHandlers(entigrator);
+	fha=ExtensionHandler.listExtensionHandlers(entigrator);
 	
 	if(fha!=null){
 		
-		for(FacetHandler fh:fha){
-		if(debug)	
-			System.out.println("BaseHandler:listAllHandlers:fh="+fh.getClass().getName());
-			fl.add(fh);
+		for(FacetHandler h:fha){
+		//if(debug)	
+		//	System.out.println("BaseHandler:listAllHandlers:fh="+fh.getClass().getName());
+			fl.add(h);
+			entigrator.putHandlerAtType(h.getType(),h);
 		}
 	}
 	
- 
-	return fl.toArray(new FacetHandler[0]);
+    fha=fl.toArray(new FacetHandler[0]);	
+	if(debug)
+	for(FacetHandler h:fha)
+		System.out.println("BaseHandler:listAllHandlers:h="+h.getClass().getName());
+
+	return fha;
 	}catch(Exception e){
 		Logger.getLogger(BaseHandler.class.getName()).severe(e.toString());
 		return null;
@@ -245,11 +283,22 @@ public static FacetHandler getHandler(Entigrator entigrator,String entityType$){
 	FacetHandler[] fha=listAllHandlers(entigrator);
 	if(fha==null||fha.length<1)
 		return null;
-	for(FacetHandler h:fha)
+	if(debug)
+		for(FacetHandler h:fha)
+			System.out.println("BaseHandler:getHandler:h="+h.getClass().getName());
+
+
+	for(FacetHandler h:fha){
+		if(debug)
+			System.out.println("BaseHandler:getHandler:entity type="+entityType$+" handler type="+h.getType()+" handler="+h.getClass().getName());
 		if(entityType$.equals(h.getType())){
 			entigrator.putHandlerAtType(entityType$, h);
-			return fh;
+			if(debug)
+				System.out.println("BaseHandler:getHandler:return handler="+h.getClassName());
+			return h;
 		}
+	
+	}
 	return null;
 }
 }

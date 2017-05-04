@@ -74,7 +74,7 @@ public class JEntityPrimaryMenu extends JItemsListPanel implements JRequester{
     String saveId$;
     boolean ignoreOutdate=false;
     Sack entity;
-    static boolean debug=false;
+    static boolean debug=true;
 /**
  * Get context menu.
  * @return the context menu.
@@ -581,12 +581,25 @@ private void cloneEntity(JMainConsole console,String locator$){
  */
 public static void reindexEntity(JMainConsole console,String locator$){
 	  try{
+		  if(debug) 
+			  System.out.println("EntityPrimaryMenu:reindexEntity:reindex entity.locator="+locator$);
+			 
 		  Properties locator=Locator.toProperties(locator$);
 		  String entihome$=locator.getProperty(Entigrator.ENTIHOME);
 		  Entigrator entigrator=console.getEntigrator(entihome$);
 		  String entityKey$=locator.getProperty(EntityHandler.ENTITY_KEY);
+		  if(debug) 
+			  System.out.println("EntityPrimaryMenu:reindexEntity:entity key=="+entityKey$);
+			 
+		
 		  Sack entity=entigrator.getEntityAtKey(entityKey$);
+		  if(debug) 
+			  System.out.println("EntityPrimaryMenu:reindexEntity:1");
+		
 		  entity=entigrator.ent_reindex(entity);
+		  if(debug) 
+			  System.out.println("EntityPrimaryMenu:reindexEntity:2");
+		
 		  FacetHandler[] fha=BaseHandler.listAllHandlers(entigrator);
 		  if(debug) 
 		  System.out.println("EntityPrimaryMenu:reindexEntity:fha="+fha.length);
@@ -982,7 +995,11 @@ public void activate() {
 	if(entity==null)
 		return;
 	if(ignoreOutdate){
+		
 		ignoreOutdate=false;
+		if(debug)
+			System.out.println("JEntityPrimaryMenu:activate:=FINISH ignore");
+		
 		return;
 	}
 	Entigrator entigrator=console.getEntigrator(entihome$);
@@ -991,6 +1008,8 @@ public void activate() {
 	int n=new ReloadDialog(this).show();
 	if(2==n){
 		ignoreOutdate=true;
+		if(debug)
+			System.out.println("JEntityPrimaryMenu:activate:=FINISH 2");
 		return;
 	}
 	if(1==n){
@@ -1001,6 +1020,9 @@ public void activate() {
 		pmLocator$=Locator.append(pmLocator$,EntityHandler.ENTITY_KEY , entityKey$);
 		pmLocator$=Locator.append(pmLocator$,JRequester.REQUESTER_RESPONSE_LOCATOR , requesterResponseLocator$);
 		JConsoleHandler.execute(console, pmLocator$);
+		if(debug)
+			System.out.println("JEntityPrimaryMenu:activate:=FINISH 1");
+		
 	}
 	if(0==n){
 			entity=entigrator.ent_reload(entityKey$);
@@ -1010,10 +1032,13 @@ public void activate() {
 			pmLocator$=Locator.append(pmLocator$,EntityHandler.ENTITY_KEY , entityKey$);
 			pmLocator$=Locator.append(pmLocator$,JRequester.REQUESTER_RESPONSE_LOCATOR , requesterResponseLocator$);
 			JConsoleHandler.execute(console, pmLocator$);
+			if(debug)
+				System.out.println("JEntityPrimaryMenu:activate:=FINISH 0");
 			
 		}
 	}
-	
+	if(debug)
+		System.out.println("JEntityPrimaryMenu:activate:=FINISH ALL");
 }
 }
 

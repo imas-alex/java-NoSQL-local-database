@@ -223,7 +223,8 @@ public JBasesPanel(){
 		}
 	}
 	static void refreshAllEntitiesQuery(JMainConsole console,String entihome$){
-			try{
+		/*	
+		try{
 				InputStream is=JQueryPanel.class.getResourceAsStream("query.tar");
 		        TarArchiveInputStream tis = new TarArchiveInputStream(is);
 				ArchiveHandler.extractEntitiesFromTar(entihome$,tis);
@@ -234,6 +235,7 @@ public JBasesPanel(){
 			}catch(Exception e){
 				Logger.getLogger(JQueryPanel.class.getName()).severe(e.toString());	
 			}
+			*/
 		}
 	static void refreshIconsFolder(JMainConsole console,String entihome$){
 		try{

@@ -26,6 +26,7 @@ import gdt.data.entity.facet.FolderHandler;
 import gdt.data.entity.facet.IndexHandler;
 import gdt.data.entity.facet.ProcedureHandler;
 import gdt.data.entity.facet.QueryHandler;
+import gdt.data.entity.facet.ViewHandler;
 import gdt.data.entity.facet.WebsetHandler;
 import gdt.data.grain.Core;
 import gdt.data.grain.Locator;
@@ -34,6 +35,7 @@ import gdt.data.grain.Support;
 import gdt.data.store.Entigrator;
 import gdt.jgui.base.JBaseNavigator;
 import gdt.jgui.base.JBasesPanel;
+import gdt.jgui.entity.JEntitiesPanel;
 import gdt.jgui.entity.bookmark.JBookmarksEditor;
 import gdt.jgui.entity.extension.JExtensionRenderer;
 import gdt.jgui.entity.fields.JFieldsEditor;
@@ -42,6 +44,7 @@ import gdt.jgui.entity.folder.JFolderPanel;
 import gdt.jgui.entity.index.JIndexPanel;
 import gdt.jgui.entity.procedure.JProcedurePanel;
 import gdt.jgui.entity.query.JQueryPanel;
+import gdt.jgui.entity.view.JViewPanel;
 import gdt.jgui.entity.webset.JWeblinkEditor;
 
 import java.awt.Color;
@@ -264,6 +267,8 @@ public static JFacetRenderer getFacetRenderer(Entigrator entigrator,FacetHandler
 		return new JQueryPanel();
 	if(ProcedureHandler.class.getName().equals(fh.getClass().getName()))
 		return new JProcedurePanel();
+	if(ViewHandler.class.getName().equals(fh.getClass().getName()))
+		return new JViewPanel();
 	String extension$=fh.getLocation();
 	return getExtensionFacetRenderer(entigrator,fh.getClass().getName(), extension$);
 }
@@ -535,7 +540,9 @@ try{
 			return Support.readHandlerIcon(null,JBasesPanel.class , "bases.png");
 		}
 		}
+			 
 		 String fileName$=locator.getProperty(JFolderPanel.FILE_NAME);
+		 
 		 String filePath$=entigrator.getEntihome()+"/"+locator.getProperty(JFolderPanel.FILE_PATH);
 		//if(debug)
 		//	System.out.println("JConsoleHandler:getIcon:file path="+filePath$);
@@ -560,6 +567,9 @@ try{
 				return Support.readHandlerIcon(entigrator, JFileOpenItem.class, "file.png");
              }
 		 String iconFile$=locator.getProperty(Locator.LOCATOR_ICON_FILE);
+		//if("sack.gif".equals(iconFile$)||"sack.png".equals(iconFile$))
+		//		 return Support.readHandlerIcon(null,JEntitiesPanel.class , "sack.png");
+			
 		 if(iconFile$!=null&&!"null".equals(iconFile$)){
 		 if(Locator.LOCATOR_ICON_CONTAINER_ICONS.equals(locator.getProperty(Locator.LOCATOR_ICON_CONTAINER))){
         String extension$=locator.getProperty(Locator.LOCATOR_ICON_LOCATION);

@@ -943,8 +943,7 @@ public static String[] insertCache(Entigrator entigrator,String cache$,boolean k
 		for(String s:sa){
 			if(keep&&entigrator.indx_getLabel(s)!=null)
 					continue;
-			entity=Sack.parseXML(entityBodies.getPath()+"/"+s);
-			
+			entity=Sack.parseXML(entigrator,entityBodies.getPath()+"/"+s);
 			if(entity!=null)
 				entigrator.save(entity);
 			    entigrator.ent_reindex(entity);

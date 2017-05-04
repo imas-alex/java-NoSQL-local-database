@@ -1,4 +1,4 @@
-package gdt.jgui.entity.query;
+package gdt.jgui.entity.view;
 /*
  * Copyright 2016 Alexander Imas
  * This file is part of JEntigrator.
@@ -24,7 +24,7 @@ import org.apache.commons.codec.binary.Base64;
 import gdt.data.entity.BaseHandler;
 import gdt.data.entity.EntityHandler;
 import gdt.data.entity.FacetHandler;
-import gdt.data.entity.facet.QueryHandler;
+import gdt.data.entity.facet.ViewHandler;
 import gdt.data.grain.Locator;
 import gdt.data.grain.Support;
 import gdt.data.store.Entigrator;
@@ -40,25 +40,25 @@ import gdt.jgui.console.WUtils;
 import gdt.jgui.entity.JEntityFacetPanel;
 import gdt.jgui.entity.JEntityPrimaryMenu;
 import gdt.jgui.entity.fields.JFieldsFacetOpenItem;
-import gdt.jgui.entity.view.JViewFacetOpenItem;
-import gdt.jgui.entity.view.JViewPanel;
 
 /**
- * This class represents the query facet item in the list
+ * This class represents the view facet item in the list
  * of  entity's facets.
  * @author imasa
  *
  */
-public class JQueryFacetOpenItem extends JFacetOpenItem implements JRequester,WContext{
+public class JViewFacetOpenItem extends JFacetOpenItem implements JRequester,WContext{
 	private static final long serialVersionUID = 1L;
 	private static final String ACTION_DISPLAY_FACETS="action display facets";
-	private Logger LOGGER=Logger.getLogger(JQueryFacetOpenItem.class.getName());
-
+	private Logger LOGGER=Logger.getLogger(JViewFacetOpenItem.class.getName());
+	public static final String ID_NAME="ID name";
+	public static final String ID_VALUE="ID value";
+	public static final String ACTION_OPEN_ID="action open ID";
     boolean debug=false;
 	/**
      * The default constructor.
      */
-	public JQueryFacetOpenItem(){
+	public JViewFacetOpenItem(){
 		super();
 	}
 	/**
@@ -68,20 +68,20 @@ public class JQueryFacetOpenItem extends JFacetOpenItem implements JRequester,WC
  @Override
 public String getLocator(){
 	Properties locator=new Properties();
-	locator.setProperty(Locator.LOCATOR_TITLE,"Query");
-	locator.setProperty(BaseHandler.HANDLER_CLASS,JQueryFacetOpenItem.class.getName());
+	locator.setProperty(Locator.LOCATOR_TITLE,"View");
+	locator.setProperty(BaseHandler.HANDLER_CLASS,JViewFacetOpenItem.class.getName());
 	locator.setProperty(BaseHandler.HANDLER_SCOPE,JConsoleHandler.CONSOLE_SCOPE);
 	locator.setProperty(BaseHandler.HANDLER_METHOD,METHOD_OPEN_FACET);
-	locator.setProperty( JContext.CONTEXT_TYPE,"Query facet");
-	locator.setProperty(Locator.LOCATOR_TITLE,"Query");
-	locator.setProperty(FACET_HANDLER_CLASS,QueryHandler.class.getName());
+	locator.setProperty( JContext.CONTEXT_TYPE,"View facet");
+	locator.setProperty(Locator.LOCATOR_TITLE,"View");
+	locator.setProperty(FACET_HANDLER_CLASS,ViewHandler.class.getName());
 	if(entityKey$!=null)
 		locator.setProperty(EntityHandler.ENTITY_KEY,entityKey$);
 	if(entihome$!=null)
 		locator.setProperty(Entigrator.ENTIHOME,entihome$);
 	locator.setProperty(Locator.LOCATOR_ICON_CONTAINER,Locator.LOCATOR_ICON_CONTAINER_CLASS);
 	locator.setProperty(Locator.LOCATOR_ICON_CLASS,getClass().getName());
-	locator.setProperty(Locator.LOCATOR_ICON_FILE,"query.png");
+	locator.setProperty(Locator.LOCATOR_ICON_FILE,"view.png");
     if(entihome$!=null){   
  	locator.setProperty(Locator.LOCATOR_CHECKABLE,Locator.LOCATOR_TRUE);
 	    }
@@ -94,7 +94,7 @@ public String getLocator(){
   */
 @Override
 public void response(JMainConsole console, String locator$) {
-//	System.out.println("JQueryFacetOpenItem:response:FACET locator:"+locator$);
+//	System.out.println("JViewFacetOpenItem:response:FACET locator:"+locator$);
 	try{
 		Properties locator=Locator.toProperties(locator$);
 		String requesterResponseLocator$=locator.getProperty(JRequester.REQUESTER_RESPONSE_LOCATOR);
@@ -129,7 +129,7 @@ public boolean isRemovable() {
  */
 @Override
 public String getFacetName() {
-	return "Query";
+	return "View";
 }
 /**
  * Get the facet icon as a Base64 string.
@@ -137,7 +137,7 @@ public String getFacetName() {
  */
 @Override
 public String getFacetIcon(Entigrator entigrator) {
-	return Support.readHandlerIcon(null,JEntityPrimaryMenu.class, "query.png");
+	return Support.readHandlerIcon(null,JEntityPrimaryMenu.class, "view.png");
 }
 
 @Override
@@ -163,13 +163,13 @@ public void openFacet(JMainConsole console,String locator$) {
 		responseLocator$=Locator.toString(responseLocator);
 		String requesterResponseLocator$=Locator.compressText(responseLocator$);
 
-		JQueryPanel queryPanel=new JQueryPanel();
-		String qpLocator$=queryPanel.getLocator();
-		qpLocator$=Locator.append(qpLocator$, Entigrator.ENTIHOME, entihome$);
-		qpLocator$=Locator.append(qpLocator$, EntityHandler.ENTITY_KEY, entityKey$);
-		qpLocator$=Locator.append(qpLocator$, JRequester.REQUESTER_RESPONSE_LOCATOR, requesterResponseLocator$);
-		qpLocator$=Locator.append(qpLocator$, BaseHandler.HANDLER_METHOD,"instantiate");
-		JConsoleHandler.execute(console, qpLocator$);
+		JViewPanel viewPanel=new JViewPanel();
+		String vpLocator$=viewPanel.getLocator();
+		vpLocator$=Locator.append(vpLocator$, Entigrator.ENTIHOME, entihome$);
+		vpLocator$=Locator.append(vpLocator$, EntityHandler.ENTITY_KEY, entityKey$);
+		vpLocator$=Locator.append(vpLocator$, JRequester.REQUESTER_RESPONSE_LOCATOR, requesterResponseLocator$);
+		vpLocator$=Locator.append(vpLocator$, BaseHandler.HANDLER_METHOD,"instantiate");
+		JConsoleHandler.execute(console, vpLocator$);
 	}catch(Exception e){
 		LOGGER.severe(e.toString());
 	}
@@ -181,7 +181,7 @@ public void openFacet(JMainConsole console,String locator$) {
 
 @Override
 public String getFacetRenderer() {
-	return JQueryPanel.class.getName();
+	return JViewPanel.class.getName();
 }
 /**
  * No action.
@@ -200,7 +200,7 @@ public DefaultMutableTreeNode[] getDigest(Entigrator entigrator,String locator$)
 
 @Override
 public FacetHandler getFacetHandler() {
-	return new QueryHandler();
+	return new ViewHandler();
 }
 /**
  * No action.
@@ -219,7 +219,7 @@ public void removeFacet() {
 }
 @Override
 public String getFacetIconName() {
-	return  "query.png";
+	return  "view.png";
 }
 @Override
 public String getWebView(Entigrator entigrator, String locator$) {
@@ -229,7 +229,7 @@ public String getWebView(Entigrator entigrator, String locator$) {
 		String entityLabel$=locator.getProperty(EntityHandler.ENTITY_LABEL);
 		String webRequester$=locator.getProperty(WContext.WEB_REQUESTER);
 		if(debug)
-		System.out.println("JQueryFacetOpenItem:locator="+locator$);
+		System.out.println("JViewFacetOpenItem:locator="+locator$);
 		entityKey$=entigrator.indx_keyAtLabel(entityLabel$);
 		StringBuffer sb=new StringBuffer();
 		sb.append("<!DOCTYPE html PUBLIC \"-//W3C//DTD HTML 4.01//EN\" \"http://www.w3.org/TR/html4/strict.dtd\">");
@@ -253,21 +253,20 @@ public String getWebView(Entigrator entigrator, String locator$) {
 	    sb.append("</strong></td></tr><tr><td>Entity: </td><td><strong>");
 	    sb.append(entityLabel$);
 	    sb.append("</strong></td></tr>");
-	    sb.append("<tr><td>Facet: </td><td><strong>Query</strong></td></tr>");
+	    sb.append("<tr><td>Facet: </td><td><strong>View</strong></td></tr>");
 	    sb.append("</table>");
-	    
-	    sb.append(JQueryPanel.getWebItems(entigrator, locator$));
+	    sb.append(JViewPanel.getViewItems(entigrator, locator$));
 	    sb.append("<script>");
 	    sb.append("function onLoad() {");
-	    sb.append(" var parameter=window.localStorage.getItem(\"query_requester\");");
+	    sb.append(" var parameter=window.localStorage.getItem(\"view_requester\");");
 	    sb.append("console.log('parameter='+parameter);");
 	    sb.append("if(parameter==null) "); 
 	    sb.append("initBack(\""+this.getClass().getName()+"\",\""+webRequester$+"\");");
 	    sb.append("else {");
 	    sb.append("initBack(\""+this.getClass().getName()+"\",parameter);");
-	   
 	    sb.append("}");
 	    sb.append("}");
+	    
 	    sb.append("function labelClick(label) {");
 	    sb.append("console.log(label);");
 	    Properties foiLocator=new Properties(); 
@@ -283,7 +282,6 @@ public String getWebView(Entigrator entigrator, String locator$) {
     	sb.append("window.localStorage.setItem(\"back."+JEntityFacetPanel.class.getName()+"\",\""+this.getClass().getName()+"\");");
 	    sb.append("window.location.assign(href);");
 	    sb.append("}");
-	    sb.append("window.localStorage.setItem(\""+this.getClass().getName()+"\",\""+Base64.encodeBase64URLSafeString(locator$.getBytes())+"\");");
 	    
 	    sb.append("function keyClick(entityKey) {");
 	    sb.append("console.log(entityKey);");
@@ -304,7 +302,7 @@ public String getWebView(Entigrator entigrator, String locator$) {
 	    sb.append("function headerClick(header) {");
 	    sb.append("console.log(header);");
 	    Properties headerLocator=new Properties(); 
-	    headerLocator.setProperty(BaseHandler.HANDLER_CLASS,JQueryFacetOpenItem.class.getName());
+	    headerLocator.setProperty(BaseHandler.HANDLER_CLASS,JViewFacetOpenItem.class.getName());
     	headerLocator.setProperty(Entigrator.ENTIHOME,entigrator.getEntihome());
     	headerLocator.setProperty(WContext.WEB_HOME, webHome$);
     	//headerLocator.setProperty(WContext.WEB_REQUESTER, this.getClass().getName());
@@ -318,6 +316,8 @@ public String getWebView(Entigrator entigrator, String locator$) {
     	sb.append("window.localStorage.setItem(\"back."+JEntityFacetPanel.class.getName()+"\",\""+this.getClass().getName()+"\");");
 	    sb.append("window.location.assign(href);");
 	    sb.append("}");
+	    sb.append("window.localStorage.setItem(\""+this.getClass().getName()+"\",\""+Base64.encodeBase64URLSafeString(locator$.getBytes())+"\");");
+	    
 	    sb.append("</script>");
 	    sb.append("</body>");
 	    sb.append("</html>");

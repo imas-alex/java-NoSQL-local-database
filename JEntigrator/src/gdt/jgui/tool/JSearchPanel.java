@@ -45,6 +45,7 @@ import java.awt.GridBagConstraints;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Properties;
@@ -117,8 +118,16 @@ public JContext instantiate(JMainConsole console, String locator$) {
 				 Entigrator entigrator=console.getEntigrator(entihome$);
 				 entigrator.store_refresh();
 				 String[] labels=entigrator.indx_listAllLabels();
+				 String[] files=new File(entigrator.getEntihome()+"/"+Entigrator.ENTITY_BASE+"/data/").list();
+				 ArrayList<String>sl=new ArrayList<String>();
+				 for(String s:labels)
+					 sl.add(s);
+				 for(String s:files)
+					 sl.add(s);
+				 
+				 
 		//		 System.out.println("SearchPanel:instantiate.labels="+labels.length);
-				 comboBox = new AutocompleteJComboBox(labels);
+				 comboBox = new AutocompleteJComboBox(sl.toArray(new String[0]));
 					GridBagConstraints gbc_comboBox = new GridBagConstraints();
 					gbc_comboBox.fill = GridBagConstraints.HORIZONTAL;
 					gbc_comboBox.insets = new Insets(5, 5, 5, 5);
@@ -200,9 +209,12 @@ public JMenu getContextMenu() {
 						  JEntityFacetPanel ep=new JEntityFacetPanel();
 						  String locator$=ep.getLocator();
 						   locator$=Locator.append(locator$, Entigrator.ENTIHOME, entihome$);
-						   String entityLabel$=(String)comboBox.getSelectedItem();
+						   String item$=(String)comboBox.getSelectedItem();
 						   Entigrator entigrator=console.getEntigrator(entihome$);
-						   String entityKey$=entigrator.indx_keyAtLabel(entityLabel$);
+						   String entityKey$=item$;
+						   File file= new File(entigrator.getEntihome()+"/"+Entigrator.ENTITY_BASE+"/data/"+item$);
+						   if(!file.exists())
+						   entityKey$=entigrator.indx_keyAtLabel(item$);
 						   locator$=Locator.append(locator$, EntityHandler.ENTITY_KEY, entityKey$);
 						   JConsoleHandler.execute(console, locator$);
 					}
