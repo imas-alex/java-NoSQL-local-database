@@ -74,7 +74,7 @@ public class JEntityPrimaryMenu extends JItemsListPanel implements JRequester{
     String saveId$;
     boolean ignoreOutdate=false;
     Sack entity;
-    static boolean debug=true;
+    static boolean debug=false;
 /**
  * Get context menu.
  * @return the context menu.

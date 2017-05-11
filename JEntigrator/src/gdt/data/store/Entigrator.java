@@ -687,7 +687,7 @@ public String[] indx_listEntities(Properties criteria) {
         if("entity".equals(propertyName$)){
      	   try{
     	       //	Sack labelMap=Sack.parseXML(getEntihome()+"/"+LABEL_MAP);
-    	      storeAdapter.indx_listEntitiesAtType(propertyValue$);
+    	      return storeAdapter.indx_listEntitiesAtType(propertyValue$);
      	    }catch(Exception e){
      	    	 LOGGER.severe(e.toString()); 
  	 
@@ -2870,16 +2870,15 @@ public boolean store_replace(){
 public String store_reload(){
 	 if(debug)
 	   System.out.println("Entigrator:store_reload");
-	entitiesCache.clear();
+	
 	return storeAdapter.store_reload();
 }
-/*
-public boolean store_outdated(String saveId$){
-	 if(debug)
-		 System.out.println("Entigrator:store_outdated");
-	return storeAdapter.store_outdated(saveId$);
+
+public void clearCache(){
+	entitiesCache.clear();
+
 }
-*/
+
 public boolean store_outdated(){
 	 if(debug)
 		 System.out.println("Entigrator:store_outdated");

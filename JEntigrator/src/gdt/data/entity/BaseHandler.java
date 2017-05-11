@@ -90,7 +90,7 @@ public class BaseHandler {
 		 *  
 		 * @return The locator string.
 		 */	 
-	static boolean debug=true;
+	static boolean debug=false;
 	public static String getLocator(){
 			Properties locator=new Properties();
 			locator.setProperty(Locator.LOCATOR_TITLE, "Base handler");

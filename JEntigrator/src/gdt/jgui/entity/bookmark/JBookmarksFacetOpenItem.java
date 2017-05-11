@@ -385,9 +385,6 @@ public String getWebView(Entigrator entigrator, String locator$) {
         		foiLocator=Locator.toProperties(foiLocator$);
         		foiLocator.setProperty(Entigrator.ENTIHOME,entigrator.getEntihome());
                 foiType$=foiLocator.getProperty(JContext.CONTEXT_TYPE);
-                ///foiHandler$=foiLocator.getProperty(BaseHandler.HANDLER_CLASS);
-                
-                	
                 foiIcon$=JConsoleHandler.getIcon(entigrator,c.value);
                 if(debug)
             		System.out.println("JBookmarksFacetOpenItem:getWebView: foiType="+foiType$+" facet panel type="+facetPanelType$);

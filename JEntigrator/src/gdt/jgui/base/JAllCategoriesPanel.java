@@ -55,7 +55,7 @@ public class JAllCategoriesPanel extends JItemsListPanel implements WContext {
 String entihome$;
 Hashtable<String,JItemPanel> items;
 	private static final long serialVersionUID = 1L;
-	boolean debug=true;
+	boolean debug=false;
 	boolean ignoreOutdate=false;
 	/**
 	 * Default constructor

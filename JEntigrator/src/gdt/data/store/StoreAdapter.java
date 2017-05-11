@@ -12,9 +12,6 @@ public class StoreAdapter {
 	public static final String HEADERS="_AM7SyUTiAcrd_hDOtNegtzohEbc";
 	private static final String QUICK_MAP="_0Hw7Cb9q5VrmwG6enFmb5GBKIXo";
 	private static final String STORE_STATE="_h118ipt7JttV441WtL_BMFD2klA";
-	//private static final String MAP_TIME="map time";
-	//private static final String IS_LOCKED="is locked";
-	//private static final String SINGLE_MODE="single mode";
 	private final Logger LOGGER= Logger.getLogger(getClass().getName());
 	
 	Sack quickMap;
@@ -609,20 +606,6 @@ private boolean store_isLocked(){
 		if(!state.exists())
 			return false;
 		storeState=Sack.parseXML(entigrator,entigrator.getEntihome() +"/"+STORE_STATE);
-		/*
-		if(storeState==null){
-			Thread.sleep(10);
-			storeState=Sack.parseXML(entigrator.getEntihome() +"/"+STORE_STATE);
-		}
-		if(storeState==null){
-				Thread.sleep(10);
-				storeState=Sack.parseXML(entigrator.getEntihome() +"/"+STORE_STATE);
-		}
-		if(storeState==null){
-				Thread.sleep(10);
-				storeState=Sack.parseXML(entigrator.getEntihome() +"/"+STORE_STATE);
-		}
-		*/
 		if(storeState==null)
 				return false;
 		if(!storeState.getAttributeAt(Entigrator.SAVE_ID).equals(quickMap.getAttributeAt(Entigrator.SAVE_ID)))
@@ -757,17 +740,21 @@ public String[] indx_listEntitiesAtType(String entityType$) {
 		System.out.println("StoreAdapter: indx_listEntitiesAtType:entity type="+entityType$);
 
 	try{
-    	map_update();
+    	//map_update();
        String[]sa=quickMap.elementList("key");
        if(sa==null)
     	   return null;
        ArrayList<String>sl=new ArrayList<String>();
+       //System.out.println("StoreAdapter: indx_listEntitiesAtType:1");
        Core[]ca=quickMap.elementGet("key");
+      // System.out.println("StoreAdapter: indx_listEntitiesAtType:2");
       	for(Core aCa:ca){
       		if(entityType$.equals(aCa.value))
       		   sl.add(aCa.name);
       	}
-      	 return sl.toArray(new String[0]);
+      	sa=sl.toArray(new String[0]);
+      //	System.out.println("StoreAdapter: indx_listEntitiesAtType:sa="+sa.length);
+      	 return sa;
        
     }catch(Exception e){
    	 LOGGER.severe(e.toString());
@@ -816,7 +803,7 @@ public void store_refresh(){
 	if(debug)
 		System.out.println("StoreAdapter:store_refresh:store save id="+saveId$);
 }
-/**
+/*
 public void store_block(){
 	singleMode=true;
 

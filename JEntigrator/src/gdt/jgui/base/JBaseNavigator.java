@@ -72,7 +72,7 @@ import org.apache.commons.codec.binary.Base64;
 */
 public class JBaseNavigator extends JItemsListPanel implements WContext{
 	private static final long serialVersionUID = 1L;
-	boolean debug=true;
+	boolean debug=false;
 private Logger LOGGER=Logger.getLogger(JBaseNavigator.class.getName());
 	String entihome$;
 	boolean keep=true;

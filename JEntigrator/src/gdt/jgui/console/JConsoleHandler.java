@@ -250,7 +250,7 @@ public static JFacetRenderer getFacetRenderer(Entigrator entigrator,String fhand
 		return null;
 }
 public static JFacetRenderer getFacetRenderer(Entigrator entigrator,FacetHandler fh){
-	  System.out.println("JConsoleHandler:getFacetRenderer:handler="+fh.getClass().getName());	
+	 // System.out.println("JConsoleHandler:getFacetRenderer:handler="+fh.getClass().getName());	
 	if(FieldsHandler.class.getName().equals(fh.getClass().getName()))
 		   return new JFieldsEditor();
 	if(FolderHandler.class.getName().equals(fh.getClass().getName()))
@@ -277,7 +277,7 @@ public static JFacetRenderer getExtensionFacetRenderer(Entigrator entigrator,Str
 	 System.out.println("JConsoleHandler:getExtensionFacetRenderer:handler="+fhandler$+" extension="+extension$);	
 	try{
 			Sack extension=entigrator.getEntityAtKey(extension$);
-			System.out.println("JConsoleHandler:getFacetRenderer:extension="+extension.getProperty("label"));
+			//System.out.println("JConsoleHandler:getFacetRenderer:extension="+extension.getProperty("label"));
 			Core[]ca=extension.elementGet("content.jfacet");
 			if(ca==null)
 				return null;

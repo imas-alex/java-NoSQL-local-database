@@ -60,7 +60,7 @@ public class JItemPanel extends JPanel {
 	protected JLabel title ;
 	protected Timer timer	;
 	protected JPopupMenu popup;
-	boolean debug=true;
+	boolean debug=false;
 	
 /**
  * The constructor.

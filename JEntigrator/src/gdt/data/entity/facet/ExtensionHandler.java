@@ -59,7 +59,7 @@ private Logger LOGGER=Logger.getLogger(ExtensionHandler.class.getName());
  *  @param locator$ entity's locator 
  * @return true if applied false otherwise.
  */	
-static boolean debug=true;
+static boolean debug=false;
 	@Override
 	public boolean isApplied(Entigrator entigrator, String locator$) {
 		try{

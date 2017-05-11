@@ -74,7 +74,7 @@ public class JCategoryPanel extends JItemsListPanel implements WContext{
 	JMenuItem deleteItem;
 	JMenuItem copyItem;
 	private JMenuItem[] mia;
-	static boolean debug=true; 
+	static boolean debug=false; 
 	boolean ignoreOutdate=false;
 	boolean refresh=false;
 	/**
@@ -380,6 +380,8 @@ public class JCategoryPanel extends JItemsListPanel implements WContext{
 	       Properties emLocator;
 		   String iconFile$;
 		   FacetHandler[] fha=BaseHandler.listAllHandlers(entigrator);
+		   Hashtable<FacetHandler,JFacetRenderer>frtab=new Hashtable<FacetHandler,JFacetRenderer>();
+		   JFacetRenderer facetRenderer;
 	       for(Core c:ca){
 			   try{
 				   if(debug)
@@ -402,7 +404,11 @@ public class JCategoryPanel extends JItemsListPanel implements WContext{
 						
 				    	   for(FacetHandler fh:fha){
 				    		if(type$.equals(fh.getType())){
-				    			 JFacetRenderer facetRenderer=JConsoleHandler.getFacetRenderer(entigrator, fh);
+				    			 facetRenderer=frtab.get(fh);
+				    			 if(facetRenderer==null){
+				    					facetRenderer= JConsoleHandler.getFacetRenderer(entigrator, fh);
+				    					frtab.put(fh, facetRenderer);
+				    			 }
 				    			 emLocator.setProperty(Locator.LOCATOR_ICON_CONTAINER,Locator.LOCATOR_ICON_CONTAINER_CLASS);
 				    			 emLocator.setProperty(Locator.LOCATOR_ICON_CLASS,facetRenderer.getClass().getName());
 				    			 emLocator.setProperty(Locator.LOCATOR_ICON_FILE,facetRenderer.getFacetIcon());
@@ -423,6 +429,7 @@ public class JCategoryPanel extends JItemsListPanel implements WContext{
 			   }catch(Exception ee){
 				   Logger.getLogger(JCategoryPanel.class.getName()).info(ee.toString());
 			   }
+			   entigrator.clearCache();
 		   }
 		   Collections.sort(ipl,new ItemPanelComparator());
 		   return ipl.toArray(new JItemPanel[0]);
@@ -445,7 +452,7 @@ public class JCategoryPanel extends JItemsListPanel implements WContext{
 			   String[] sa=entigrator.indx_listEntities("entity",entityType$);
 			   if(sa!=null)
 				   for(String s:sa)
-				   sl.add(s);
+				      sl.add(s);
 			   sa=entigrator.indx_listEntitiesAtPropertyName(entityType$);
 			   if(sa!=null)
 				   for(String s:sa)
@@ -499,8 +506,10 @@ public class JCategoryPanel extends JItemsListPanel implements WContext{
 			   }catch(Exception ee){
 				   Logger.getLogger(JCategoryPanel.class.getName()).info(ee.toString());
 			   }
+			   entigrator.clearCache();
 		   }
 		   Collections.sort(tl);
+		   
 		   for(String s:tl)
 			   sl.add(tab.get(s));
 		   return sl.toArray(new String[0]);
@@ -512,7 +521,7 @@ public class JCategoryPanel extends JItemsListPanel implements WContext{
 	}
 	private static String getItem(String icon$, String url$, String title$,String foiLocator$){
 		if(debug)
-				System.out.println("JBookmarksFacetOpenItem:getItem: locator="+foiLocator$);
+				System.out.println("JCategoryPanel:getItem: locator="+foiLocator$);
 	    
 		String iconTerm$="<img src=\"data:image/png;base64,"+WUtils.scaleIcon(icon$)+
 				  "\" width=\"24\" height=\"24\" alt=\""+title$+"\">";

@@ -31,14 +31,13 @@ import java.io.Writer;
 import java.lang.reflect.Method;
 import java.net.URL;
 import java.net.URLClassLoader;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Properties;
 import java.util.Stack;
-import java.util.Vector;
 import java.util.logging.Logger;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JComboBox;
@@ -73,8 +72,8 @@ import gdt.jgui.console.JContext;
 import gdt.jgui.console.JFacetRenderer;
 import gdt.jgui.console.JMainConsole;
 import gdt.jgui.console.JRequester;
-import gdt.jgui.console.WContext;
 import gdt.jgui.entity.JEntitiesPanel;
+import gdt.jgui.entity.JEntityFacetPanel;
 import gdt.jgui.entity.JEntityPrimaryMenu;
 import gdt.jgui.entity.JReferenceEntry;
 import gdt.jgui.entity.folder.JFolderFacetAddItem;
@@ -105,7 +104,7 @@ public class JViewPanel extends JPanel implements JFacetRenderer,JRequester{
 	protected Sack entity=null;
 	protected JMainConsole console;
 	private JMenu menu;
-	static boolean debug=true;
+	static boolean debug=false;
 	protected ArrayList <String>viewScope;
 	protected ArrayList <String>elementScope;
 	protected View view;
@@ -129,6 +128,7 @@ public class JViewPanel extends JPanel implements JFacetRenderer,JRequester{
 		gbc_scroll_panel.gridx = 0;
 		gbc_scroll_panel.gridy =0;
 		contentTable=new JTable();
+		
 		contentTable.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
 		scrollPane = new JScrollPane(contentTable, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 		add(scrollPane, gbc_scroll_panel);
@@ -163,8 +163,7 @@ public class JViewPanel extends JPanel implements JFacetRenderer,JRequester{
 							  try{
 							  contentTable.setModel(select());
 							  setSorter();
-							 //scrollPane.revalidate();
-							 //scrollPane.repaint();
+							
 							  }catch(Exception ee){
 								  Logger.getLogger(JViewPanel.class.getName()).severe(ee.toString());
 							  }
@@ -210,24 +209,11 @@ public class JViewPanel extends JPanel implements JFacetRenderer,JRequester{
 			});
 			 return menu;
 		 }
-	/*
-	private String[] select(Properties params){
-		Entigrator entigrator=console.getEntigrator(entihome$);
-	
-		return select( entigrator,params);
-		
-	}
-	*/
 	protected void initView(){
 		try{
 			if(debug)
 	 			System.out.println("JViewPanel.initView:BEGIN");
 			File viewHome=new File(entihome$+"/"+entityKey$);
-			//File classFile=new File(entihome$+"/"+entityKey$+"/"+entityKey$+".class");
-			//if(!classFile.exists())
-				
-			//if(debug)
-	 		//	System.out.println("JViewPanel.initView:1");
 			URL url = viewHome.toURI().toURL();
 		    URL[] urls = new URL[]{url};
 		    ClassLoader parentLoader = JMainConsole.class.getClassLoader();
@@ -240,15 +226,7 @@ public class JViewPanel extends JPanel implements JFacetRenderer,JRequester{
 	}
 	protected DefaultTableModel select(){
 		try{
-			Core[] ca=entity.elementGet("parameter");
-			Properties properties=new Properties();
-			if(ca!=null){
-			
-			for(Core c:ca)
-				 properties.setProperty(c.name, c.value);
-			}
-			//Method method = view.getClass().getDeclaredMethod("select",Entigrator.class,Properties.class);
-			initView();
+        	initView();
 			Method method = view.getClass().getDeclaredMethod("select",Entigrator.class);
 	 	    return (DefaultTableModel)method.invoke(view,console.getEntigrator(entihome$));
 		}catch(Exception e){
@@ -256,19 +234,7 @@ public class JViewPanel extends JPanel implements JFacetRenderer,JRequester{
 		}
 		return null;
 	}
-	protected void initParameters(){
-		try{
-			DefaultComboBoxModel<String> pmodel=new DefaultComboBoxModel<String>();
-			parameterComboBox.setModel(pmodel);
-			Method method = view.getClass().getDeclaredMethod("listParameters");
-	 	    String []na=(String[])method.invoke(view);
-	 	    if(na!=null)
-	 	    	for(String n:na)
-	 	    		pmodel.addElement(n);
-		}catch(Exception e){
-			Logger.getLogger(JViewPanel.class.getName()).severe(e.toString());
-		}
-	}
+	
 	protected void initValues(){
 		try{
 			DefaultComboBoxModel<String> vmodel=new DefaultComboBoxModel<String>();
@@ -285,40 +251,7 @@ public class JViewPanel extends JPanel implements JFacetRenderer,JRequester{
 			Logger.getLogger(JViewPanel.class.getName()).severe(e.toString());
 		}
 	}
-/*	
-public  String[] select(Entigrator entigrator,Properties params){
-		try{
-			if(debug)
-	 			System.out.println("JViewPanel.select:SELECT");
-			if(debug)
-	 			System.out.println("JViewPanel.select:view="+entityKey$);
-			File viewHome=new File(entihome$+"/"+entityKey$);
-			File classFile=new File(entihome$+"/"+entityKey$+"/"+entityKey$+".class");
-			if(!classFile.exists())
-				return null;
-			if(debug)
-	 			System.out.println("JViewPanel.select:1");
-			URL url = viewHome.toURI().toURL();
-		    URL[] urls = new URL[]{url};
-		    ClassLoader parentLoader = JMainConsole.class.getClassLoader();
-		    URLClassLoader cl = new URLClassLoader(urls,parentLoader);
-		  Class<?> cls = cl.loadClass(entityKey$);
-		  Object obj=cls.newInstance();
-		  Method method = obj.getClass().getDeclaredMethod("select",Entigrator.class,Properties.class);
- 	      Object value=method.invoke(obj,entigrator);
- 	     
- 	      String[] sa=(String[])value;
- 	     if(debug)
-	 			System.out.println("JViewPanel.select:sa="+sa.length);
- 	      //String []ea=entity.elementList("exclude");
- 	      return sa;
- 	       
-		}catch(Exception e){
-			Logger.getLogger(JViewPanel.class.getName()).severe(e.toString());
-		}
-		return null;
-	}
-	*/
+
 /**
  * Get the context locator.
  * @return the context locator.
@@ -361,7 +294,7 @@ public  String[] select(Entigrator entigrator,Properties params){
 			Properties locator=Locator.toProperties(locator$);
 			entihome$=locator.getProperty(Entigrator.ENTIHOME);
 			entityKey$=locator.getProperty(EntityHandler.ENTITY_KEY);
-			Entigrator entigrator=console.getEntigrator(entihome$);
+			final Entigrator entigrator=console.getEntigrator(entihome$);
 			entityLabel$=locator.getProperty(EntityHandler.ENTITY_LABEL);
 			if(entityLabel$==null)
 				entityLabel$=entigrator.indx_getLabel(entityKey$);
@@ -369,14 +302,38 @@ public  String[] select(Entigrator entigrator,Properties params){
 				 return this;
 			entity=entigrator.getEntityAtKey(entityKey$);
             entityLabel$=entity.getProperty("label");
-            if(contentTable!=null)
-            	contentTable.setModel(new DefaultTableModel());
             if(parametersTable!=null)
             	parametersTable.setModel(new DefaultTableModel());
             initView();
             initValues();
-    		initParameters();
-    		displayParameters();
+    		 contentTable.addMouseListener(new java.awt.event.MouseAdapter() {
+    		   	    @Override
+    		   	    public void mouseClicked(java.awt.event.MouseEvent evt) {
+    		   	       try{
+    		   	    	Sack id2key =entigrator.getEntityAtKey(entigrator.indx_keyAtLabel("id2key"));
+    		   	    	int row = contentTable.rowAtPoint(evt.getPoint());
+    		   	        int col = contentTable.columnAtPoint(evt.getPoint());
+    		   	        String value$=(String)contentTable.getValueAt(row, col);
+    		   	        String header$=contentTable.getColumnName(col);
+    	   	            //System.out.println("JViewPanel:cell click:row="+row+" column="+col+" value="+value$+" header="+header$);
+    	   	            if(id2key==null)
+    	   	            	return;
+    	   	            String entityKey$=id2key.getElementItemAt(header$, value$);
+    	   	            if(entityKey$==null)
+    	   	            	return;
+    	   	         JEntityFacetPanel efp=new  JEntityFacetPanel();
+    		         String efpLocator$=efp.getLocator();
+    		         efpLocator$=Locator.append(efpLocator$, Entigrator.ENTIHOME, entihome$);
+    		         efpLocator$=Locator.append(efpLocator$, EntityHandler.ENTITY_KEY, entityKey$);
+    		         JConsoleHandler.execute(JViewPanel.this.console, efpLocator$);
+    		   	   
+    		   	       }catch(Exception e){
+    		   	    	   System.out.println("ViewPanel:instantiate:mouse clicked:"+e.toString());
+    		   	       }
+    		   	        }
+    		   	    });
+    		contentTable.setModel(select());
+    		setSorter();
         		}catch(Exception e){
 	        Logger.getLogger(getClass().getName()).severe(e.toString());
 		}
@@ -620,321 +577,6 @@ public  String[] select(Entigrator entigrator,Properties params){
 		}
 		
 	}
-/*
-private void initElementSelector(){
-    DefaultComboBoxModel<String> model=new DefaultComboBoxModel<String>();
-	//String[]sa=select();
-     itemNameComboBox.setModel(model);
-     itemValueComboBox.setModel(model);
-    if(queryScope==null||queryScope.size()<1){
-		elementComboBox.setModel(model);
-		return;
-	}
-	if(elementScope==null)
-		elementScope=new ArrayList<String>();
-	else
-		elementScope.clear();
-	 if(debug)
-			System.out.println("JViewPanel. initElementSelector:1");
-  String component$=(String)componentComboBox.getSelectedItem();
-  if(component$==null)
-	  return;
-	try{
-		Entigrator entigrator=console.getEntigrator(entihome$);
-		ArrayList <String>sl=new ArrayList<String>();
-		Sack entity;
-        String[] ea;		
-		for(String s:queryScope){
-			 if(debug)
-					System.out.println("JViewPanel. initElementSelector:s="+s);
-			entity=entigrator.getEntityAtKey(s);
-			if(entity==null)
-				continue;
-			if(!component$.equals(entity.getProperty("entity")))
-				continue;
-			if(!elementScope.contains(s))
-				elementScope.add(s);
-			ea=entity.elementsList();
-			if(ea!=null)
-				for (String e:ea)
-				 if(!sl.contains(e))	
-					sl.add(e);
-		}
-		Collections.sort(sl);
-		for(String s:sl)
-			model.addElement(s);
-		elementComboBox.setModel(model);
-		System.out.println("JViewPanel. initElementSelector:element scope:"+elementScope.size());
-	}catch(Exception e){
-		Logger.getLogger(getClass().getName()).severe(e.toString());
-	}
-}
-*/
-/*
-
-private void initScopeMember(Entigrator entigrator,Sack member){
-	try{
-		String entityType$=member.getProperty("entity");
-		if(entityType$==null)
-			return;
-		if(!entity.existsElement("entity"))
-			entity.createElement("entity");
-		entity.putElementItem("entity", new Core(null,entityType$,null));
-		String[] ea=member.elementsList();
-		Core[] ca;
-		if(ea!=null){
-			if(!entity.existsElement("element"))
-				entity.createElement("element");
-			String elementKey$;
-		    for(String e:ea){
-		    	elementKey$=Identity.key();
-		    	entity.putElementItem("element", new Core(entityType$,elementKey$,e));
-		    	ca=member.elementGet(e);
-		    	if(ca!=null){
-		    		}
-		    	}
-		    
-		}
-	}catch(Exception e){
-		Logger.getLogger(getClass().getName()).severe(e.toString());
-	}
-}
-*/
-/*
-private void initComponentSelector(){
-	
-	
-	queryScope=new ArrayList<String>(Arrays.asList(select()));
-	DefaultComboBoxModel<String> model=new DefaultComboBoxModel<String>();
-	
-	String[]sa=select();
-	if(sa==null){
-		componentComboBox.setModel(model);
-		return;
-	}
-	 if(debug)
-			System.out.println("JViewPanel. initComponentSelector:1");
-  
-	try{
-		Entigrator entigrator=console.getEntigrator(entihome$);
-		ArrayList <String>sl=new ArrayList<String>();
-		Sack member;
-		String entityType$;
-		String memberType$;
-        String[] ca;
-       // if(!entity.existsElement("header.container"))
-       // 	entity.createElement("header.container");
-       // else
-       // 	entity.clearElement("header.container");
-		for(String s:sa){
-			 if(debug)
-					System.out.println("JViewPanel. initComponentSelector:s="+s);
-		     member=entigrator.getEntityAtKey(s);
-		     if(member==null)
-		    	 continue;
-		     if(!queryScope.contains(s))
-		    	 queryScope.add(s);
-			 memberType$=entigrator.getEntityType(s);
-			if(memberType$!=null)
-				 if(!sl.contains(memberType$))	
-					sl.add(memberType$);
-			ca=entigrator.ent_listComponentsCascade(member);
-			if(ca!=null)
-				for(String c:ca){
-					if(!queryScope.contains(c))
-				    	 queryScope.add(c);
-					 entityType$=entigrator.getEntityType(c);
-						if(entityType$!=null)
-							 if(!sl.contains(entityType$))	
-								sl.add(entityType$);
-				}
-		}
-		
-		Collections.sort(sl);
-		for(String s:sl)
-			model.addElement(s);
-		componentComboBox.setModel(model);
-		//System.out.println("JViewPanel. initComponentSelector:scope="+scope.size());
-	    entigrator.replace(entity);
-	    initElementSelector();
-	}catch(Exception e){
-		Logger.getLogger(getClass().getName()).severe(e.toString());
-	}
-}
-*/
-	/*
-private void initItemNameFieldSelector(){
-    DefaultComboBoxModel<String> model=new DefaultComboBoxModel<String>();
-    model.addElement("name");
-    model.addElement("type");
-    itemNameFieldComboBox.setModel(model);
-}
-*/
-	/*
-private void initItemNameSelector(){
-    DefaultComboBoxModel<String> model=new DefaultComboBoxModel<String>();
-    try{
-    String component$=(String)componentComboBox.getSelectedItem();	
-    String element$=(String)elementComboBox.getSelectedItem();
-    String constituent$=(String)itemNameFieldComboBox.getSelectedItem();
-    Entigrator entigrator=console.getEntigrator(entihome$);
-    //String[]sa=select();
-    if(elementScope==null||elementScope.size()<1)
-    	return;
-    String[]sa=elementScope.toArray(new String[0]);
-   if(debug)
-	   System.out.println("initItemNameSelector:element scope="+elementScope.size());
-    ArrayList <String>sl=new ArrayList<String>();
-	Sack entity;
-    Core[] ca;
-	for(String s:sa){
-		try{
-		entity=entigrator.getEntityAtKey(s);
-		if(entity==null)
-			continue;
-		if(!component$.equals(entity.getProperty("entity")))
-			continue;
-		ca=entity.elementGet(element$);
-		 if(debug)
-			   System.out.println("initItemNameSelector:element="+element$+" ca="+ca.length+" constituent="+constituent$);
-		if(ca==null)
-			continue;
-		for(Core c:ca){
-			if("type".equals(constituent$))
-				if(!sl.contains(c.type))	
-			sl.add(c.type);
-		if("name".equals(constituent$))
-			if(!sl.contains(c.name))
-			    sl.add(c.name);
-		}
-		}catch(Exception ee){
-			System.out.println("JViewPanel:initItemNameSelector:"+ee.toString());	
-		}
-	}
-	Collections.sort(sl);
-	if(debug)
-		   System.out.println("initItemNameSelector:sl="+sl.size());
-	 DefaultComboBoxModel<String> mod=new DefaultComboBoxModel<String>();
-	for(String s:sl)
-		   mod.addElement(s);
-    itemNameComboBox.setModel(mod);
-    }catch(Exception e){
-    	Logger.getLogger(getClass().getName()).severe(e.toString());
-    	itemNameComboBox.setModel(model);
-    }
-}
-*/
-	/*
-private void initItemValueSelector(){
-    DefaultComboBoxModel<String> model=new DefaultComboBoxModel<String>();
-    itemValueComboBox.setModel(model);
-    if(debug)
-		 System.out.println("JViewPanel:initItemValueSelector:BEGIN");
-    try{
-    String component$=(String)componentComboBox.getSelectedItem();	
-    String element$=(String)elementComboBox.getSelectedItem();
-    String constituent$=(String)itemNameFieldComboBox.getSelectedItem();
-    String itemName$=(String)itemNameComboBox.getSelectedItem();
-    Entigrator entigrator=console.getEntigrator(entihome$);
-   // String[]sa=select();
-    String[]sa=elementScope.toArray(new String[0]);
-    if(sa==null)
-    	return;
-    	
-    if(debug)
-		 System.out.println("JViewPanel:initItemValueSelector:element scope="+sa.length);
-    ArrayList <String>sl=new ArrayList<String>();
-	Sack entity;
-    String[] ia;
-    
-    String value$;
-    Core item;
-    Core [] ca;
-	for(String s:sa){
-		if(!component$.equals(entigrator.getEntityType(s)))
-			continue;
-		entity=entigrator.getEntityAtKey(s);
-		if(entity==null)
-			continue;
-		if(!component$.equals(entity.getProperty("entity")))
-			continue;
-		ca=entity.elementGet(element$);
-		if(ca==null)
-			continue;
-		for(Core c:ca){
-			if("type".equals(constituent$))
-				if(itemName$.equals(c.type))
-					if(!sl.contains(c.value))
-						sl.add(c.value);
-			if("name".equals(constituent$))
-				if(itemName$.equals(c.name))
-					if(!sl.contains(c.value))
-						sl.add(c.value);	
-		}
-		
-	}
-	Collections.sort(sl);
-	for(String s:sl)
-		model.addElement(s);
-    itemValueComboBox.setModel(model);
-    }catch(Exception e){
-    	Logger.getLogger(getClass().getName()).severe(e.toString());
-    	itemValueComboBox.setModel(model);
-    }
-}
-*/
-private void setParameter(){
-	
-	try{
-		 if(debug)
-			 System.out.println("JViewPanel:setParameter:BEGIN");
-		 Entigrator entigrator=console.getEntigrator(entihome$);
-			 String parameter$=(String)parameterComboBox.getSelectedItem();
-		 String value$=(String)valueComboBox.getSelectedItem();
-		 if(parameter$!=null&&value$!=null){
-		if(!entity.existsElement("parameter"))
-				entity.createElement("parameter");
-		 entity.putElementItem("parameter", new Core(null,parameter$,value$));
-	    
-		 }
-		 entigrator.replace(entity);
-	    displayParameters();
-	 }catch(Exception e){
-	    	Logger.getLogger(getClass().getName()).severe(e.toString());
-    }
-   
-}
-private void displayParameters(){
-	
-	try{
-		 if(debug)
-			 System.out.println("JViewPanel:displayParameters:BEGIN");
-		 DefaultTableModel model=new DefaultTableModel();
-	Core[] ca=entity.elementGet("parameter");
-	if(debug)
-		 System.out.println("JViewPanel:displayParameters:ca="+ca.length);
-	   if(ca!=null){
-		   if(ca.length>1)
-		    ca=Core.sortAtName(ca);
-		   Vector <String>n=new Vector<String>();
-		   ArrayList <String>sl=new ArrayList<String>();
-		   for(int i=0;i<ca.length;i++){
-			   n.add(ca[i].name);
-			   sl.add(ca[i].value);
-		   }
-		   model.setColumnIdentifiers(n);
-		   String[] sa=sl.toArray(new String[0]);
-		   model.addRow(sa);
-		  // if(debug)
-		//		 System.out.println("JViewPanel:displayParameters:sa="+sa.length);
-		   parametersTable.setModel(model);
-	   }
-	 }catch(Exception e){
-	    	Logger.getLogger(getClass().getName()).severe(e.toString());
-    }
-   
-}
-
 static class ItemComparator implements Comparator<String>{
     @Override
     public int compare(String l1$, String l2$) {
@@ -1046,7 +688,9 @@ private static void createSource(String entihome$,String viewKey$){
 		Logger.getLogger(JViewPanel.class.getName()).severe(e.toString());
 	}
 }
-
+/**
+ * No action
+ */
 @Override
 public void activate() {
 	// TODO Auto-generated method stub
@@ -1096,6 +740,13 @@ private static String getWebHeader(Entigrator entigrator,Sack entity){
 	}
 	return null;
 }
+/**
+ * Get table rows as an array of strings in http form.
+ * @param entigrator the entigrator
+ * @param entity the query entity
+ * @param sortColumnName$ sort rows by this column
+ * @return table rows as a string array.
+ */	
 public static String getWebItems(Entigrator entigrator,Sack entity,String sortColumnName$){
 	try{
 	if(debug)
@@ -1165,53 +816,62 @@ public static String getWebItems(Entigrator entigrator,Sack entity,String sortCo
 	
 	return null;
 }
-public static class SortIgnoreCase implements Comparator<Object> {
-    public int compare(Object o1, Object o2) {
-        String s1 = (String) o1;
-        String s2 = (String) o2;
-        return s1.toLowerCase().compareTo(s2.toLowerCase());
-    }
-}
 
 
+/**
+ * Get the name of the class  for the facet open item.
+ * @return the name of the class.
+ */
 @Override
 public String getFacetOpenItem() {
-	// TODO Auto-generated method stub
+	
 	return JViewFacetOpenItem.class.getName();
 }
+/**
+ * Get the name of the icon file for the facet.
+ * @return the name of file.
+ */
 @Override
 public String getFacetIcon() {
-	// TODO Auto-generated method stub
 	return "view.png";
 }
- private boolean containsRow(ArrayList <String[]> scope,String[] row){
-	 if(scope.size()<1)
-		 return false;
-	 RowComparator rowComparator=new RowComparator(); 
-	 for(String[] r:scope){
-		  if(rowComparator.compare(r, row)==0){
-			
-			  return true;
-		  }
-	 }
-	 return false;
- }
- class RowComparator implements Comparator<String[]> {
-	 
-    @Override
-    public int compare(String[] row1, String[]row2) {
-        int cnt=row1.length-row2.length;
-        if(cnt!=0)
-        	return -1;
-        for(int i=1;i<row1.length;i++)
-        	if(!row1[i].equals(row2[i]))
-        		return -1;
-       // System.out.println("r1="+row1+" r2="+row2);
-        return 0;
-    }
-}
+  /**
+  * The  comparator for date strings 
+  * @author imasa.
+  *
+  */
+ public static class DateComparator  implements Comparator<String> {
+	    
+	 @Override
+	 /**
+		 * Compare two date strings.
+		 * @param a the first  date string
+		 * @param b the second date string
+		 * @return a negative integer, zero, or a positive integer as the first argument is less than, equal to, or greater than the second.
+		 */
+	    public int compare(String a, String b) {
+	        try{
+	    	Timestamp a1=DateHandler.getTimestamp(a,null);
+	    	Timestamp b1=DateHandler.getTimestamp(b,null);
+	        return a1.compareTo(b1);
+	        }catch(Exception e){
+	        	return 0;
+	        }
+	    }
+	} 
+ /**
+  * The  comparator for integers strings 
+  * @author imasa.
+  *
+  */
  public static class IntComparator implements Comparator<String> {
 	    @Override
+	    /**
+		 * Compare two integer strings.
+		 * @param a the first  integer string
+		 * @param b the second integer string
+		 * @return a negative integer, zero, or a positive integer as the first argument is less than, equal to, or greater than the second.
+		 */
 	    public int compare(String a, String b) {
 	        try{
 	    	Integer a1=new Integer(a);
@@ -1222,8 +882,19 @@ public String getFacetIcon() {
 	        }
 	    }
 	}
+ /**
+  * The  comparator for integers strings 
+  * @author imasa.
+  *
+  */
 public static  class LongComparator implements Comparator<String> {
 	    @Override
+	    /**
+		 * Compare two long strings.
+		 * @param a the first  long string
+		 * @param b the second long string
+		 * @return a negative integer, zero, or a positive integer as the first argument is less than, equal to, or greater than the second.
+		 */
 	    public int compare(String a, String b) {
 	        try{
 	    	Long a1=new Long(a);
@@ -1234,8 +905,19 @@ public static  class LongComparator implements Comparator<String> {
 	        }
 	    }
 	}
+/**
+ * The  comparator for float strings 
+ * @author imasa.
+ *
+ */
  public static class FloatComparator implements Comparator<String> {
 	    @Override
+	    /**
+		 * Compare two long strings.
+		 * @param a the first  float string
+		 * @param b the second float string
+		 * @return a negative integer, zero, or a positive integer as the first argument is less than, equal to, or greater than the second.
+		 */
 	    public int compare(String a, String b) {
 	        try{
 	    	Float a1=new Float(a);
@@ -1246,8 +928,21 @@ public static  class LongComparator implements Comparator<String> {
 	        }
 	    }
 	}
+ /**
+  * The  comparator for double strings 
+  * @author imasa.
+  *
+  */
+
 public static class DoubleComparator implements Comparator<String> {
 	    @Override
+	    /**
+		 * Compare two double strings.
+		 * @param a the first  double string
+		 * @param b the second double string
+		 * @return a negative integer, zero, or a positive integer as the first argument is less than, equal to, or greater than the second.
+		 */
+
 	    public int compare(String a, String b) {
 	        try{
 	    	Double a1=new Double(a);
@@ -1275,24 +970,23 @@ public static class DoubleComparator implements Comparator<String> {
 			    }
 			});
 			
-		//sorter.setComparator(1,new IntComparator());
 		int cnt=model.getColumnCount();
-//		String columnName$;
 		String columnType$;
 		for(int i=0;i<cnt;i++){
 			columnType$=view.getColumnType(model.getColumnName(i));
 			//System.out.println("JQueryPanel:setSorter: column name="+model.getColumnName(i));
-			if("int".equals(columnType$)){
- 				//if(debug)
- 			  	//	System.out.println("JQueryPanel:showContent:set int comparator: i="+i);
+			if("int".equals(columnType$))
  				 sorter.setComparator(i,new IntComparator());
- 			 }
+ 			 
  			 if("long".equals(columnType$))
  				 sorter.setComparator(i,new LongComparator());
  			 if("float".equals(columnType$))
  				 sorter.setComparator(i,new FloatComparator());
  			 if("double".equals(columnType$))
  				 sorter.setComparator(i,new DoubleComparator());
+ 			if("date".equals(columnType$))
+				 sorter.setComparator(i,new JViewPanel.DateComparator());
+		  
 		}
 	    
  }
@@ -1312,6 +1006,9 @@ public static class DoubleComparator implements Comparator<String> {
  				 sorter.setComparator(i,new FloatComparator());
  			 if("double".equals(columnType$))
  				 sorter.setComparator(i,new DoubleComparator());
+ 			if("date".equals(columnType$))
+				 sorter.setComparator(i,new JViewPanel.DateComparator());
+		  
 		}
 	    return sorter;
  }

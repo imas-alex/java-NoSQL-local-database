@@ -84,7 +84,7 @@ public class JEntityStructurePanel extends JPanel implements JContext,WContext{
     boolean isRoot=true;
     boolean isFirst=true;
 	String selection$;
-	static boolean debug=true;
+	static boolean debug=false;
 	/**
 	 * The default constructor.
 	 */
