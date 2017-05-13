@@ -88,4 +88,8 @@ public BankHandler(){
 public String getClassName() {
 	return  BankHandler.class.getName();
 }
+@Override
+public String getLocation() {
+	return EXTENSION_KEY;
+}
 }

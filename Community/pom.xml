@@ -2,7 +2,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>com.github.imas-alex</groupId>
   <artifactId>Community</artifactId>
-  <version>0.0.64-SNAPSHOT</version>
+  <version>0.0.65-SNAPSHOT</version>
    <name>Community</name>
   <description>The community extension for the entigrator application</description>
   <url>https://github.com/imas-alex/java-NoSQL-local-database</url>
@@ -141,15 +141,10 @@
  
   <dependencies> 
   <dependency>
-  		<groupId>com.github.imas-alex</groupId>
- 			 <artifactId>JEntigrator</artifactId>
-  			 <version>0.0.6</version>
-  			 <scope>system</scope>
-    <systemPath>${basedir}/../JEntigrator/target/JEntigrator-0.0.6-jar-with-dependencies.jar</systemPath>
-  			
-  </dependency>
-
-
+  <groupId>com.github.imas-alex</groupId>
+  <artifactId>JEntigrator</artifactId>
+  <version>0.0.6</version>
+   </dependency>
   		<dependency>
 	  	<groupId>commons-codec</groupId>
   		<artifactId>commons-codec</artifactId>

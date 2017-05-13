@@ -88,4 +88,8 @@ public final static String PERSON="person";
 public String getClassName() {
 	return PersonHandler.class.getName();
 }
+@Override
+public String getLocation() {
+	return EXTENSION_KEY;
+}
 }

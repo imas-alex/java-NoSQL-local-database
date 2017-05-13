@@ -89,4 +89,8 @@ public AddressHandler(){
 public String getClassName() {
 	return  AddressHandler.class.getName();
 }
+@Override
+public String getLocation() {
+	return EXTENSION_KEY;
+}
 }

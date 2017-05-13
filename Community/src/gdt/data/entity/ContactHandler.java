@@ -120,4 +120,8 @@ public void completeMigration(Entigrator entigrator) {
 	// TODO Auto-generated method stub
 	
 }
+@Override
+public String getLocation() {
+	return EXTENSION_KEY;
+}
 }
