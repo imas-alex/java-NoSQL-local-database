@@ -109,7 +109,7 @@ public class JQueryPanel extends JPanel implements JFacetRenderer,JRequester{
 	protected JMainConsole console;
 	protected Entigrator entigrator;
 	private JMenu menu;
-	static boolean debug=false;
+	static boolean debug=true;
 	protected ArrayList <String>queryScope;
 	protected ArrayList <String>elementScope;
 	/**
@@ -1086,7 +1086,10 @@ private void initItemValueSelector(){
 }
 
 private void initTable(){
-	 try{
+	//table=getTable(entigrator ,entity);
+	//scrollPane.getViewport().add(table);
+	 
+	try{
 		 JTable originTable=getTable(entigrator, entity);
 		 if(debug)
 			 System.out.println("JQueryPanel:initTable:origin table rows="+originTable.getRowCount());
@@ -1113,7 +1116,8 @@ private void initTable(){
 			 for(int j=1;j<originColumns+1;j++){
 				 row[j]=(String)originModel.getValueAt(i, j-1);
 			 }
-			 model.addRow(row);
+			// if(!JViewPanel.containsRow(model, row))
+			     model.addRow(row);
 		 }
 		 table=new JTable(model);
 		 table.setAutoCreateRowSorter(true);
@@ -1192,6 +1196,7 @@ private void initTable(){
 	    	Logger.getLogger(getClass().getName()).severe(e.toString());
 	    
 	    }
+	
 }
 private void addHeader(){
 	 try{
@@ -1257,8 +1262,8 @@ private static void addRow(Entigrator entigrator,String[]row,Sack query,Sack mem
 			for(int i=0;i<ca.length;i++){
 				value$=null;
 				component$=query.getElementItemAt("header.component", ca[i].name);
-				if(!component$.equals(member.getProperty("entity")))
-					continue;
+				//if(!component$.equals(member.getProperty("entity")))
+				//	continue;
 				element$=ca[i].value;
 				item=query.getElementItem("header.item", ca[i].name);
 				name$=item.value;
@@ -1290,7 +1295,8 @@ private static void addRow(Entigrator entigrator,String[]row,Sack query,Sack mem
 				}
 			}
 		}else{
-		    model.addRow(newRow);
+			if(!JViewPanel.containsRow(model,newRow));
+		       model.addRow(newRow);
 		    if(debug){
 		    	for(int i=0;i<newRow.length;i++)
 				   System.out.print("["+i+"]="+newRow[i]+" ");
@@ -1303,7 +1309,14 @@ private static void addRow(Entigrator entigrator,String[]row,Sack query,Sack mem
 }
 private static JTable getTable(Entigrator entigrator,Sack query){
 	try{
-	    String[] sa=select(entigrator,query);
+		 if(debug)
+	    	   System.out.println("JQueryPanel:getTable: BEGIN");
+	     
+		String[] sa=select(entigrator,query);
+		 if(debug)
+	    	   System.out.println("JQueryPanel:getTable: sa="+sa.length);
+	     
+	
        DefaultTableModel model=new DefaultTableModel();
        JTable table=new JTable(model);
        TableRowSorter<DefaultTableModel> sorter = new TableRowSorter<>(model);
@@ -1479,12 +1492,12 @@ private void initType(){
 	        String itemName$=(String)itemNameComboBox.getSelectedItem();
 	    if(debug)
 	    	System.out.println("JQueryPanel.initType:item name="+itemName$);
-	        Entigrator entigrator=console.getEntigrator(entihome$);
+	        entigrator=console.getEntigrator(entihome$);
         	entity=entigrator.getEntityAtKey(entityKey$);
         	String itemKey$=entity.getElementItemAtValue("header.item", itemName$);
         	//String itemType$=(String)itemTypeComboBox.getSelectedItem();
         	Core alias=entity.getElementItem("header.alias", itemKey$);
-        	 if(debug)
+        	if(debug)
      	    	System.out.println("JQueryPanel.initType:item type="+alias.type);
         	int cnt=itemTypeComboBox.getModel().getSize();
         	for(int i=0;i<cnt;i++)

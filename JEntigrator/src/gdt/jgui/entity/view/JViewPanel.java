@@ -953,6 +953,43 @@ public static class DoubleComparator implements Comparator<String> {
 	        }
 	    }
 	}
+public static class RowComparator implements Comparator<String[]> {
+	 
+    @Override
+    public int compare(String[] row1, String[]row2) {
+        int cnt=row1.length-row2.length;
+        if(cnt!=0)
+        	return -1;
+        for(int i=1;i<row1.length;i++)
+        	if(!row1[i].equals(row2[i]))
+        		return -1;
+       // System.out.println("r1="+row1+" r2="+row2);
+        return 0;
+    }
+}
+public static boolean containsRow(DefaultTableModel model,String[] row){
+	try{
+	if(model==null)
+		 return false;
+	 RowComparator rowComparator=new RowComparator();
+	 int rowCnt =model.getRowCount();
+	 int colCnt=model.getColumnCount();
+	 String[] currentRow=new String[colCnt];
+	// for(String[] r:scope){
+	 for(int i=0;i<rowCnt;i++){
+		 
+		 for(int j=0;j<colCnt;j++)
+		  currentRow [j]=(String)model.getValueAt(i,j);  	 
+		  if(rowComparator.compare(currentRow, row)==0){
+			  return true;
+		  }
+	 }
+	}catch(Exception e){
+		
+	}
+	
+	 return false;
+}
 
  private void setSorter(){
 	 DefaultTableModel model=(DefaultTableModel)contentTable.getModel();
