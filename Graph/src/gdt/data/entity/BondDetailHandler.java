@@ -284,4 +284,9 @@ public static void refresh(Entigrator entigrator,String entityKey$){
 		Logger.getLogger(BondDetailHandler.class.getName()).severe(e.toString());	
 	}
 }
+@Override
+public String getLocation() {
+	// TODO Auto-generated method stub
+	return EXTENSION_KEY;
+}
 }

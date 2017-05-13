@@ -371,4 +371,9 @@ public void completeMigration(Entigrator entigrator) {
    // System.out.println("GraphHandler:completeMigration");
 	
 }
+@Override
+public String getLocation() {
+	// TODO Auto-generated method stub
+	return EXTENSION_KEY;
+}
 }

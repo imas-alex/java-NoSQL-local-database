@@ -20,7 +20,6 @@ import gdt.data.entity.EdgeHandler;
 import gdt.data.entity.EntityHandler;
 import gdt.data.entity.GraphHandler;
 import gdt.data.entity.NodeHandler;
-import gdt.data.entity.facet.BookmarksHandler;
 import gdt.data.grain.Core;
 import gdt.data.grain.Identity;
 import gdt.data.grain.Locator;
@@ -30,7 +29,6 @@ import gdt.jgui.console.JConsoleHandler;
 import gdt.jgui.console.JContext;
 import gdt.jgui.console.JMainConsole;
 import gdt.jgui.console.JRequester;
-import gdt.jgui.entity.JEntitiesPanel;
 import gdt.jgui.entity.JEntityPrimaryMenu;
 import gdt.jgui.entity.JReferenceEntry;
 import gdt.jgui.entity.bookmark.JBookmarkItem;
@@ -400,5 +398,9 @@ public class JGraphEditor extends JBookmarksEditor{
 		}catch(Exception e){
 			Logger.getLogger(getClass().getName()).severe(e.toString());
 		}
+	}
+	@Override
+	public String getEntityType() {
+		return "graph";
 	}
 }

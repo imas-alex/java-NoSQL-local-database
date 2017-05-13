@@ -1516,7 +1516,7 @@ try{
 	String header$=entigrator.getEntihome()+"/"+StoreAdapter.HEADERS+"/"+nodeKey$;
     if(!new File(header$).exists())
     	return null;
-	Sack header=Sack.parseXML(header$);
+	Sack header=Sack.parseXML(entigrator,header$);
     String nodeLabel$=header.getElementItem("key", nodeKey$).type;
    // if(debug)
    // System.out.println("JGraphRenderer:getNodeIcon:header="+header$+" key="+nodeKey$+" label="+nodeLabel$);

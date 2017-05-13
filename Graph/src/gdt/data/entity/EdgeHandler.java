@@ -195,7 +195,7 @@ public void completeMigration(Entigrator entigrator) {
 	    	targetDetail.createNewFile();
 	    FileExpert.copyFile(sourceDetail,targetDetail);
 	  
-	    pastedEntity=Sack.parseXML(targetDetail.getPath());
+	    pastedEntity=Sack.parseXML(entigrator,targetDetail.getPath());
 	   
 	    icon$=pastedEntity.getAttributeAt("icon");
 	    sourceIcon= new File(originEntihome$+"/"+Entigrator.ICONS+"/"+icon$);
@@ -331,5 +331,9 @@ public static String[] filterNodesAtEdge(Entigrator entigrator, String[] nodeLab
 	}
 	return null;
 	}
-
+@Override
+public String getLocation() {
+	// TODO Auto-generated method stub
+	return EXTENSION_KEY;
+}
 }
