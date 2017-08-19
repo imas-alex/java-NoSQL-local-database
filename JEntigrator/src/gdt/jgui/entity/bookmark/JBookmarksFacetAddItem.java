@@ -90,7 +90,7 @@ public class JBookmarksFacetAddItem extends JFacetAddItem{
 				component.putElementItem("fhandler", new Core(null,BookmarksHandler.class.getName(),null));
 				component.createElement("jfacet");
 				component.putElementItem("jfacet", new Core(getClass().getName(),BookmarksHandler.class.getName(),JBookmarksFacetOpenItem.class.getName()));
-					entigrator.save(component);
+					entigrator.ent_replace(component);
 				entigrator.saveHandlerIcon(JEntitiesPanel.class, "bookmark.png");
 				Sack container=entigrator.getEntityAtKey(entityKey$);
 				entigrator.col_addComponent(container, component);
@@ -126,7 +126,7 @@ public class JBookmarksFacetAddItem extends JFacetAddItem{
 			   if(!entity.existsElement("jfacet"))
 				   entity.createElement("jfacet");
 			   entity.putElementItem("jfacet", new Core(JBookmarksFacetAddItem.class.getName(),BookmarksHandler.class.getName(),JBookmarksFacetOpenItem.class.getName()));
-			   entigrator.save(entity);
+			   entigrator.ent_replace(entity);
 			   entity=entigrator.ent_assignProperty(entity, "bookmarks", entity.getProperty("label"));
 			}catch(Exception e){
 				Logger.getLogger(getClass().getName()).severe(e.toString());

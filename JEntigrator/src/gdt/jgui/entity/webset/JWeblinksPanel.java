@@ -263,7 +263,7 @@ menu.addMenuListener(new MenuListener(){
                    entity.removeElementItem("web.login", webLinkKey$);
                    entity.removeElementItem("web.icon", webLinkKey$);
 				  }
-                   entigrator.save(entity);  
+                   entigrator.ent_replace(entity);  
                    
 				   JConsoleHandler.execute(console,locator$);
 			   }
@@ -303,7 +303,7 @@ menu.addMenuListener(new MenuListener(){
 				entity.createElement("web.icon");
 			String icon$=Support.readHandlerIcon(null,JEntitiesPanel.class, "globe.png");
 			entity.putElementItem("web.icon", new Core(null,webLinkKey$,icon$));
-			entigrator.save(entity);
+			entigrator.ent_replace(entity);
 			JWeblinkEditor wle=new JWeblinkEditor();
 			String wleLocator$=wle.getLocator();
 			wleLocator$=Locator.append(wleLocator$, Entigrator.ENTIHOME, entihome$);
@@ -353,7 +353,7 @@ menu.addMenuListener(new MenuListener(){
 					 if(webLinkIcon$!=null)
 						 entity.putElementItem("web.icon", new Core(null,webLinkKey$,webLinkIcon$));
 				 }
-				 entigrator.save(entity);
+				 entigrator.ent_replace(entity);
 				 JConsoleHandler.execute(console, getLocator());
 			}
 		} );
@@ -374,7 +374,7 @@ menu.addMenuListener(new MenuListener(){
 					}
 				}else{
 					Entigrator entigrator=console.getEntigrator(entihome$);
-					entigrator.replace(entity);
+					entigrator.ent_replace(entity);
 					console.back();
 				}
 		}
@@ -455,7 +455,7 @@ return menu;
 		Entigrator entigrator=console.getEntigrator(entihome$);
 		if(entity==null)
 			return;
-		if(!entigrator.ent_outdated(entity)){
+		if(!entigrator.ent_entIsObsolete(entity)){
 			System.out.println("JWeblinksPanel:activate:up to date");
 			return;
 		}
@@ -465,7 +465,7 @@ return menu;
 			return;
 		}
 		if(1==n){
-			entigrator.save(entity);
+			entigrator.ent_replace(entity);
 			
 		}
 		if(0==n){

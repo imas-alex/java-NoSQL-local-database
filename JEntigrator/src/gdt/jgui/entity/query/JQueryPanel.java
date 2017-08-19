@@ -27,10 +27,13 @@ import java.awt.event.ItemListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.FileWriter;
+import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.lang.reflect.Method;
@@ -109,7 +112,7 @@ public class JQueryPanel extends JPanel implements JFacetRenderer,JRequester{
 	protected JMainConsole console;
 	protected Entigrator entigrator;
 	private JMenu menu;
-	static boolean debug=true;
+	static boolean debug=false;
 	protected ArrayList <String>queryScope;
 	protected ArrayList <String>elementScope;
 	/**
@@ -402,7 +405,8 @@ public class JQueryPanel extends JPanel implements JFacetRenderer,JRequester{
 						public void actionPerformed(ActionEvent e) {
 							Entigrator entigrator=console.getEntigrator(entihome$);
 							Sack query=entigrator.getEntityAtKey(entityKey$);
-							entigrator.saveNative(query);
+							if(query!=null)
+							  entigrator.ent_replace(query);
 							console.back();
 						}
 					} );
@@ -469,24 +473,41 @@ public class JQueryPanel extends JPanel implements JFacetRenderer,JRequester{
 		Core[] ca=query.elementGet("header.alias");
 		String type$=null;
 		String element$=null;
+		String field$=null;
     	  for(Core c:ca)
 			  if(sortColumnName$.equals(c.value)){
 				  type$=c.type;
 				  element$=query.getElementItemAt("header.element", c.name);
+				  field$=query.getElementItem("header.item", c.name).type;
 				  break;
 			  }
-    	//  System.out.println("JQueryPanel:select:type="+type$+" element="+element$);
+    	 if(debug) 
+    	  System.out.println("JQueryPanel:select:type="+type$+" element="+element$+" field="+field$);
 		Sack member;
 		Hashtable<String,ArrayList<String>> tab=new Hashtable<String,ArrayList<String>>();
 		String sortValue$;
 		ArrayList<String>vl=new ArrayList<String>();
 		ArrayList<String>rl=new ArrayList<String>();
 		ArrayList<String>gl;
+		 
 		for(String s:sa){
+			sortValue$=null;
 			member=entigrator.getEntityAtKey(s);
 			if(member==null)
 				continue;
+			if("name".equals(field$))
 			sortValue$=member.getElementItemAt(element$, sortColumnName$);
+			if("type".equals(field$)){
+		       	ca=member.elementGet(element$);
+		       	if(ca!=null)
+		       		for(Core c:ca)
+		       			if(sortColumnName$.equals(c.type)){
+		       				sortValue$=c.value;
+		       				break;
+		       			}
+			}
+			if(debug) 
+		    	  System.out.println("JQueryPanel:sort value="+sortValue$);
 			if(sortValue$!=null){
 			 gl=tab.get(sortValue$);
 			 if(gl==null)
@@ -769,7 +790,7 @@ public void instantiate(Entigrator entigrator, String locator$) {
 		    	String queryHandler$=QueryHandler.class.getName();
 		    	if(entity.getElementItem("fhandler", queryHandler$)!=null){
 					entity.putElementItem("jfacet", new Core(null,queryHandler$,JQueryFacetOpenItem.class.getName()));
-					entigrator.save(entity);
+					entigrator.ent_replace(entity);
 				}
 		    }catch(Exception e){
 		    	Logger.getLogger(getClass().getName()).severe(e.toString());
@@ -834,7 +855,7 @@ public void instantiate(Entigrator entigrator, String locator$) {
 					query.createElement("jfacet");
 					query.putElementItem("jfacet", new Core(JFolderFacetAddItem.class.getName(),FolderHandler.class.getName(),JFolderFacetOpenItem.class.getName()));
 					query.putElementItem("jfacet", new Core(null,QueryHandler.class.getName(),JQueryFacetOpenItem.class.getName()));
-					entigrator.save(query);
+					entigrator.ent_replace(query);
 					entigrator.ent_assignProperty(query, "query", text$);
 					entigrator.ent_assignProperty(query, "folder", text$);
 					entigrator.saveHandlerIcon(getClass(), "query.png");
@@ -957,7 +978,7 @@ private void initComponentSelector(){
 		for(String s:sl)
 			model.addElement(s);
 		componentComboBox.setModel(model);
-	    entigrator.replace(entity);
+	    entigrator.ent_replace(entity);
 	    initElementSelector();
 	}catch(Exception e){
 		Logger.getLogger(getClass().getName()).severe(e.toString());
@@ -1228,7 +1249,7 @@ private void addHeader(){
 	    else
 	    	entity.putElementItem("header.element", new Core("0",headerKey$,(String)elementComboBox.getSelectedItem()));
 	    entity.putElementItem("header.component", new Core(null,headerKey$,(String)componentComboBox.getSelectedItem()));
-		entigrator.replace(entity); 
+		entigrator.ent_replace(entity); 
 		initTable();
 	 }catch(Exception e){
 	    	Logger.getLogger(getClass().getName()).severe(e.toString());
@@ -1401,7 +1422,10 @@ private static void saveTable(Entigrator entigrator,Sack query,String sortColumn
        File out=new File(entigrator.getEntihome()+"/"+query.getKey()+"/out.txt");
        if(!out.exists())
     	   out.createNewFile();
-       FileWriter file=new FileWriter(out);
+       Writer file = new BufferedWriter(new OutputStreamWriter(
+    		    new FileOutputStream(out), "UTF-8"));
+       
+       //FileWriter file=new FileWriter(out);
        int i=0;
        String[] columns=headers.toArray(new String[0]);
        for(String s:sa){
@@ -1440,7 +1464,7 @@ private void clearHeader(){
         	query.removeElement("header.item");
         	query.removeElement("header.alias");
         	
-        	entigrator.replace(query);
+        	entigrator.ent_replace(query);
 	    } catch(Exception e){
 	    	LOGGER.severe(e.toString());
 	    }
@@ -1464,7 +1488,7 @@ private void removeColumn(){
                 	entity.removeElementItem("header.alias", c.name);
         		}
         	}
-        	entigrator.replace(entity);
+        	entigrator.ent_replace(entity);
         	initTable();
 	    } catch(Exception e){
 	    	LOGGER.severe(e.toString());
@@ -1481,7 +1505,7 @@ private void setType(){
         	Core alias=entity.getElementItem("header.alias", itemKey$);
         	alias.type=itemType$;
         	entity.putElementItem("header.alias",alias);
-        	entigrator.replace(entity);
+        	entigrator.ent_replace(entity);
         	
 	    } catch(Exception e){
 	    	LOGGER.severe(e.toString());
@@ -1634,7 +1658,9 @@ public  static String getWebItems(Entigrator entigrator,String locator$){
 			 sb.append(getWebHeader(query));
 			 //
 			 File out=new File(entigrator.getEntihome()+"/"+query.getKey()+"/out.txt");
-			 BufferedReader br = new BufferedReader(new FileReader(out)); 
+			 BufferedReader br = new BufferedReader(new InputStreamReader(
+					    new FileInputStream(out), "UTF-8"));
+			// BufferedReader br = new BufferedReader(new FileReader(out)); 
 			 int value = 0;
 			 while((value = br.read()) != -1) {
 		            char c = (char)value;
@@ -1713,7 +1739,7 @@ public String getFacetIcon() {
 		 Logger.getLogger(getClass().getName()).severe(e.toString());
 	 }
  }
-private static void saveRow(Entigrator entigrator,String[]row,Sack query,Sack member,FileWriter file,Sack id2key,String[] columns){
+private static void saveRow(Entigrator entigrator,String[]row,Sack query,Sack member,Writer file,Sack id2key,String[] columns){
 	 try{
 			Core[] ca=query.elementGet("header.element");
 			ca=Core.sortAtIntType(ca);
@@ -1721,7 +1747,7 @@ private static void saveRow(Entigrator entigrator,String[]row,Sack query,Sack me
 			String element$;
 			String name$;
 			String value$=null;
-			String component$;
+		//	String component$;
 			String field$;
 			String[] newRow=new String[row.length];
 				 for(int i=0;i<row.length;i++)
@@ -1730,9 +1756,9 @@ private static void saveRow(Entigrator entigrator,String[]row,Sack query,Sack me
 			Core []va;
 			for(int i=0;i<ca.length;i++){
 				value$=null;
-				component$=query.getElementItemAt("header.component", ca[i].name);
-				if(!component$.equals(member.getProperty("entity")))
-					continue;
+				//component$=query.getElementItemAt("header.component", ca[i].name);
+				//if(!component$.equals(member.getProperty("entity")))
+				//	continue;
 				element$=ca[i].value;
 				item=query.getElementItem("header.item", ca[i].name);
 				name$=item.value;

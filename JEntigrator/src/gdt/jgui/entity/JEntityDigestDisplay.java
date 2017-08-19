@@ -860,7 +860,7 @@ private boolean instantiateFacetNode(DefaultMutableTreeNode facetNode){
 		Entigrator entigrator=console.getEntigrator(entihome$);
 		if(entity==null)
 			return;
-		if(!entigrator.ent_outdated(entity)){
+		if(!entigrator.ent_entIsObsolete(entity)){
 			if(debug)
 			System.out.println("JEntityDigestDisplay:activate:up to date");
 			return;
@@ -871,7 +871,7 @@ private boolean instantiateFacetNode(DefaultMutableTreeNode facetNode){
 			return;
 		}
 		if(1==n){
-			entigrator.save(entity);
+			entigrator.ent_replace(entity);
 			
 		}
 		if(0==n){
@@ -886,7 +886,29 @@ private boolean instantiateFacetNode(DefaultMutableTreeNode facetNode){
 		try{
 			Properties locator=Locator.toProperties(locator$);
 			String webHome$=locator.getProperty(WContext.WEB_HOME);
-			String entityLabel$=locator.getProperty(EntityHandler.ENTITY_LABEL);
+			//String entityLabel$=locator.getProperty(EntityHandler.ENTITY_LABEL);
+			String entityKey$=locator.getProperty(EntityHandler.ENTITY_KEY);
+			String entityLabel$=null;
+			if(entityKey$==null){
+				String encodedLabel$=locator.getProperty(JEntitiesPanel.ENCODED_LABEL);
+				if(encodedLabel$!=null){
+						byte[] ba=Base64.decodeBase64(encodedLabel$);
+						entityLabel$=new String(ba,"UTF-8");
+						entityKey$=entigrator.indx_keyAtLabel(entityLabel$);
+					}else{
+				    entityLabel$=locator.getProperty(EntityHandler.ENTITY_LABEL);
+				    entityKey$=entigrator.indx_keyAtLabel(entityLabel$);
+				    if(entityKey$==null){
+				    	byte[] ba=Base64.decodeBase64(entityLabel$);
+						entityLabel$=new String(ba,"UTF-8");
+						entityKey$=entigrator.indx_keyAtLabel(entityLabel$);
+				    }
+					}
+			}else{
+				entityLabel$=entigrator.indx_getLabel(entityKey$);
+				if(debug)
+					System.out.println("JEntityDigestDisplay:found label="+entityLabel$+" at key="+entityKey$);
+			}
 			String webRequester$=locator.getProperty(WContext.WEB_REQUESTER);
 			if(debug)
 			System.out.println("JEntityDigestDisplay:locator="+locator$);
@@ -980,8 +1002,33 @@ private boolean instantiateFacetNode(DefaultMutableTreeNode facetNode){
 			System.out.println("JEntityDigestDisplay.getWebItems:locator="+locator$);
 			
 			Properties locator=Locator.toProperties(locator$);
-			String entityLabel$=locator.getProperty(EntityHandler.ENTITY_LABEL);
-			String entityKey$=entigrator.indx_keyAtLabel(entityLabel$);
+			//String entityLabel$=locator.getProperty(EntityHandler.ENTITY_LABEL);
+			//String entityKey$=entigrator.indx_keyAtLabel(entityLabel$);
+			///
+			String entityKey$=locator.getProperty(EntityHandler.ENTITY_KEY);
+			String entityLabel$=null;
+			if(entityKey$==null){
+				String encodedLabel$=locator.getProperty(JEntitiesPanel.ENCODED_LABEL);
+				if(encodedLabel$!=null){
+						byte[] ba=Base64.decodeBase64(encodedLabel$);
+						entityLabel$=new String(ba,"UTF-8");
+						entityKey$=entigrator.indx_keyAtLabel(entityLabel$);
+					}else{
+				    entityLabel$=locator.getProperty(EntityHandler.ENTITY_LABEL);
+				    entityKey$=entigrator.indx_keyAtLabel(entityLabel$);
+				    if(entityKey$==null){
+				    	byte[] ba=Base64.decodeBase64(entityLabel$);
+						entityLabel$=new String(ba,"UTF-8");
+						entityKey$=entigrator.indx_keyAtLabel(entityLabel$);
+				    }
+					}
+			}else{
+				entityLabel$=entigrator.indx_getLabel(entityKey$);
+				if(debug)
+					System.out.println("JEntityStructurePanel:found label="+entityLabel$+" at key="+entityKey$);
+			}
+			
+			///
 			String webHome$=locator.getProperty(WContext.WEB_HOME);
 			//String webRequester$=locator.getProperty(WContext.WEB_REQUESTER);
 			Sack  entity=entigrator.getEntityAtKey(entityKey$);

@@ -44,6 +44,7 @@ import javax.swing.event.MenuListener;
 import org.apache.commons.codec.binary.Base64;
 import gdt.data.entity.BaseHandler;
 import gdt.data.entity.EntityHandler;
+import gdt.data.entity.facet.FieldsHandler;
 import gdt.data.entity.facet.FolderHandler;
 import gdt.data.grain.Core;
 import gdt.data.grain.Identity;
@@ -155,6 +156,8 @@ public class JFolderPanel extends JItemsListPanel implements JFacetRenderer,JReq
 				 return this;
 			
 			entity=entigrator.getEntityAtKey(entityKey$);
+			//System.out.println("FolderPanel:instantiate:1");
+            // entity.print();
 			requesterResponseLocator$=locator.getProperty(JRequester.REQUESTER_RESPONSE_LOCATOR);
 			entityLabel$=locator.getProperty(EntityHandler.ENTITY_LABEL);
 			if(entityLabel$==null){
@@ -198,10 +201,13 @@ public class JFolderPanel extends JItemsListPanel implements JFacetRenderer,JReq
 				foia=(JFileOpenItem[]) sort(foia);
 				putItems(foia);
 			}
-			
+			entity=entigrator.getEntityAtKey(entityKey$);
+					//System.out.println("FolderPanel:instantiate:2");
+			        //entity.print();	
 		}catch(Exception e){
 	        LOGGER.severe(e.toString());
 			}
+		
 		return this;
 	}
 /**
@@ -277,14 +283,22 @@ public class JFolderPanel extends JItemsListPanel implements JFacetRenderer,JReq
 				   JConsoleHandler.execute(console, locator$);
 				}
 			if(ACTION_CREATE_FOLDER.equals(action$)){
-				   String entihome$=locator.getProperty(Entigrator.ENTIHOME);
+				//System.out.println("FolderPanel:response:create folder");   
+				String entihome$=locator.getProperty(Entigrator.ENTIHOME);
 				   String text$=locator.getProperty(JTextEditor.TEXT);
 				   Entigrator entigrator=console.getEntigrator(entihome$);
 				   Sack folder=entigrator.ent_new("folder", text$);
 				   folder=entigrator.ent_assignProperty(folder, "folder", folder.getProperty("label"));
 				   folder.putAttribute(new Core(null,"icon","folder.png"));
-				   entigrator.save(folder);
-				   entigrator.saveHandlerIcon(JFolderPanel.class, "folder.png");
+				   folder.createElement("fhandler");
+                   folder.putElementItem("fhandler", new Core(null,FolderHandler.class.getName(),null));
+                   //folder.print();
+                   String icons$=entihome$+"/"+Entigrator.ICONS;
+   				   Support.addHandlerIcon(getClass(), "folder.png", icons$);
+                   entigrator.ent_replace(folder);
+                  // System.out.println("FolderPanel:response:create folder:1");
+                  // folder.print();
+				   //entigrator.saveHandlerIcon(JFolderPanel.class, "folder.png");
 				   entityKey$=folder.getKey();
 				   File folderHome=new File(entihome$+"/"+entityKey$);
 				   if(!folderHome.exists())
@@ -293,12 +307,20 @@ public class JFolderPanel extends JItemsListPanel implements JFacetRenderer,JReq
 				   String fLocator$=fp.getLocator();
 				   fLocator$=Locator.append(fLocator$, Entigrator.ENTIHOME, entihome$);
 				   fLocator$=Locator.append(fLocator$, EntityHandler.ENTITY_KEY, entityKey$);
-				   
 				   JEntityPrimaryMenu.reindexEntity(console, fLocator$);
+				   folder=entigrator.getEntityAtKey(entityKey$);
+				   if(folder==null){
+					   LOGGER.severe("JFolderPanel:response: cannot reindex entity");
+					   return;
+							   
+				   }
+				    //System.out.println("FolderPanel:response:create folder:2");
+	               //folder.print();
 				   Stack<String> s=console.getTrack();
 				   s.pop();
 				   console.setTrack(s);
-				   entigrator.store_replace();
+				   //entigrator.store_replace();
+				   
 				   JConsoleHandler.execute(console, fLocator$);
 				   
 				}
@@ -417,7 +439,7 @@ public class JFolderPanel extends JItemsListPanel implements JFacetRenderer,JReq
 	public void reindex(JMainConsole console, Entigrator entigrator, Sack entity) {
 		 try{
 		    		entity.putElementItem("jfacet", new Core(JFolderFacetAddItem.class.getName(),FolderHandler.class.getName(),JFolderFacetOpenItem.class.getName()));
-					entigrator.save(entity);
+					entigrator.ent_replace(entity);
 		    }catch(Exception e){
 		    	LOGGER.severe(e.toString());
 		    }

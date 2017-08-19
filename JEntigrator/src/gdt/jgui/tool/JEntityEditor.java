@@ -32,6 +32,7 @@ import gdt.jgui.console.JRequester;
 import gdt.jgui.console.ReloadDialog;
 import gdt.jgui.console.WContext;
 import gdt.jgui.console.WUtils;
+import gdt.jgui.entity.JEntitiesPanel;
 import gdt.jgui.entity.JEntityDigestDisplay;
 import gdt.jgui.entity.JEntityPrimaryMenu;
 import gdt.jgui.entity.JEntityStructurePanel;
@@ -530,7 +531,7 @@ private void refresh(){
 			candidate.putAttribute(new Core(null,Entigrator.SAVE_ID,Identity.key()));
 			candidate.putAttribute(new Core(null,Entigrator.SAVE_ID,Identity.key()));
 			Entigrator entigrator=console.getEntigrator(entihome$);
-			entigrator.replace(candidate);
+			entigrator.ent_replace(candidate);
 
 		}catch(Exception e){
 			LOGGER.severe(e.toString());
@@ -688,7 +689,7 @@ public void response(JMainConsole console, String locator$) {
 					  return;
 				  entity.createElement(text$);
 				  entity.putElementItem(text$, new Core(null,"item",null));
-				  entigrator.save(entity);
+				  entigrator.ent_replace(entity);
 				  locator$=getLocator();
 				  locator$=Locator.remove(locator$, BaseHandler.HANDLER_METHOD);
 				  locator$=Locator.remove(locator$, JRequester.REQUESTER_ACTION);
@@ -705,7 +706,7 @@ public void response(JMainConsole console, String locator$) {
 			entity.createElement(element$);
 			entity.elementReplace(element$, entity.elementGet(oldElement$));
 			entity.removeElement(oldElement$);
-			entigrator.save(entity);
+			entigrator.ent_replace(entity);
 			locator$=Locator.append(locator$, Locator.LOCATOR_TITLE,"Edit");
 			locator$=Locator.append(locator$,EntityHandler.ENTITY_ACTION,JEntityEditor.ENTITY_EDIT);
 			locator$=Locator.append(locator$,BaseHandler.HANDLER_CLASS,JEntityEditor.class.getName());
@@ -747,7 +748,7 @@ public void response(JMainConsole console, String locator$) {
 				entity.putAttribute(core);
 			else	
 				entity.putElementItem(element$, core);
-			entigrator.save(entity);
+			entigrator.ent_replace(entity);
 			if(debug)
 			System.out.println("EntityEditor:response:entity saved");
 			locator$=Locator.append(locator$, Locator.LOCATOR_TITLE,"Edit");
@@ -803,7 +804,7 @@ public void response(JMainConsole console, String locator$) {
 		Entigrator entigrator=console.getEntigrator(entihome$);
 		if(entity==null)
 			return;
-		if(!entigrator.ent_outdated(entity)){
+		if(!entigrator.ent_entIsObsolete(entity)){
 			System.out.println("JWeblinksPanel:activate:up to date");
 			return;
 		}
@@ -813,11 +814,14 @@ public void response(JMainConsole console, String locator$) {
 			return;
 		}
 		if(1==n){
-			entigrator.save(entity);
-			
+			entigrator.ent_replace(entity);
+			ignoreOutdate=true;
+			return;
 		}
 		if(0==n){
+			 entigrator.ent_reload(entityKey$);
 			 JConsoleHandler.execute(console, getLocator());
+			 ignoreOutdate=true;
 			}
 		
 	}
@@ -828,14 +832,38 @@ public void response(JMainConsole console, String locator$) {
 				System.out.println("JEntityEditor:locator="+locator$);
 			Properties locator=Locator.toProperties(locator$);
 			String webHome$=locator.getProperty(WContext.WEB_HOME);
-			String entityLabel$=locator.getProperty(EntityHandler.ENTITY_LABEL);
-			entityLabel$=entityLabel$.replaceAll("&quot;", "\"");
+			//
+			String entityKey$=locator.getProperty(EntityHandler.ENTITY_KEY);
+			String entityLabel$=null;
+			if(entityKey$==null){
+				String encodedLabel$=locator.getProperty(JEntitiesPanel.ENCODED_LABEL);
+				if(encodedLabel$!=null){
+						byte[] ba=Base64.decodeBase64(encodedLabel$);
+						entityLabel$=new String(ba,"UTF-8");
+						entityKey$=entigrator.indx_keyAtLabel(entityLabel$);
+					}else{
+				    entityLabel$=locator.getProperty(EntityHandler.ENTITY_LABEL);
+				    entityKey$=entigrator.indx_keyAtLabel(entityLabel$);
+				    if(entityKey$==null){
+				    	byte[] ba=Base64.decodeBase64(entityLabel$);
+						entityLabel$=new String(ba,"UTF-8");
+						entityKey$=entigrator.indx_keyAtLabel(entityLabel$);
+				    }
+					}
+			}else{
+				entityLabel$=entigrator.indx_getLabel(entityKey$);
+				if(debug)
+					System.out.println("JEntityEditor:found label="+entityLabel$+" at key="+entityKey$);
+			}
+			//locator$=Locator.append(locator$, EntityHandler.ENTITY_LABEL, entityLabel$);
+			locator$=Locator.remove(locator$, EntityHandler.ENTITY_LABEL);
 			String webRequester$=locator.getProperty(WContext.WEB_REQUESTER);
 			String element$=locator.getProperty(ELEMENT);
+			String category$=entigrator.getEntityType(entityKey$);
 			if(debug){
 			System.out.println("JEntityEditor:web home="+webHome$+" locator="+locator$);
 			System.out.println("JEntityEditor:web requester="+webRequester$);
-			System.out.println("JEntityEditor:entity label="+entityLabel$+" element="+element$);
+			System.out.println("JEntityEditor:entity label="+entityLabel$+" element="+element$+" entity key="+entityKey$);
 			}
 			StringBuffer sb=new StringBuffer();
 			sb.append("<!DOCTYPE html PUBLIC \"-//W3C//DTD HTML 4.01//EN\" \"http://www.w3.org/TR/html4/strict.dtd\">");
@@ -872,7 +900,10 @@ public void response(JMainConsole console, String locator$) {
 		    sb.append("</strong></td></tr><tr><td>Entity: </td><td><strong>");
 		    sb.append(entityLabel$);
 		    sb.append("</strong></td></tr>");
-		    sb.append("</strong></td></tr><tr><td>Facet: </td><td><strong>");
+		    sb.append("<tr><td>Category: </td><td><strong>");
+		    sb.append(category$);
+		    sb.append("</strong></td></tr>");
+		    sb.append("<tr><td>Facet: </td><td><strong>");
 		    sb.append("Entity viewer");
 		    sb.append("</strong></td></tr>");
 		    sb.append("</table>");
@@ -882,7 +913,7 @@ public void response(JMainConsole console, String locator$) {
 		    sb.append("<td>Element:</td>");
 		    sb.append("<td>");
 		    sb.append("<select id=\"element\" size=\"1\" onchange=\"showElement()\">");
-		    entityKey$=entigrator.indx_keyAtLabel(entityLabel$);
+		   // entityKey$=entigrator.indx_keyAtLabel(entityLabel$);
 		    if(element$==null)
 		    	element$="attributes";
 		    if("attributes".equals(element$))
@@ -930,7 +961,8 @@ public void response(JMainConsole console, String locator$) {
 		    locator$=locator$.replaceAll("\"", "&quot;");
 		    locator$=locator$.replaceAll("'", "&#39;");
 		    sb.append("function showElement() {");
-		   
+		    if(entityKey$!=null)
+		    	locator$=Locator.append(locator$, EntityHandler.ENTITY_KEY, entityKey$);
 		    sb.append("var locator =\""+locator$+"\";");
 		    sb.append("var element = document.getElementById(\"element\").value;");
 		    sb.append("locator=appendProperty(locator,\""+ELEMENT+"\",element);");

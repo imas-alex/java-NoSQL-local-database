@@ -872,7 +872,7 @@ private static Sack prepareUndo(Entigrator entigrator,String cache$){
 			   for(File f:ifa)
 				   undo.putElementItem("icon", new Core(null,f.getName(),null));
 		}
-		entigrator.save(undo);
+		entigrator.ent_replace(undo);
 		entigrator.ent_reindex(undo);
 		return undo;
 	}catch(Exception e){
@@ -945,7 +945,7 @@ public static String[] insertCache(Entigrator entigrator,String cache$,boolean k
 					continue;
 			entity=Sack.parseXML(entigrator,entityBodies.getPath()+"/"+s);
 			if(entity!=null)
-				entigrator.save(entity);
+				entigrator.ent_replace(entity);
 			    entigrator.ent_reindex(entity);
 			    cacheEntityHome=new File(cache$+"/"+s);
 			    if(cacheEntityHome.exists()){

@@ -50,7 +50,6 @@ import gdt.jgui.console.JRequester;
 import gdt.jgui.console.WContext;
 import gdt.jgui.console.WUtils;
 import gdt.jgui.entity.query.JQueryFacetOpenItem;
-import gdt.jgui.entity.view.JViewFacetOpenItem;
 import gdt.jgui.tool.JEntityEditor;
 /**
  * Display a list of all facets assigned to the entity.
@@ -93,6 +92,7 @@ public class JEntityFacetPanel extends JItemsListPanel implements WContext {
 			       if(entihome$!=null){
 			       locator.setProperty(Locator.LOCATOR_ICON_CONTAINER,Locator.LOCATOR_ICON_CONTAINER_ICONS);
 			       Entigrator entigrator=console.getEntigrator(entihome$);
+			       if(entigrator.ent_getIconAtKey(entityKey$)!=null)
 			       locator.setProperty(Locator.LOCATOR_ICON_FILE,entigrator.ent_getIconAtKey(entityKey$));
 			       }
 		    }
@@ -114,7 +114,11 @@ public class JEntityFacetPanel extends JItemsListPanel implements WContext {
  */
 	@Override
 	public JContext instantiate(JMainConsole console, String locator$) {
-	//	System.out.println("JEntityFacetPanel:instantiate:BEGIN");
+	if(debug)
+		if(console!=null)
+		System.out.println("JEntityFacetPanel:instantiate:BEGIN");
+		else
+			System.out.println("JEntityFacetPanel:instantiate:console is null");
 		this.console=console;
 		this.locator$=locator$;
 		 Properties locator=Locator.toProperties(locator$);
@@ -250,6 +254,7 @@ private String[] listFacetOpenItems(){
 			try{
 				openItem=(JFacetOpenItem )JConsoleHandler.getHandlerInstance(entigrator,aCa.value);
 				
+				//openItem=JFacetOpenItem.getFacetOpenItemInstance(console, aCa.value);
 				if(debug)
 					System.out.println("JEntityFacetPanel:listFacetOpenItems:handler="+aCa.value+"  locator="+openItem.getLocator());
 				itemLocator=Locator.toProperties(openItem.getLocator());
@@ -257,6 +262,7 @@ private String[] listFacetOpenItems(){
 			    itemLocator.setProperty(EntityHandler.ENTITY_KEY, entityKey$);
 			    itemLocator$= Locator.toString(itemLocator);
 			    openItem.instantiate(entigrator, itemLocator$);
+			    openItem.setConsole(console);
      	        if(openItem.isRemovable())
      	        	itemLocator.setProperty(Locator.LOCATOR_CHECKABLE,Locator.LOCATOR_TRUE);
 			    //System.out.println("EntityFacetPanel:getFacetOpenItems:handler class="+aCa.value);
@@ -483,26 +489,29 @@ public String getWebView(Entigrator entigrator,String locator$) {
 		String basesList$=locator.getProperty(WContext.BASES);
 		String[] sa=Locator.toArray(basesList$);
 		String webHome$=locator.getProperty(WContext.WEB_HOME);
-	
-		String entityLabel$=locator.getProperty(EntityHandler.ENTITY_LABEL);
 		String entityKey$=locator.getProperty(EntityHandler.ENTITY_KEY);
-		/*
-		String action$=locator.getProperty(JRequester.REQUESTER_ACTION);
-		if(JViewFacetOpenItem.ACTION_OPEN_ID.equals(action$)){
-			try{
-				String idName$=JViewFacetOpenItem.ID_NAME;
-				String idValue$=JViewFacetOpenItem.ID_VALUE;
-				Sack id2key=entigrator.getEntityAtKey(entigrator.indx_keyAtLabel("id2key"));
-				entityKey$=id2key.getElementItemAt(idName$, idValue$);
-			}catch(Exception ee){}
-		}
-		*/
-		if(entityKey$==null)
-			entityKey$=entigrator.indx_keyAtLabel(entityLabel$);
-		if(entityLabel$==null)
+		String entityLabel$=null;
+		if(entityKey$==null){
+			String encodedLabel$=locator.getProperty(JEntitiesPanel.ENCODED_LABEL);
+			if(encodedLabel$!=null){
+					byte[] ba=Base64.decodeBase64(encodedLabel$);
+					entityLabel$=new String(ba,"UTF-8");
+				}else{
+			    entityLabel$=locator.getProperty(EntityHandler.ENTITY_LABEL);
+			    entityKey$=entigrator.indx_keyAtLabel(entityLabel$);
+			    if(entityKey$==null){
+			    	byte[] ba=Base64.decodeBase64(entityLabel$);
+					entityLabel$=new String(ba,"UTF-8");
+					entityKey$=entigrator.indx_keyAtLabel(entityLabel$);
+			    }
+				}
+		}else
 			entityLabel$=entigrator.indx_getLabel(entityKey$);
+		if(debug)
+			System.out.println("JEntityFacetPanel:entity label="+entityLabel$+ " key="+entityKey$);
+			
 		String webRequester$=locator.getProperty(WContext.WEB_REQUESTER);
-		
+		String category$=entigrator.getEntityType(entityKey$);
 		if(debug)
 		System.out.println("JEntityFacetPanel:web home="+webHome$+ " web requester="+webRequester$);
 		StringBuffer sb=new StringBuffer();
@@ -527,6 +536,9 @@ public String getWebView(Entigrator entigrator,String locator$) {
 	    sb.append("</strong></td></tr><tr><td>Entity: </td><td><strong>");
 	    sb.append(entityLabel$);
 	    sb.append("</strong></td></tr>");
+	    sb.append("<tr><td>Category: </td><td><strong>");
+	    sb.append(category$);
+	    sb.append("</strong></td></tr>");
 	    sb.append("<tr><td>Context:</td><td><strong>Facets");
 	    sb.append("</strong></td></tr>");
 	    sb.append("</table>");
@@ -548,6 +560,8 @@ public String getWebView(Entigrator entigrator,String locator$) {
             ArrayList <String>sl=new ArrayList<String>();
             foiLocator.setProperty(BaseHandler.HANDLER_CLASS,JEntityEditor.class.getName());
             foiLocator.setProperty(EntityHandler.ENTITY_LABEL,entityLabel$);
+            foiLocator.setProperty(EntityHandler.ENTITY_KEY,entityKey$);
+            foiLocator.setProperty(JEntitiesPanel.ENCODED_LABEL,Base64.encodeBase64URLSafeString(entityLabel$.getBytes()));
             foiLocator.setProperty(WContext.WEB_REQUESTER,JEntityFacetPanel.class.getName());
             
             foiIcon$=Support.readHandlerIcon(null,JEntityPrimaryMenu.class, "entity.png");
@@ -565,12 +579,12 @@ public String getWebView(Entigrator entigrator,String locator$) {
         		foiLocator.setProperty(BaseHandler.HANDLER_CLASS,foiClass$);
         		if(JQueryFacetOpenItem.class.getName().equals(foiClass$))
         			sb.append("window.localStorage.setItem('query_requester',\""+webRequester$+"\");");
-        	    if(foiExtension$==null||"null".equals(foiExtension$)){
+        	if(foiExtension$==null||"null".equals(foiExtension$)){
        			facetOpenItem=(JFacetOpenItem)Class.forName(foiClass$).newInstance();
        			foiLocator.setProperty(Locator.LOCATOR_ICON_CONTAINER,Locator.LOCATOR_ICON_CONTAINER_CLASS);
        			foiLocator.setProperty(Locator.LOCATOR_ICON_CLASS,foiClass$);
        			foiLocator.setProperty(Locator.LOCATOR_ICON_FILE,facetOpenItem.getFacetIconName());
-
+       			
         	}
        		else{
        			Object o=ExtensionHandler.loadHandlerInstance(entigrator, foiExtension$, foiClass$);
@@ -580,13 +594,18 @@ public String getWebView(Entigrator entigrator,String locator$) {
        			foiLocator.setProperty(Locator.LOCATOR_ICON_CONTAINER,Locator.LOCATOR_ICON_CONTAINER_CLASS);
        			foiLocator.setProperty(Locator.LOCATOR_ICON_CLASS,foiClass$);
        			foiLocator.setProperty(Locator.LOCATOR_ICON_FILE,facetOpenItem.getFacetIconName());
+       			foiLocator.setProperty(Locator.LOCATOR_ICON_LOCATION,foiExtension$);
        			foiLocator.setProperty(BaseHandler.HANDLER_LOCATION,foiExtension$);
        		}
         	foiLocator.setProperty(WEB_REQUESTER,JEntityFacetPanel.class.getName());
  			foiTitle$=facetOpenItem.getFacetName();
  			if(debug)
- 			System.out.println("JEntityFacetPanel:getWebView: foi title="+foiTitle$+" icon="+foiIcon$);
+ 	 			System.out.println("JEntityFacetPanel:getWebView: foi locator="+Locator.toString(foiLocator));
+ 	 		
  			foiIcon$=JConsoleHandler.getIcon(entigrator,Locator.toString(foiLocator));
+ 			if(debug)
+ 	 			System.out.println("JEntityFacetPanel:getWebView: foi title="+foiTitle$+" icon="+foiIcon$);
+ 	 			
  			foiItem$=getItem(foiIcon$, webHome$,foiTitle$,Locator.toString(foiLocator));
  			sl.add(foiTitle$);
  			tab.put(foiTitle$, foiItem$);

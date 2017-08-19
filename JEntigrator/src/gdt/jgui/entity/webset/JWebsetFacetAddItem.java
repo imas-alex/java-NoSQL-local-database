@@ -95,7 +95,7 @@ public class JWebsetFacetAddItem extends JFacetAddItem{
 				component.putElementItem("fhandler", new Core(null,WebsetHandler.class.getName(),null));
 				component.createElement("jfacet");
 				component.putElementItem("jfacet", new Core(getClass().getName(),WebsetHandler.class.getName(),JWebsetFacetOpenItem.class.getName()));
-					entigrator.save(component);
+					entigrator.ent_replace(component);
 				entigrator.saveHandlerIcon(JEntitiesPanel.class, "globe.png");
 				Sack container=entigrator.getEntityAtKey(entityKey$);
 				entigrator.col_addComponent(container, component);
@@ -130,7 +130,7 @@ public class JWebsetFacetAddItem extends JFacetAddItem{
 			   if(!entity.existsElement("jfacet"))
 				   entity.createElement("jfacet");
 			   entity.putElementItem("jfacet", new Core(JWebsetFacetAddItem.class.getName(),WebsetHandler.class.getName(),JWebsetFacetOpenItem.class.getName()));
-			   entigrator.save(entity);
+			   entigrator.ent_replace(entity);
 			   entity=entigrator.ent_assignProperty(entity, "webset", entity.getProperty("label"));
 			}catch(Exception e){
 				Logger.getLogger(getClass().getName()).severe(e.toString());

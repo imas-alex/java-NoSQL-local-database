@@ -310,15 +310,19 @@ public void putContext(JContext context,String locator$){
 		Logger.getLogger(getClass().getName()).severe(e.toString());
 	}
 	entihome$=Locator.getProperty(locator$, Entigrator.ENTIHOME);
-	//System.out.println("MainConsole:putContext:entihome="+entihome$);
+	
 	if(entihome$!=null)
 	    getEntigrator(entihome$);
 	frmEntigrator.getContentPane().removeAll();
 	
 	context.instantiate(this, locator$);
-	
+	if(debug)
+	System.out.println("JMainConsole:putContext:1");
 	frmEntigrator.getContentPane().add(context.getPanel(),BorderLayout.CENTER );
+	if(debug)
+	System.out.println("JMainConsole:putContext:2");
 	frmEntigrator.setTitle(context.getTitle());
+	
 	String ctxLocator$=context.getLocator();
 	if(ctxLocator$!=null)
 	        JTrackPanel.putMember(this,ctxLocator$ );
@@ -334,6 +338,7 @@ public void putContext(JContext context,String locator$){
 	}catch(Exception e){
 		Logger.getLogger(getClass().getName()).severe("cannot get context menu for context="+context.getClass().getName()+".error:"+ e.toString()); 	
 	}
+	
 	String subtitle$=context.getSubtitle();
 	if(subtitle$!=null){
 	subtitle.setText(subtitle$);

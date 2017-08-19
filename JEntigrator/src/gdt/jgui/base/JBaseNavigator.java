@@ -37,6 +37,7 @@ import gdt.data.grain.Sack;
 import gdt.data.grain.Support;
 import gdt.data.store.Entigrator;
 import gdt.data.store.FileExpert;
+import gdt.jgui.console.JClipboard;
 import gdt.jgui.console.JConsoleHandler;
 import gdt.jgui.console.JContext;
 import gdt.jgui.console.JItemPanel;
@@ -156,7 +157,7 @@ private Logger LOGGER=Logger.getLogger(JBaseNavigator.class.getName());
 					    		 Sack undo=entigrator.getEntityAtKey(undo$);
 					    		 undo.putElementItem("fhandler", new Core(null,"gdt.data.entity.facet.BookmarksHandler",null));
 					    		    undo.putElementItem("jfacet", new Core("gdt.jgui.entity.bookmark.JBookmarksFacetAddItem","gdt.data.entity.facet.BookmarksHandler","gdt.jgui.entity.bookmark.JBookmarksFacetOpenItem"));
-					    		    entigrator.save(undo);
+					    		    entigrator.ent_replace(undo);
 					    		    entigrator.ent_assignProperty(undo, "bookmarks", undo.getProperty("label"));
 					    		    String undoLocator$=EntityHandler.getEntityLocator(entigrator, undo);
 					    		    JEntityPrimaryMenu.reindexEntity(console, undoLocator$);
@@ -176,7 +177,7 @@ private Logger LOGGER=Logger.getLogger(JBaseNavigator.class.getName());
 					    					console.clipboard.putString(entityLocator$);
 					    				}
 					    				undo=putBookmarks(console,undo);
-					    				entigrator.save(undo);
+					    				entigrator.ent_replace(undo);
 					    				updateBookmarks(entigrator,undo);
 					    			}
 					    			
@@ -593,7 +594,7 @@ Runnable Paste=new Runnable(){
 	if(debug)
 		System.out.println("JBasenavigator:Paste:BEGIN");
 	Sack undo=entigrator.ent_new("undo", "undo_"+String.valueOf(cnt));
-	entigrator.save(undo);
+	entigrator.ent_replace(undo);
 	entigrator.ent_reindex(undo);
 	entigrator.ent_assignProperty(undo, "folder", undo.getProperty("label"));
 	undo.createElement("entity");
@@ -663,14 +664,13 @@ Runnable Paste=new Runnable(){
 	    pastedEntity=Sack.parseXML(entigrator,oldEntity.getPath());
 	    entigrator.ent_reindex(pastedEntity);
 	    pastedEntity.putAttribute(new Core(null,JReferenceEntry.ORIGIN_ENTIHOME,jre.type));
-	    entigrator.save(pastedEntity);
+	    entigrator.ent_replace(pastedEntity);
 	    icon$=pastedEntity.getAttributeAt("icon");
 	    //System.out.println("BaseNavigator:paste:icon="+icon$);
 	    if(icon$!=null){
 	    	undo.putElementItem("icon", new Core(null,icon$,null));
 	    	newIcon=new File(jre.type+"/"+Entigrator.ICONS+"/"+icon$);
 	    	if(newIcon.exists()){
-	    		
 	    		oldIcon=new File(oldIcons.getPath()+"/"+icon$);
 	    		if(!oldIcon.exists())
 	    			oldIcon.createNewFile();
@@ -700,7 +700,7 @@ Runnable Paste=new Runnable(){
   //  
     undo.putElementItem("fhandler", new Core(null,"gdt.data.entity.facet.BookmarksHandler",null));
     undo.putElementItem("jfacet", new Core("gdt.jgui.entity.bookmark.JBookmarksFacetAddItem","gdt.data.entity.facet.BookmarksHandler","gdt.jgui.entity.bookmark.JBookmarksFacetOpenItem"));
-    entigrator.save(undo);
+    entigrator.ent_replace(undo);
     entigrator.ent_assignProperty(undo, "bookmarks", undo.getProperty("label"));
     String undoLocator$=EntityHandler.getEntityLocator(entigrator, undo);
     JEntityPrimaryMenu.reindexEntity(console, undoLocator$);
@@ -708,6 +708,7 @@ Runnable Paste=new Runnable(){
 	if(sa!=null){
 		String entityLocator$;
 		Sack entity;
+		JClipboard.store(console);
 		console.clipboard.clear();
 		FacetHandler[] fha=BaseHandler.listAllHandlers(entigrator);
 		for(String s:sa){
@@ -721,9 +722,10 @@ Runnable Paste=new Runnable(){
 			console.clipboard.putString(entityLocator$);
 		}
 		undo=putBookmarks(console,undo);
-		entigrator.save(undo);
+		entigrator.ent_replace(undo);
 		updateBookmarks(entigrator,undo);
 	}
+	JClipboard.restore(console);
     JConsoleHandler.execute(console, getLocator());
 	
 }catch(Exception ee){
@@ -934,7 +936,7 @@ private static void updateBookmarks(Entigrator entigrator,Sack undo){
 				    jbm.value=Locator.append(jbm.value,Entigrator.ENTIHOME, entigrator.getEntihome()); 
 					entity.putElementItem("jbookmark", jbm);
 			}
-		entigrator.save(entity);	
+		entigrator.ent_replace(entity);	
 		}
 		
 	}catch(Exception e){

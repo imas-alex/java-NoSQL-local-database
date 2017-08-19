@@ -17,16 +17,17 @@ package gdt.data.grain;
     along with JEntigrator.  If not, see <http://www.gnu.org/licenses/>.
  */
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
+//import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
-import java.io.RandomAccessFile;
+//import java.io.RandomAccessFile;
 import java.io.Writer;
 import java.lang.reflect.Array;
-import java.nio.channels.Channels;
-import java.nio.channels.FileChannel;
+//import java.nio.channels.Channels;
+//import java.nio.channels.FileChannel;
 import java.nio.channels.FileLock;
 import java.util.Stack;
 import java.util.logging.Logger;
@@ -59,7 +60,7 @@ public class Sack extends Identity {
    	 * @param fname$ the path of the file. 
 	 * @return a sack.   
    	 */
-      public static Sack parseXML(Entigrator entigrator,String fname$) {
+       public static Sack parseXML(Entigrator entigrator,String fname$) {
     	  if(debug)
     	    System.out.println("Sack:parseXML:fname="+fname$); 
     	  final Logger LOGGER= Logger.getLogger(Sack.class.getName());
@@ -72,67 +73,28 @@ public class Sack extends Identity {
             DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
             DocumentBuilder db = dbf.newDocumentBuilder();
             File file = new File(fname$);
-            if(file.exists()&&file.length()<10){
+            if(!file.exists()){
+            	 LOGGER.severe(":parseXML:not exists file="+fname$);
+            	 return null;
+            }
+            if(file.length()<10){
             	 LOGGER.severe(":parseXML:empty file="+fname$);
             	 file.delete();
                  return null;
             }
-            RandomAccessFile raf=new RandomAccessFile(fname$, "rw");
-            FileChannel channel = raf.getChannel();
-            //FileLock fl =null;
-            FileLock fl=entigrator.getFileLock(fname$);
-          //  boolean success=false;
+          
             int n=0;
-            while(fl==null)
-            try{
-            	
+            while(n<3){
+            
+            	if(file.canRead())
+            		break;
             	n++;
-            	if(n>10){
-            		System.out.println("Sack:parseXML:fatal:cannot lock file="+fname$);
-            		entigrator.removeFileLock(fname$);
-            		return null;
-            	}
-            		fl=channel.tryLock();
-            		entigrator.putFileLock(fname$, fl);
-            		if(debug)
-            		System.out.println("Sack:parseXML:lock channel="+fl.channel().toString());
-            		
-            			
-            }catch(java.nio.channels.OverlappingFileLockException ee){
-            	System.out.println("Sack:parseXML:try lock file="+fname$+"::"+ee.toString());
-            	Thread.currentThread().sleep(10);
-            }
-                int cnt = 0;
-                while (fl == null) {
-                    try {
-                       // System.out.println("Sack:parseXML:try lock file=" + fname + " cnt=" + cnt);
-                        Thread.sleep(10);
-                        fl = channel.tryLock();
-                        cnt++;
-                        if (cnt > 10) {
-                         //   System.out.println("Sack:parseXML:cannot parse file" + fname);
-                        	LOGGER.severe(":parseXML:cannot parse file" + fname$);
-                        	channel.close();
-                        	entigrator.removeFileLock(fname$);
-                            return null;
-                        }
-                    } catch (Exception e) {
-                    	LOGGER.severe(":parseXML:" +  e.toString());
-                    	if (file.exists()) {
-                            try {
-                                file.delete();
-                                LOGGER.severe(":parseXML: delete wrong file=" + fname$);
-                            } catch (Exception eee) {
-                            	 LOGGER.severe(":parseXML:cannot delete wrong file=" + fname$);
-                            	 entigrator.removeFileLock(fname$);
-                            	 return null;
-                            }
-                        }
-                    }
-              
-
-            }
-            InputStream is = Channels.newInputStream(channel);
+                Thread.sleep(10);
+    	   }
+            if(!file.canRead())
+        		return null;
+           
+            FileInputStream is = new FileInputStream(file);
             Document doc = db.parse(is);
             doc.setXmlVersion("1.1");
             Sack ret = new Sack();
@@ -171,9 +133,8 @@ public class Sack extends Identity {
                         }
                     }
             }
-            channel.close();
-            raf.close();
-            entigrator.removeFileLock(fname$);
+            is.close();
+           
             return ret;
         } catch (Exception e) {
         	LOGGER.severe("cannot parse,delete file:"+fname$);
@@ -795,7 +756,7 @@ public synchronized boolean saveXML(String fname$){
     /**
 	 * Get the property value. 
 	 * @param property$ property name.
-	 * @return proeperty value.
+	 * @return property value.
 	 */  
     public String getProperty(String property$) {
         if (property$ == null)

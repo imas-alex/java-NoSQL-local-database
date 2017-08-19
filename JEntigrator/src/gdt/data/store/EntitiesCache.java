@@ -22,6 +22,7 @@ import gdt.data.grain.Sack;
 import gdt.data.grain.Support;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.Iterator;
@@ -37,7 +38,7 @@ import java.util.logging.Logger;
 * @since   2016-03-11
 */
 public class EntitiesCache {
-boolean saverIsRunning=false;
+volatile boolean saverIsRunning=false;
 Entigrator entigrator;
 Hashtable <String,Sack>entities=new Hashtable<String,Sack>();
 Thread saver;
@@ -84,7 +85,7 @@ public synchronized Sack get(String entityKey$){
 		if(entity==null)
 			reload=true;
 	if(!reload)
-		reload=entigrator.ent_outdated(entity);
+		reload=entigrator.ent_entIsObsolete(entity);
 	if(reload){
 		entity=Sack.parseXML(entigrator,entigrator.getEntihome() + "/" + Entigrator.ENTITY_BASE + "/data/"+entityKey$);
      	if(entity!=null){	
@@ -110,7 +111,7 @@ public synchronized void delete(String entityKey$){
  */
 /**
  * Save all entities on  disk.
- */
+ 
 public synchronized void save(){
 	try{
 		if(entities==null)
@@ -128,10 +129,13 @@ public synchronized void save(){
 		LOGGER.severe(":save:"+e.toString());
 	}
 }
-
+*/
 Runnable store=		new Runnable(){
 	public void run(){
-			try{
+		// System.out.println("EntitiesCache:store:run:0"); 	
+		try{
+			if(entities.isEmpty())
+				return;
 			while(saverIsRunning)
 				Thread.sleep(1500);
 			saverIsRunning=true;
@@ -145,37 +149,47 @@ Runnable store=		new Runnable(){
 		    	currentTime=System.currentTimeMillis();
 		    	set =entities.keySet();
 		    	itr = set.iterator();
-	//	    	 System.out.println("EntitiesCache:store:run:entities="+set.size());
-		    Stack <String>s=new Stack<String>();
+		    	if(debug)
+		    	 System.out.println("EntitiesCache:store:run:entities="+set.size());
+		    ArrayList <String>s=new ArrayList<String>();
 		    while (itr.hasNext()) {
 		      entityKey$ = itr.next();
 		      entity=entities.get(entityKey$);
 	//	      System.out.println("EntitiesCache:store:entity="+entity.getProperty("label"));
-		      entigrator.saveNative(entity);
+		//      entigrator.replace(entity);
 		
 		      try{
 		      entityTime=Long.parseLong(entity.getAttributeAt(Entigrator.TIMESTAMP));
 		      if(currentTime-entityTime>1000)
-			    	  s.push(entityKey$);
-		      }catch(Exception ee){
-		    	  LOGGER.severe(":store:"+ee.toString());
+			    	if(!s.contains(entityKey$))
+			    		s.add(entityKey$);
+		 		      }catch(Exception ee){
+		    	  LOGGER.severe(":a:store:"+ee.toString());
 		      }
 		    }
+		    //
+		    
+		    //
 		    Sack candidate;
-		    while(!s.isEmpty()){
-		        entityKey$=s.pop();
+		    if(!s.isEmpty()){
+		      for(String key$:s){
+		        entityKey$=key$;
 		        candidate=entigrator.getEntity( entityKey$);
 		        if(candidate==null){
 		        	entity=entities.get(entityKey$);
 		        	if(entity!=null){
-		        	   entigrator.saveNative(entity);
+		        	   entigrator.ent_replace(entity);
 		        	}
 		        }
-		    	delete(entityKey$);
-		    }
+		        delete(entityKey$);
+		    }}
+		  //  System.out.println("EntitiesCache:store:run:1"); 
 		    saverIsRunning=false;	
+		    
+		  //System.out.println("EntitiesCache:store:run:2");
+		  
 			}catch(Exception e){
-				LOGGER.severe(":store:"+e.toString());
+				LOGGER.severe(":b:store:"+e.toString());
 			}
 			
 		}

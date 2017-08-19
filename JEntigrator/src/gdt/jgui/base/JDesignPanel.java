@@ -351,6 +351,8 @@ private void selectEntitiesAtProperty(){
 	String propertyName$=(String)propertyComboBox.getSelectedItem();
 	Entigrator entigrator=console.getEntigrator(entihome$);
 	String[] sa=entigrator.indx_listEntitiesAtPropertyName(propertyName$);
+	if(debug)
+		System.out.println("JDesignPanel:selectEntitiesAtProperty:sa="+sa.length);
 	if(sa!=null){
 		String label$;
 		DefaultComboBoxModel<String> entityBoxModel=new DefaultComboBoxModel<String>();
@@ -359,6 +361,7 @@ private void selectEntitiesAtProperty(){
 			label$=entigrator.indx_getLabel(aSa);
 		    if(label$!=null)
 		    	sl.add(label$);
+		    entigrator.clearCache();
 		}
 		sa=sl.toArray(new String[0]);
 		Support.sortStrings(sa);
@@ -904,7 +907,11 @@ public String getWebView(Entigrator entigrator,String locator$) {
 		entihome$=locator.getProperty(Entigrator.ENTIHOME);
 		
 		String propertyName$=locator.getProperty(PROPERTY_NAME);
+		//String pv$=locator.getProperty(PROPERTY_VALUE);
 		String propertyValue$=locator.getProperty(PROPERTY_VALUE);
+		//if(pv$!=null)
+		//	java.net.URLDecoder.decode(pv$, "UTF-8");
+		
 		String webRequester$=locator.getProperty(WContext.WEB_REQUESTER);
 		if(debug){
 		System.out.println("JDesignPanel:web home="+webHome$+" locator="+locator$);
@@ -942,8 +949,8 @@ public String getWebView(Entigrator entigrator,String locator$) {
 	    sb.append("<td><button onclick=\"listAtPropertyName()\">Property</button></td>");
 	    sb.append("<td>");
 	    sb.append("<select id=\"pselector\" size=\"1\" onchange=\"setValues()\">");
-	    if(debug)
-  		  System.out.println("JDesignPanel:getWebView:1");
+	    //if(debug)
+  		//  System.out.println("JDesignPanel:getWebView:1");
   		
 	    String[] sa=entigrator.indx_listPropertyNames();
 	    
@@ -974,19 +981,22 @@ public String getWebView(Entigrator entigrator,String locator$) {
 	    if(propertyName$!=null)
 	    {
 	    va=entigrator.indx_listPropertyValues(propertyName$);
+	   String v;
 	    if(va!=null)
 	    	for(String s:va){
+	    		v=java.net.URLEncoder.encode(s, "UTF-8");	
 	    	 if(debug)	
 	    		System.out.println("JDesignPanel:getWebView:property value="+propertyValue$+" candidate="+s);
-	    		if(propertyValue$!=null && propertyValue$.equals(s)){
-	    		s=s.replaceAll("\"", "&quot;");
-            	s=s.replaceAll("'", "&#39;");
-    			sb.append("<option value=\""+s+"\" selected=\"selected\" >"+s+"</option>");
+	    		if(propertyValue$!=null && propertyValue$.equals(java.net.URLEncoder.encode(s, "UTF-8"))){
+	    		//s=s.replaceAll("\"", "&quot;");
+            	//s=s.replaceAll("'", "&#39;");
+	    		
+    			sb.append("<option value=\""+v+"\" selected=\"selected\" >"+s+"</option>");
 	    		}
 	    		else{
-	    			s=s.replaceAll("\"", "&quot;");
-	            	s=s.replaceAll("'", "&#39;");
-	    		    sb.append("<option value=\""+s+"\">"+s+"</option>");
+	    			//s=s.replaceAll("\"", "&quot;");
+	            	//s=s.replaceAll("'", "&#39;");
+	    		    sb.append("<option value=\""+v+"\">"+s+"</option>");
 	    	}
 	    	}
 	    }
@@ -1002,15 +1012,16 @@ public String getWebView(Entigrator entigrator,String locator$) {
 	       propertyValue$=va[0];
 	    if(propertyName$!=null&&propertyValue$!=null)
 	    {
-	    String[] ea=entigrator.indx_listEntities(propertyName$, propertyValue$);
+	    String decodedValue$=java.net.URLDecoder.decode(propertyValue$, "UTF-8");	
+	    String[] ea=entigrator.indx_listEntities(propertyName$, decodedValue$);
 	    if(ea!=null){
 	    	String label$;
 	    	ArrayList<String> sl=new ArrayList<String>();
 	    	for(String s:ea){
 	            label$=entigrator.indx_getLabel(s);
 	            if(label$!=null){
-	            	label$=label$.replaceAll("\"", "&quot;");
-	            	label$=label$.replaceAll("'", "&#39;");
+	            	//label$=label$.replaceAll("\"", "&quot;");
+	            	//label$=label$.replaceAll("'", "&#39;");
 	            	sl.add(label$);
 	            }
 	    		//sb.append("<option value=\""+label$+"\">"+label$+"</option>");
@@ -1022,7 +1033,9 @@ public String getWebView(Entigrator entigrator,String locator$) {
 	            }
 	        });
 	    	for(String s:sl)
-	    		sb.append("<option value=\""+s+"\">"+s+"</option>");
+	    		//sb.append("<option value=\""+java.net.URLEncoder.encode(s, "UTF-8")+"\">"+s+"</option>");
+	    		//sb.append("<option value=\""+Base64.encodeBase64URLSafeString(s.getBytes())+"\">"+s+"</option>");
+	    		sb.append("<option value=\""+entigrator.indx_keyAtLabel(s)+"\">"+s+"</option>");
 	    }
 	    }
 	    sb.append("</select>");
@@ -1031,9 +1044,9 @@ public String getWebView(Entigrator entigrator,String locator$) {
 	    sb.append("</table>");
 	    sb.append("<p id=\"locator\"></p>");
 	    sb.append("<p id=\"property\"></p>");
-	    sb.append("<script>");
-	    locator$=locator$.replaceAll("\"", "&quot;");
-	    locator$=locator$.replaceAll("'", "&#39;");
+	    sb.append("<script charset=\"utf-8\">");
+	   // locator$=locator$.replaceAll("\"", "&quot;");
+	   // locator$=locator$.replaceAll("'", "&#39;");
 	    sb.append("function setValues() {");
 	    sb.append("var locator =\""+locator$+"\";");
 	    sb.append("var property = document.getElementById(\"pselector\").value;");
@@ -1061,10 +1074,11 @@ public String getWebView(Entigrator entigrator,String locator$) {
 	    
 	    sb.append("function openEntity() {");
 	    sb.append("var locator =\""+locator$+"\";");
-	    sb.append("var entityLabel = document.getElementById(\"eselector\").value;");
+	    //sb.append("var entityLabel = document.getElementById(\"eselector\").value;");
+	    sb.append("var entityKey = document.getElementById(\"eselector\").value;");
 	    sb.append("locator=removeProperty(locator,\""+PROPERTY_VALUE+"\");");
 	    sb.append("locator=removeProperty(locator,\""+PROPERTY_NAME+"\");");
-	    sb.append("locator=appendProperty(locator,\""+EntityHandler.ENTITY_LABEL+"\",entityLabel);");
+	    sb.append("locator=appendProperty(locator,\""+EntityHandler.ENTITY_KEY+"\",entityKey);");
 	    sb.append("locator=appendProperty(locator,\""+BaseHandler.HANDLER_CLASS+"\",\""+JEntityFacetPanel.class.getName()+"\");");
 	    sb.append("locator=appendProperty(locator,\""+WContext.WEB_REQUESTER+"\",\""+this.getClass().getName()+"\");");
 	    locator$=Locator.append(locator$,Entigrator.ENTIHOME,entigrator.getEntihome());

@@ -2,7 +2,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>Movies</groupId>
   <artifactId>Movies</artifactId>
-  <version>0.0.3-SNAPSHOT</version>
+  <version>0.0.4-SNAPSHOT</version>
   <description>The movies extension for the entigrator application</description>
   <url>https://github.com/imas-alex/java-NoSQL-local-database</url>
   <issueManagement>
@@ -141,8 +141,6 @@
   <artifactId>JEntigrator</artifactId>
   <version>0.0.6</version>
    </dependency>
-
-
   		<dependency>
 	  	<groupId>commons-codec</groupId>
   		<artifactId>commons-codec</artifactId>

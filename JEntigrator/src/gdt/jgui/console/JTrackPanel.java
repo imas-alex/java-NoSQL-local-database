@@ -18,6 +18,8 @@ package gdt.jgui.console;
  */
 import gdt.data.entity.BaseHandler;
 import gdt.data.grain.Locator;
+import gdt.data.store.Entigrator;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
@@ -42,6 +44,7 @@ public class JTrackPanel extends JItemsListPanel {
 	private final static String TRACK="track";
 	private Stack<String>track;
 	private Logger LOGGER=Logger.getLogger(JTrackPanel.class.getName());
+	static boolean debug=false;
 	/**
 	 * The constructor.
 	 * @param console the main console.
@@ -258,7 +261,11 @@ public static void restoreTrack(JMainConsole console){
 			if(aSa!=null&&aSa.length()>0)
 				track.push(aSa);
 		String locator$=track.peek();
-		
+		if(debug)
+			System.out.println("JTrackPanel:restore:locator="+locator$);
+		String entihome$=Locator.getProperty(locator$,Entigrator.ENTIHOME);
+		Entigrator entigrator=new Entigrator(new String[]{entihome$});
+		console.putEntigrator(entigrator);
 		JConsoleHandler.execute(console, locator$);
 		console.setTrack(track);
 		rd.close();

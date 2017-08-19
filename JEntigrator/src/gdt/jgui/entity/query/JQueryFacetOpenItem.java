@@ -235,6 +235,7 @@ public String getWebView(Entigrator entigrator, String locator$) {
 		sb.append("<!DOCTYPE html PUBLIC \"-//W3C//DTD HTML 4.01//EN\" \"http://www.w3.org/TR/html4/strict.dtd\">");
 		sb.append("<html>");
 		sb.append("<head>");
+		sb.append(" <meta charset=\"UTF-8\">");
 		sb.append(WUtils.getMenuBarScript());
 		sb.append(WUtils.getMenuBarStyle());
 		sb.append("</head>");

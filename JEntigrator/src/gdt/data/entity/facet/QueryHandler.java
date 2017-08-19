@@ -36,7 +36,7 @@ public class QueryHandler extends FacetHandler {
 						if(!entity.existsElement("fhandler"))
 							entity.createElement("fhandler");
 							entity.putElementItem("fhandler", new Core(null,getClass().getName(),null));
-							entigrator.save(entity);
+							entigrator.ent_replace(entity);
 					}
 	            result=true;
 				}

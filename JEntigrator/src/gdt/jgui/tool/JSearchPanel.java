@@ -319,10 +319,10 @@ public String getWebView(Entigrator entigrator, String locator$) {
 	    	Collections.sort(sl);
 	    	cnt=sl.size();
 	    	sb.append("<tr>");
-	    	if(cnt==1)
+	    	//if(cnt==1)
 	    	 sb.append("<td> <button onclick=\"openEntity()\">Open:</button> </td>");
-	    	else
-	    		sb.append("<td></td>");
+	    	//else
+	    	//	sb.append("<td></td>");
 	    	if(cnt>0){
 	    	sb.append("<td><select id=\"selector\" size=\""+1+"\" onchange=\"openEntity()\">");
 	    	for(String s:sl){
@@ -330,7 +330,8 @@ public String getWebView(Entigrator entigrator, String locator$) {
 	    			System.out.println("JSearchPanel:option=="+s);
 	    		s=s.replaceAll("\"", "&quot;");
             	s=s.replaceAll("'", "&#39;");
-	    	sb.append("<option value=\""+s+"\">"+s+"</option>");
+	    	//sb.append("<option value=\""+s+"\">"+s+"</option>");
+            	sb.append("<option value=\""+entigrator.indx_keyAtLabel(s)+"\">"+s+"</option>");
 	    	}
 	    	sb.append("</select></td>");
 	    	}
@@ -350,8 +351,9 @@ public String getWebView(Entigrator entigrator, String locator$) {
 	    
 	    sb.append("function openEntity() {");
 	    sb.append("var locator =\""+locator$+"\";");
-	    sb.append("var entityLabel = document.getElementById(\"selector\").value;");
-	    sb.append("locator=appendProperty(locator,\""+EntityHandler.ENTITY_LABEL+"\",entityLabel);");
+	    //sb.append("var entityLabel = document.getElementById(\"selector\").value;");
+	    sb.append("var entityKey = document.getElementById(\"selector\").value;");
+	    sb.append("locator=appendProperty(locator,\""+EntityHandler.ENTITY_KEY+"\",entityKey);");
 	    sb.append("locator=appendProperty(locator,\""+BaseHandler.HANDLER_CLASS+"\",\""+JEntityFacetPanel.class.getName()+"\");");
 	    sb.append("locator=appendProperty(locator,\""+WContext.WEB_REQUESTER+"\",\""+this.getClass().getName()+"\");");
 	   

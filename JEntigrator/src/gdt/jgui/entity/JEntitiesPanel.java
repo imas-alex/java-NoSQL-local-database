@@ -61,6 +61,9 @@ public class JEntitiesPanel extends JItemsListPanel implements WContext {
 	
 	
 	public static final String SELECTED="selected";
+	public static final String PAGE_BEGIN_COUNT="page begin count";
+	public static final String ENCODED_LABEL="encoded label";
+	public static final int PAGE_SIZE=100;
 	private Logger LOGGER=Logger.getLogger(JEntitiesPanel.class.getName());
 	protected String entihome$;
 	protected String list$;
@@ -500,93 +503,7 @@ public String getTitle() {
 		
 			   
 	}
-	/*
-	 public static JItemPanel[] listEntitiesAtList(JMainConsole console,String locator$){
-		try{
-			   Properties locator=Locator.toProperties(locator$);
-			   String list$=locator.getProperty(EntityHandler.ENTITY_LIST);
-			   String[]la=Locator.toArray(list$);
-			  
-			   if(la==null){
-				   Logger.getLogger(JEntitiesPanel.class.getName()).info("empty list");
-				   return null;
-			   }
-			   
-			   String entihome$=locator.getProperty(Entigrator.ENTIHOME);
-			   Entigrator entigrator=console.getEntigrator(entihome$);
-			    ArrayList<JItemPanel>ipl=new ArrayList<JItemPanel>();
-			   JItemPanel itemPanel;
-			   String entityLocator$;
-			   int i=0;
-			   String entityKey$;
-			   FacetHandler[] fha=BaseHandler.listAllHandlers(entigrator);
-		   for(String aLa:la){
-			   try{
-			if(debug)
-				   System.out.println("JEntitiesPanel: listEntitiesAtLabelList:aLa="+aLa);	   
-			      entityLocator$=EntityHandler.getEntityLocatorAtLabel(entigrator, aLa);
-			   if(entityLocator$==null){
-			       entityLocator$=EntityHandler.getEntityLocatorAtKey(entigrator, aLa);
-			       entityKey$=aLa;
-			   }else
-				   entityKey$=entigrator.indx_keyAtLabel(aLa);
-		  if(debug)   
-			   System.out.println("JEntitiesPanel: listEntitiesAtLabelList:locator="+entityLocator$);	
-			   entityLocator$=Locator.append(entityLocator$,Entigrator.ENTIHOME , entihome$);
-			   entityLocator$=Locator.append(entityLocator$,Locator.LOCATOR_CHECKABLE , Locator.LOCATOR_TRUE);
-			   JEntityFacetPanel em=new JEntityFacetPanel();
-			   entityLocator$=Locator.append(entityLocator$, JFacetRenderer.ONLY_ITEM, Locator.LOCATOR_TRUE);
-			   em.instantiate(console, entityLocator$);
-			   String emLocator$=em.getLocator();
-			   Properties emLocator=Locator.toProperties(emLocator$);
-			   emLocator.setProperty(Locator.LOCATOR_CHECKABLE, Locator.LOCATOR_TRUE);
-			   emLocator.setProperty(POSITION, String.valueOf(i++));
-			   String iconFile$=entigrator.ent_getIconAtKey(entityKey$);
-			   if(iconFile$!=null&&!"sack.gif".equals(iconFile$)&&!"null".equals(iconFile$)){
-			   emLocator.setProperty(Locator.LOCATOR_ICON_CONTAINER,Locator.LOCATOR_ICON_CONTAINER_ICONS);
-			   emLocator.setProperty(Locator.LOCATOR_ICON_FILE,iconFile$);
-			   }else{
-					String type$=entigrator.getEntityType(entityKey$);
-					if(debug)   
-						   System.out.println("JEntitiesPanel: listEntitiesAtLabelList:entity type="+type$);	
-					boolean found=false;	
-//					FacetHandler[] fha=BaseHandler.listAllHandlers(entigrator);
-			    	   for(FacetHandler fh:fha){
-			    		if(debug)   
-							   System.out.println("JEntitiesPanel: listEntitiesAtLabelList:handler type="+fh.getType());	
-						
-			    		if(type$.equals(fh.getType())){
-			    			 JFacetRenderer facetRenderer=JConsoleHandler.getFacetRenderer(entigrator, fh);
-			    			 emLocator.setProperty(Locator.LOCATOR_ICON_CONTAINER,Locator.LOCATOR_ICON_CONTAINER_CLASS);
-			    			 emLocator.setProperty(Locator.LOCATOR_ICON_CLASS,facetRenderer.getClass().getName());
-			    			 emLocator.setProperty(Locator.LOCATOR_ICON_FILE,facetRenderer.getFacetIcon());
-			    			 found=true;
-			    			 break;
-			    		}
-			    	   }
-			    	   if(!found){
-			    		 emLocator.setProperty(Locator.LOCATOR_ICON_CONTAINER,Locator.LOCATOR_ICON_CONTAINER_CLASS);
-			    		 emLocator.setProperty(Locator.LOCATOR_ICON_CLASS,JEntitiesPanel.class.getName());
-			    		 emLocator.setProperty(Locator.LOCATOR_ICON_FILE,"facet.png");
-			    		
-			    	   }
-			   }
-			   itemPanel=new JItemPanel(console,Locator.toString(emLocator));
-			   ipl.add(itemPanel);
-			   }catch(Exception ee){
-				   Logger.getLogger(JEntitiesPanel.class.getName()).info(ee.toString());
-			   }
-		   }
-		   Collections.sort(ipl,new ItemPanelComparator());
-		   JItemPanel[] ipa=ipl.toArray(new JItemPanel[0]);
-		   return ipa;
-		}catch(Exception e) {
-        	Logger.getLogger(JEntitiesPanel.class.getName()).severe(e.toString());
-            return null;
-        }
-	}
 	
-	 */
 	/**
 	 * Complete the context. No action.
 	 */
@@ -718,6 +635,7 @@ public String getTitle() {
 			String mode$=locator.getProperty(JDesignPanel.MODE);
 			String propertyName$=locator.getProperty(JDesignPanel.PROPERTY_NAME);
 			String propertyValue$=locator.getProperty(JDesignPanel.PROPERTY_VALUE);
+			String pageBeginCount$=locator.getProperty(PAGE_BEGIN_COUNT);
 			if(debug)
 			System.out.println("JEntitiesPanel:web home="+webHome$+ " web requester="+webRequester$);
 			// String icon$=Support.readHandlerIcon(null,JBaseNavigator.class, "base.png");
@@ -750,11 +668,67 @@ public String getTitle() {
 		    	sa=entigrator.indx_listEntitiesAtPropertyName(propertyName$);
 		    if(JDesignPanel.VALUE_MODE.equals(mode$))
 		    	sa=entigrator.indx_listEntities(propertyName$,propertyValue$);
+		    ArrayList<String>page=new ArrayList<String>();
+		    String[] ia;
+		    if(debug)
+		    	   System.out.println("JEntitiesPanel:getWebView:selected keys="+sa.length);
+		    
 		    if(sa!=null){
+		    //
+		       sa=entigrator.indx_sortKeysAtlabel(sa);
+		       if(debug)
+		    	   System.out.println("JEntitiesPanel:getWebView:sorted keys="+sa.length);
+		       int pageBegin=0;
+		       if(pageBeginCount$!=null)
+		    		try{ pageBegin=Integer.parseInt(pageBeginCount$);}catch(Exception e){}
+		       int pageEnd=pageBegin+PAGE_SIZE;
+		      // page.clear();
+		       if(pageEnd<sa.length){
+		    	   for(int i=pageBegin;i<pageEnd;i++)
+		    		   page.add(sa[i]);
+		    	   if(debug)
+			    	   System.out.println("JEntitiesPanel:getWebView:page="+page.size());
+			     	   
+		    	   ia=listWebItems(entigrator,webHome$,page.toArray(new String[0]));
+		    	   if(debug)
+			    	   System.out.println("JEntitiesPanel:getWebView:items="+ia.length);
+			     	   
+		    	
+		    	   for(String it:ia)
+		    		   sb.append(it+"<br>");
+		    	   locator$=Locator.append(locator$, PAGE_BEGIN_COUNT, String.valueOf(pageEnd));
+		    		String moreItem$="<a href=\""+webHome$+"?"+WContext.WEB_LOCATOR+"="+Base64.encodeBase64URLSafeString(locator$.getBytes())+"\" ><strong>Next page </strong></a>";
+		    		sb.append(moreItem$);
+		       }else{
+		    	   for(int i=0;i<sa.length;i++){
+		    		   page.add(sa[i]);
+		    	   }
+		    	   ia=listWebItems(entigrator,webHome$,page.toArray(new String[0]));
+		    	   for(String it:ia)
+		    		   sb.append(it+"<br>");
+		       }
+		    	   
+		       
+		    	
+		   // 
+		       /*
 		    String[] ia=listWebItems(entigrator,webHome$,sa);
-		    if(ia!=null)
-		    	for(String i:ia)
-		    	sb.append(i+"<br>");
+		    if(ia!=null){
+		    	int page_begin=0;
+		    	if(pageBeginCount$!=null)
+		    		try{ page_begin=Integer.parseInt(pageBeginCount$);}catch(Exception e){}
+		    	int pageEnd=page_begin+PAGE_SIZE;
+		    	for(int i=page_begin;i<ia.length;i++){
+		    	sb.append(ia[i]+"<br>");
+		    	if(i>pageEnd ){
+		    		locator$=Locator.append(locator$, PAGE_BEGIN_COUNT, String.valueOf(pageEnd));
+		    		String moreItem$="<a href=\""+webHome$+"?"+WContext.WEB_LOCATOR+"="+Base64.encodeBase64URLSafeString(locator$.getBytes())+"\" >Next page </a>";
+		    		sb.append(moreItem$);
+		    				break;
+		    	}
+		    	}
+		    }
+		    */
 		    }	  
 	        sb.append("<script>");
 	      
@@ -780,7 +754,7 @@ public String getTitle() {
 		return null;
 	}
 
-	private  static String[] listWebItems(Entigrator entigrator,String webHome$,String[] sa){
+	public  static String[] listWebItems(Entigrator entigrator,String webHome$,String[] sa){
 		try{
 			
 	    Properties foiLocator=new Properties();   
@@ -792,28 +766,21 @@ public String getTitle() {
 	    String entityIcon$;
 	    String foiItem$;
 	    String entityLabel$;
-	    Hashtable<String,String> tab=new Hashtable<String,String>();
 		   for(String s:sa){
 			   try{
-				   //if(debug)
-				//	   		System.out.println("JEntitiesPanelPanel:listCategoryMembers:c type="+c.type+" name="+c.name+" value="+c.value);
 				   entityLocator$=EntityHandler.getEntityLocatorAtKey(entigrator, s);
 				   entityLabel$=Locator.getProperty(entityLocator$,EntityHandler.ENTITY_LABEL); 
 				   entityIcon$=JConsoleHandler.getIcon(entigrator, entityLocator$);
 				   entityLocator$=Locator.append(entityLocator$,BaseHandler.HANDLER_CLASS, JEntityFacetPanel.class.getName());
 				   entityLocator$=Locator.append(entityLocator$,Entigrator.ENTIHOME, entigrator.getEntihome());
+				   entityLocator$=Locator.append(entityLocator$,ENCODED_LABEL, Base64.encodeBase64URLSafeString(entityLabel$.getBytes()));
 				   foiItem$=getItem(entityIcon$, webHome$,entityLabel$,entityLocator$);
-                   tl.add(entityLabel$);
-                   tab.put(entityLabel$,foiItem$);
+				   tl.add(foiItem$);
 			   }catch(Exception ee){
 				   Logger.getLogger(JCategoryPanel.class.getName()).info(ee.toString());
 			   }
 		   }
-		   Collections.sort(tl);
-		   ArrayList<String>sl=new ArrayList<String>();
-		   for(String s:tl)
-			   sl.add(tab.get(s));
-		   return sl.toArray(new String[0]);
+		   return tl.toArray(new String[0]);
 		}catch(Exception e) {
         	Logger.getLogger(JEntitiesPanel.class.getName()).severe(e.toString());
             return null;
@@ -821,7 +788,7 @@ public String getTitle() {
 	}
 	private static String getItem(String icon$, String url$, String title$,String foiLocator$){
 		if(debug)
-				System.out.println("JBookmarksFacetOpenItem:getItem: locator="+foiLocator$);
+				System.out.println("JEntitiesPanel:getItem: locator="+foiLocator$);
 	    
 		String iconTerm$="<img src=\"data:image/png;base64,"+WUtils.scaleIcon(icon$)+
 				  "\" width=\"24\" height=\"24\" alt=\""+title$+"\">";

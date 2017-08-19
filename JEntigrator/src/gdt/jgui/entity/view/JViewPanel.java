@@ -193,7 +193,8 @@ public class JViewPanel extends JPanel implements JFacetRenderer,JRequester{
 						public void actionPerformed(ActionEvent e) {
 							Entigrator entigrator=console.getEntigrator(entihome$);
 							Sack view=entigrator.getEntityAtKey(entityKey$);
-							entigrator.saveNative(view);
+							if(view!=null)
+							entigrator.ent_replace(view);
 							console.back();
 						}
 					} );
@@ -484,7 +485,7 @@ public class JViewPanel extends JPanel implements JFacetRenderer,JRequester{
 		    	String viewHandler$=ViewHandler.class.getName();
 		    	if(entity.getElementItem("fhandler", viewHandler$)!=null){
 					entity.putElementItem("jfacet", new Core(null,viewHandler$,JViewFacetOpenItem.class.getName()));
-					entigrator.save(entity);
+					entigrator.ent_replace(entity);
 				}
 		    }catch(Exception e){
 		    	Logger.getLogger(getClass().getName()).severe(e.toString());
@@ -549,7 +550,7 @@ public class JViewPanel extends JPanel implements JFacetRenderer,JRequester{
 					view.createElement("jfacet");
 					view.putElementItem("jfacet", new Core(JFolderFacetAddItem.class.getName(),FolderHandler.class.getName(),JFolderFacetOpenItem.class.getName()));
 					view.putElementItem("jfacet", new Core(null,ViewHandler.class.getName(),JViewFacetOpenItem.class.getName()));
-					entigrator.save(view);
+					entigrator.ent_replace(view);
 					entigrator.ent_assignProperty(view, "view", text$);
 					entigrator.ent_assignProperty(view, "folder", text$);
 					entigrator.saveHandlerIcon(getClass(), "view.png");

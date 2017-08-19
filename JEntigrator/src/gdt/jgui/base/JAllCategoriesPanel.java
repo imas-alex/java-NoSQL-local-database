@@ -298,6 +298,7 @@ Hashtable<String,JItemPanel> items;
 		    sb.append("</table>");
 		    FacetHandler[] fha=BaseHandler.listAllHandlers(entigrator);
 			 if(fha!=null){
+				
 				 JFacetRenderer facetRenderer;
 
 				 String fIcon$;
@@ -311,6 +312,8 @@ Hashtable<String,JItemPanel> items;
 				 String item$;
 				 for(FacetHandler fh:fha){
 					 try{
+						 if(!entigrator.ent_existsAtType(fh.getType()))
+							 continue;
 				     //  fHandler$=fh.getClassName();
 				       if(debug) 
 				    	   System.out.println("JAllCategoriesPanel:getWebView:facet handler="+fh.getClass().getName());		 

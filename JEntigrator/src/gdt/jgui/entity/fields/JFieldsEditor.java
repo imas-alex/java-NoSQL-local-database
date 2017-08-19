@@ -102,7 +102,7 @@ protected JMenuItem pasteItem;
 protected JMenuItem doneItem;
 protected JMenuItem[] postMenu;
 protected String message$;
-boolean debug=false;
+boolean debug=true;
 protected boolean ignoreOutdate=false;
 /**
  * The default constructor.
@@ -228,12 +228,12 @@ public JFieldsEditor() {
 									sourceEntityKey$=locator.getProperty(EntityHandler.ENTITY_KEY);
 									sourceEntity=sourceEntigrator.getEntityAtKey(sourceEntityKey$);
 									sourceEntity.removeElementItem("field", name$);
-									sourceEntigrator.save(sourceEntity);
+									sourceEntigrator.ent_replace(sourceEntity);
 								}
 							}
 						}
 						}
-						entigrator.save(entity);
+						entigrator.ent_replace(entity);
 						Core[] ca=entity.elementGet("field");
 						replaceTable(ca);
 						}catch(Exception ee){
@@ -497,7 +497,7 @@ public JFieldsEditor() {
 			//entity.print();
 				entity.putAttribute(new Core(null,Entigrator.TIMESTAMP,String.valueOf(System.currentTimeMillis())));	
 				entity.putAttribute(new Core(null,Entigrator.SAVE_ID,Identity.key()));
-				entigrator.replace(entity);
+				entigrator.ent_replace(entity);
 		}catch(Exception e){
 			LOGGER.severe(e.toString());
 		}
@@ -663,12 +663,15 @@ public JFieldsEditor() {
 				newEntity.createElement("fhandler");
 				newEntity.putElementItem("fhandler", new Core(null,FieldsHandler.class.getName(),null));
 				newEntity.putAttribute(new Core (null,"icon","fields.png"));
-				if(!entigrator.save(newEntity))
-					return;
+				//newEntity.print();
+				System.out.println("JFieldsEditor:response:1");
+				entigrator.ent_replace(newEntity);
+					
 				String icons$=entihome$+"/"+Entigrator.ICONS;
 				Support.addHandlerIcon(getClass(), "fields.png", icons$);
+				System.out.println("JFieldsEditor:response:2");
 				newEntity=entigrator.ent_reindex(newEntity);
-			//	newEntity.print();
+				//newEntity.print();
 				JEntityFacetPanel efp=new JEntityFacetPanel(); 
 				String efpLocator$=efp.getLocator();
 				efpLocator$=Locator.append(efpLocator$,Locator.LOCATOR_TITLE,newEntity.getProperty("label"));
@@ -681,7 +684,7 @@ public JFieldsEditor() {
 				s.pop();
 				console.setTrack(s);
 				JConsoleHandler.execute(console, efpLocator$);
-				entigrator.store_replace();
+				//entigrator.store_replace();
 				return;
 			}
 				String entityKey$=locator.getProperty(EntityHandler.ENTITY_KEY);
@@ -695,7 +698,8 @@ public JFieldsEditor() {
 					core.value=text$;
 //				System.out.println("FieldsEditor:response:name="+core.name+" value="+core.value);
 				entity.putElementItem("field", core);
-				entigrator.save(entity);
+				System.out.println("JFieldsEditor:response:3");
+				entigrator.ent_replace(entity);
 				String feLocator$=getLocator();
 				feLocator$=Locator.append(locator$, Entigrator.ENTIHOME, entihome$);
 				feLocator$=Locator.append(locator$, EntityHandler.ENTITY_KEY, entityKey$);
@@ -791,7 +795,7 @@ public JFieldsEditor() {
 	    	String fhandler$=FieldsHandler.class.getName();
 	    	if(entity.getElementItem("fhandler", fhandler$)!=null){
 				entity.putElementItem("jfacet", new Core(JFieldsFacetAddItem.class.getName(),fhandler$,JFieldsFacetOpenItem.class.getName()));
-				entigrator.save(entity);
+				entigrator.ent_replace(entity);
 			}
 	    	String entityLocator$=EntityHandler.getEntityLocator(entigrator, entity);
 			FieldsHandler fieldsHandler=new FieldsHandler();
@@ -906,7 +910,7 @@ public JFieldsEditor() {
 				return;
 			}
 		}
-		if(!entigrator.ent_outdated(entity))
+		if(!entigrator.ent_entIsObsolete(entity))
 			return;
 		int n=new ReloadDialog(this).show();
 		if(2==n){

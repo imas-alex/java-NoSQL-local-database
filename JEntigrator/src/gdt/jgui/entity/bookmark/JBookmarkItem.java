@@ -31,6 +31,7 @@ import gdt.jgui.console.JRequester;
 import gdt.jgui.entity.folder.JFolderPanel;
 import gdt.jgui.tool.JIconSelector;
 import gdt.jgui.tool.JTextEditor;
+
 /**
  * This class represent a bookmarked item in the
  * bookmarks list console.

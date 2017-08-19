@@ -278,7 +278,7 @@ public class JEntityStructurePanel extends JPanel implements JContext,WContext{
 						@Override
 						public void actionPerformed(ActionEvent e) {
 							Entigrator entigrator=console.getEntigrator(entihome$);
-							entigrator.replace(parent);
+							entigrator.ent_replace(parent);
 							console.back();
 						}
 					    });
@@ -721,8 +721,33 @@ public class JEntityStructurePanel extends JPanel implements JContext,WContext{
 	private static String getWebItems(Entigrator entigrator,String locator$){
 		try{
 				Properties locator=Locator.toProperties(locator$);
-				String entityLabel$=locator.getProperty(EntityHandler.ENTITY_LABEL);
-				String entityKey$=entigrator.indx_keyAtLabel(entityLabel$);
+				//String entityLabel$=locator.getProperty(EntityHandler.ENTITY_LABEL);
+				//String entityKey$=entigrator.indx_keyAtLabel(entityLabel$);
+				///
+				String entityKey$=locator.getProperty(EntityHandler.ENTITY_KEY);
+				String entityLabel$=null;
+				if(entityKey$==null){
+					String encodedLabel$=locator.getProperty(JEntitiesPanel.ENCODED_LABEL);
+					if(encodedLabel$!=null){
+							byte[] ba=Base64.decodeBase64(encodedLabel$);
+							entityLabel$=new String(ba,"UTF-8");
+							entityKey$=entigrator.indx_keyAtLabel(entityLabel$);
+						}else{
+					    entityLabel$=locator.getProperty(EntityHandler.ENTITY_LABEL);
+					    entityKey$=entigrator.indx_keyAtLabel(entityLabel$);
+					    if(entityKey$==null){
+					    	byte[] ba=Base64.decodeBase64(entityLabel$);
+							entityLabel$=new String(ba,"UTF-8");
+							entityKey$=entigrator.indx_keyAtLabel(entityLabel$);
+					    }
+						}
+				}else{
+					entityLabel$=entigrator.indx_getLabel(entityKey$);
+					if(debug)
+						System.out.println("JEntityStructurePanel:found label="+entityLabel$+" at key="+entityKey$);
+				}
+				
+				///
 				String webHome$=locator.getProperty(WContext.WEB_HOME);
 				String showContainers=locator.getProperty(JEntityEditor.SHOW_CONTAINERS);
 			//	String webRequester$=locator.getProperty(WContext.WEB_REQUESTER);

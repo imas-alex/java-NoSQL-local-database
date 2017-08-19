@@ -35,7 +35,6 @@ import gdt.data.grain.Support;
 import gdt.data.store.Entigrator;
 import gdt.jgui.base.JBaseNavigator;
 import gdt.jgui.base.JBasesPanel;
-import gdt.jgui.entity.JEntitiesPanel;
 import gdt.jgui.entity.bookmark.JBookmarksEditor;
 import gdt.jgui.entity.extension.JExtensionRenderer;
 import gdt.jgui.entity.fields.JFieldsEditor;
@@ -49,7 +48,6 @@ import gdt.jgui.entity.webset.JWeblinkEditor;
 
 import java.awt.Color;
 import java.awt.Graphics2D;
-import java.awt.Image;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -125,15 +123,26 @@ public class JConsoleHandler {
     		   System.out.println("ConsoleHandler:execute:cannot instantiate "+handlerClass$);
     	       return null;
     	   }
+    	   if(debug)
+    		   System.out.println("JConsoleHandler:obj= "+obj.getClass().getName());
+    	       
     	   if (obj instanceof JContext){
-    	    	 console.putContext((JContext)obj,locator$);
-    	    	
+    		   if(debug)
+	    		   System.out.println("JConsoleHandler:obj is JContext");
+	    	 
+    		   console.putContext((JContext)obj,locator$);
+    		   if(debug)
+	    		   System.out.println("JConsoleHandler:put context");
+	    	 	   
     	    	   if(method$!=null){
     	    		   if(debug)
     	    			   System.out.println("ConsoleHandler:execute:method="+method$+" class="+obj.getClass().getName()+" locator="+locator$); 
    	    	    	Method method = obj.getClass().getDeclaredMethod(method$,JMainConsole.class,String.class);
    	    	    	method.invoke((JContext)obj,console, locator$);
    	    	    	  }
+    	    	   if(debug)
+    	    		   System.out.println("JConsoleHandler:execute:return locator= "+locator$);
+    	    	   
       	    	   return locator$;
     	    }else{
     	    	if(debug)
@@ -284,7 +293,7 @@ public static JFacetRenderer getExtensionFacetRenderer(Entigrator entigrator,Str
 			for(Core aCa:ca)
 				     if(aCa.name.equals(fhandler$)){
 				   if(debug) 	 
-				    System.out.println("ConsoleHandler:getFacetRenderer:aca.value="+aCa.value);	 
+				    System.out.println("JConsoleHandler:getFacetRenderer:aca.value="+aCa.value);	 
 				    JFacetOpenItem facetOpenItem=(JFacetOpenItem)getHandlerInstance(entigrator,aCa.value,extension$);
 					String facetRenderer$= facetOpenItem.getFacetRenderer();
 					if(debug)
@@ -623,6 +632,7 @@ try{
 			 String core$=locator.getProperty(Locator.LOCATOR_ICON_CORE);
 			 String field$=locator.getProperty(Locator.LOCATOR_ICON_FIELD);
 			 Core core=entity.getElementItem(element$, core$);
+			 entigrator.clearCache();
 			 if(Locator.LOCATOR_ICON_FIELD_VALUE.equals(field$))
 				 return core.value;
 			 if(Locator.LOCATOR_ICON_FIELD_TYPE.equals(field$))
@@ -641,7 +651,9 @@ try{
 		 return null;
 	 }catch(Exception e){
 		 Logger.getLogger(JConsoleHandler.class.getName()).severe(e.toString());
+		 entigrator.clearCache();	 
 	 }
+
 	 return null;
 }
 }

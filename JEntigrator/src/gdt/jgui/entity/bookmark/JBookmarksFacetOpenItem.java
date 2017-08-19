@@ -189,7 +189,7 @@ static boolean debug=false;
 			entity.removeElementItem("fhandler", BookmarksHandler.class.getName());
 			 entity.removeElementItem("jfacet", BookmarksHandler.class.getName());
 			 entity.removeElement("jbookmark");
-			entigrator.save(entity);
+			entigrator.ent_replace(entity);
 			entigrator.ent_takeOffProperty(entity, "bookmarks");
 		}catch(Exception e){
 		Logger.getLogger(getClass().getName()).severe(e.toString());

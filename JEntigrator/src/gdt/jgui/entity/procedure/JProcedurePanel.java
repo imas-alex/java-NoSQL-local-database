@@ -439,7 +439,7 @@ Entigrator entigrator;
 		    	String procedureHandler$=ProcedureHandler.class.getName();
 		    	if(entity.getElementItem("fhandler", procedureHandler$)!=null){
 					entity.putElementItem("jfacet", new Core(null,procedureHandler$,JProcedureFacetOpenItem.class.getName()));
-					entigrator.save(entity);
+					entigrator.ent_replace(entity);
 				}
 		    }catch(Exception e){
 		    	Logger.getLogger(getClass().getName()).severe(e.toString());
@@ -497,7 +497,7 @@ Entigrator entigrator;
 				procedure=entigrator.ent_assignProperty(procedure, "procedure", procedure.getProperty("label"));
 				procedure=entigrator.ent_assignProperty(procedure, "folder", procedure.getProperty("label"));
 				procedure.putAttribute(new Core(null,"icon","procedure.png"));
-				entigrator.save(procedure);
+				entigrator.ent_replace(procedure);
 				File folderHome=new File(entihome$+"/"+procedure.getKey());
 				if(!folderHome.exists())
 				    folderHome.mkdir();

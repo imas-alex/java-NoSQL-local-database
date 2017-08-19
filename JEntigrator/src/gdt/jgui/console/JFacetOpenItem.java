@@ -162,4 +162,7 @@ public abstract FacetHandler getFacetHandler();
  * @return the popup menu.
  */
 public abstract JPopupMenu getPopupMenu(String digestLocator$);
+public void setConsole(JMainConsole console){
+	this.console=console;
+}
 }

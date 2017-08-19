@@ -140,7 +140,7 @@ public void response(JMainConsole console, String locator$) {
 				if(FIELD_VALUE.equals(selectionType$))
 				     field.value=text$;
 				entity.putElementItem("field", field);
-				entigrator.save(entity);
+				entigrator.ent_replace(entity);
 			}
 			JEntityDigestDisplay edd=new JEntityDigestDisplay();
 			String eddLocator$=edd.getLocator();
@@ -170,8 +170,11 @@ public boolean isRemovable() {
 	try{
 		entihome$=Locator.getProperty(locator$, Entigrator.ENTIHOME);
 		entityKey$=Locator.getProperty(locator$,EntityHandler.ENTITY_KEY);
+		
+		if(debug)
+			System.out.println("JFieldsfacetOpenItem:isRemovable:entihome="+entihome$+" entity key="+entityKey$);
 		Entigrator entigrator=console.getEntigrator(entihome$);
-		 Sack entity =entigrator.getEntityAtKey(entityKey$);
+		Sack entity =entigrator.getEntityAtKey(entityKey$);
 		 if("fields".equals(entity.getProperty("entity")))
 			 return false;
 		 return true;
@@ -209,7 +212,7 @@ public void removeFacet() {
 		 entity.removeElement("field");
 		 entity.removeElementItem("fhandler", FieldsHandler.class.getName());
 		 entity.removeElementItem("jfacet", FieldsHandler.class.getName());
-		 entigrator.save(entity);
+		 entigrator.ent_replace(entity);
 		 entigrator.ent_takeOffProperty(entity, "fields");
 	}catch(Exception e){
 		LOGGER.severe(e.toString());
@@ -429,12 +432,14 @@ public String getWebView(Entigrator entigrator, String locator$) {
 	try{
 		Properties locator=Locator.toProperties(locator$);
 		String webHome$=locator.getProperty(WContext.WEB_HOME);
+		String entityKey$=locator.getProperty(EntityHandler.ENTITY_KEY);
 		String entityLabel$=locator.getProperty(EntityHandler.ENTITY_LABEL);
+		
 		String webRequester$=locator.getProperty(WContext.WEB_REQUESTER);
 		String fieldsFacet$=locator.getProperty(FIELDS_FACET);
 		if(debug)
 		System.out.println("JFieldsFacetOpenItem:web home="+webHome$+ " web requester="+webRequester$);
-		 entityKey$=entigrator.indx_keyAtLabel(entityLabel$);
+		//entityKey$=entigrator.indx_keyAtLabel(entityLabel$);
 		    Sack entity=entigrator.getEntityAtKey(entityKey$);
 	        Core[]	ca=entity.elementGet("field");
 		StringBuffer sb=new StringBuffer();

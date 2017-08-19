@@ -246,7 +246,9 @@ public class Entigrator {
   	 *  @param sack the entity.
   	 * @return true if success false otherwise.
   	 */
+    
     public synchronized boolean save(Sack sack){
+    	try{
     	if (sack == null) {
     		if(debug)
     		System.out.println("Entigrator:save:sack is null");
@@ -256,13 +258,20 @@ public class Entigrator {
     	 String entityBase$ =ENTITY_BASE; 
       	 String base$ = sack.getAttributeAt("residence.base");
     	 if(entityBase$.equals(base$)){
-    		// System.out.println("Entigrator:save:put in cache:"+sack.getKey());
-    	     entitiesCache.put(sack);
+    		 ent_replace(sack);
     	     return true;
     	 }else{
-    	    return saveNative(sack);
+    		 //
+    		 String path$ =entihome$+"/" + base$ + "/data/" +sack.getKey();
+        	   sack.saveXML(path$);
+        	   return true;
     	 }
+    	}catch(Exception e){
+    		LOGGER.severe(e.toString());
+    		return false;
+    	}
     }
+    /*
     public boolean replace(Sack sack){
     	if (sack == null) 
             return false;
@@ -271,14 +280,18 @@ public class Entigrator {
     		 return false;
     	sack.putAttribute(new Core(null,SAVE_ID,Identity.key()));
     	entitiesCache.put(sack);
-    	return storeAdapter.ent_save(this, sack);
+    	//return storeAdapter.ent_save(this, sack);
+    	storeAdapter.entRunReplace(sack);
     	//return saveNative(sack);
+    	return true;
     }
-    /**
+    */
+    /*
   	 * Store an entity on the disk.
   	 *  @param sack the entity.
   	 * @return true if success false otherwise.
   	 */ 
+    /*
     public synchronized boolean saveNative(Sack sack) {
         if (sack == null) {
            // System.out.println("Entigrator:save:sack is null");
@@ -303,19 +316,14 @@ public class Entigrator {
         	   sack.saveXML(path$);
         	   notifyAll();
         	   return true;
-    	/*   
-       }else
-    		   notifyAll();
-    		   return false;
-    		   */
+       
        }
-      
-       return storeAdapter.ent_save(this, sack);
         } catch (Exception e) {
         	LOGGER.severe("saveNative:"+e.toString());
         }
         return false;
     }
+    */
     /**
   	 * Check entity file.
   	 *  @param entityKey$ key of the entity
@@ -555,6 +563,7 @@ public String[] indx_listEntities(Properties criteria) {
      * @return entity label.
      */ 
     public String indx_getLabel(String key$) {
+    	
     	return storeAdapter.indx_getLabel(key$);
     	/*
     	try{
@@ -741,6 +750,14 @@ public String[] indx_listEntities(Properties criteria) {
             LOGGER.severe(":indx_listEntities:empty map=" + map$ + " at value=" + propertyValue$ + " in property=" + propertyName$);
             return null;
         }
+    }
+    /**
+     * Sort keys of entities by  labels. 
+     *  @param keys input keys.
+     * @return array of sorted keys.
+     */ 
+    public String[] indx_sortKeysAtlabel(String[] keys) {
+    	return storeAdapter.indx_sortKeysAtlabel(keys);
     }
     /**
      * Get keys of entities having certain property name assigned. 
@@ -959,7 +976,7 @@ public String[] indx_listEntities(Properties criteria) {
             }
 
             if (modified)
-                save(entity);
+                ent_replace(entity);
             else
                 return entity;
         }
@@ -1065,7 +1082,7 @@ public Sack ent_makeEnsemble(Sack entity){
 				sl.add(s);
 	for(String s:sl)
 		entity.putElementItem("ensemble",new Core(null,s,null));
-	replace (entity);
+	ent_replace (entity);
 	}catch(Exception e){
 		LOGGER.severe(e.toString());
 	}
@@ -1098,14 +1115,18 @@ public Sack ent_reindex(Sack entity) {
             LOGGER.severe(":ent_reindex:no properties in entity=" + entity.getKey());
             return null;
         }
+        System.out.println("-reindex 1 ---------------------");
+        entity.print();
         String label$=null;
         String key$=null;
-        Sack candidate;
+    //    Sack candidate;
         for (Core aCa : ca) {
         	  if(debug)
         	        System.out.println("Entigrator:ent_reindex:assign property="+aCa.value);
         	     
-        	if (aCa.type != null && aCa.value != null&&!"label".equals(aCa.type)) {
+        	  System.out.println("-reindex 1.0 ------------------------type="+aCa.type+" value="+aCa.value);
+              entity.print();
+        	  if (aCa.type != null && aCa.value != null&&!"label".equals(aCa.type)) {
             	entity = ent_assignProperty(entity, aCa.type, aCa.value);
             }
             if ("label".equals(aCa.type)){
@@ -1115,22 +1136,24 @@ public Sack ent_reindex(Sack entity) {
             }
             if(debug)
     	        System.out.println("Entigrator:ent_reindex:finish assign property="+aCa.value);
-    	 
+            System.out.println("-reindex 1.1 ------------------------");
+            entity.print();
         }
+        System.out.println("-reindex 2 ------------------------");
+        entity.print();
         if(debug)
 	        System.out.println("Entigrator:ent_reindex:label="+label$);
-	 
+        if(entity.getProperty("entity")!=null)
+            entity=ent_assignProperty(entity, entity.getProperty("entity"), entity.getProperty("label"));
+       
         if(label$==null)
         	label$=entity.getKey();
+       
         key$=indx_keyAtLabel(label$);
-        if(debug)
-	        System.out.println("Entigrator:ent_reindex:found key=label="+label$);
         if(key$!=null&&(!entity.getKey().equals(key$))){
-        	candidate=getMember("entity.base",key$);
-        	if(candidate!=null)
-               if(!entity.getKey().equals(key$))
         	      label$=label$+entity.getKey().substring(0, 4);
         }
+        
        entity=ent_assignLabel(entity, label$);
         //entity.putElementItem("property", new Core("label",entity.getKey(),label$));
        if(debug)
@@ -1148,20 +1171,29 @@ public Sack ent_reindex(Sack entity) {
             header.setPath(header$);
             header.putElementItem("label", new Core(entity.getAttributeAt("icon"),entity.getProperty("label"),entity.getKey()));
             header.putElementItem("key", new Core(entity.getProperty("label"),entity.getKey(),entity.getProperty("entity")));
-            header.putAttribute(new Core(null,TIMESTAMP,String.valueOf(System.currentTimeMillis())));
-            header.saveXML(header$);
+            
+            //header.putAttribute(new Core(null,SAVE_ID,Identity.key()));
+            //header.saveXML(header$);
+           }else{
+        	   header=Sack.parseXML(this, header$);
            }
+           header.putAttribute(new Core(null,TIMESTAMP,String.valueOf(System.currentTimeMillis())));
+           header.putAttribute(new Core(null,SAVE_ID,Identity.key()));
+           header.saveXML(header$);
+           
         }catch(Exception e){
         	//System.out.println("Entigrator:ent_reindex:"+e.toString());
         	LOGGER.severe(":ent_reindex:"+e.toString());
+        	return null;
         }
-        entity.putAttribute(new Core(null,"key",entity.getKey()));
-        replace(entity);
-        if(entity.getProperty("entity")!=null)
-            entity=ent_assignProperty(entity, entity.getProperty("entity"), entity.getProperty("label"));
+        
+      //  entity.putAttribute(new Core(null,"key",entity.getKey()));
+        ent_replace(entity);
+       
         entity=col_clearComponents(entity);
         entity=col_updateContainers(entity);
-        replace(entity);
+       // ent_replace(entity);
+        
         return entity;
     }
 
@@ -1231,7 +1263,7 @@ private boolean ent_propertyAlreadyAssigned(Sack entity, String propertyName$, S
         }
     	//System.out.println("Entigrator:ent_assignProperty: entity="+entity.getProperty("label")+" property="+propertyName$+" value="+propertyValue$);
          if (ent_propertyAlreadyAssigned(entity, propertyName$, propertyValue$)){
-        	// System.out.println("Entigrator:ent_assignProperty:already assigned");
+        	 System.out.println("Entigrator:ent_assignProperty:already assigned");
             return entity;
         }
         if("label".equals(propertyName$)){
@@ -1250,125 +1282,153 @@ private boolean ent_propertyAlreadyAssigned(Sack entity, String propertyName$, S
                         return entity;
                     case INDX_NO_ENTITY_ENTRY:
                         ent_assignMapEntry(entity, propertyName$, propertyValue$);
-                        return get(entity);
+                        //return get(entity);
+                        return entity;
                     case INDX_NO_MAP_ENTRY:
                         ent_assignMapEntry(entity, propertyName$, propertyValue$);
-                        return get(entity);
+                        //return get(entity);
+                        return entity;
                     case INDX_NO_MAP_SACK:
                         ent_assignMapEntry(entity, propertyName$, propertyValue$);
-                        return get(entity);
+                        //return get(entity);
+                        return entity;
                     case INDX_NO_PROP_ENTRY:
                         ent_assignMapEntry(entity, propertyName$, propertyValue$);
-                        return get(entity);
+                        //return get(entity);
+                        return entity;
                     case INDX_NO_PROP_SACK:
                         ent_assignMapEntry(entity, propertyName$, propertyValue$);
-                        return get(entity);
+                        return entity;
+                        //return get(entity);
                     case INDX_ENTITY_FALSE_MAP:
                         ent_assignMapEntry(entity, propertyName$, propertyValue$);
-                        ent_deleteWrongProperties(entity);
-                        return get(entity);
+                        entity=ent_deleteWrongProperties(entity);
+                        //return get(entity);
+                        
                 }
             case ENT_MULTIPLE_VALUES_OK:
                 switch (indxStatus) {
                     case INDX_OK:
-                        ent_deleteWrongProperties(entity);
-                        return get(entity);
+                        entity=ent_deleteWrongProperties(entity);
+                        //return get(entity);
+                        return entity;
                     case INDX_NO_ENTITY_ENTRY:
                         ent_assignMapEntry(entity, propertyName$, propertyValue$);
-                        ent_deleteWrongProperties(entity);
-                        return get(entity);
+                        entity=ent_deleteWrongProperties(entity);
+                        //return get(entity);
+                        return entity;
                     case INDX_NO_MAP_ENTRY:
                         ent_assignMapEntry(entity, propertyName$, propertyValue$);
-                        ent_deleteWrongProperties(entity);
-                        return get(entity);
+                        entity=ent_deleteWrongProperties(entity);
+                        //return get(entity);
+                        return entity;
                     case INDX_NO_MAP_SACK:
                         ent_assignMapEntry(entity, propertyName$, propertyValue$);
-                        ent_deleteWrongProperties(entity);
-                        return get(entity);
+                        entity=ent_deleteWrongProperties(entity);
+                        //return get(entity);
+                        return entity;
                     case INDX_NO_PROP_ENTRY:
                         ent_assignMapEntry(entity, propertyName$, propertyValue$);
-                        ent_deleteWrongProperties(entity);
-                        return get(entity);
+                        entity=ent_deleteWrongProperties(entity);
+                        //return get(entity);
+                        return entity;
                     case INDX_NO_PROP_SACK:
                         ent_assignMapEntry(entity, propertyName$, propertyValue$);
-                        ent_deleteWrongProperties(entity);
-                        return get(entity);
+                        entity=ent_deleteWrongProperties(entity);
+                        //return get(entity);
+                        return entity;
                     case INDX_ENTITY_FALSE_MAP:
                         ent_assignMapEntry(entity, propertyName$, propertyValue$);
-                        ent_deleteWrongProperties(entity);
-                        return get(entity);
+                        entity=ent_deleteWrongProperties(entity);
+                        //return get(entity);
+                        return entity;
                 }
             case ENT_MULTIPLE_VALUES_BAD:
                 switch (indxStatus) {
                     case INDX_OK:
-                        ent_assignPropertyEntry(entity, propertyName$, propertyValue$);
-                        ent_deleteWrongProperties(entity);
-                        return get(entity);
+                        entity=ent_assignPropertyEntry(entity, propertyName$, propertyValue$);
+                        entity=ent_deleteWrongProperties(entity);
+                        //return get(entity);
+                        return entity;
                     case INDX_NO_ENTITY_ENTRY:
-                        ent_assignPropertyEntry(entity, propertyName$, propertyValue$);
+                        entity=ent_assignPropertyEntry(entity, propertyName$, propertyValue$);
                         ent_assignMapEntry(entity, propertyName$, propertyValue$);
-                        ent_deleteWrongProperties(entity);
-                        return get(entity);
+                        entity=ent_deleteWrongProperties(entity);
+                        //return get(entity);
+                        return entity;
                     case INDX_NO_MAP_ENTRY:
-                        ent_assignPropertyEntry(entity, propertyName$, propertyValue$);
+                        entity=ent_assignPropertyEntry(entity, propertyName$, propertyValue$);
                         ent_assignMapEntry(entity, propertyName$, propertyValue$);
-                        ent_deleteWrongProperties(entity);
-                        return get(entity);
+                        entity=ent_deleteWrongProperties(entity);
+                        //return get(entity);
+                        return entity;
                     case INDX_NO_MAP_SACK:
-                        ent_assignPropertyEntry(entity, propertyName$, propertyValue$);
+                        entity=ent_assignPropertyEntry(entity, propertyName$, propertyValue$);
                         ent_assignMapEntry(entity, propertyName$, propertyValue$);
-                        ent_deleteWrongProperties(entity);
-                        return get(entity);
+                        entity=ent_deleteWrongProperties(entity);
+                        //return get(entity);
+                        return entity;
                     case INDX_NO_PROP_ENTRY:
-                        ent_assignPropertyEntry(entity, propertyName$, propertyValue$);
+                        entity=ent_assignPropertyEntry(entity, propertyName$, propertyValue$);
                         ent_assignMapEntry(entity, propertyName$, propertyValue$);
-                        ent_deleteWrongProperties(entity);
-                        return get(entity);
+                        entity=ent_deleteWrongProperties(entity);
+                        //return get(entity);
+                        return entity;
                     case INDX_NO_PROP_SACK:
-                        ent_assignPropertyEntry(entity, propertyName$, propertyValue$);
+                        entity=ent_assignPropertyEntry(entity, propertyName$, propertyValue$);
                         ent_assignMapEntry(entity, propertyName$, propertyValue$);
-                        ent_deleteWrongProperties(entity);
-                        return get(entity);
+                        entity=ent_deleteWrongProperties(entity);
+                        //return get(entity);
+                        return entity;
                     case INDX_ENTITY_FALSE_MAP:
-                        ent_assignPropertyEntry(entity, propertyName$, propertyValue$);
+                        entity=ent_assignPropertyEntry(entity, propertyName$, propertyValue$);
                         ent_assignMapEntry(entity, propertyName$, propertyValue$);
-                        ent_deleteWrongProperties(entity);
-                        return get(entity);
+                        entity=ent_deleteWrongProperties(entity);
+                        //return get(entity);
+                        return entity;
                 }
             case ENT_PROP_NOT_ASSIGNED:
                 switch (indxStatus) {
                     case INDX_OK:
-                        ent_assignPropertyEntry(entity, propertyName$, propertyValue$);
-                        ent_deleteWrongProperties(entity);
-                        return get(entity);
+                        entity=ent_assignPropertyEntry(entity, propertyName$, propertyValue$);
+                        entity=ent_deleteWrongProperties(entity);
+                        //return get(entity);
+                        return entity;
                     case INDX_NO_ENTITY_ENTRY:
-                        ent_assignPropertyEntry(entity, propertyName$, propertyValue$);
+                        entity=ent_assignPropertyEntry(entity, propertyName$, propertyValue$);
                         ent_assignMapEntry(entity, propertyName$, propertyValue$);
-                        return get(entity);
+                        //return get(entity);
+                        return entity;
                     case INDX_NO_MAP_ENTRY:
-                        ent_assignPropertyEntry(entity, propertyName$, propertyValue$);
+                        entity=ent_assignPropertyEntry(entity, propertyName$, propertyValue$);
                         ent_assignMapEntry(entity, propertyName$, propertyValue$);
-                        return get(entity);
+                        //return get(entity);
+                        return entity;
                     case INDX_NO_MAP_SACK:
-                        ent_assignPropertyEntry(entity, propertyName$, propertyValue$);
+                        entity=ent_assignPropertyEntry(entity, propertyName$, propertyValue$);
                         ent_assignMapEntry(entity, propertyName$, propertyValue$);
-                        return get(entity);
+                        //return get(entity);
+                        return entity;
                     case INDX_NO_PROP_ENTRY:
-                        ent_assignPropertyEntry(entity, propertyName$, propertyValue$);
+                        entity=ent_assignPropertyEntry(entity, propertyName$, propertyValue$);
                         ent_assignMapEntry(entity, propertyName$, propertyValue$);
-                        return get(entity);
+                       // return get(entity);
+                        return entity;
                     case INDX_NO_PROP_SACK:
-                        ent_assignPropertyEntry(entity, propertyName$, propertyValue$);
+                        entity=ent_assignPropertyEntry(entity, propertyName$, propertyValue$);
                         ent_assignMapEntry(entity, propertyName$, propertyValue$);
-                        return get(entity);
+                        //return get(entity);
+                        return entity;
                     case INDX_ENTITY_FALSE_MAP:
                     	
-                        ent_assignPropertyEntry(entity, propertyName$, propertyValue$);
+                        entity=ent_assignPropertyEntry(entity, propertyName$, propertyValue$);
                         ent_assignMapEntry(entity, propertyName$, propertyValue$);
-                        return get(entity);
+                        //return get(entity);
+                        return entity;
                 }
         }
-        return get(entity);
+        //return get(entity);
+        return entity;
     }
     /**
      * Clone an entity. 
@@ -1416,7 +1476,7 @@ private boolean ent_propertyAlreadyAssigned(Sack entity, String propertyName$, S
         }
        // System.out.println("Entigrator:ent_clone:clone");
        // entity.print();
-          save(entity);
+          ent_replace(entity);
           ca=entity.elementGet("property");
         for(Core aCa:ca){
         	if("template".equals(aCa.type)){
@@ -1427,18 +1487,18 @@ private boolean ent_propertyAlreadyAssigned(Sack entity, String propertyName$, S
         	else
         	  entity=ent_assignProperty(entity, aCa.type, aCa.value);	
         }
-        save(entity);
+        ent_replace(entity);
         return entity;
     }
 
-    private void ent_deleteWrongProperties(Sack entity) {
+    private Sack ent_deleteWrongProperties(Sack entity) {
         if (entity == null) {
         	LOGGER.severe(":ent_deleteWrongProperties:null argument");
-        	return;
+        	return null;
         }
         Core[] ca = entity.elementGet("wrong.props");
         if (ca == null)
-            return;
+            return entity;
         Sack map ;
         for (Core aCa : ca) {
             map = indx_getPropertyMap(aCa.type, aCa.value);
@@ -1448,14 +1508,14 @@ private boolean ent_propertyAlreadyAssigned(Sack entity, String propertyName$, S
             save(map);
             entity.removeElementItem("wrong.props", aCa.name);
         }
-        save(entity);
-        ent_reindex(entity);
+        return entity;
+       
     }
-private void ent_assignPropertyEntry(Sack entity, String propertyName$, String propertyValue$) {
+private Sack ent_assignPropertyEntry(Sack entity, String propertyName$, String propertyValue$) {
        
 	if (entity == null || propertyName$ == null || propertyValue$ == null) {
          	LOGGER.severe(":ent_assignPropertyEntry:null argument");
-        	return;
+        	return entity;
         }
 	//System.out.println("Entigrator:ent_assignPropertyEntry.entity="+entity.getProperty("label")+" property name="+propertyName$+" value="+propertyValue$);
          if ("label".equals(propertyName$))
@@ -1463,12 +1523,13 @@ private void ent_assignPropertyEntry(Sack entity, String propertyName$, String p
         Sack map = indx_getPropertyMap(propertyName$, propertyValue$);
         if (map == null) {
         	LOGGER.severe(":ent_assignPropertyEntry:cannot get map at property=" + propertyName$ + " value=" + propertyValue$);
-        	return;
+        	return entity;
         }
         //System.out.println("Entigrator:ent_assignPropertyEntry: map="+map.getKey());
         entity.putElementItem("property", new Core(propertyName$, map.getKey(), propertyValue$));
         entity.putAttribute(new Core(null,SAVE_ID,Identity.key()));
-        save(entity);
+        //ent_replace(entity);
+        return entity;
     }
 /**
  * Assign icon file to the entity. 
@@ -1567,7 +1628,7 @@ private int prp_detectAtEntity(Sack entity, String propertyName$, String propert
             if (propertyValue$.equals(core.value)) {
                 if ("label".equals(propertyName$)) {
                     entity.putAttribute(new Core("String", "alias", propertyValue$));
-                    save(entity);
+                    ent_replace(entity);
                 }
                 if (pa.length == 1) {
                     if (!entity.existsElement("wrong.props"))
@@ -1621,7 +1682,7 @@ public Sack col_clearComponents(Sack container){
 		}
 		ca=cl.toArray(new Core[0]);
 		container.elementReplace("component", ca);
-		replace(container);
+		ent_replace(container);
 		return container;
 	}catch(Exception e){
 		LOGGER.severe(":col_clearComponents"+e.toString());
@@ -1646,13 +1707,13 @@ public Sack col_updateContainers(Sack component){
 				container=getEntityAtKey(aCa.value);
 				if(container!=null){
 					container.putElementItem("component", new Core(componentLabel$,aCa.name,componentKey$));
-					save(container);
+					ent_replace(container);
 				}else{
 					component.removeElementItem("container", aCa.name);
 				}
 			
 		}
-       replace(component);
+		 ent_replace(component);
 		
 	}catch(Exception e){
 		LOGGER.severe(":col_clearComponents"+e.toString());
@@ -1706,10 +1767,10 @@ public String col_addComponent(Sack container, Sack component) {
         container.putElementItem("component.type", new Core(component.getProperty("entity"), key$, component.getProperty("component")));
        if(component.existsElement("ensemble"))
     	   component.removeElement("ensemble");
-        replace(component);
+        ent_replace(component);
         if(container.existsElement("ensemble"))
      	   container.removeElement("ensemble");
-       replace(container);
+       ent_replace(container);
         return key$;
     }
 
@@ -2124,7 +2185,7 @@ private boolean col_existsContainer(Sack container, Sack component) {
                         if (entity == null)
                             continue;
                         entity.removeElementItem("property", map$);
-                        save(entity);
+                        ent_replace(entity);
                     }
                 }
             }
@@ -2191,8 +2252,8 @@ private boolean col_existsContainer(Sack container, Sack component) {
                     container.removeElementItem("component", aCa.name);
                     container.removeElementItem("component.type", aCa.name);
                 }
-        save(component);
-        save(container);
+        ent_replace(component);
+        ent_replace(container);
         return container;
     }
     /**
@@ -2214,8 +2275,9 @@ private boolean col_existsContainer(Sack container, Sack component) {
         ent_assignLabel(entity, label$);
         entity.putElementItem("property", new Core("entity",Identity.key(),type$));
         //saveNative(entity);
-        replace(entity);
-        ent_reindex(entity);
+        //replace(entity);
+        ent_replace(entity);
+      //  ent_reindex(entity);
         return entity;
     }
     /**
@@ -2237,7 +2299,8 @@ private boolean col_existsContainer(Sack container, Sack component) {
         entity.createElement("property");
         entity.putElementItem("property", new Core("label",entity.getKey(),label$));
         entity.putElementItem("property", new Core("entity",Identity.key(),type$));
-        saveNative(entity);
+        //saveNative(entity);
+        ent_replace(entity);
         ent_reindex(entity);
         return entity;
     }
@@ -2372,7 +2435,7 @@ public String[] ent_listContainers(Sack entity) {
             s.push(aCa.value);
         }
         if (modified)
-            save(entity);
+            ent_replace(entity);
         int cnt = s.size();
         if (cnt < 1) {
             //LOGGER.info(":ent_listContainers:empty 'container' element in entity=" + entity.getProperty("label"));
@@ -2784,19 +2847,39 @@ public boolean store_isSelfLocked(){
 	}	
 */
 public boolean ent_existsAtKey(String entityKey$){
-	return storeAdapter.ent_existsAtKey(entityKey$);
+	return storeAdapter.entExistsAtKey(entityKey$);
 }
 public boolean ent_existsAtLabel(String label$){
-	return storeAdapter.ent_existsAtLabel(label$);
+	return storeAdapter.entExistsAtLabel(label$);
+}
+public boolean ent_canReplace(Sack entity){
+	return storeAdapter.entCanReplace(entity);
+}
+public boolean ent_isBusy(Entigrator entigrator,String entityKey$){
+	return storeAdapter.entIsBusy(entityKey$);
+}
+public boolean ent_release(String entityKey$){
+	return storeAdapter.entRelease( entityKey$);
+}
+public void ent_replace(Sack entity){
+	
+	storeAdapter.entRunReplace(entity);
+    entitiesCache.put(entity);	
+}
+public void ent_setBusy(Sack entity){
+	storeAdapter.entSetBusy(entity);
+	}
+public boolean ent_existsAtType(String type$){
+	return storeAdapter.ent_existsAtType(type$);
 }
 public Sack ent_getAtKey(String entityKey$){
 	return storeAdapter.ent_getAtKey(entityKey$);
 }
 public Sack ent_getAtlabel(String label$){
-	return storeAdapter.ent_getAtLabel(label$);
+	return storeAdapter.entGetAtLabel(label$);
 	}
-public boolean ent_outdated(Sack entity){
-	return storeAdapter.ent_outdated(entity);
+public boolean ent_entIsObsolete(Sack entity){
+	return storeAdapter.entIsObsolete(entity);
 	}
 public String  store_saveId(){
 	 if(debug)
@@ -2882,7 +2965,7 @@ public void clearCache(){
 public boolean store_outdated(){
 	 if(debug)
 		 System.out.println("Entigrator:store_outdated");
-	return storeAdapter.store_outdated();
+	return storeAdapter.qmOutdated();
 }
 public void store_refresh(){
 	storeAdapter.store_refresh();
