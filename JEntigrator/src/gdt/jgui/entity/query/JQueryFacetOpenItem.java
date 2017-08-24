@@ -228,7 +228,7 @@ public String getWebView(Entigrator entigrator, String locator$) {
 		String webHome$=locator.getProperty(WContext.WEB_HOME);
 		String entityLabel$=locator.getProperty(EntityHandler.ENTITY_LABEL);
 		String webRequester$=locator.getProperty(WContext.WEB_REQUESTER);
-		if(debug)
+		//if(debug)
 		System.out.println("JQueryFacetOpenItem:locator="+locator$);
 		entityKey$=entigrator.indx_keyAtLabel(entityLabel$);
 		StringBuffer sb=new StringBuffer();
