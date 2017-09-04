@@ -279,7 +279,7 @@ public static void refresh(Entigrator entigrator,String entityKey$){
 				}
 			}
 		}
-		entigrator.replace(detail);
+		entigrator.ent_alter(detail);
 	}catch(Exception e){
 		Logger.getLogger(BondDetailHandler.class.getName()).severe(e.toString());	
 	}

@@ -2,7 +2,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>com.github.imas-alex</groupId>
   <artifactId>Graph</artifactId>
-  <version>0.0.703-SNAPSHOT</version>
+  <version>0.0.708-SNAPSHOT</version>
    <name>Graph</name>
   <description>The graph extension for the entigrator application</description>
   <url>https://github.com/imas-alex/java-NoSQL-local-database</url>
@@ -22,7 +22,7 @@
 		<url>https://github.com/imas-alex/Graph</url>
 		<connection>scm:git:git://github.com/imas-alex/java-NoSQL-local-database.git</connection>
 		<developerConnection>scm:git:git@github.com:imas-alex/java-NoSQL-local-database.git</developerConnection>
-	  <tag>Graph-0.0.12</tag>
+	  <tag>Graph-0.0.707</tag>
   </scm>
 	<developers>
 		<developer>
@@ -145,13 +145,11 @@
    <dependency>
   <groupId>com.github.imas-alex</groupId>
   <artifactId>JEntigrator</artifactId>
-  <version>0.0.6</version>
+  <version>0.0.913</version>
+   <scope>system</scope>
+    <systemPath>${basedir}/../JEntigrator/target/JEntigrator-0.0.913-jar-with-dependencies.jar </systemPath>
    </dependency>
-  	<dependency>
-	  	<groupId>commons-codec</groupId>
-  		<artifactId>commons-codec</artifactId>
-  		<version>1.10</version>
-  	</dependency>
+  
 		<dependency>
 	  	<groupId>commons-codec</groupId>
   		<artifactId>commons-codec</artifactId>

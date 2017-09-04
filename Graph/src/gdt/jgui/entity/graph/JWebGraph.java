@@ -30,12 +30,13 @@ import gdt.jgui.console.JMainConsole;
 import gdt.jgui.console.JRequester;
 import gdt.jgui.console.WContext;
 import gdt.jgui.console.WUtils;
+import gdt.jgui.entity.JEntitiesPanel;
 import gdt.jgui.entity.JEntityFacetPanel;
 import gdt.jgui.entity.bonddetail.JBondDetailFacetOpenItem;
 import gdt.jgui.entity.edge.JBondsPanel;
 
 public class JWebGraph implements WContext {
-static boolean debug=false;
+static boolean debug=true;
 //private JMainConsole console;
 private String entihome$;
 private String entityKey$;
@@ -54,7 +55,29 @@ public JWebGraph(){
 			//boolean initSelector=false;
 			Properties locator=Locator.toProperties(locator$);
 			String webHome$=locator.getProperty(WContext.WEB_HOME);
-			String entityLabel$=locator.getProperty(EntityHandler.ENTITY_LABEL);
+			//String entityLabel$=locator.getProperty(EntityHandler.ENTITY_LABEL);
+			String entityKey$=locator.getProperty(EntityHandler.ENTITY_KEY);
+			String entityLabel$=null;
+			if(entityKey$==null){
+				String encodedLabel$=locator.getProperty(JEntitiesPanel.ENCODED_LABEL);
+				if(encodedLabel$!=null){
+						byte[] ba=Base64.decodeBase64(encodedLabel$);
+						entityLabel$=new String(ba,"UTF-8");
+					}else{
+				    entityLabel$=locator.getProperty(EntityHandler.ENTITY_LABEL);
+				    entityKey$=entigrator.indx_keyAtLabel(entityLabel$);
+				    if(entityKey$==null){
+				    	byte[] ba=Base64.decodeBase64(entityLabel$);
+						entityLabel$=new String(ba,"UTF-8");
+						entityKey$=entigrator.indx_keyAtLabel(entityLabel$);
+				    }
+					}
+			}else
+				entityLabel$=entigrator.indx_getLabel(entityKey$);
+		
+			
+			//
+			String category$=entigrator.getEntityType(entityKey$);
 			String edgeLabel$=locator.getProperty(JBondsPanel.EDGE_LABEL);
 			String webRequester$=locator.getProperty(WContext.WEB_REQUESTER);
 			String action$=locator.getProperty(JRequester.REQUESTER_ACTION);
@@ -89,7 +112,7 @@ public JWebGraph(){
 				}
 			}
 			
-			String entityKey$=entigrator.indx_keyAtLabel(entityLabel$);
+			//String entityKey$=entigrator.indx_keyAtLabel(entityLabel$);
 			    Sack entity=entigrator.getEntityAtKey(entityKey$);
 		    //    Core[]	ca=entity.elementGet("field");
 			StringBuffer sb=new StringBuffer();
@@ -134,6 +157,10 @@ public JWebGraph(){
 		    sb.append("</strong></td></tr><tr><td>Entity: </td><td><strong>");
 		    sb.append(entityLabel$);
 		    sb.append("</strong></td></tr>");
+		    sb.append("<tr><td>Category: </td><td><strong>");
+		    sb.append(category$);
+		    sb.append("</strong></td></tr>");
+		    
 		    sb.append("<tr><td>Facet: </td><td><strong>Node</strong></td></tr>");
 		    sb.append("<tr><td>Context: </td><td><strong>Graph</strong></td></tr></table>");
 		   
@@ -213,21 +240,14 @@ public JWebGraph(){
 				if(debug)
 					System.out.println("JWebGraph:relations:selected node="+nodeLabel$);
 				if(nodeLabel$!=null){
-					//nodeLabel$=nodeLabel$.replaceAll("\"", "&quot;");
-					//nodeLabel$=nodeLabel$.replaceAll("'", "&#39;");
-					// sb.append(getRelations(entigrator,entityKey$,nodeLabel$));
 					sb.append(getGraph(getRelations(entigrator,  nodeLabel$)));
-					//sb.append(getGraph(getScopeExpansion(entigrator,  nodeLabel$,shownLabels$)));
+				
 				}
 		    }
 		    if(JGraphRenderer.ACTION_NETWORK_RELATIONS.equals(action$)){
-		    	//String nodeLabel$=locator.getProperty(SELECTED_NODE_LABEL);
 		    	
 				if(debug)
 					System.out.println("JWebGraph:network relations:selected node="+nodeLabel$ +" shown labels="+shownLabels$);
-				//nodeLabel$=nodeLabel$.replaceAll("\"", "&quot;");
-				//nodeLabel$=nodeLabel$.replaceAll("'", "&#39;");
-					// sb.append(getRelations(entigrator,entityKey$,nodeLabel$));
 					sb.append(getGraph(getNetworkRelations(entigrator,  nodeLabel$,shownLabels$)));
 					 
 				
@@ -243,35 +263,21 @@ public JWebGraph(){
 				
 		    }
 		    if(JGraphRenderer.ACTION_EXPAND.equals(action$)){
-		    	//String nodeLabel$=locator.getProperty(SELECTED_NODE_LABEL);
-		    	//shownLabels$=locator.getProperty(SHOWN_NODES_LABELS);
 		    	if(debug)
 					System.out.println("JWebGraph:expansion:selected selection="+nodeLabel$+" nodes="+shownLabels$);
-					// sb.append(getRelations(entigrator,entityKey$,nodeLabel$));
-		    	//nodeLabel$=nodeLabel$.replaceAll("\"", "&quot;");
-				//nodeLabel$=nodeLabel$.replaceAll("'", "&#39;");
 					sb.append(getGraph(getExpansion(entigrator, nodeLabel$,shownLabels$)));
 					 
 		    }
 		    if(JGraphRenderer.ACTION_NETWORK.equals(action$)){
-		    	//String nodeLabel$=locator.getProperty(SELECTED_NODE_LABEL);
-		    	// shownLabels$=locator.getProperty(SHOWN_NODES_LABELS);
 		    	if(debug)
 					System.out.println("JWebGraph:network:selected selection="+nodeLabel$+" nodes="+shownLabels$);
-					// sb.append(getRelations(entigrator,entityKey$,nodeLabel$));
-		    	//nodeLabel$=nodeLabel$.replaceAll("\"", "&quot;");
-				//nodeLabel$=nodeLabel$.replaceAll("'", "&#39;");	
 		    	sb.append(getGraph(getNetwork(entigrator, nodeLabel$,shownLabels$)));
 					 
 		    }
 		    if(JGraphRenderer.ACTION_EDGE.equals(action$)){
-		    	//String nodeLabel$=locator.getProperty(SELECTED_NODE_LABEL);
-		    	
+	    	
 		    	if(debug)
 					System.out.println("JWebGraph:edge:label="+edgeLabel$+" selected selection="+nodeLabel$+" nodes="+shownLabels$);
-					// sb.append(getRelations(entigrator,entityKey$,nodeLabel$));
-		    	//edgeLabel$=edgeLabel$.replaceAll("\"", "&quot;");
-		    	//edgeLabel$=edgeLabel$.replaceAll("'", "&#39;");
 					sb.append(getGraph(getEdge(entigrator, edgeLabel$,filteredNodeLabels$)));
 					 
 		    }
@@ -284,14 +290,7 @@ public JWebGraph(){
 	        sb.append(" var bondKey;");
 	        sb.append(" var edgeLabel;");
 	        sb.append(" var network;");
-	       // sb.append("var na=new Array();"); 
-	       // sb.append("var ea=new Array();"); 
-	/*
-	        sb.append("function onLoad() {");
-		    sb.append("initBack(\""+this.getClass().getName()+"\",\""+webRequester$+"\");");
-		    sb.append("}");
-		*/    
-		    sb.append("function entity(){");
+	   	    sb.append("function entity(){");
 		    locator$=Locator.append(locator$, JRequester.REQUESTER_ACTION, JGraphRenderer.ACTION_ENTITY);
 		    locator$=locator$.replaceAll("\"", "&quot;");
 		    locator$=locator$.replaceAll("'", "&#39;");
@@ -301,6 +300,7 @@ public JWebGraph(){
 	    	sb.append(" locator=appendProperty(locator,\""+EntityHandler.ENTITY_LABEL+"\",selectedNodeLabel);");
 	    	sb.append(" locator=appendProperty(locator,\""+BaseHandler.HANDLER_CLASS+"\",\""+ JEntityFacetPanel.class.getName()+"\");");
 	    	sb.append(" locator=appendProperty(locator,\""+Entigrator.ENTIHOME+"\",\""+ entigrator.getEntihome()+"\");");
+	    	sb.append(" locator=removeProperty(locator,\""+EntityHandler.ENTITY_KEY+"\",\""+entityKey$+"\");");
 	     // 	sb.append("console.log(locator);");
 	    	sb.append(" var href=\""+webHome$+"?"+WContext.WEB_LOCATOR+"=\"+window.btoa(locator);");
 	    //	sb.append("console.log(href);");

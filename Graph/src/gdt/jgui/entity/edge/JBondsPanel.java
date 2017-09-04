@@ -688,7 +688,8 @@ return menu;
 		try{
 			Entigrator entigrator=console.getEntigrator(entihome$);
 			Sack entity=entigrator.getEntityAtKey(entityKey$);
-			entigrator.replace(entity);
+			//entigrator.replace(entity);
+			entigrator.ent_alter(entity);
 			}catch(Exception e){
 				Logger.getLogger(getClass().getName()).severe(e.toString());;
 			}	  

@@ -277,7 +277,7 @@ public static String[] filterNodesAtEdge(Entigrator entigrator, String[] nodeLab
 		
 		
 		String edgeKey$=entigrator.indx_keyAtLabel(edgeLabel$);
-		Sack edge=entigrator.getEntity(edgeKey$);
+		Sack edge=entigrator.getEntityAtKey(edgeKey$);
 		Core[] ca=edge.elementGet("bond");
 		if(debug)
 			System.out.println("EdgeHandler:filterNodesAtEdge: bonds="+ca.length);
