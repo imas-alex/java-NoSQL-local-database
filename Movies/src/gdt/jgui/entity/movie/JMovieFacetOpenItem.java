@@ -20,13 +20,15 @@ import java.util.Properties;
 import java.util.logging.Logger;
 
 import javax.swing.JPopupMenu;
+import javax.swing.tree.DefaultMutableTreeNode;
+
 import gdt.data.entity.BaseHandler;
 import gdt.data.entity.EntityHandler;
 import gdt.data.entity.FacetHandler;
 import gdt.data.entity.MovieHandler;
+
 import gdt.data.entity.facet.ExtensionHandler;
 import gdt.data.grain.Locator;
-import gdt.data.grain.Support;
 import gdt.data.store.Entigrator;
 import gdt.jgui.console.JConsoleHandler;
 import gdt.jgui.console.JContext;
@@ -58,11 +60,12 @@ public class JMovieFacetOpenItem extends JFieldsFacetOpenItem{
 		if(entihome$!=null){
 			locator.setProperty(Entigrator.ENTIHOME,entihome$);
 			locator.setProperty(Locator.LOCATOR_CHECKABLE,Locator.LOCATOR_TRUE);
-			Entigrator entigrator=console.getEntigrator(entihome$);
-			String icon$=ExtensionHandler.loadIcon(entigrator,MovieHandler.EXTENSION_KEY, "movie.png");
-		    if(icon$!=null)
-		    	locator.setProperty(Locator.LOCATOR_ICON,icon$);
+
 		}
+		locator.setProperty(Locator.LOCATOR_ICON_CONTAINER,Locator.LOCATOR_ICON_CONTAINER_CLASS);
+		locator.setProperty(Locator.LOCATOR_ICON_CLASS,getClass().getName());
+		locator.setProperty(Locator.LOCATOR_ICON_FILE,"movie.png");
+			locator.setProperty(Locator.LOCATOR_ICON_LOCATION,MovieHandler.EXTENSION_KEY);
 		return Locator.toString(locator);
 	}
 
@@ -76,13 +79,10 @@ public String getFacetName() {
 	return "movie";
 }
 @Override
-public String getFacetIcon() {
-	//return Support.readHandlerIcon(JBankFacetOpenItem.class, "bank.png");
-	if(entihome$!=null){
-		Entigrator entigrator=console.getEntigrator(entihome$);
+public String getFacetIcon(Entigrator entigrator) {
+		
 		return ExtensionHandler.loadIcon(entigrator,MovieHandler.EXTENSION_KEY, "movie.png");
-	}
-	return null;
+	
 }
 @Override
 public void removeFacet() {
@@ -92,6 +92,7 @@ public void removeFacet() {
 public void openFacet(JMainConsole console,String locator$) {
 	try{
 	//	System.out.println("JBankFacetOpenItem:openFacet:locator="+locator$);
+		this.console=console;
 		Properties locator=Locator.toProperties(locator$);
 		String entihome$=locator.getProperty(Entigrator.ENTIHOME);
 		String entityKey$=locator.getProperty(EntityHandler.ENTITY_KEY);
@@ -143,5 +144,13 @@ public void response(JMainConsole console, String locator$) {
 //	System.out.println("JBankFacetOpenItem:responce:locator="+locator$);
 	super.response(console,locator$);
 }
-
+@Override
+public String getFacetIconName() {
+	
+	return "movie.png";
+}
+@Override
+public DefaultMutableTreeNode[] getDigest(Entigrator entigrator,String locator$) {
+	return null;
+}
 }

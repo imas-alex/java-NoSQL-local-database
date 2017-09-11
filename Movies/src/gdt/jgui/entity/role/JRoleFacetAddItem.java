@@ -50,7 +50,7 @@ public class JRoleFacetAddItem extends JFacetAddItem{
 @Override
 public String getLocator(){
 	Properties locator=new Properties();
-	locator.setProperty(Locator.LOCATOR_TITLE,"Movie");
+	locator.setProperty(Locator.LOCATOR_TITLE,"Role");
 	locator.setProperty(BaseHandler.HANDLER_CLASS,JRoleFacetAddItem.class.getName());
 	locator.setProperty(BaseHandler.HANDLER_SCOPE,JConsoleHandler.CONSOLE_SCOPE);
 	locator.setProperty(BaseHandler.HANDLER_METHOD,METHOD_ADD_COMPONENT);
@@ -63,10 +63,15 @@ public String getLocator(){
 	if(entihome$!=null){
 		locator.setProperty(Entigrator.ENTIHOME,entihome$);
 		Entigrator entigrator=console.getEntigrator(entihome$);
-		String icon$=ExtensionHandler.loadIcon(entigrator,RoleHandler.EXTENSION_KEY, "movie.png");
-	if(icon$!=null)
-	    	locator.setProperty(Locator.LOCATOR_ICON,icon$);
+		//String icon$=ExtensionHandler.loadIcon(entigrator,RoleHandler.EXTENSION_KEY, "movie.png");
+	//if(icon$!=null)
+	 //   	locator.setProperty(Locator.LOCATOR_ICON,icon$);
 	}
+		locator.setProperty( Locator.LOCATOR_ICON_CONTAINER, Locator.LOCATOR_ICON_CONTAINER_CLASS);
+    	locator.setProperty( Locator.LOCATOR_ICON_CLASS, getClass().getName());
+    	locator.setProperty( Locator.LOCATOR_ICON_FILE, "role.png");
+    
+	
 	 locator$=Locator.toString(locator);
 	locator.setProperty(Locator.LOCATOR_CHECKABLE,Locator.LOCATOR_TRUE);
 	 return Locator.toString(locator);
@@ -89,7 +94,7 @@ public void response(JMainConsole console, String locator$) {
 			component.putElementItem("jfacet", new Core(JRoleFacetAddItem.class.getName(),RoleHandler.class.getName(),JRoleFacetOpenItem.class.getName()));
 			component.createElement("field");
 			component.putElementItem("field", new Core(null,"Role",null));
-			entigrator.save(component);
+			entigrator.ent_alter(component);
 			entigrator.saveHandlerIcon(JRoleFacetAddItem.class, "role.png");
 			Sack container=entigrator.getEntityAtKey(entityKey$);
 			entigrator.col_addComponent(container, component);
@@ -118,7 +123,7 @@ public void addFacet(JMainConsole console, String locator$) {
 	   if(!entity.existsElement("jfacet"))
 		   entity.createElement("jfacet");
 	   entity.putElementItem("jfacet", new Core(JRoleFacetAddItem.class.getName(),RoleHandler.class.getName(),JRoleFacetOpenItem.class.getName()));
-	   entigrator.save(entity);
+	   entigrator.ent_alter(entity);
 	   entity=entigrator.ent_assignProperty(entity, "fields", entity.getProperty("label"));
 	   entity=entigrator.ent_assignProperty(entity, "role", entity.getProperty("label"));
 	}catch(Exception e){
@@ -138,6 +143,7 @@ public void addComponent(JMainConsole console, String locator$) {
 	    editorLocator$=Locator.append(editorLocator$, JTextEditor.TEXT, label$+".role."+Identity.key().substring(0,4));
 	    editorLocator$=Locator.append(editorLocator$,Locator.LOCATOR_TITLE,"Component label");
 	    editorLocator$=Locator.append(editorLocator$,JTextEditor.TEXT_TITLE,"Add role component");
+	      editorLocator$=Locator.append(editorLocator$,Entigrator.ENTIHOME,entihome$);
 	    String responseLocator$=getLocator();
 	    responseLocator$=Locator.append(responseLocator$, BaseHandler.HANDLER_METHOD, "response");
 	    responseLocator$=Locator.append(responseLocator$, Entigrator.ENTIHOME, entihome$);

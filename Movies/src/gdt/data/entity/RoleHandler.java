@@ -48,7 +48,7 @@ public RoleHandler(){
 					if(!entity.existsElement("fhandler"))
 						entity.createElement("fhandler");
 					entity.putElementItem("fhandler", new Core(null, RoleHandler.class.getName(),null));
-					entigrator.save(entity);
+					entigrator.ent_alter(entity);
 				}
 	            result=true;
 			}
@@ -87,5 +87,9 @@ public RoleHandler(){
 @Override
 public String getClassName() {
 	return  RoleHandler.class.getName();
+}
+@Override
+public String getLocation() {
+	return EXTENSION_KEY;
 }
 }

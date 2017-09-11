@@ -139,7 +139,10 @@
   <dependency>
   <groupId>com.github.imas-alex</groupId>
   <artifactId>JEntigrator</artifactId>
-  <version>0.0.6</version>
+ <version>0.0.914</version>
+   <scope>system</scope>
+    <systemPath>${basedir}/../JEntigrator/target/JEntigrator-0.0.914-jar-with-dependencies.jar </systemPath>
+ 
    </dependency>
   		<dependency>
 	  	<groupId>commons-codec</groupId>

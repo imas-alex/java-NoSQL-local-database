@@ -39,6 +39,7 @@ import java.util.Stack;
 import java.util.logging.Logger;
 import gdt.data.entity.BaseHandler;
 import gdt.data.entity.EntityHandler;
+import gdt.data.entity.MovieHandler;
 import gdt.data.entity.RoleHandler;
 import gdt.data.entity.facet.ExtensionHandler;
 import gdt.data.entity.facet.FieldsHandler;
@@ -78,11 +79,11 @@ public class JRoleEditor extends JFieldsEditor {
 				locator.setProperty(EntityHandler.ENTITY_KEY,entityKey$);
 			if(entihome$!=null){
 				locator.setProperty(Entigrator.ENTIHOME,entihome$);
-			Entigrator entigrator=console.getEntigrator(entihome$);
-		    String icon$=ExtensionHandler.loadIcon(entigrator,RoleHandler.EXTENSION_KEY, "role.png");
-		    if(icon$!=null)
-		    	locator.setProperty(Locator.LOCATOR_ICON,icon$);	
-			}
+				}
+			locator.setProperty(Locator.LOCATOR_ICON_CONTAINER,Locator.LOCATOR_ICON_CONTAINER_CLASS);
+			locator.setProperty(Locator.LOCATOR_ICON_CLASS,getClass().getName());
+			locator.setProperty(Locator.LOCATOR_ICON_FILE,"role.png");
+				locator.setProperty(Locator.LOCATOR_ICON_LOCATION,MovieHandler.EXTENSION_KEY);
 			return Locator.toString(locator);
 			}catch(Exception e){
 	        Logger.getLogger(getClass().getName()).severe(e.toString());
@@ -105,21 +106,22 @@ public class JRoleEditor extends JFieldsEditor {
 	public String getFacetHandler() {
 		return RoleHandler.class.getName();
 	}
-
+	@Override
+	public String getFacetIcon() {
+		
+		return "role.png";
+	}
 	@Override
 	public String getEntityType() {
 		return "role";
 	}
 
 	@Override
-	public String getCategoryIcon() {
-		String icon$=null;
-		if(entihome$!=null)	{
-			Entigrator entigrator=console.getEntigrator(entihome$);
-		    icon$=ExtensionHandler.loadIcon(entigrator,RoleHandler.EXTENSION_KEY, "role.png");
+	public String getCategoryIcon(Entigrator entigrator) {
+		
+		    return ExtensionHandler.loadIcon(entigrator,RoleHandler.EXTENSION_KEY, "role.png");
 	}
-		return icon$;
-	}
+		
 	@Override
 	public String getCategoryTitle() {
 		return "Roles";
@@ -133,7 +135,7 @@ public class JRoleEditor extends JFieldsEditor {
 		    	if(entity.getElementItem("fhandler", fhandler$)!=null){
 		    		entity.putElementItem("jfacet", new Core(JRoleFacetAddItem.class.getName(),fhandler$,JRoleFacetOpenItem.class.getName()));
 					entity.putElementItem("fhandler", new Core(null,fhandler$,RoleHandler.EXTENSION_KEY));
-					entigrator.save(entity);
+					entigrator.ent_alter(entity);
 				}
 		    }catch(Exception e){
 		    	Logger.getLogger(getClass().getName()).severe(e.toString());
@@ -145,17 +147,19 @@ public class JRoleEditor extends JFieldsEditor {
 	    String editorLocator$=textEditor.getLocator();
 	    editorLocator$=Locator.append(editorLocator$, JTextEditor.TEXT, "Role"+Identity.key().substring(0,4));
 	    editorLocator$=Locator.append(editorLocator$,Locator.LOCATOR_TITLE,"Role entity");
+	   
 	    JRoleEditor fe=new JRoleEditor();
 	    String feLocator$=fe.getLocator();
 	    Properties responseLocator=Locator.toProperties(feLocator$);
 	    entihome$=Locator.getProperty(locator$,Entigrator.ENTIHOME );
 	    if(entihome$!=null){
 	      responseLocator.setProperty(Entigrator.ENTIHOME,entihome$);
-	  		Entigrator entigrator=console.getEntigrator(entihome$);
+	      editorLocator$=Locator.append(editorLocator$,Entigrator.ENTIHOME,entihome$);
+	  		//Entigrator entigrator=console.getEntigrator(entihome$);
 	  		// String icon$=Support.readHandlerIcon(null,JAddressEditor.class, "address.png");
-	  	 String icon$=ExtensionHandler.loadIcon(entigrator,RoleHandler.EXTENSION_KEY, "role.png");
-	  	if(icon$!=null)
-	  		 editorLocator$=Locator.append(editorLocator$,Locator.LOCATOR_ICON,icon$);
+	  //	 String icon$=ExtensionHandler.loadIcon(entigrator,RoleHandler.EXTENSION_KEY, "role.png");
+	  //	if(icon$!=null)
+	  //		 editorLocator$=Locator.append(editorLocator$,Locator.LOCATOR_ICON,icon$);
 	    }
 	   responseLocator.setProperty(BaseHandler.HANDLER_CLASS,JRoleEditor.class.getName());
 		responseLocator.setProperty(BaseHandler.HANDLER_METHOD,"response");
@@ -167,6 +171,7 @@ public class JRoleEditor extends JFieldsEditor {
     	//System.out.println("JBankEditor:newEntity:responseLocator:=:"+responseLocator$);
 		String requesterResponseLocator$=Locator.compressText(responseLocator$);
 		editorLocator$=Locator.append(editorLocator$,JRequester.REQUESTER_RESPONSE_LOCATOR,requesterResponseLocator$);
+		
 		JConsoleHandler.execute(console,editorLocator$); 
 		return editorLocator$;
 	}
@@ -190,7 +195,7 @@ public class JRoleEditor extends JFieldsEditor {
 				newEntity.createElement("jfacet");
 				newEntity.putElementItem("jfacet", new Core(JRoleFacetAddItem.class.getName(),RoleHandler.class.getName(),JRoleFacetOpenItem.class.getName()));
 				newEntity.putAttribute(new Core (null,"icon","role.png"));
-				entigrator.save(newEntity);
+				entigrator.ent_alter(newEntity);
 				entigrator.ent_assignProperty(newEntity, "fields", text$);
 				entigrator.ent_assignProperty(newEntity, "role", text$);
 				String icons$=entihome$+"/"+Entigrator.ICONS;
@@ -222,7 +227,7 @@ public class JRoleEditor extends JFieldsEditor {
 					core.value=text$;
 //				System.out.println("JBankEditor:response:name="+core.name+" value="+core.value);
 				entity.putElementItem("field", core);
-				entigrator.save(entity);
+				entigrator.ent_alter(entity);
 				String feLocator$=getLocator();
 				feLocator$=Locator.append(locator$, Entigrator.ENTIHOME, entihome$);
 				feLocator$=Locator.append(locator$, EntityHandler.ENTITY_KEY, entityKey$);

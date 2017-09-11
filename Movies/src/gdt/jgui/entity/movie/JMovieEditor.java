@@ -40,6 +40,7 @@ import java.util.logging.Logger;
 import gdt.data.entity.BaseHandler;
 import gdt.data.entity.EntityHandler;
 import gdt.data.entity.MovieHandler;
+
 import gdt.data.entity.facet.ExtensionHandler;
 import gdt.data.entity.facet.FieldsHandler;
 import gdt.data.grain.Core;
@@ -78,11 +79,11 @@ public class JMovieEditor extends JFieldsEditor {
 				locator.setProperty(EntityHandler.ENTITY_KEY,entityKey$);
 			if(entihome$!=null){
 				locator.setProperty(Entigrator.ENTIHOME,entihome$);
-			Entigrator entigrator=console.getEntigrator(entihome$);
-		    String icon$=ExtensionHandler.loadIcon(entigrator,MovieHandler.EXTENSION_KEY, "movie.png");
-		    if(icon$!=null)
-		    	locator.setProperty(Locator.LOCATOR_ICON,icon$);	
-			}
+				}
+			locator.setProperty(Locator.LOCATOR_ICON_CONTAINER,Locator.LOCATOR_ICON_CONTAINER_CLASS);
+			locator.setProperty(Locator.LOCATOR_ICON_CLASS,getClass().getName());
+			locator.setProperty(Locator.LOCATOR_ICON_FILE,"movie.png");
+				locator.setProperty(Locator.LOCATOR_ICON_LOCATION,MovieHandler.EXTENSION_KEY);
 			return Locator.toString(locator);
 			}catch(Exception e){
 	        Logger.getLogger(getClass().getName()).severe(e.toString());
@@ -105,21 +106,21 @@ public class JMovieEditor extends JFieldsEditor {
 	public String getFacetHandler() {
 		return MovieHandler.class.getName();
 	}
-
+	@Override
+	public String getFacetIcon() {
+		
+		return "movie.png";
+	}
 	@Override
 	public String getEntityType() {
 		return "movie";
 	}
 
 	@Override
-	public String getCategoryIcon() {
-		String icon$=null;
-		if(entihome$!=null)	{
-			Entigrator entigrator=console.getEntigrator(entihome$);
-		    icon$=ExtensionHandler.loadIcon(entigrator,MovieHandler.EXTENSION_KEY, "movie.png");
+	public String getCategoryIcon(Entigrator entigrator) {
 		
-	}
-		return icon$;
+		    return ExtensionHandler.loadIcon(entigrator,MovieHandler.EXTENSION_KEY, "movie.png");
+	
 	}
 	@Override
 	public String getCategoryTitle() {
@@ -134,7 +135,7 @@ public class JMovieEditor extends JFieldsEditor {
 		    	if(entity.getElementItem("fhandler", fhandler$)!=null){
 		    		entity.putElementItem("jfacet", new Core(JMovieFacetAddItem.class.getName(),fhandler$,JMovieFacetOpenItem.class.getName()));
 					entity.putElementItem("fhandler", new Core(null,fhandler$,JMovieFacetAddItem.EXTENSION_KEY));
-					entigrator.save(entity);
+					entigrator.ent_alter(entity);
 				}
 		    }catch(Exception e){
 		    	Logger.getLogger(getClass().getName()).severe(e.toString());
@@ -152,12 +153,9 @@ public class JMovieEditor extends JFieldsEditor {
 	    entihome$=Locator.getProperty(locator$,Entigrator.ENTIHOME );
 	    if(entihome$!=null){
 	      responseLocator.setProperty(Entigrator.ENTIHOME,entihome$);
-	  		Entigrator entigrator=console.getEntigrator(entihome$);
-	  		// String icon$=Support.readHandlerIcon(null,JAddressEditor.class, "address.png");
-	  	 String icon$=ExtensionHandler.loadIcon(entigrator,MovieHandler.EXTENSION_KEY, "movie.png");
-	  	if(icon$!=null)
-	  		 editorLocator$=Locator.append(editorLocator$,Locator.LOCATOR_ICON,icon$);
-	    }
+	      editorLocator$=Locator.append(editorLocator$,Entigrator.ENTIHOME,entihome$);
+	  	}
+	   
 	   responseLocator.setProperty(BaseHandler.HANDLER_CLASS,JMovieEditor.class.getName());
 		responseLocator.setProperty(BaseHandler.HANDLER_METHOD,"response");
 		responseLocator.setProperty(BaseHandler.HANDLER_SCOPE,JConsoleHandler.CONSOLE_SCOPE);
@@ -193,7 +191,7 @@ public class JMovieEditor extends JFieldsEditor {
 				newEntity.putElementItem("jfacet", new Core("gdt.jgui.entity.movie.JMovieFacetAddItem",MovieHandler.class.getName(),"gdt.jgui.entity.movie.JMovieFacetOpenItem"));
 				
 				newEntity.putAttribute(new Core (null,"icon","movie.png"));
-				entigrator.save(newEntity);
+				entigrator.ent_alter(newEntity);
 				entigrator.ent_assignProperty(newEntity, "fields", text$);
 				entigrator.ent_assignProperty(newEntity, "movie", text$);
 				String icons$=entihome$+"/"+Entigrator.ICONS;
@@ -225,7 +223,7 @@ public class JMovieEditor extends JFieldsEditor {
 					core.value=text$;
 //				System.out.println("JBankEditor:response:name="+core.name+" value="+core.value);
 				entity.putElementItem("field", core);
-				entigrator.save(entity);
+				entigrator.ent_alter(entity);
 				String feLocator$=getLocator();
 				feLocator$=Locator.append(locator$, Entigrator.ENTIHOME, entihome$);
 				feLocator$=Locator.append(locator$, EntityHandler.ENTITY_KEY, entityKey$);

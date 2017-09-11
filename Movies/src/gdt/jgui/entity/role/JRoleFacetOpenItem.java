@@ -20,9 +20,12 @@ import java.util.Properties;
 import java.util.logging.Logger;
 
 import javax.swing.JPopupMenu;
+import javax.swing.tree.DefaultMutableTreeNode;
+
 import gdt.data.entity.BaseHandler;
 import gdt.data.entity.EntityHandler;
 import gdt.data.entity.FacetHandler;
+import gdt.data.entity.MovieHandler;
 import gdt.data.entity.RoleHandler;
 import gdt.data.entity.facet.ExtensionHandler;
 import gdt.data.grain.Locator;
@@ -58,11 +61,15 @@ public class JRoleFacetOpenItem extends JFieldsFacetOpenItem{
 		if(entihome$!=null){
 			locator.setProperty(Entigrator.ENTIHOME,entihome$);
 			locator.setProperty(Locator.LOCATOR_CHECKABLE,Locator.LOCATOR_TRUE);
-			Entigrator entigrator=console.getEntigrator(entihome$);
-			String icon$=ExtensionHandler.loadIcon(entigrator,RoleHandler.EXTENSION_KEY, "role.png");
-		    if(icon$!=null)
-		    	locator.setProperty(Locator.LOCATOR_ICON,icon$);
+		//	Entigrator entigrator=console.getEntigrator(entihome$);
+		//	String icon$=ExtensionHandler.loadIcon(entigrator,RoleHandler.EXTENSION_KEY, "role.png");
+		 //   if(icon$!=null)
+		  //  	locator.setProperty(Locator.LOCATOR_ICON,icon$);
 		}
+		locator.setProperty(Locator.LOCATOR_ICON_CONTAINER,Locator.LOCATOR_ICON_CONTAINER_CLASS);
+		locator.setProperty(Locator.LOCATOR_ICON_CLASS,getClass().getName());
+		locator.setProperty(Locator.LOCATOR_ICON_FILE,"role.png");
+			locator.setProperty(Locator.LOCATOR_ICON_LOCATION,RoleHandler.EXTENSION_KEY);
 		return Locator.toString(locator);
 	}
 
@@ -76,13 +83,10 @@ public String getFacetName() {
 	return "role";
 }
 @Override
-public String getFacetIcon() {
-	//return Support.readHandlerIcon(JBankFacetOpenItem.class, "bank.png");
-	if(entihome$!=null){
-		Entigrator entigrator=console.getEntigrator(entihome$);
+public String getFacetIcon(Entigrator entigrator) {
+	
 		return ExtensionHandler.loadIcon(entigrator,RoleHandler.EXTENSION_KEY, "role.png");
-	}
-	return null;
+	
 }
 @Override
 public void removeFacet() {
@@ -92,6 +96,7 @@ public void removeFacet() {
 public void openFacet(JMainConsole console,String locator$) {
 	try{
 	//	System.out.println("JBankFacetOpenItem:openFacet:locator="+locator$);
+		this.console=console;
 		Properties locator=Locator.toProperties(locator$);
 		String entihome$=locator.getProperty(Entigrator.ENTIHOME);
 		String entityKey$=locator.getProperty(EntityHandler.ENTITY_KEY);
@@ -118,6 +123,18 @@ public void openFacet(JMainConsole console,String locator$) {
 		mvLocator$=Locator.append(mvLocator$, JRequester.REQUESTER_RESPONSE_LOCATOR, requesterResponseLocator$);
 		mvLocator$=Locator.append(mvLocator$, BaseHandler.HANDLER_METHOD,"instantiate");
 		JConsoleHandler.execute(console, mvLocator$);
+		
+	/*
+		Entigrator entigrator=console.getEntigrator(entihome$);
+		JContext bondsPanel=(JContext)ExtensionHandler.loadHandlerInstance(entigrator,"_Tm142C8Sgti2iAKlDEcEXT2Kj1E" , "gdt.jgui.entity.edge.JBondsPanel");
+		//JBondsPanel bondsPanel=new JBondsPanel();
+		String bpLocator$=bondsPanel.getLocator();
+		bpLocator$=Locator.append(bpLocator$, Entigrator.ENTIHOME, entihome$);
+		bpLocator$=Locator.append(bpLocator$, EntityHandler.ENTITY_KEY, entityKey$);
+		bpLocator$=Locator.append(bpLocator$, JRequester.REQUESTER_RESPONSE_LOCATOR, requesterResponseLocator$);
+		bpLocator$=Locator.append(bpLocator$, BaseHandler.HANDLER_METHOD,"instantiate");
+		JConsoleHandler.execute(console, bpLocator$);
+		*/
 	}catch(Exception e){
 		Logger.getLogger(getClass().getName()).severe(e.toString());
 	}
@@ -143,5 +160,13 @@ public void response(JMainConsole console, String locator$) {
 //	System.out.println("JBankFacetOpenItem:responce:locator="+locator$);
 	super.response(console,locator$);
 }
-
+@Override
+public String getFacetIconName() {
+	
+	return "role.png";
+}
+@Override
+public DefaultMutableTreeNode[] getDigest(Entigrator entigrator,String locator$) {
+	return null;
+}
 }

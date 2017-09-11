@@ -17,14 +17,8 @@ package gdt.data.extension;
     along with JEntigrator.  If not, see <http://www.gnu.org/licenses/>.
  */
 import java.io.File;
-import java.io.FileOutputStream;
-import java.io.InputStream;
-import java.net.URL;
-import java.net.URLClassLoader;
 import java.net.URLDecoder;
 import java.util.logging.Logger;
-
-import gdt.data.entity.facet.ExtensionHandler;
 import gdt.data.entity.facet.ExtensionMain;
 import gdt.data.grain.Core;
 import gdt.data.grain.Sack;

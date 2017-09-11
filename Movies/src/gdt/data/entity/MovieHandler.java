@@ -18,9 +18,7 @@ package gdt.data.entity;
  */
 
 import java.util.Properties;
-import java.util.logging.FileHandler;
 import java.util.logging.Logger;
-
 import gdt.data.grain.Core;
 import gdt.data.grain.Locator;
 import gdt.data.grain.Sack;
@@ -46,7 +44,7 @@ public final static String MOVIE="movie";
 					if(!entity.existsElement("fhandler"))
 						entity.createElement("fhandler");
 					entity.putElementItem("fhandler", new Core(null,MovieHandler.class.getName(),null));
-					entigrator.save(entity);
+					entigrator.ent_alter(entity);
 				}
 	            result=true;
 			}
@@ -86,5 +84,9 @@ public final static String MOVIE="movie";
 @Override
 public String getClassName() {
 	return MovieHandler.class.getName();
+}
+@Override
+public String getLocation() {
+	return EXTENSION_KEY;
 }
 }
