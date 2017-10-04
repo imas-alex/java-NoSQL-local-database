@@ -245,11 +245,18 @@ public class JCategoryPanel extends JItemsListPanel implements WContext{
 				@Override
 				public void actionPerformed(ActionEvent e) {
 				//	System.out.println("JCategoryPanel:new:renderer="+renderer$);
-					Entigrator entigrator=console.getEntigrator(entihome$);	
+					Entigrator entigrator=console.getEntigrator(entihome$);
+					if(entigrator.store_isBusy()){
+			            	JBusyStorage.show(JCategoryPanel.this);
+			            	return;
+			            }
+					 
+					entigrator.store_lock();	
 					JFacetRenderer facetRenderer=(JFacetRenderer)JConsoleHandler.getHandlerInstance(entigrator, renderer$);
 					String fcLocator$=facetRenderer.getLocator();
 					fcLocator$=Locator.append(fcLocator$, Entigrator.ENTIHOME, entihome$);
 			    	facetRenderer.newEntity(console, fcLocator$);
+			    	entigrator.store_release();
 				}
 			} );
 			menu.add(newItem);
@@ -273,7 +280,7 @@ public class JCategoryPanel extends JItemsListPanel implements WContext{
 							  if(debug)
 							  System.out.println("JCatehoryPanel:delete:aSa="+aSa);
 							  candidate$=Locator.getProperty(aSa, EntityHandler.ENTITY_KEY);
-							  candidate=entigrator.ent_getAtKey(candidate$);
+							  candidate=entigrator.getEntityAtKey(candidate$);
 							  if(candidate!=null){
 								  entigrator.deleteEntity(candidate);
 								  JConsoleHandler.execute(console,getLocator());
@@ -282,7 +289,7 @@ public class JCategoryPanel extends JItemsListPanel implements WContext{
 								Logger.getLogger(getClass().getName()).info(ee.toString()+":"+aSa);
 							}
 						  }
-						  entigrator.store_replace();
+						 // entigrator.store_replace();
 					   }
 					
 				}

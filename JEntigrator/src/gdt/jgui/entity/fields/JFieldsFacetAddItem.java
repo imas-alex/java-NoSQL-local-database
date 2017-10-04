@@ -97,7 +97,7 @@ public void response(JMainConsole console, String locator$) {
 			component.putElementItem("jfacet", new Core(getClass().getName(),FieldsHandler.class.getName(),JFieldsFacetOpenItem.class.getName()));
 			component.createElement("field");
 			component.putElementItem("field", new Core(null,"Name","Value"));
-			entigrator.ent_replace(component);
+			entigrator.ent_alter(component);
 			entigrator.saveHandlerIcon(getClass(), "fields.png");
 			Sack container=entigrator.getEntityAtKey(entityKey$);
 			entigrator.col_addComponent(container, component);
@@ -134,7 +134,7 @@ public void addFacet(JMainConsole console, String locator$) {
 		   entity.createElement("jfacet");
 	   entity.putElementItem("jfacet", new Core(JFieldsFacetAddItem.class.getName(),FieldsHandler.class.getName(),JFieldsFacetOpenItem.class.getName()));
 	   //entigrator.save(entity);
-	   entigrator.ent_replace(entity);
+	   entigrator.ent_alter(entity);
 	   entity=entigrator.ent_assignProperty(entity, "fields", entity.getProperty("label"));
 	}catch(Exception e){
 		  LOGGER.severe(e.toString());

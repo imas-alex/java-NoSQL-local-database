@@ -33,6 +33,10 @@ public class JClipboard {
 	private static final String CLIP="clip";
 	private ArrayList<String>sl=new ArrayList<String>();
 	static boolean debug=false;
+	private long progressLength=0;
+	private long progressCurrent=0;
+	private boolean progressStop=false;
+	private String progressMessage$;
 	/**
 	 * Get  clipboard content.
 	 * @return clipboard content as a string array.
@@ -112,5 +116,30 @@ public static void restore(JMainConsole console){
 	}catch(Exception e){
 		Logger.getLogger(JClipboard.class.getName()).severe(e.toString());
 	}
+}
+public void resetProgress(long progressLength){
+	this.progressLength=progressLength;
+	progressCurrent=0;
+}
+public void setProgress(long progressCurrent){
+	this.progressCurrent=progressCurrent;
+}
+public long getProgress(){
+	return progressCurrent;
+}
+public long getProgressLength(){
+	return progressLength;
+}
+public void setProgressStop(boolean progressStop){
+	this.progressStop=progressStop;
+}
+public boolean getProgressStop(){
+	return progressStop;
+}
+public void setProgressMessage(String  progressMessage$){
+	this.progressMessage$=progressMessage$;
+}
+public String getProgressMessage(){
+	return progressMessage$;
 }
 }

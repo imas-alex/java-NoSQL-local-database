@@ -85,7 +85,7 @@ public class JFolderFacetAddItem extends JFacetAddItem{
 				component.putElementItem("jfacet", new Core(getClass().getName(),FolderHandler.class.getName(),JFolderFacetOpenItem.class.getName()));
 			    File folder=new File(entigrator.getEntihome()+"/"+component.getKey());
 			    folder.mkdir();
-				entigrator.ent_replace(component);
+				entigrator.ent_alter(component);
 				entigrator.saveHandlerIcon(getClass(), "folder.png");
 				Sack container=entigrator.getEntityAtKey(entityKey$);
 				entigrator.col_addComponent(container, component);
@@ -120,7 +120,7 @@ public class JFolderFacetAddItem extends JFacetAddItem{
 			   if(!entity.existsElement("jfacet"))
 				   entity.createElement("jfacet");
 			   entity.putElementItem("jfacet", new Core(JFolderFacetAddItem.class.getName(),FolderHandler.class.getName(),JFolderFacetOpenItem.class.getName()));
-			   entigrator.ent_replace(entity);
+			   entigrator.ent_alter(entity);
 			   entity=entigrator.ent_assignProperty(entity, "folder", entity.getProperty("label"));
 			}catch(Exception e){
 				  LOGGER.severe(e.toString());

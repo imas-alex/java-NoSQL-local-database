@@ -169,7 +169,7 @@ public class JReferenceEntry extends Core{
    private  void processEntity(JMainConsole console, Entigrator entigrator, ArrayList< JReferenceEntry>rel){
 	   try{
 //		   System.out.println("JReferenceEntry:processEntity:entity key="+name+" value="+value);
-		   Sack entity=entigrator.getEntityAtKey(name);
+		  Sack entity=entigrator.getEntityAtKey(name);
 		  String[] sa=entity.elementList("fhandler");
 		  String extensionKey$;
 		  if(sa!=null){

@@ -189,7 +189,9 @@ public class Locator {
         for (int i = 0; i < sa.length; i++)
             list.append(sa[i] + ARRAY_DELIMITER);
         String list$ = list.toString();
+        try{
         list$ = list$.substring(0, list$.length() - ARRAY_DELIMITER.length());
+        }catch(Exception e){}
         return list$;
     }
     /**

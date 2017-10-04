@@ -57,6 +57,7 @@ public class Sack extends Identity {
     }
     /**
    	 * Load a sack from a xml file.
+   	 * @param entigrator the entigrator.
    	 * @param fname$ the path of the file. 
 	 * @return a sack.   
    	 */
@@ -146,7 +147,7 @@ public class Sack extends Identity {
         		LOGGER.severe(ee.toString());
         		
         	}
-        	entigrator.removeFileLock(fname$);
+        	//entigrator.removeFileLock(fname$);
         	return null;
         }
     }

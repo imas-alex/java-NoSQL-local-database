@@ -194,7 +194,7 @@ public class JViewPanel extends JPanel implements JFacetRenderer,JRequester{
 							Entigrator entigrator=console.getEntigrator(entihome$);
 							Sack view=entigrator.getEntityAtKey(entityKey$);
 							if(view!=null)
-							entigrator.ent_replace(view);
+							entigrator.ent_alter(view);
 							console.back();
 						}
 					} );
@@ -483,9 +483,11 @@ public class JViewPanel extends JPanel implements JFacetRenderer,JRequester{
 	public void reindex(JMainConsole console, Entigrator entigrator, Sack entity) {
 		 try{	
 		    	String viewHandler$=ViewHandler.class.getName();
-		    	if(entity.getElementItem("fhandler", viewHandler$)!=null){
+		    	if(entity.getElementItem("fhandler", viewHandler$)!=null)
+		    		return;
+		    	if(entity.getElementItem("jfacet", viewHandler$)==null){
 					entity.putElementItem("jfacet", new Core(null,viewHandler$,JViewFacetOpenItem.class.getName()));
-					entigrator.ent_replace(entity);
+					entigrator.ent_alter(entity);
 				}
 		    }catch(Exception e){
 		    	Logger.getLogger(getClass().getName()).severe(e.toString());
@@ -550,7 +552,7 @@ public class JViewPanel extends JPanel implements JFacetRenderer,JRequester{
 					view.createElement("jfacet");
 					view.putElementItem("jfacet", new Core(JFolderFacetAddItem.class.getName(),FolderHandler.class.getName(),JFolderFacetOpenItem.class.getName()));
 					view.putElementItem("jfacet", new Core(null,ViewHandler.class.getName(),JViewFacetOpenItem.class.getName()));
-					entigrator.ent_replace(view);
+					entigrator.ent_alter(view);
 					entigrator.ent_assignProperty(view, "view", text$);
 					entigrator.ent_assignProperty(view, "folder", text$);
 					entigrator.saveHandlerIcon(getClass(), "view.png");
@@ -578,7 +580,8 @@ public class JViewPanel extends JPanel implements JFacetRenderer,JRequester{
 		}
 		
 	}
-static class ItemComparator implements Comparator<String>{
+/*
+	static class ItemComparator implements Comparator<String>{
     @Override
     public int compare(String l1$, String l2$) {
     	try{
@@ -600,7 +603,7 @@ static class ItemComparator implements Comparator<String>{
     	}
     }
 }
-
+*/
 private static void createClasspathFile(String entihome$,String viewKey$){
 	try{
 	//	System.out.println("JProcedurePanel:createClasspathFile.procedure key="+procedureKey$);
@@ -901,6 +904,28 @@ public static  class LongComparator implements Comparator<String> {
 	    	Long a1=new Long(a);
 	    	Long a2=new Long(b);
 	        return a1.compareTo(a2);
+	        }catch(Exception e){
+	        	return 0;
+	        }
+	    }
+	}
+/**
+ * The  comparator for  strings 
+ * @author imasa.
+ *
+ */
+public static  class StringComparator implements Comparator<String> {
+	    @Override
+	    /**
+		 * Compare two long strings.
+		 * @param a the first  long string
+		 * @param b the second long string
+		 * @return a negative integer, zero, or a positive integer as the first argument is less than, equal to, or greater than the second.
+		 */
+	    public int compare(String a, String b) {
+	        try{
+	    	
+	        return a.compareTo(b);
 	        }catch(Exception e){
 	        	return 0;
 	        }

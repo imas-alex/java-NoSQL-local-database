@@ -56,7 +56,7 @@ public class IndexHandler extends FacetHandler{
 						if(!entity.existsElement("fhandler"))
 							entity.createElement("fhandler");
 							entity.putElementItem("fhandler", new Core(null,getClass().getName(),null));
-							entigrator.ent_replace(entity);
+							entigrator.ent_alter(entity);
 					}
 			return true;
 		}catch(Exception e){
@@ -143,7 +143,7 @@ public class IndexHandler extends FacetHandler{
 				index.putElementItem("index.jlocator", c);
 			}
 			
-			entigrator.ent_replace(index);
+			entigrator.ent_alter(index);
 		}catch(Exception e){
 			Logger.getLogger(JBaseNavigator.class.getName()).severe(e.toString());
 		}

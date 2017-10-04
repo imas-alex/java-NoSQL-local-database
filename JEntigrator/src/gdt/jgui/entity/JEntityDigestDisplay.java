@@ -188,7 +188,7 @@ public  class JEntityDigestDisplay extends JPanel implements JContext ,JRequeste
 		 entityLabel$=locator.getProperty(EntityHandler.ENTITY_LABEL);
 		 if(entigrator==null)
 		 entigrator=console.getEntigrator(entihome$);
-		 entity=entigrator.getEntity(entityKey$);
+		 entity=entigrator.getEntityAtKey(entityKey$);
 		 String compressedSelection$=locator.getProperty(SELECTION);
 		 if(compressedSelection$!=null){
 			try{
@@ -244,7 +244,7 @@ public  class JEntityDigestDisplay extends JPanel implements JContext ,JRequeste
 			 entigrator=console.getEntigrator(entihome$);
 		 entityKey$=locator.getProperty(EntityHandler.ENTITY_KEY);
 		 entityLabel$=locator.getProperty(EntityHandler.ENTITY_LABEL);
-		 entity=entigrator.getEntity(entityKey$);
+		 entity=entigrator.getEntityAtKey(entityKey$);
 		 DefaultMutableTreeNode root = new DefaultMutableTreeNode(entityLabel$);
 		 locator=new Properties();
 		 locator.setProperty(Locator.LOCATOR_TITLE, DIGEST);
@@ -871,7 +871,7 @@ private boolean instantiateFacetNode(DefaultMutableTreeNode facetNode){
 			return;
 		}
 		if(1==n){
-			entigrator.ent_replace(entity);
+			entigrator.ent_alter(entity);
 			
 		}
 		if(0==n){

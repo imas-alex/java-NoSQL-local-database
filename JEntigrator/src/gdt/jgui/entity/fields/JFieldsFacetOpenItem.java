@@ -140,7 +140,7 @@ public void response(JMainConsole console, String locator$) {
 				if(FIELD_VALUE.equals(selectionType$))
 				     field.value=text$;
 				entity.putElementItem("field", field);
-				entigrator.ent_replace(entity);
+				entigrator.ent_alter(entity);
 			}
 			JEntityDigestDisplay edd=new JEntityDigestDisplay();
 			String eddLocator$=edd.getLocator();
@@ -212,7 +212,7 @@ public void removeFacet() {
 		 entity.removeElement("field");
 		 entity.removeElementItem("fhandler", FieldsHandler.class.getName());
 		 entity.removeElementItem("jfacet", FieldsHandler.class.getName());
-		 entigrator.ent_replace(entity);
+		 entigrator.ent_alter(entity);
 		 entigrator.ent_takeOffProperty(entity, "fields");
 	}catch(Exception e){
 		LOGGER.severe(e.toString());

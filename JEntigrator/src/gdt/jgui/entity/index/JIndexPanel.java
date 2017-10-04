@@ -159,7 +159,7 @@ public class JIndexPanel extends JPanel implements JContext , JFacetRenderer,JRe
 				entity=entigrator.ent_new("index", text$);
 				entity=entigrator.ent_assignProperty(entity, "index", entity.getProperty("label"));
 				entity.putAttribute(new Core(null,"icon","index.png"));
-				entigrator.ent_replace(entity);
+				entigrator.ent_alter(entity);
 				entigrator.ent_reindex(entity);
 				entigrator.saveHandlerIcon(JEntitiesPanel.class, "index.png");
 				entityKey$=entity.getKey();
@@ -210,7 +210,7 @@ public class JIndexPanel extends JPanel implements JContext , JFacetRenderer,JRe
 			    	
 			    	entity.putElementItem("index.jlocator", new Core(null,groupKey$,groupLocator$));
 			    	entity.putElementItem("index.selection", new Core(null,"selection",groupKey$));
-			    	entigrator.ent_replace(entity);
+			    	entigrator.ent_alter(entity);
 			    	JConsoleHandler.execute(console, getLocator());
 			    }
 			}
@@ -230,7 +230,7 @@ public class JIndexPanel extends JPanel implements JContext , JFacetRenderer,JRe
 			    Core core=entity.getElementItem("index.jlocator", nodeKey$);
 			    core.value=Locator.toString(locator);
 			    entity.putElementItem("index.jlocator",core );
-			    entigrator.ent_replace(entity);
+			    entigrator.ent_alter(entity);
 			    JConsoleHandler.execute(console, getLocator());
 			    return;
 			}
@@ -255,7 +255,7 @@ public class JIndexPanel extends JPanel implements JContext , JFacetRenderer,JRe
 			    	core.value=text$;
 			    
 			    entity.putElementItem("index.title",core );
-			    entigrator.ent_replace(entity);
+			    entigrator.ent_alter(entity);
 			    JConsoleHandler.execute(console, getLocator());
 			    return;
 			}
@@ -275,7 +275,7 @@ public class JIndexPanel extends JPanel implements JContext , JFacetRenderer,JRe
 			    Core core=entity.getElementItem("index.jlocator", nodeKey$);
 			    core.value=Locator.toString(locator);
 			    entity.putElementItem("index.jlocator",core );
-			    entigrator.ent_replace(entity);
+			    entigrator.ent_alter(entity);
 			    JConsoleHandler.execute(console, getLocator());
 			    return;
 			}
@@ -296,7 +296,7 @@ public class JIndexPanel extends JPanel implements JContext , JFacetRenderer,JRe
 			    else
 			       core=new Core(icon$,nodeKey$,null);
 			    entity.putElementItem("index.title",core );
-			    entigrator.ent_replace(entity);
+			    entigrator.ent_alter(entity);
 			    JConsoleHandler.execute(console, getLocator());
 			    return;
 			}
@@ -403,7 +403,7 @@ public class JIndexPanel extends JPanel implements JContext , JFacetRenderer,JRe
 								    	   entity.removeElementItem("index.jlocator", nodeKey$);
 								       }
 								    Entigrator entigrator=console.getEntigrator(entihome$);
-								    entigrator.ent_replace(entity);
+								    entigrator.ent_alter(entity);
 								    JConsoleHandler.execute(console, getLocator());
 								     }catch(Exception ee){
 								    	 LOGGER.info(ee.toString());
@@ -419,7 +419,7 @@ public class JIndexPanel extends JPanel implements JContext , JFacetRenderer,JRe
 					@Override
 					public void actionPerformed(ActionEvent e) {
 						Entigrator entigrator=console.getEntigrator(entihome$);
-						entigrator.ent_replace(entity);
+						entigrator.ent_alter(entity);
 						console.back();
 						
 					}
@@ -853,9 +853,11 @@ private Sack orderGroupDefault(Sack index,String groupKey$){
 	public void reindex(JMainConsole console, Entigrator entigrator, Sack entity) {
 		try{	
 	    	String indexHandler$=IndexHandler.class.getName();
-	    	if(entity.getElementItem("fhandler", indexHandler$)!=null){
+	    	if(entity.getElementItem("fhandler", indexHandler$)==null)
+				return;
+	    	if(entity.getElementItem("jfacet", indexHandler$)==null){
 				entity.putElementItem("jfacet", new Core(null,indexHandler$,JIndexFacetOpenItem.class.getName()));
-				entigrator.ent_replace(entity);
+				entigrator.ent_alter(entity);
 			}
 	    }catch(Exception e){
 	    	Logger.getLogger(getClass().getName()).severe(e.toString());
@@ -992,7 +994,7 @@ private Sack orderGroupDefault(Sack index,String groupKey$){
 								  String nodeKey$=locator.getProperty(NODE_KEY);
 								  entity=orderGroupDefault(entity, nodeKey$);
 								  entity.putElementItem("index.selection", new Core(null,"selection",nodeKey$));
-								  entigrator.ent_replace(entity);
+								  entigrator.ent_alter(entity);
 								  JConsoleHandler.execute(console,getLocator());
 							   }catch(Exception ee){
 								   Logger.getLogger(JIndexPanel.class.getName()).info(ee.toString());
@@ -1054,7 +1056,7 @@ private Sack orderGroupDefault(Sack index,String groupKey$){
 									  for(String aSa:sa){
 										  entity=pasteItemToGroup(entity,groupKey$,aSa);
 									  }
-									  entigrator.ent_replace(entity);
+									  entigrator.ent_alter(entity);
 									  cut=false;
 								      JConsoleHandler.execute(console, getLocator());
 								   }catch(Exception ee){
@@ -1083,7 +1085,7 @@ private Sack orderGroupDefault(Sack index,String groupKey$){
 								  
 								  entity=removeNode(entity,nodeKey$);
 								  entity.putElementItem("index.selection", new Core(null,"selection",groupKey$));
-								  entigrator.ent_replace(entity);
+								  entigrator.ent_alter(entity);
 								  JConsoleHandler.execute(console,getLocator());
 							   }catch(Exception ee){
 								   Logger.getLogger(JIndexPanel.class.getName()).info(ee.toString());
@@ -1173,7 +1175,7 @@ private Sack orderGroupDefault(Sack index,String groupKey$){
 							
 							  entity.removeElementItem("index.jlocator", nodeKey$);
 							  entity.putElementItem("index.selection", new Core(null,"selection",groupKey$));
-							  entigrator.ent_replace(entity);
+							  entigrator.ent_alter(entity);
 							  JConsoleHandler.execute(console, getLocator());
 						   }
 								
@@ -1246,7 +1248,7 @@ private Sack orderGroupDefault(Sack index,String groupKey$){
 								  if(title!=null){
 								  entity.removeElementItem("index.title", nodeKey$);
 								  Entigrator entigrator=console.getEntigrator(entihome$);
-							  	  entigrator.ent_replace(entity);
+							  	  entigrator.ent_alter(entity);
 								  JConsoleHandler.execute(console, getLocator());
 								  }
 							   }catch(Exception ee){
@@ -1496,7 +1498,7 @@ private Sack pasteItemToGroup(Sack index,String groupKey$,String itemLocator$){
          if(!entity.existsElement("index.selection"))
         	 entity.createElement("index.selection");
          entity.putElementItem("index.selection", new Core(null,"selection",selectedNodeKey$));
-         entigrator.ent_replace(entity);
+         entigrator.ent_alter(entity);
       	  //
   		  }
 }
@@ -1643,7 +1645,7 @@ public void activate() {
 		return;
 	}
 	if(1==n){
-		entigrator.ent_replace(entity);
+		entigrator.ent_alter(entity);
 		//JConsoleHandler.execute(console, getLocator());
 	}
 	if(0==n){

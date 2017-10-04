@@ -27,6 +27,8 @@ import java.util.logging.Logger;
 import gdt.data.entity.BaseHandler;
 import gdt.data.entity.EntityHandler;
 import gdt.data.entity.facet.BookmarksHandler;
+import gdt.data.entity.facet.FieldsHandler;
+import gdt.data.entity.facet.FolderHandler;
 import gdt.data.grain.Core;
 import gdt.data.grain.Identity;
 import gdt.data.grain.Locator;
@@ -150,7 +152,7 @@ public class JBookmarksEditor extends JItemsListPanel implements JFacetRenderer,
 				                   String bmLocator$=be.getLocator();
 				                   bmLocator$=Locator.append(bmLocator$, EntityHandler.ENTITY_KEY, entityKey$);	 
 				                   bmLocator$=Locator.append(bmLocator$, Entigrator.ENTIHOME, entihome$);	 
-								  entigrator.ent_replace(entity);
+								  entigrator.ent_alter(entity);
 								  JConsoleHandler.execute(console,bmLocator$);
 							   }
 							}catch(Exception ee){
@@ -176,7 +178,7 @@ public class JBookmarksEditor extends JItemsListPanel implements JFacetRenderer,
 					@Override
 					public void actionPerformed(ActionEvent e) {
 						Entigrator entigrator=console.getEntigrator(entihome$);
-						entigrator.ent_replace(entity);
+						entigrator.ent_alter(entity);
 						console.back();
 					}
 				} );
@@ -246,7 +248,7 @@ protected void paste(){
     	}
     	ca=cl.toArray(new Core[0]);
     	entity.elementReplace("jbookmark", ca);
-    	entigrator.ent_replace(entity);
+    	entigrator.ent_alter(entity);
     	JConsoleHandler.execute(console, getLocator());
     }catch(Exception e){
     	LOGGER.severe(e.toString());
@@ -385,7 +387,7 @@ protected void paste(){
 				Sack bookmarks=entigrator.ent_new("bookmarks", text$);
 				   bookmarks=entigrator.ent_assignProperty(bookmarks, "bookmarks", bookmarks.getProperty("label"));
 				   bookmarks.putAttribute(new Core(null,"icon","bookmark.png"));
-				   entigrator.ent_replace(bookmarks);
+				   entigrator.ent_alter(bookmarks);
 				   entigrator.saveHandlerIcon(JEntitiesPanel.class, "bookmark.png");
 				   entityKey$=bookmarks.getKey();
 				   JBookmarksEditor be=new JBookmarksEditor();
@@ -424,7 +426,7 @@ protected void paste(){
 				bookmark.value=  bookmarkLocator$;
 			}
 			entity.putElementItem("jbookmark", bookmark);
-			entigrator.ent_replace(entity);
+			entigrator.ent_alter(entity);
 			String bmeLocator$=getLocator();
 			bmeLocator$=Locator.append(bmeLocator$, Entigrator.ENTIHOME, entihome$);
 			bmeLocator$=Locator.append(bmeLocator$, EntityHandler.ENTITY_KEY, entityKey$);
@@ -526,9 +528,12 @@ protected void paste(){
 	public void reindex(JMainConsole console, Entigrator entigrator, Sack entity) {
     try{	
     	String bookmarksHandler$=BookmarksHandler.class.getName();
-    	if(entity.getElementItem("fhandler", bookmarksHandler$)!=null){
+    	if(entity.getElementItem("fhandler", bookmarksHandler$)==null){
+    		return ;
+    	}
+    	if(entity.getElementItem("jfacet", bookmarksHandler$)==null){
 			entity.putElementItem("jfacet", new Core(JBookmarksFacetAddItem.class.getName(),bookmarksHandler$,JBookmarksFacetOpenItem.class.getName()));
-			entigrator.ent_replace(entity);
+			entigrator.ent_alter(entity);
 		}
     }catch(Exception e){
     	Logger.getLogger(getClass().getName()).severe(e.toString());
@@ -620,7 +625,7 @@ public void activate() {
 		return;
 	}
 	if(1==n){
-		entigrator.ent_replace(entity);
+		entigrator.ent_alter(entity);
 	}
 	if(0==n){
 		 JConsoleHandler.execute(console, getLocator());

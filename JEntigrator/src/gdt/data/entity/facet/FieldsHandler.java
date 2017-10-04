@@ -55,12 +55,14 @@ public final static String FIELDS="fields";
 			
 			if(entity.getProperty("fields")!=null&&
 				!Locator.LOCATOR_FALSE.equals(entity.getProperty("fields"))){
+				if(entity.getElementItem("fhandler", FieldsHandler.class.getName())!=null)
+					return true;
 				String handler$=entity.getElementItemAt("fhandler", FieldsHandler.class.getName());
 				if(handler$==null){
 					if(!entity.existsElement("fhandler"))
 						entity.createElement("fhandler");
 					entity.putElementItem("fhandler", new Core(null,FieldsHandler.class.getName(),null));
-					entigrator.ent_replace(entity);
+					entigrator.ent_alter(entity);
 				}
 					 return true;
 			}
@@ -72,7 +74,7 @@ public final static String FIELDS="fields";
 						if(!entity.existsElement("fhandler"))
 							entity.createElement("fhandler");
 						entity.putElementItem("fhandler", new Core(null,FieldsHandler.class.getName(),null));
-						entigrator.ent_replace(entity);
+						entigrator.ent_alter(entity);
 					}
 						 return true;
 				}
@@ -115,7 +117,7 @@ private void adaptLabel(Entigrator entigrator){
 		Sack entity=entigrator.getEntityAtKey(entityKey$);
 		entityLabel$= entity.getProperty("label");
 		entity=entigrator.ent_assignProperty(entity, "fields",entityLabel$);
-		entigrator.ent_replace(entity);
+		entigrator.ent_alter(entity);
 	 }catch(Exception e){
     	Logger.getLogger(getClass().getName()).severe(e.toString());
 	    }

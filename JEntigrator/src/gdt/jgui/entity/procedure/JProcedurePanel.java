@@ -436,10 +436,13 @@ Entigrator entigrator;
 	@Override
 	public void reindex(JMainConsole console, Entigrator entigrator, Sack entity) {
 		 try{	
-		    	String procedureHandler$=ProcedureHandler.class.getName();
-		    	if(entity.getElementItem("fhandler", procedureHandler$)!=null){
+		    	
+			     String procedureHandler$=ProcedureHandler.class.getName();
+			     if(entity.getElementItem("fhandler", procedureHandler$)==null)
+					return;
+			     if(entity.getElementItem("jfacet", procedureHandler$)==null){
 					entity.putElementItem("jfacet", new Core(null,procedureHandler$,JProcedureFacetOpenItem.class.getName()));
-					entigrator.ent_replace(entity);
+					entigrator.ent_alter(entity);
 				}
 		    }catch(Exception e){
 		    	Logger.getLogger(getClass().getName()).severe(e.toString());
@@ -497,7 +500,7 @@ Entigrator entigrator;
 				procedure=entigrator.ent_assignProperty(procedure, "procedure", procedure.getProperty("label"));
 				procedure=entigrator.ent_assignProperty(procedure, "folder", procedure.getProperty("label"));
 				procedure.putAttribute(new Core(null,"icon","procedure.png"));
-				entigrator.ent_replace(procedure);
+				entigrator.ent_alter(procedure);
 				File folderHome=new File(entihome$+"/"+procedure.getKey());
 				if(!folderHome.exists())
 				    folderHome.mkdir();

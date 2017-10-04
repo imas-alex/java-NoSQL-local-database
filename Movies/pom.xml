@@ -2,7 +2,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>Movies</groupId>
   <artifactId>Movies</artifactId>
-  <version>0.0.4-SNAPSHOT</version>
+  <version>0.0.5-SNAPSHOT</version>
   <description>The movies extension for the entigrator application</description>
   <url>https://github.com/imas-alex/java-NoSQL-local-database</url>
   <issueManagement>

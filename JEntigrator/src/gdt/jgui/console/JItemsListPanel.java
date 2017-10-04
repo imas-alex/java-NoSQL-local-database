@@ -123,6 +123,7 @@ public  abstract class JItemsListPanel extends JPanel implements JContext{
 			      }
 				}
 			} );
+		   menu.add(unselectItem); 
 		//
 		   countItem = new JMenuItem("Count all");
 		   countItem.addActionListener(new ActionListener() {

@@ -108,14 +108,17 @@ public class JMainConsole {
 					    }
 					    public void windowActivated(WindowEvent e) {
 					    	try{
-					    	    	
+					    		if(debug)
+							    	System.out.println("MainConsole:activated");   	    	
 					    		int cnt=console.frmEntigrator.getContentPane().getComponentCount();
 					    	if(cnt>0){
 					    	
 					    	JContext current=(JContext)console.frmEntigrator.getContentPane().getComponent(0);
 					    	
 					    	if(current!=null)
-					    	    	
+					    		if(debug)
+							    	System.out.println("MainConsole:activated:context="+current.getTitle());   	    	
+					    		  	
 					    	    current.activate();
 					    	}
 					    	}catch(Exception ee){
@@ -344,11 +347,13 @@ public void putContext(JContext context,String locator$){
 	subtitle.setText(subtitle$);
 	frmEntigrator.getContentPane().add(subtitle,BorderLayout.SOUTH );
 	}
+		
 	menuBar.revalidate();
 	menuBar.repaint();
-	
+		
 	frmEntigrator.getContentPane().revalidate();
 	frmEntigrator.getContentPane().repaint();
+	
 }
 
 /**

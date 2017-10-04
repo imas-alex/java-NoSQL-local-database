@@ -195,7 +195,7 @@ public class JWebsetFacetOpenItem extends JFacetOpenItem implements JRequester,W
 			 entity.removeElement("web");
 			 entity.removeElement("web.icon");
 			 entity.removeElement("web.login");
-			entigrator.ent_replace(entity);
+			entigrator.ent_alter(entity);
 			entigrator.ent_takeOffProperty(entity, "webset");
 		}catch(Exception e){
 		Logger.getLogger(getClass().getName()).severe(e.toString());

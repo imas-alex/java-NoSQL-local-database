@@ -65,6 +65,8 @@ import gdt.jgui.console.JMainConsole;
 import gdt.jgui.console.JRequester;
 import gdt.jgui.entity.JEntityPrimaryMenu;
 import gdt.jgui.entity.JReferenceEntry;
+import gdt.jgui.entity.fields.JFieldsFacetAddItem;
+import gdt.jgui.entity.fields.JFieldsFacetOpenItem;
 import gdt.jgui.tool.JTextEditor;
 /**
  * This class provides the folder functionality.
@@ -295,7 +297,7 @@ public class JFolderPanel extends JItemsListPanel implements JFacetRenderer,JReq
                    //folder.print();
                    String icons$=entihome$+"/"+Entigrator.ICONS;
    				   Support.addHandlerIcon(getClass(), "folder.png", icons$);
-                   entigrator.ent_replace(folder);
+                   entigrator.ent_alter(folder);
                   // System.out.println("FolderPanel:response:create folder:1");
                   // folder.print();
 				   //entigrator.saveHandlerIcon(JFolderPanel.class, "folder.png");
@@ -438,8 +440,12 @@ public class JFolderPanel extends JItemsListPanel implements JFacetRenderer,JReq
 	@Override
 	public void reindex(JMainConsole console, Entigrator entigrator, Sack entity) {
 		 try{
-		    		entity.putElementItem("jfacet", new Core(JFolderFacetAddItem.class.getName(),FolderHandler.class.getName(),JFolderFacetOpenItem.class.getName()));
-					entigrator.ent_replace(entity);
+			 if(entity.getElementItem("fhandler", FolderHandler.class.getName())==null)
+			return;
+			 if(entity.getElementItem("jfacet", FolderHandler.class.getName())==null){	
+				 entity.putElementItem("jfacet", new Core(JFolderFacetAddItem.class.getName(),FolderHandler.class.getName(),JFolderFacetOpenItem.class.getName()));
+					entigrator.ent_alter(entity);
+				}
 		    }catch(Exception e){
 		    	LOGGER.severe(e.toString());
 		    }

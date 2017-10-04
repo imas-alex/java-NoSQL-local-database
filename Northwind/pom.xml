@@ -2,12 +2,12 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>Northwind</groupId>
   <artifactId>Northwind</artifactId>
-  <version>0.0.4-SNAPSHOT</version>
+  <version>0.0.10-SNAPSHOT</version>
   <scm>
-		<url>https://github.com/imas-alex/Graph</url>
+		<url>https://github.com/imas-alex/Northwind</url>
 		<connection>scm:git:git://github.com/imas-alex/java-NoSQL-local-database.git</connection>
 		<developerConnection>scm:git:git@github.com:imas-alex/java-NoSQL-local-database.git</developerConnection>
-	  <tag>Graph-0.0.12</tag>
+	  <tag>Northwind-0.0.8</tag>
   </scm>
 	<developers>
 		<developer>
@@ -19,6 +19,15 @@
 	</developers>
   <build>
     <sourceDirectory>src</sourceDirectory>
+  
+    <resources>
+      <resource>
+        <directory>src</directory>
+        <includes>
+          <include>**/*.png</include>
+        </includes>
+      </resource>
+    </resources>
     <plugins>
       <plugin>
         <artifactId>maven-compiler-plugin</artifactId>
@@ -34,7 +43,10 @@
    <dependency>
   <groupId>com.github.imas-alex</groupId>
   <artifactId>JEntigrator</artifactId>
-  <version>0.0.6</version>
+  <version>0.0.915</version>
+   <scope>system</scope>
+    <systemPath>${basedir}/../JEntigrator/target/JEntigrator-0.0.915-jar-with-dependencies.jar </systemPath>
+ 
    </dependency>
    </dependencies> 
 </project>

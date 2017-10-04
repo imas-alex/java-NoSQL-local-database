@@ -144,7 +144,8 @@ public class ArchiveHandler {
 	
 	private boolean append(Entigrator entigrator,String root$, String source$, TarArchiveOutputStream aos) {
 	        try {
-
+	        	if(debug)
+	        	System.out.println("ArchiveHandler:append:root="+root$+" source="+source$);
 	            File[] fa = null;
 	            File source = new File(source$);
 	            if (source.exists())
@@ -872,8 +873,8 @@ private static Sack prepareUndo(Entigrator entigrator,String cache$){
 			   for(File f:ifa)
 				   undo.putElementItem("icon", new Core(null,f.getName(),null));
 		}
-		entigrator.ent_replace(undo);
-		entigrator.ent_reindex(undo);
+		entigrator.ent_alter(undo);
+		undo=entigrator.ent_reindex(undo);
 		return undo;
 	}catch(Exception e){
 		Logger.getLogger(ArchiveHandler.class.getName()).severe(e.toString());
@@ -933,7 +934,7 @@ private static void fillUndo(Entigrator entigrator,Sack undo){
  * If keep is false then replace existing entities.  
  *  @return array of keys of inserted entities.
  */
-public static String[] insertCache(Entigrator entigrator,String cache$,boolean keep){
+public static String[] insertFromCache(Entigrator entigrator,String cache$,boolean keep){
 	try{
 		File entityBodies=new File(cache$+"/"+Entigrator.ENTITY_BASE+"/data/");
 		String[] sa=entityBodies.list();
@@ -945,7 +946,7 @@ public static String[] insertCache(Entigrator entigrator,String cache$,boolean k
 					continue;
 			entity=Sack.parseXML(entigrator,entityBodies.getPath()+"/"+s);
 			if(entity!=null)
-				entigrator.ent_replace(entity);
+				entigrator.ent_alter(entity);
 			    entigrator.ent_reindex(entity);
 			    cacheEntityHome=new File(cache$+"/"+s);
 			    if(cacheEntityHome.exists()){
@@ -978,6 +979,40 @@ public static String[] insertCache(Entigrator entigrator,String cache$,boolean k
 	}
 	return null;
 }
+public static String insertEntities(Entigrator entigrator,String file$,boolean keep){
+	try{
+       if(!ARCHIVE_CONTENT_ENTITIES.equals(detectContentOfArchive(file$))){
+    	  if(debug)
+    	   System.out.println("ArchiveHandler:insertEntites:wrong archive="+file$);
+    	   return null;
+       }
+    	   
+		File cache=new File(System.getProperty("user.home")+"/.entigrator/cache");
+        if(!cache.exists())
+        	cache.mkdirs();
+        FileExpert.clear(cache.getPath());
+		ArchiveHandler.extractEntities(cache.getPath(), file$);
+		Sack undo=ArchiveHandler.prepareUndo(entigrator, cache.getPath());
+	   ArchiveHandler.fillUndo(entigrator, undo);
+	   ArchiveHandler.insertFromCache(entigrator, cache.getPath(),keep);
+		String[] sa=undo.elementList("entity");
+		Sack entity;
+		if(sa!=null){
+			
+			for(String s:sa){
+				entity=entigrator.ent_reload(s);
+				if(entity!=null)
+					entigrator.ent_reindex(entity);
+						
+			}
+		}
+		return undo.getKey();
+	}catch(Exception ee){
+		Logger.getLogger(ArchiveHandler.class.getName()).severe(ee.toString());
+		return null;
+	}
+}
+
 /**
  * Insert entities from the archive file into the database. 
  * @param  console main console instance
@@ -1006,9 +1041,9 @@ public static String insertEntities(JMainConsole console,String entihome$,String
 		  int response = JOptionPane.showConfirmDialog(console.getContentPanel(), "Keep existing entities ?", "Confirm",
 			        JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
 		  if (response == JOptionPane.YES_OPTION) 
-			 ArchiveHandler.insertCache(entigrator, cache.getPath(),true);
+			 ArchiveHandler.insertFromCache(entigrator, cache.getPath(),true);
 		  else 
-		   ArchiveHandler.insertCache(entigrator, cache.getPath(),false);
+		   ArchiveHandler.insertFromCache(entigrator, cache.getPath(),false);
 		String[] sa=undo.elementList("entity");
 		if(sa!=null){
 			String entityLocator$;

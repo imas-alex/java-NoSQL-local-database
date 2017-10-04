@@ -20,7 +20,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Hashtable;
 import java.util.Properties;
 import java.util.logging.Logger;
 import javax.swing.JMenu;
@@ -38,8 +37,11 @@ import gdt.data.grain.Sack;
 import gdt.data.store.Entigrator;
 import gdt.jgui.base.JBaseNavigator;
 import gdt.jgui.base.JBasesPanel;
+import gdt.jgui.base.JBusyStorage;
 import gdt.jgui.base.JCategoryPanel;
 import gdt.jgui.base.JDesignPanel;
+import gdt.jgui.base.ProgressDialog;
+import gdt.jgui.base.ProgressDisplay;
 import gdt.jgui.console.JConsoleHandler;
 import gdt.jgui.console.JContext;
 import gdt.jgui.console.JFacetRenderer;
@@ -49,7 +51,7 @@ import gdt.jgui.console.JMainConsole;
 import gdt.jgui.console.ReloadDialog;
 import gdt.jgui.console.WContext;
 import gdt.jgui.console.WUtils;
-import gdt.jgui.console.JItemsListPanel.ItemPanelComparator;
+
 /**
  * Displays the list of entities.
  * @author imasa
@@ -73,6 +75,7 @@ public class JEntitiesPanel extends JItemsListPanel implements WContext {
 	protected JMenuItem reindexItem;
 	protected JMenuItem deleteItem;
 	protected JMenuItem archiveItem;
+	protected JMenuItem releaseItem;
 	protected JMenuItem removeComponentsItem; 
 	protected JMenuItem removeContainersItem; 
 	protected String requesterResponseLocator$;
@@ -121,43 +124,9 @@ public class JEntitiesPanel extends JItemsListPanel implements WContext {
 			  			}catch(Exception ee){
 			  				 System.out.println("JEntitiesPanel:getConextMenu:"+ee.toString());
 			  			}
-			Properties locator=Locator.toProperties(locator$);
-				if(locator.getProperty(EntityHandler.ENTITY_CONTAINER)!=null){
-				if(JEntityPrimaryMenu.hasToPaste(console, locator$)){
-					pasteItem = new JMenuItem("Paste components");
-					pasteItem.addActionListener(new ActionListener() {
-						@Override
-						public void actionPerformed(ActionEvent e) {
-							pasteComponents();
-						}
-					} );
-					menu.add(pasteItem);
-				}
-				if(hasSelectedItems()){
-				  if(containerKey$!=null){	
-					removeComponentsItem = new JMenuItem("Remove components");
-					removeComponentsItem.addActionListener(new ActionListener() {
-						@Override
-						public void actionPerformed(ActionEvent e) {
-							removeComponents();
-						}
-					} );
-					menu.add(removeComponentsItem);
-				  }
-				}
-				}
-				if(locator.getProperty(EntityHandler.ENTITY_COMPONENT)!=null){
-					 if(componentKey$!=null&&JEntitiesPanel.this.hasSelectedItems()){	
-							removeContainersItem = new JMenuItem("Remove containers");
-							removeContainersItem.addActionListener(new ActionListener() {
-								@Override
-								public void actionPerformed(ActionEvent e) {
-									removeContainers();
-								}
-							} );
-							menu.add(removeContainersItem);
-						  }
-				}
+			
+				Properties locator=Locator.toProperties(locator$);
+			
 				if(hasSelectedItems()){
 					menu.addSeparator();
 					copyItem = new JMenuItem("Copy");
@@ -180,18 +149,42 @@ public class JEntitiesPanel extends JItemsListPanel implements WContext {
 					reindexItem.addActionListener(new ActionListener() {
 						@Override
 						public void actionPerformed(ActionEvent e) {
+							Entigrator entigrator=console.getEntigrator(entihome$);
+							//if(entigrator.store_scopeIsBusy(true, sa))
 							JItemPanel[] ipa=JEntitiesPanel.this.getItems();
+							Properties locator;
+							ArrayList<String>sl=new ArrayList<String>();
+							String entityKey$;
+							for(JItemPanel ip:ipa){
+								if(ip.isChecked()){
+								    locator=Locator.toProperties(ip.getLocator());
+								    entityKey$=locator.getProperty(EntityHandler.ENTITY_KEY);
+								    sl.add(entityKey$);
+								}
+							}
+							String[] sa=sl.toArray(new String[0]);
+							if(entigrator.store_scopeIsBusy(true, sa)){
+								JBusyStorage.show(JEntitiesPanel.this);
+								return;
+							}
+							entigrator.store_lock();
 							for(JItemPanel ip:ipa)
 								if(ip.isChecked()){
 								    JEntityPrimaryMenu.reindexEntity(console, ip.getLocator());
 								}
+							entigrator.store_releaseScope(sa);
+							
 						}
 					} );
 					menu.add(reindexItem);
-					archiveItem = new JMenuItem("Archive");
+					archiveItem = new JMenuItem("Export");
 					archiveItem.addActionListener(new ActionListener() {
 						@Override
 						public void actionPerformed(ActionEvent e) {
+							ProgressDialog pd=new ProgressDialog(console.getFrame(),Export,"Prepare ..");
+							pd.setLocationRelativeTo(JEntitiesPanel.this);
+							pd.setVisible(true);
+							/*
 							JItemPanel[] ipa=JEntitiesPanel.this.getItems();
 							Entigrator entigrator=console.getEntigrator(entihome$);
 							Properties locator;
@@ -222,51 +215,49 @@ public class JEntitiesPanel extends JItemsListPanel implements WContext {
 						  apLocator$=Locator.append(apLocator$,Locator.LOCATOR_ICON_FILE,"archive.png.png");
 					
 						  JConsoleHandler.execute(console, apLocator$);
+						  */
 							}
 					} );
 					menu.add(archiveItem);
+					//
+					releaseItem = new JMenuItem("Force release");
+					releaseItem.addActionListener(new ActionListener() {
+						@Override
+						public void actionPerformed(ActionEvent e) {
+							Entigrator entigrator=console.getEntigrator(entihome$);
+							//if(entigrator.store_scopeIsBusy(true, sa))
+							JItemPanel[] ipa=JEntitiesPanel.this.getItems();
+							Properties locator;
+							ArrayList<String>sl=new ArrayList<String>();
+							String entityKey$;
+							for(JItemPanel ip:ipa){
+								if(ip.isChecked()){
+								    locator=Locator.toProperties(ip.getLocator());
+								    entityKey$=locator.getProperty(EntityHandler.ENTITY_KEY);
+								    entigrator.ent_release(entityKey$);
+								}
+							}
+							entigrator.store_release();
+						}
+					} );
+					menu.add(releaseItem);
+					//
 					menu.addSeparator();
 					deleteItem = new JMenuItem("Delete");
 					deleteItem.addActionListener(new ActionListener() {
 						@Override
 						public void actionPerformed(ActionEvent e) {
-							//System.out.println("JEntitiesPanel:delete:0");
 							int response = JOptionPane.showConfirmDialog(console.getContentPanel(), "Delete ?", "Confirm",
 							        JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
-						   if (response == JOptionPane.YES_OPTION) {
-							  // System.out.println("JEntitiesPanel:delete:1");
-							   JItemPanel[] ipa=JEntitiesPanel.this.getItems();
-							Entigrator entigrator=console.getEntigrator(entihome$);
-							String iLocator$;
-							Properties iLocator;
-							String iEntityLabel$;
-							Sack iEntity;
-							ArrayList<String>sl=new ArrayList<String>();
-							for(JItemPanel ip:ipa){
-								iLocator$=ip.getLocator();
-								
-								iLocator=Locator.toProperties(iLocator$);
-							//	System.out.println("JEntitiesPanel:delete title="+iLocator.getProperty(Locator.LOCATOR_TITLE));
-								iEntityLabel$=iLocator.getProperty(EntityHandler.ENTITY_LABEL);
-								if(ip.isChecked()){
-								//	System.out.println("JEntitiesPanel:delete label="+iEntityLabel$);
-									iEntity=entigrator.ent_getAtLabel(iEntityLabel$);
-									if(iEntity!=null)
-										entigrator.deleteEntity(iEntity);
-									
-								}
-								else{
-									sl.add(iEntityLabel$);
-								}
-							}
-							String[] sa=sl.toArray(new String[0]);
-                            if(sa!=null&&sa.length>0){							
-							String sa$=Locator.toString(sa);
-							locator$=Locator.append(locator$, EntityHandler.ENTITY_LIST, sa$);
-                            }
-							JConsoleHandler.execute(console, locator$);
+						   if (response != JOptionPane.YES_OPTION) 
+							   return;
+							
+							ProgressDisplay pd=new ProgressDisplay(console,Delete,"Wait for delete..");	
+				    	pd.setLocationRelativeTo(JEntitiesPanel.this);
+				    	pd.setVisible(true);
 						}
-						}
+						
+				    	
 					} );
 					menu.add(deleteItem);
 				  }
@@ -297,6 +288,96 @@ public class JEntitiesPanel extends JItemsListPanel implements WContext {
 		} );
 		menu.add(doneItem);
 		return menu;
+	}
+	//
+	
+	private void deleteEntities(Entigrator entigrator){
+		JItemPanel[] ipa=JEntitiesPanel.this.getItems();
+		
+		String iLocator$;
+		Properties iLocator;
+		String iEntityKey$;
+		String iEntityLabel$;
+		Sack iEntity;
+		ArrayList<String>sl=new ArrayList<String>();
+		entigrator.setBulkMode(true);
+		console.clipboard.resetProgress(ipa.length);
+	    console.clipboard.setProgressMessage("Delete entities..");
+		long i=0;
+		for(JItemPanel ip:ipa){
+			console.clipboard.setProgress(i++);
+			iLocator$=ip.getLocator();
+			iEntityKey$=Locator.getProperty(iLocator$,EntityHandler.ENTITY_KEY);
+			iEntityLabel$=entigrator.indx_getLabel(iEntityKey$);
+			if(ip.isChecked()){
+			//System.out.println("JEntitiesPanel:delete label="+iEntityLabel$);
+				iEntity=entigrator.getEntityAtKey(iEntityKey$);
+				if(iEntity!=null)
+					entigrator.deleteEntity(iEntity);
+			}
+			else{
+				//System.out.println("JEntitiesPanel:cannot get entity  label="+iEntityLabel$);
+				sl.add(iEntityKey$);
+			}
+		}
+		entigrator.setBulkMode(false);
+		String[] sa=sl.toArray(new String[0]);
+        if(sa!=null&&sa.length>0){							
+		String sa$=Locator.toString(sa);
+		locator$=Locator.append(locator$, EntityHandler.ENTITY_LIST, sa$);
+        }
+		JConsoleHandler.execute(console, locator$);
+	}
+	Runnable Delete=new Runnable(){
+		public void run(){
+			//System.out.println("Entigrator:Reindex:thread="+Thread.currentThread().hashCode());
+			if(console.clipboard.getProgress()>0){
+				console.clipboard.setProgress(0);
+				return;
+			}
+			Entigrator entigrator=console.getEntigrator(entihome$);
+			deleteEntities(entigrator);
+		}};
+	//
+	Runnable Export =new Runnable(){
+		public void run(){
+		   export();	
+		}
+	};
+	private void export(){
+		JItemPanel[] ipa=JEntitiesPanel.this.getItems();
+		if(ipa==null||ipa.length<1)
+			return;
+		Entigrator entigrator=console.getEntigrator(entihome$);
+		Properties locator;
+		ArrayList<String>sl=new ArrayList<String>();
+		String entityKey$;
+		long i=0;
+		for(JItemPanel ip:ipa){
+			if(ip.isChecked()){
+			    locator=Locator.toProperties(ip.getLocator());
+			    entityKey$=locator.getProperty(EntityHandler.ENTITY_KEY);
+			    sl.add(entityKey$);
+			}
+		}
+		String[] sa=sl.toArray(new String[0]);
+		
+		String[] ea=JReferenceEntry.getCoalition(console, entigrator, sa);
+		if(debug){
+		if(ea==null)
+			System.out.println("JEntitiesPanel:archive:ea null");
+		else
+		System.out.println("JEntitiesPanel:archive:ea="+ea.length);
+		}
+		JArchivePanel archivePanel=new JArchivePanel();
+    	String apLocator$=archivePanel.getLocator();
+	  apLocator$=Locator.append(apLocator$,Entigrator.ENTIHOME,entihome$);
+	  apLocator$=Locator.append(apLocator$, EntityHandler.ENTITY_LIST,Locator.toString(ea));
+	  apLocator$=Locator.append(apLocator$,Locator.LOCATOR_ICON_CONTAINER,Locator.LOCATOR_ICON_CONTAINER_CLASS);
+	  apLocator$=Locator.append(apLocator$,Locator.LOCATOR_ICON_CLASS,JEntityPrimaryMenu.class.getName());
+	  apLocator$=Locator.append(apLocator$,Locator.LOCATOR_ICON_FILE,"archive.png.png");
+
+	  JConsoleHandler.execute(console, apLocator$);
 	}
 /**
  * Get the context locator.
@@ -355,7 +436,7 @@ public class JEntitiesPanel extends JItemsListPanel implements WContext {
         	 containerKey$=locator.getProperty(EntityHandler.ENTITY_CONTAINER);
         	 componentKey$=locator.getProperty(EntityHandler.ENTITY_COMPONENT);
         	  Entigrator entigrator=console.getEntigrator(entihome$);
-        	 saveId$=entigrator.store_saveId();
+        	// saveId$=entigrator.store_saveId();
         	
         	
 			 JItemPanel[] ipl= listEntitiesAtList( console,locator$);
@@ -529,67 +610,7 @@ public String getTitle() {
 			}
 		return subtitle$;
 	}
-	private void pasteComponents(){
-		String locator$= JEntityPrimaryMenu.pasteComponents(console,getLocator());
-		JEntityPrimaryMenu.showComponents(console, locator$);
-	}
-	private void removeComponents(){
-		String[] sa=listSelectedItems();
-		if(sa==null|sa.length<1)
-			return;
-		try{
-			  Entigrator entigrator=console.getEntigrator(entihome$);
-			  Sack container=entigrator.getEntityAtKey(entityKey$);
-			  Properties locator;
-			  String componentKey$;
-			  Sack component;
-			  for(String aSa:sa){
-				 try{ 
-				 locator=Locator.toProperties(aSa);
-				 locator=Locator.toProperties(aSa);
-				 componentKey$=locator.getProperty(EntityHandler.ENTITY_KEY);
-				 component=entigrator.getEntityAtKey(componentKey$);
-				 if(component!=null){
-					 container=entigrator.col_breakRelation(container, component);
-				 }
-				 }catch(Exception ee){
-					 LOGGER.info(ee.toString()); 
-				 }
-			  }
-			 JEntityPrimaryMenu.showComponents(console, locator$);
-			}catch(Exception e){
-			LOGGER.severe(e.toString());
-			}
-	}
-	private void removeContainers(){
-		String[] sa=listSelectedItems();
-		if(sa==null|sa.length<1)
-			return;
-		try{
-			  Entigrator entigrator=console.getEntigrator(entihome$);
-			  Sack component=entigrator.getEntityAtKey(entityKey$);
-			  Properties locator;
-			  Sack container;
-			  for(String aSa:sa){
-				 try{ 
-				 locator=Locator.toProperties(aSa);
-				 locator=Locator.toProperties(aSa);
-				 containerKey$=locator.getProperty(EntityHandler.ENTITY_KEY);
-				 container=entigrator.getEntityAtKey(containerKey$);
-				 if(component!=null){
-					 container=entigrator.col_breakRelation(container, component);
-				 }
-				 }catch(Exception ee){
-					 LOGGER.info(ee.toString()); 
-				 }
-			  }
-			 JEntityPrimaryMenu.showContainers(console, locator$);
-			  
-			}catch(Exception e){
-			LOGGER.severe(e.toString());
-			}
-	}
-
+	
 	@Override
 	public void activate() {
 		if(debug)
@@ -710,25 +731,6 @@ public String getTitle() {
 		    	   
 		       
 		    	
-		   // 
-		       /*
-		    String[] ia=listWebItems(entigrator,webHome$,sa);
-		    if(ia!=null){
-		    	int page_begin=0;
-		    	if(pageBeginCount$!=null)
-		    		try{ page_begin=Integer.parseInt(pageBeginCount$);}catch(Exception e){}
-		    	int pageEnd=page_begin+PAGE_SIZE;
-		    	for(int i=page_begin;i<ia.length;i++){
-		    	sb.append(ia[i]+"<br>");
-		    	if(i>pageEnd ){
-		    		locator$=Locator.append(locator$, PAGE_BEGIN_COUNT, String.valueOf(pageEnd));
-		    		String moreItem$="<a href=\""+webHome$+"?"+WContext.WEB_LOCATOR+"="+Base64.encodeBase64URLSafeString(locator$.getBytes())+"\" >Next page </a>";
-		    		sb.append(moreItem$);
-		    				break;
-		    	}
-		    	}
-		    }
-		    */
 		    }	  
 	        sb.append("<script>");
 	      

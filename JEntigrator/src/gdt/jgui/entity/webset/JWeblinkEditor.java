@@ -401,7 +401,7 @@ try{
 						}
 				}else{
 					Entigrator entigrator=console.getEntigrator(entihome$);
-					entigrator.ent_replace(entity);	
+					entigrator.ent_alter(entity);	
 				  console.back();
 				}
 				
@@ -453,7 +453,7 @@ private void save(){
         String icon$ = Base64.encodeBase64String(res);
         webset.putElementItem("web.icon",new Core(null,webLinkKey$,icon$));
        }
-       entigrator.ent_replace(webset);
+       entigrator.ent_alter(webset);
 	}catch(Exception e){
        Logger.getLogger(getClass().getName()).severe(e.toString());		
 	}
@@ -648,9 +648,11 @@ private void save(){
 	public void reindex(JMainConsole console, Entigrator entigrator, Sack entity) {
 		 try{
 		    	String websetHandler$=WebsetHandler.class.getName();
-		    	if(entity.getElementItem("fhandler", websetHandler$)!=null){
+		    	if(entity.getElementItem("fhandler", websetHandler$)==null)
+		    		return;
+		    	if(entity.getElementItem("jfacet", websetHandler$)==null){
 					entity.putElementItem("jfacet", new Core(JWebsetFacetAddItem.class.getName(),websetHandler$,JWebsetFacetOpenItem.class.getName()));
-					entigrator.ent_replace(entity);
+					entigrator.ent_alter(entity);
 				}
 		    }catch(Exception e){
 		    	Logger.getLogger(getClass().getName()).severe(e.toString());
@@ -713,7 +715,7 @@ private void save(){
 				newEntity.createElement("fhandler");
 				newEntity.putElementItem("fhandler", new Core(null,WebsetHandler.class.getName(),null));
 				newEntity.putAttribute(new Core (null,"icon","globe.png"));
-				entigrator.ent_replace(newEntity);
+				entigrator.ent_alter(newEntity);
 				String icons$=entihome$+"/"+Entigrator.ICONS;
 				Support.addHandlerIcon(JEntitiesPanel.class, "globe.png", icons$);
 				newEntity=entigrator.ent_reindex(newEntity);
@@ -739,7 +741,7 @@ private void save(){
 	//				System.out.println("WeblinkEditor:response:set icon="+iconFile$);
 		             Sack entity=entigrator.getEntityAtKey(entityKey$);
 		             entity.putElementItem("web.icon", new Core(null,webLinkKey$,iconFile$));
-		             entigrator.ent_replace(entity);
+		             entigrator.ent_alter(entity);
 		             locator$=Locator.remove(locator$,BaseHandler.HANDLER_METHOD);
 		             locator$=Locator.remove(locator$,JRequester.REQUESTER_ACTION);
 		             JConsoleHandler.execute(console, locator$);
@@ -761,7 +763,7 @@ private void save(){
 		             }else
 		            	 login.value=text$;
 				     entity.putElementItem("web.login",login);
-		             entigrator.ent_replace(entity);
+		             entigrator.ent_alter(entity);
 		             locator$=Locator.remove(locator$,BaseHandler.HANDLER_METHOD);
 		             locator$=Locator.remove(locator$,JRequester.REQUESTER_ACTION);
 		             JConsoleHandler.execute(console, locator$);
@@ -860,7 +862,7 @@ public void activate() {
 		return;
 	}
 	if(1==n){
-		entigrator.ent_replace(entity);
+		entigrator.ent_alter(entity);
 		
 	}
 	if(0==n){

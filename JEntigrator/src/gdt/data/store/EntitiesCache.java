@@ -21,13 +21,13 @@ import gdt.data.grain.Core;
 import gdt.data.grain.Sack;
 import gdt.data.grain.Support;
 
-import java.io.File;
+//import java.io.File;
 import java.util.ArrayList;
-import java.util.Enumeration;
+//import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.Set;
-import java.util.Stack;
+//import java.util.Stack;
 import java.util.logging.Logger;
 /**
 * This class provides structures and methods to serve an entities
@@ -105,31 +105,6 @@ public synchronized Sack get(String entityKey$){
 public synchronized void delete(String entityKey$){
 	Support.removeKey( entityKey$,entities);
 }
-/**
- * Save entity on  disk.
- *  @param entity the entity .
- */
-/**
- * Save all entities on  disk.
- 
-public synchronized void save(){
-	try{
-		if(entities==null)
-			return;
-		Enumeration<String> keys=entities.keys();
-		if(keys==null)
-			return;
-		Sack entity;
-	while(keys.hasMoreElements()){	
-	   entity=entities.get(keys.nextElement());
-	   if(entity!=null)
-        	entigrator.saveNative(entity);
-	}
-	}catch(Exception e){
-		LOGGER.severe(":save:"+e.toString());
-	}
-}
-*/
 Runnable store=		new Runnable(){
 	public void run(){
 		// System.out.println("EntitiesCache:store:run:0"); 	
@@ -174,11 +149,11 @@ Runnable store=		new Runnable(){
 		    if(!s.isEmpty()){
 		      for(String key$:s){
 		        entityKey$=key$;
-		        candidate=entigrator.getEntity( entityKey$);
+		        candidate=entigrator.getEntityAtKey( entityKey$);
 		        if(candidate==null){
 		        	entity=entities.get(entityKey$);
 		        	if(entity!=null){
-		        	   entigrator.ent_replace(entity);
+		        	   entigrator.ent_alter(entity);
 		        	}
 		        }
 		        delete(entityKey$);
@@ -194,6 +169,9 @@ Runnable store=		new Runnable(){
 			
 		}
 };
+/**
+ * Delete all entities from the cache.
+ */
 public void clear(){
 	entities.clear();
 }

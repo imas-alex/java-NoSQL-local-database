@@ -263,10 +263,18 @@ private String getClearPropertiesLocator(){
 			String entihome$=locator.getProperty(Entigrator.ENTIHOME);
 			Entigrator entigrator=console.getEntigrator(entihome$);
 			if(ACTION_ADD_PROPERTY.equals(action$)){
+				//System.out.println("PropertyPanel:response:store is busy="+entigrator.store_isBusy());
+				if(entigrator.store_isBusy()){
+					JBusyStorage.show(this);
+					return;
+				}
 				String text$=locator.getProperty(JTextEditor.TEXT);
 			//	System.out.println("PropertyPanel:response:property="+text$);
-				if(text$!=null)
+				if(text$!=null){
+					entigrator.store_lock();
 					entigrator.indx_addPropertyName(text$);
+					entigrator.store_release();
+				}
 				    JDesignPanel dp=new JDesignPanel();
 				    String dpLocator$=dp.getLocator();
 				    dpLocator$=Locator.append(dpLocator$, Entigrator.ENTIHOME, entihome$);
@@ -277,9 +285,16 @@ private String getClearPropertiesLocator(){
 			if(ACTION_EDIT_PROPERTY.equals(action$)){
 				String text$=locator.getProperty(JTextEditor.TEXT);
 				String propertyName$=locator.getProperty(JDesignPanel.PROPERTY_NAME);
+				if(entigrator.store_isBusy()){
+					JBusyStorage.show(this);
+					return;
+				}
 			//	System.out.println("PropertyPanel:response:set  property name ="+propertyName$+" new="+text$);
-				if(text$!=null)
+				if(text$!=null){
+					entigrator.store_lock();
 					entigrator.prp_editPropertyName(propertyName$, text$);
+					entigrator.store_release();
+				}
 					
 				    JDesignPanel dp=new JDesignPanel();
 				    String dpLocator$=dp.getLocator();
@@ -293,7 +308,13 @@ private String getClearPropertiesLocator(){
 				 int response = JOptionPane.showConfirmDialog(console.getContentPanel(), "Delete unused properties ?", "Confirm",
 					        JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
 				   if (response == JOptionPane.YES_OPTION) {
+					   if(entigrator.store_isBusy()){
+							JBusyStorage.show(this);
+							return;
+						}
+					   entigrator.store_lock();
 					   entigrator.prp_deleteWrongEntries();
+					   entigrator.store_release();
 					   JDesignPanel dp=new JDesignPanel();
 					   String dpLocator$=dp.getLocator();
 					   dpLocator$=Locator.append(dpLocator$, Entigrator.ENTIHOME, entihome$);
@@ -319,14 +340,21 @@ private String getClearPropertiesLocator(){
 	}
 	public void deleteProperty(JMainConsole console,String locator$){
 		  try{
+			 
 			  Properties locator=Locator.toProperties(locator$);
 			  String entihome$=locator.getProperty(Entigrator.ENTIHOME);
 			  Entigrator entigrator=console.getEntigrator(entihome$);
+			  if(entigrator.store_isBusy()){
+					JBusyStorage.show(this);
+					return;
+				}
 			  String propertyName$=locator.getProperty(JDesignPanel.PROPERTY_NAME);
 			  int response = JOptionPane.showConfirmDialog(console.getContentPanel(), "Delete property ?", "Confirm",
 				        JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
 			   if (response == JOptionPane.YES_OPTION) {
+				   entigrator.store_lock();
 				   entigrator.prp_deletePropertyName(propertyName$);
+				   entigrator.store_release();
 				   JDesignPanel dp=new JDesignPanel();
 				   String dpLocator$=dp.getLocator();
 				   dpLocator$=Locator.append(dpLocator$, Entigrator.ENTIHOME,entihome$);

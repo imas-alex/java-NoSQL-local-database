@@ -261,7 +261,7 @@ public static String createBlankDatabase(String entihome$){
 			 folder=entigrator.ent_new("folder", "Icons",Entigrator.ICONS);
    	         folder.putAttribute(new Core(null,"icon","folder.png"));
 	         //entigrator.replace(folder);
-   	         entigrator.ent_replace(folder);
+   	         entigrator.ent_alter(folder);
 	         folder=entigrator.ent_assignProperty(folder, "folder", folder.getProperty("label"));
 		 }
 	   File folderHome=new File(entihome$+"/"+Entigrator.ICONS);

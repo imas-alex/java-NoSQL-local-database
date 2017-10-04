@@ -37,7 +37,6 @@ import gdt.data.grain.Sack;
 import gdt.data.grain.Support;
 import gdt.data.store.Entigrator;
 import gdt.data.store.FileExpert;
-import gdt.jgui.console.JClipboard;
 import gdt.jgui.console.JConsoleHandler;
 import gdt.jgui.console.JContext;
 import gdt.jgui.console.JItemPanel;
@@ -76,6 +75,7 @@ public class JBaseNavigator extends JItemsListPanel implements WContext{
 	boolean debug=false;
 private Logger LOGGER=Logger.getLogger(JBaseNavigator.class.getName());
 	String entihome$;
+	Sack undo;
 	boolean keep=true;
 	
 	/**
@@ -151,37 +151,16 @@ private Logger LOGGER=Logger.getLogger(JBaseNavigator.class.getName());
 					    chooser.setFileFilter(filter);
 					    if (chooser.showOpenDialog(JBaseNavigator.this) == JFileChooser.APPROVE_OPTION) { 
 					    	String file$=chooser.getSelectedFile().getPath();
-					    	String undo$=ArchiveHandler.insertEntities(console, entihome$, file$);
-					    	if(undo$!=null){
-					    		 Entigrator entigrator=console.getEntigrator(entihome$);
-					    		 Sack undo=entigrator.getEntityAtKey(undo$);
-					    		 undo.putElementItem("fhandler", new Core(null,"gdt.data.entity.facet.BookmarksHandler",null));
-					    		    undo.putElementItem("jfacet", new Core("gdt.jgui.entity.bookmark.JBookmarksFacetAddItem","gdt.data.entity.facet.BookmarksHandler","gdt.jgui.entity.bookmark.JBookmarksFacetOpenItem"));
-					    		    entigrator.ent_replace(undo);
-					    		    entigrator.ent_assignProperty(undo, "bookmarks", undo.getProperty("label"));
-					    		    String undoLocator$=EntityHandler.getEntityLocator(entigrator, undo);
-					    		    JEntityPrimaryMenu.reindexEntity(console, undoLocator$);
-					    			String[]sa=undo.elementList("entity");
-					    			if(sa!=null){
-					    				String entityLocator$;
-					    				Sack entity;
-					    				console.clipboard.clear();
-					    				FacetHandler[] fha=BaseHandler.listAllHandlers(entigrator);
-					    				for(String s:sa){
-					    					entity=entigrator.getEntityAtKey(s);
-					    					if(entity==null)
-					    						continue;
-					    					EntityHandler.completeMigration(entigrator, s, fha);
-					    					entityLocator$=EntityHandler.getEntityLocator(entigrator, entity);
-					    					JEntityPrimaryMenu.reindexEntity(console,entityLocator$);
-					    					console.clipboard.putString(entityLocator$);
-					    				}
-					    				undo=putBookmarks(console,undo);
-					    				entigrator.ent_replace(undo);
-					    				updateBookmarks(entigrator,undo);
-					    			}
-					    			
-					    	}
+					    	 int response = JOptionPane.showConfirmDialog(console.getContentPanel(), "Keep existing entities ?", "Confirm",
+								        JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
+							 boolean keep=true; 
+					    	 if (response == JOptionPane.NO_OPTION)
+					    		 keep=false;
+					    	Entigrator entigrator=console.getEntigrator(entihome$); 
+							ImportEntities importEntities=new ImportEntities(entigrator,file$,keep);
+							ProgressDisplay pd=new ProgressDisplay(console,importEntities,"Import entities..");
+							pd.setLocationRelativeTo(JBaseNavigator.this);
+							pd.setVisible(true);
 					    	
 				      }
 					    else {
@@ -207,7 +186,7 @@ private Logger LOGGER=Logger.getLogger(JBaseNavigator.class.getName());
 					    		  else 
 					    			  keep=false;
 					    		     //paste(false);
-					    	ProgressDialog pd=new ProgressDialog(console.getFrame(),Paste,"Wait for paste..");	
+					    	ProgressDisplay pd=new ProgressDisplay(console,Paste,"Prepare..");	
 					    	pd.setLocationRelativeTo(JBaseNavigator.this);
 					    	pd.setVisible(true);
 						}
@@ -258,7 +237,8 @@ private Logger LOGGER=Logger.getLogger(JBaseNavigator.class.getName());
 					@Override
 					public void actionPerformed(ActionEvent e) {
 					 //reindex();
-						ProgressDialog pd=new ProgressDialog(console.getFrame(),Reindex,"Wait for reindex..");	
+						//ProgressDialog pd=new ProgressDialog(console.getFrame(),Reindex,"Wait for reindex..");	
+						ProgressDisplay pd=new ProgressDisplay(console,Reindex,"Wait for reindex..");	
 				    	pd.setLocationRelativeTo(JBaseNavigator.this);
 				    	pd.setVisible(true);
 					}
@@ -266,7 +246,7 @@ private Logger LOGGER=Logger.getLogger(JBaseNavigator.class.getName());
 				});
 				menu.add(reindexItem);
 				
-				JMenuItem archiveItem = new JMenuItem("Archive");
+				JMenuItem archiveItem = new JMenuItem("Export");
 				archiveItem.addActionListener(new ActionListener() {
 					@Override
 					public void actionPerformed(ActionEvent e) {
@@ -314,35 +294,174 @@ private Logger LOGGER=Logger.getLogger(JBaseNavigator.class.getName());
 			});
 		return menu;
 	}
+	class ImportEntities implements Runnable{
+		Entigrator entigrator;
+		String file$;
+		boolean keep;
+		public ImportEntities(Entigrator entigrator,String file$,boolean keep){
+			this.entigrator=entigrator;
+			this.file$=file$;
+			this.keep=keep;
+			
+			
+		}
+		public void run(){
+			importEntities(entigrator,file$,keep);
+		}
+	};
+	private void importEntities(Entigrator entigrator,String file$,boolean keep){
+    	
+		String undo$=ArchiveHandler.insertEntities(entigrator, file$,keep);
+    	if(undo$!=null){
+    		 Sack undo=entigrator.getEntityAtKey(undo$);
+    		 undo.putElementItem("fhandler", new Core(null,"gdt.data.entity.facet.BookmarksHandler",null));
+    		    undo.putElementItem("jfacet", new Core("gdt.jgui.entity.bookmark.JBookmarksFacetAddItem","gdt.data.entity.facet.BookmarksHandler","gdt.jgui.entity.bookmark.JBookmarksFacetOpenItem"));
+    		    entigrator.ent_alter(undo);
+    		    entigrator.ent_assignProperty(undo, "bookmarks", undo.getProperty("label"));
+    		    String undoLocator$=EntityHandler.getEntityLocator(entigrator, undo);
+    		    JEntityPrimaryMenu.reindexEntity(console, undoLocator$);
+    			String[]sa=undo.elementList("entity");
+    			if(sa!=null){
+    				String entityLocator$;
+    				Sack entity;
+    				//console.clipboard.clear();
+    				FacetHandler[] fha=BaseHandler.listAllHandlers(entigrator);
+    				console.clipboard.resetProgress(sa.length);
+    				long i=0;
+    				for(String s:sa){
+    					entity=entigrator.getEntityAtKey(s);
+    					console.clipboard.setProgress(i++);
+    					if(entity==null)
+    						continue;
+    					EntityHandler.completeMigration(entigrator, s, fha);
+    					entityLocator$=EntityHandler.getEntityLocator(entigrator, entity);
+    					try{
+    					JEntityPrimaryMenu.reindexEntity(console,entityLocator$);
+    					}catch(Exception ee){}
+    					//console.clipboard.putString(entityLocator$);
+    				}
+    				//undo=putBookmarks(console,undo);
+    				entigrator.ent_alter(undo);
+    			}
+    			
+    	}
+    entigrator.clearHandlers();	
+  }
+   
+   
+
 	
-//	Runnable reindex=new Runnable 
-	
-	//private void reindex(){
-	Runnable Reindex=new Runnable(){
+	Runnable Paste=new Runnable(){
+		public void run(){
+			Entigrator entigrator=console.getEntigrator(entihome$);
+			JReferenceEntry[] jrea= getToPaste();
+			undo=makeUndo(entigrator,jrea);
+			if(undo==null)
+				return;
+			entigrator.setBulkMode(true);
+			ProgressDisplay pd=new ProgressDisplay(console,Backup,"Backup entities..");	
+	    	pd.setLocationRelativeTo(JBaseNavigator.this);
+	    	pd.setVisible(true);
+		}};
+
+	Runnable Backup=new Runnable(){
+		public void run(){
+			Entigrator entigrator=console.getEntigrator(entihome$);
+			JReferenceEntry[] jrea= getToPaste();
+			backupExistingEntities(console, entigrator, undo, jrea);
+			ProgressDisplay pd=new ProgressDisplay(console,Insert,"Insert entities..");	
+	    	pd.setLocationRelativeTo(JBaseNavigator.this);
+	    	pd.setVisible(true);
+		}
+	};
+	Runnable Insert=new Runnable(){
+		public void run(){
+			Entigrator entigrator=console.getEntigrator(entihome$);
+			insertEntities(entigrator,undo);
+			ProgressDisplay pd=new ProgressDisplay(console,ReindexUndo,"Reindex..");	
+	    	pd.setLocationRelativeTo(JBaseNavigator.this);
+	    	pd.setVisible(true);
+		}
+	};
+//
+	/*
+	Runnable PasteOld=new Runnable(){
+		public void run(){
+			//
+			if(console.clipboard.getProgress()>0){
+				console.clipboard.setProgress(0);
+				return;
+			}
+			Entigrator entigrator=console.getEntigrator(entihome$);
+			//entigrator.setBulkMode(true);
+			JReferenceEntry[] jrea= getToPaste();
+			Sack undo=makeUndo(entigrator,jrea);
+			if(undo==null)
+				return;
+			console.clipboard.setProgressMessage("Paste..");
+			entigrator.setBulkMode(true);
+			System.out.println("Entigrator:Paste:0");
+			backupExistingEntities(console, entigrator, undo, jrea);
+			System.out.println("Entigrator:Paste:1");
+			removeExistingEntities(console,entigrator, undo);
+			System.out.println("Entigrator:Paste:2");
+			insertEntities(console,entigrator, undo);
+			System.out.println("Entigrator:Paste:3");
+			reindexEntities(console,entigrator, undo);
+			entigrator.setBulkMode(false);
+		}};
+*/
+//	
+		Runnable Reindex=new Runnable(){
 	public void run(){
+		//System.out.println("Entigrator:Reindex:thread="+Thread.currentThread().hashCode());
 		Entigrator entigrator=console.getEntigrator(entihome$);
-		entigrator.setSingleMode(true);
 		entigrator.setBulkMode(true);
-		entigrator.indx_reindex(null);
 		String [] sa=entigrator.indx_listEntities();
+		console.clipboard.resetProgress(sa.length);
 		Sack entity;
 		String entityLocator$;
+		long i=0;
 		for(String s:sa){
 			//System.out.println("Entigrator:Reindex:s="+s);
+			
+			console.clipboard.setProgress(i++);
+			
 			entity=entigrator.getEntityAtKey(s);
 			if(entity==null)
 				continue;
-			if(!"extension".equals(entity.getProperty("entity")))
-				continue;
-		entityLocator$=EntityHandler.getEntityLocator(entigrator, entity);
+			//System.out.println("JBaseNavigator:Reindex:entity="+entity.getProperty("label"));
+		     entigrator.ent_reindex(entity);
+			entityLocator$=EntityHandler.getEntityLocator(entigrator, entity);
 		 JEntityPrimaryMenu.reindexEntity(console,entityLocator$);
 		}
-		//System.out.println("Entigrator:Reindex:finish");
-		
-		entigrator.setSingleMode(false);
+		System.out.println("Entigrator:Reindex:1");
 		entigrator.setBulkMode(false);
+		entigrator.indx_remap();
+		console.clipboard.resetProgress(0);
+		
+		//console.clipboard.setProgressStop(true);
 	}
 	};
+	Runnable ReindexUndo=new Runnable(){
+		
+			public void run(){
+				Entigrator entigrator=console.getEntigrator(entihome$);
+				reindexEntities(console, entigrator, undo);
+			    entigrator.clearHandlers(); 
+			}
+		
+		};
+
+		Runnable UpdateBookmarks=new Runnable(){
+			
+			public void run(){
+				Entigrator entigrator=console.getEntigrator(entihome$);
+				updateBookmarks(console, entigrator, undo);
+			
+			}
+		
+		};	
 	/**
 	 * Get context locator. 
 	 * @return the locator.
@@ -501,7 +620,7 @@ private Logger LOGGER=Logger.getLogger(JBaseNavigator.class.getName());
 						icon.delete();
 				}
 			}
-			sa=ArchiveHandler.insertCache(entigrator, entigrator.ent_getHome(undo.getKey()), false);
+			sa=ArchiveHandler.insertFromCache(entigrator, entigrator.ent_getHome(undo.getKey()), false);
 			if(sa!=null){
 				String entityLocator$;
 				
@@ -568,17 +687,97 @@ private  JReferenceEntry[] getToPaste(){
 	}
 	return null;
 }
-Runnable Paste=new Runnable(){
-	public void run(){
-	try{
-		JReferenceEntry[] jrea= getToPaste();
-	Entigrator entigrator=console.getEntigrator(entihome$);
+private void removeExistingEntities(JMainConsole console,Entigrator entigrator,Sack undo){
+	String[] sa=undo.elementList("entity");
+	if(sa==null)
+		return;
+	 console.clipboard.resetProgress(sa.length);
+	 console.clipboard.setProgressMessage("Delete existing entities..");
+	long i=0;
+		Sack entity;
+	for(String s:sa){
+		 console.clipboard.setProgress(i++);
+		 entity=entigrator.getEntityAtKey(s);
+		 if(entity!=null)
+		  entigrator.deleteEntity(entity);
+	}
+}
+private void reindexEntities(JMainConsole console,Entigrator entigrator,Sack undo){
+	if(undo==null)
+		return;
+	Core[] ca=undo.elementGet("entity");
+	if(ca==null)
+		return;
+	 console.clipboard.resetProgress(ca.length);
+	 console.clipboard.setProgressMessage("Reindex entities..");
+	 //console.clipboard.setProgressStop(false);
+	 long i=0;
+	Sack entity;
+	String entityLocator$;
+	FacetHandler[] fha=BaseHandler.listAllHandlers(entigrator);
+	for(Core c:ca){
+		 console.clipboard.setProgress(i++);
+		entity=entigrator.getEntityAtKey(c.name);
+		if(entity==null)
+				continue;
+    	EntityHandler.completeMigration(entigrator, c.name, fha);
+		entityLocator$=EntityHandler.getEntityLocator(entigrator, entity);
+		entigrator.ent_reindex(entity);
+		JEntityPrimaryMenu.reindexEntity(console,entityLocator$);
+	}
+	//console.clipboard.setProgressStop(true);
+	}
+private void insertEntities(Entigrator entigrator,Sack undo){
+	Core[] ca=undo.elementGet("entity");
+	if(ca==null)
+		return;
+	 console.clipboard.resetProgress(ca.length);
+	 console.clipboard.setProgressMessage("Insert entities..");
+	// console.clipboard.setProgressStop(false);
+	 long i=0;
+	File  sourceEntity;
+	File  targetEntity;
+	File sourceEntityHome;
+	File targetEntityHome;
+	for(Core c:ca){
+		 console.clipboard.setProgress(i++);
+//body
+		 sourceEntity=new File(c.type+"/"+Entigrator.ENTITY_BASE+"/data/"+c.name);
+		 targetEntity=new File(entigrator.getEntihome()+"/"+Entigrator.ENTITY_BASE+"/data/"+c.name);
+		 try{
+		    if(!targetEntity.exists())
+		    	targetEntity.createNewFile();
+		    FileExpert.copyFile(sourceEntity,targetEntity);
+	
+		    }catch(Exception e){
+			   LOGGER.severe(e.toString());
+		   }
+//content
+		 sourceEntityHome=new File(c.type+"/"+c.name);
+		 if(sourceEntityHome.exists())
+			 try{
+			   targetEntityHome=new File(entigrator.getEntihome()+"/"+c.name);
+			   if(targetEntityHome.exists())
+				   FileExpert.clear(targetEntityHome.getPath());
+			   FileExpert.copyAll(sourceEntityHome.getPath(), targetEntityHome.getPath());  
+				}catch(Exception e){
+					   LOGGER.severe(e.toString());
+				   } 
+			}		 
+	//console.clipboard.setProgressStop(true);
+}
+private Sack makeUndo(Entigrator entigrator,JReferenceEntry[] jrea){
+	if(jrea==null)
+		return null;
 	int cnt=0;
+	//console.clipboard.setProgressStop(false);
 	String[] sa=entigrator.indx_listEntities("entity", "undo");
 	if(sa!=null){
 		String label$;
 		int max=0;
+		
 		for(String s:sa){
+			
 			label$=entigrator.indx_getLabel(s);
 			if(label$==null)
 				continue;
@@ -591,47 +790,54 @@ Runnable Paste=new Runnable(){
 		}
 		cnt=max+1;
 	}
-	if(debug)
-		System.out.println("JBasenavigator:Paste:BEGIN");
 	Sack undo=entigrator.ent_new("undo", "undo_"+String.valueOf(cnt));
-	entigrator.ent_replace(undo);
-	entigrator.ent_reindex(undo);
-	entigrator.ent_assignProperty(undo, "folder", undo.getProperty("label"));
+	undo=entigrator.ent_assignProperty(undo, "folder", undo.getProperty("label"));
 	undo.createElement("entity");
-	undo.createElement("icon");
-	undo.createElement("jbookmark");
-	File sourceEntity;
+	//undo.createElement("icon");
+	//undo.createElement("jbookmark");
+	console.clipboard.resetProgress(jrea.length);
+	  long i=0;
+	for(JReferenceEntry jre:jrea){
+		console.clipboard.setProgress(i++);
+		undo.putElementItem("entity", jre);
+	}
+	entigrator.ent_alter(undo);
+	undo=entigrator.ent_reindex(undo);
+	//console.clipboard.setProgressStop(true);
+	return undo;
+	
+}
+private Sack backupExistingEntities(JMainConsole console,Entigrator entigrator,Sack undo,JReferenceEntry[] jrea){
 	File undoEntity;
 	File oldEntity;
-	Sack pastedEntity;
 	File undoIcon;
 	File oldIcon;
-	File newIcon;
 	File undoHome=new File(entigrator.ent_getHome(undo.getKey()));
 	File undoBodies=new File(undoHome.getPath()+"/"+Entigrator.ENTITY_BASE+"/data/");
 	File undoIcons=new File(undoHome.getPath()+"/"+Entigrator.ICONS);
 	File oldEntityHome;
 	File undoEntityHome;
-	File sourceEntityHome;
 	File oldIcons=new File(entigrator.getEntihome()+"/"+Entigrator.ICONS);
 	String entityBodies$=entigrator.getEntihome()+"/"+Entigrator.ENTITY_BASE+"/data/";
     String icon$;
     if(debug)
-		System.out.println("JBasenavigator:Paste:jrea="+jrea.length);
+		System.out.println("JBaseNavigator:storeExistingEntites:jrea="+jrea.length);
+   // console.clipboard.setProgressStop(false);
+    console.clipboard.resetProgress(jrea.length);
+  long i=0;
 	for(JReferenceEntry jre:jrea){
 		try{
 			 if(debug)
-					System.out.println("JBasenavigator:Paste:jre type="+jre.type+" name="+jre.name+" value="+jre.value);
+					System.out.println("JBasenavigator:backupExistingEntites:jre type="+jre.type+" name="+jre.name+" value="+jre.value);
+		 console.clipboard.setProgress(i++);
 		if(keep&&entigrator.indx_getLabel(jre.name)!=null)
 			continue;
-		
 		oldEntity=new File(entityBodies$+jre.name);
 		if(oldEntity.exists()){
 			if(!undoBodies.exists())
 				undoBodies.mkdirs();
 			undoEntity=new File(undoBodies.getPath()+"/"+jre.name);
 			FileExpert.copyFile(oldEntity, undoEntity);
-			//icon$=entigrator.indx_getIcon(jre.name);
 			icon$=entigrator.ent_getIconAtKey(jre.name);
 			if(icon$!=null){
 				oldIcon=new File(oldIcons.getPath()+"/"+icon$);
@@ -642,6 +848,8 @@ Runnable Paste=new Runnable(){
 				undoIcon.createNewFile();
 				oldIcon=new File(oldIcons.getPath()+"/"+icon$);
 				FileExpert.copyFile(oldIcon, undoIcon);
+				if(!undo.existsElement("icon"))
+					undo.createElement("icon");
 				undo.putElementItem("icon", new Core(null,icon$,null));
 				}
 			}
@@ -652,233 +860,19 @@ Runnable Paste=new Runnable(){
 				FileExpert.copyAll(oldEntityHome.getPath(), undoEntityHome.getPath());
 			}
 		}
-		
+		if(!undo.existsElement("entity"))
+			undo.createElement("entity");
 		undo.putElementItem("entity", new Core(Locator.getProperty(jre.value,Entigrator.ENTIHOME),jre.name,jre.value));
 		if(debug)
-			System.out.println("JBasenavigator:Paste:source entihome="+jre.type+" entity="+jre.name);
-	    sourceEntity=new File(jre.type+"/"+Entigrator.ENTITY_BASE+"/data/"+jre.name);
-	   //  System.out.println("BaseNavigator:source entity="+sourceEntity.getPath());
-	    if(!oldEntity.exists())
-	    	oldEntity.createNewFile();
-	    FileExpert.copyFile(sourceEntity,oldEntity);
-	    pastedEntity=Sack.parseXML(entigrator,oldEntity.getPath());
-	    entigrator.ent_reindex(pastedEntity);
-	    pastedEntity.putAttribute(new Core(null,JReferenceEntry.ORIGIN_ENTIHOME,jre.type));
-	    entigrator.ent_replace(pastedEntity);
-	    icon$=pastedEntity.getAttributeAt("icon");
-	    //System.out.println("BaseNavigator:paste:icon="+icon$);
-	    if(icon$!=null){
-	    	undo.putElementItem("icon", new Core(null,icon$,null));
-	    	newIcon=new File(jre.type+"/"+Entigrator.ICONS+"/"+icon$);
-	    	if(newIcon.exists()){
-	    		oldIcon=new File(oldIcons.getPath()+"/"+icon$);
-	    		if(!oldIcon.exists())
-	    			oldIcon.createNewFile();
-	    		else{
-	    			if(!undoIcons.exists())
-	    				undoIcons.mkdir();
-	    			undoIcon=new File(undoIcons.getPath()+"/"+icon$);
-	    			FileExpert.copyFile(oldIcon, undoIcon);
-	    		}
-	    		FileExpert.copyFile(newIcon, oldIcon);
-	    	}
-	    }
-	    sourceEntityHome=new File(jre.type+"/"+jre.name);
-	    if( sourceEntityHome.exists()){
-	    	oldEntityHome=new File(entihome$+"/"+jre.name);
-	    	if(!oldEntityHome.exists())
-	    		oldEntityHome.mkdir();
-	    	if(debug)
-	    		System.out.println("JBasenavigator:Paste:source="+sourceEntityHome.getPath()+" target="+oldEntityHome.getPath());
-	    	FileExpert.copyAll(sourceEntityHome.getPath(), oldEntityHome.getPath());
-	    }
+			System.out.println("JBasenavigator:storeExistingEntites:source entihome="+jre.type+" entity="+jre.name);
 		}catch(Exception e){
 			Logger.getLogger(getClass().getName()).info(e.toString());
 		}
 	}
-	
-  //  
-    undo.putElementItem("fhandler", new Core(null,"gdt.data.entity.facet.BookmarksHandler",null));
-    undo.putElementItem("jfacet", new Core("gdt.jgui.entity.bookmark.JBookmarksFacetAddItem","gdt.data.entity.facet.BookmarksHandler","gdt.jgui.entity.bookmark.JBookmarksFacetOpenItem"));
-    entigrator.ent_replace(undo);
-    entigrator.ent_assignProperty(undo, "bookmarks", undo.getProperty("label"));
-    String undoLocator$=EntityHandler.getEntityLocator(entigrator, undo);
-    JEntityPrimaryMenu.reindexEntity(console, undoLocator$);
-	sa=undo.elementList("entity");
-	if(sa!=null){
-		String entityLocator$;
-		Sack entity;
-		JClipboard.store(console);
-		console.clipboard.clear();
-		FacetHandler[] fha=BaseHandler.listAllHandlers(entigrator);
-		for(String s:sa){
-			entity=entigrator.getEntityAtKey(s);
-			
-			if(entity==null)
-				continue;
-			EntityHandler.completeMigration(entigrator, s, fha);
-			entityLocator$=EntityHandler.getEntityLocator(entigrator, entity);
-			JEntityPrimaryMenu.reindexEntity(console,entityLocator$);
-			console.clipboard.putString(entityLocator$);
-		}
-		undo=putBookmarks(console,undo);
-		entigrator.ent_replace(undo);
-		updateBookmarks(entigrator,undo);
-	}
-	JClipboard.restore(console);
-    JConsoleHandler.execute(console, getLocator());
-	
-}catch(Exception ee){
-	Logger.getLogger(getClass().getName()).severe(ee.toString());
-}	
-}};
-/*
-private void paste(boolean keep){
-	try{
-	JReferenceEntry[] jrea= getToPaste();
-	Entigrator entigrator=console.getEntigrator(entihome$);
-	int cnt=0;
-	String[] sa=entigrator.indx_listEntities("entity", "undo");
-	if(sa!=null){
-		String label$;
-		int max=0;
-		for(String s:sa){
-			label$=entigrator.indx_getLabel(s);
-			cnt=Integer.parseInt(label$.substring(5, label$.length()));
-			if (cnt>max){
-				max=cnt;
-			}
-		}
-		cnt=max+1;
-	}
-	Sack undo=entigrator.ent_new("undo", "undo_"+String.valueOf(cnt));
-	entigrator.save(undo);
-	entigrator.ent_reindex(undo);
-	entigrator.ent_assignProperty(undo, "folder", undo.getProperty("label"));
-	undo.createElement("entity");
-	undo.createElement("icon");
-	undo.createElement("jbookmark");
-	File sourceEntity;
-	File undoEntity;
-	File oldEntity;
-	Sack pastedEntity;
-	File undoIcon;
-	File oldIcon;
-	File newIcon;
-	File undoHome=new File(entigrator.ent_getHome(undo.getKey()));
-	File undoBodies=new File(undoHome.getPath()+"/"+Entigrator.ENTITY_BASE+"/data/");
-	File undoIcons=new File(undoHome.getPath()+"/"+Entigrator.ICONS);
-	File oldEntityHome;
-	File undoEntityHome;
-	File sourceEntityHome;
-	File oldIcons=new File(entigrator.getEntihome()+"/"+Entigrator.ICONS);
-	String entityBodies$=entigrator.getEntihome()+"/"+Entigrator.ENTITY_BASE+"/data/";
-    String icon$;
-	for(JReferenceEntry jre:jrea){
-		try{
-		if(keep&&entigrator.indx_getLabel(jre.name)!=null)
-			continue;
-		oldEntity=new File(entityBodies$+jre.name);
-		if(oldEntity.exists()){
-			if(!undoBodies.exists())
-				undoBodies.mkdirs();
-			undoEntity=new File(undoBodies.getPath()+"/"+jre.name);
-			FileExpert.copyFile(oldEntity, undoEntity);
-			//icon$=entigrator.indx_getIcon(jre.name);
-			icon$=entigrator.ent_getIconAtKey(jre.name);
-			if(icon$!=null){
-				oldIcon=new File(oldIcons.getPath()+"/"+icon$);
-				if(oldIcon.exists()){
-				if(!undoIcons.exists())
-					undoIcons.mkdir();
-				undoIcon=new File(undoIcons.getPath()+"/"+icon$);
-				undoIcon.createNewFile();
-				oldIcon=new File(oldIcons.getPath()+"/"+icon$);
-				FileExpert.copyFile(oldIcon, undoIcon);
-				undo.putElementItem("icon", new Core(null,icon$,null));
-				}
-			}
-			oldEntityHome=new File(entihome$+"/"+jre.name);
-			if(oldEntityHome.exists()){
-				undoEntityHome=new File(undoHome.getPath()+"/"+jre.name);
-				undoEntityHome.mkdir();
-				FileExpert.copyAll(oldEntityHome.getPath(), undoEntityHome.getPath());
-			}
-		}
-		
-		undo.putElementItem("entity", new Core(Locator.getProperty(jre.value,Entigrator.ENTIHOME),jre.name,jre.value));
-	    sourceEntity=new File(jre.type+"/"+Entigrator.ENTITY_BASE+"/data/"+jre.name);
-	   //  System.out.println("BaseNavigator:source entity="+sourceEntity.getPath());
-	    if(!oldEntity.exists())
-	    	oldEntity.createNewFile();
-	    FileExpert.copyFile(sourceEntity,oldEntity);
-	    pastedEntity=Sack.parseXML(oldEntity.getPath());
-	    entigrator.ent_reindex(pastedEntity);
-	    pastedEntity.putAttribute(new Core(null,JReferenceEntry.ORIGIN_ENTIHOME,jre.type));
-	    entigrator.save(pastedEntity);
-	    icon$=pastedEntity.getAttributeAt("icon");
-	    //System.out.println("BaseNavigator:paste:icon="+icon$);
-	    if(icon$!=null){
-	    	undo.putElementItem("icon", new Core(null,icon$,null));
-	    	newIcon=new File(jre.type+"/"+Entigrator.ICONS+"/"+icon$);
-	    	if(newIcon.exists()){
-	    		
-	    		oldIcon=new File(oldIcons.getPath()+"/"+icon$);
-	    		if(!oldIcon.exists())
-	    			oldIcon.createNewFile();
-	    		else{
-	    			if(!undoIcons.exists())
-	    				undoIcons.mkdir();
-	    			undoIcon=new File(undoIcons.getPath()+"/"+icon$);
-	    			FileExpert.copyFile(oldIcon, undoIcon);
-	    		}
-	    		FileExpert.copyFile(newIcon, oldIcon);
-	    	}
-	    }
-	    sourceEntityHome=new File(jre.type+"/"+jre.name);
-	    if( sourceEntityHome.exists()){
-	    	oldEntityHome=new File(entihome$+"/"+jre.name);
-	    	if(!oldEntityHome.exists())
-	    		oldEntityHome.mkdir();
-	    	FileExpert.copyAll(sourceEntityHome.getPath(), oldEntityHome.getPath());
-	    }
-		}catch(Exception e){
-			Logger.getLogger(getClass().getName()).info(e.toString());
-		}
-	}
-  //  
-    undo.putElementItem("fhandler", new Core(null,"gdt.data.entity.facet.BookmarksHandler",null));
-    undo.putElementItem("jfacet", new Core("gdt.jgui.entity.bookmark.JBookmarksFacetAddItem","gdt.data.entity.facet.BookmarksHandler","gdt.jgui.entity.bookmark.JBookmarksFacetOpenItem"));
-    entigrator.save(undo);
-    entigrator.ent_assignProperty(undo, "bookmarks", undo.getProperty("label"));
-    String undoLocator$=EntityHandler.getEntityLocator(entigrator, undo);
-    JEntityPrimaryMenu.reindexEntity(console, undoLocator$);
-	sa=undo.elementList("entity");
-	if(sa!=null){
-		String entityLocator$;
-		Sack entity;
-		console.clipboard.clear();
-		FacetHandler[] fha=BaseHandler.listAllHandlers(entigrator);
-		for(String s:sa){
-			entity=entigrator.getEntityAtKey(s);
-			
-			if(entity==null)
-				continue;
-			EntityHandler.completeMigration(entigrator, s, fha);
-			entityLocator$=EntityHandler.getEntityLocator(entigrator, entity);
-			JEntityPrimaryMenu.reindexEntity(console,entityLocator$);
-			console.clipboard.putString(entityLocator$);
-		}
-		undo=putBookmarks(console,undo);
-		entigrator.save(undo);
-		updateBookmarks(entigrator,undo);
-	}
-    JConsoleHandler.execute(console, getLocator());
-	}catch(Exception e){
-		Logger.getLogger(getClass().getName()).severe(e.toString());
-	}
+	//console.clipboard.setProgressStop(true);
+return undo;	
 }
-*/
+
 private  static Sack putBookmarks(JMainConsole console,Sack undo ){
     try{
     	String[] sa=console.clipboard.getContent();
@@ -914,15 +908,20 @@ private  static Sack putBookmarks(JMainConsole console,Sack undo ){
     }
     return undo;
 }
-private static void updateBookmarks(Entigrator entigrator,Sack undo){
+private static void updateBookmarks(JMainConsole console,Entigrator entigrator,Sack undo){
 	try{
 		Core[] ca=undo.elementGet("jbookmark");
 		if(ca==null)
 			return;
+		 console.clipboard.resetProgress(ca.length);
+		 console.clipboard.setProgressMessage("Update bookmarks..");
+		
 		Sack entity;
 		String entityKey$;
 		Core []jbma;
+		long i=0;
 		for(Core c:ca){
+			console.clipboard.setProgress(i++);
 			entityKey$=Locator.getProperty(c.value, EntityHandler.ENTITY_KEY);
 			if(entityKey$==null)
 				continue;
@@ -936,7 +935,7 @@ private static void updateBookmarks(Entigrator entigrator,Sack undo){
 				    jbm.value=Locator.append(jbm.value,Entigrator.ENTIHOME, entigrator.getEntihome()); 
 					entity.putElementItem("jbookmark", jbm);
 			}
-		entigrator.ent_replace(entity);	
+		entigrator.ent_alter(entity);	
 		}
 		
 	}catch(Exception e){

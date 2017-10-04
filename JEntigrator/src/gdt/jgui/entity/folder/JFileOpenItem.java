@@ -290,7 +290,7 @@ String fname$;
 String fpath$;
 String ftitle$;
 if(BookmarksHandler.class.getName().equals(facetHandlerClass$)){
-	Sack entity=entigrator.getEntity(entityKey$);
+	Sack entity=entigrator.getEntityAtKey(entityKey$);
 	Core[] ca=entity.elementGet("jbookmark");
 	for(Core c:ca){
 		fname$=Locator.getProperty(c.value, JFolderPanel.FILE_NAME);

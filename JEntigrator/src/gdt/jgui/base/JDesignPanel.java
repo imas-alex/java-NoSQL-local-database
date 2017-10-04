@@ -257,11 +257,12 @@ public class JDesignPanel extends JPanel implements JContext,WContext{
 			@Override
 			public void itemStateChanged(ItemEvent e) {
 				try{
-					if(VALUE_MODE.equals(mode$)||INCLUDE_MODE.equals(mode$)){
+					//System.out.println("JDesignPanel:value:itemStateChanged:mode="+mode$);
+					if(VALUE_MODE.equals(mode$)||INCLUDE_MODE.equals(mode$))
 						selectEntitiesAtPropertyValue();
-					if(!INCLUDE_MODE.equals(mode$))
-							listContainers();
-					}
+				//	if(!INCLUDE_MODE.equals(mode$))
+				//			listContainers();
+					
 				}catch(Exception ee){
 					LOGGER.severe(ee.toString());
 				}
@@ -271,6 +272,7 @@ public class JDesignPanel extends JPanel implements JContext,WContext{
 			@Override
 			public void itemStateChanged(ItemEvent e) {
 				try{
+					//System.out.println("JDesignPanel:entityComboBox:state changed:mode="+mode$);
 					if(!INCLUDE_MODE.equals(mode$))
 						listContainers();
 				}catch(Exception ee){
@@ -319,13 +321,14 @@ private void setValues(String propertyName$){
 		for(String aSa:sa)
 			comboBoxModel.addElement(aSa);
 		valueComboBox.setModel(comboBoxModel);
-		if(VALUE_MODE.equals(mode$))
+		if(VALUE_MODE.equals(mode$)||INCLUDE_MODE.equals(mode$))
 			selectEntitiesAtPropertyValue();
 	}catch(Exception ee){
 		LOGGER.severe(ee.toString());
 	}	
 }
 private void selectEntitiesAtPropertyValue(){
+	//System.out.println("JDesignPanel:selectEntitiesAtPropertyValue:BEGIN");
 	entityComboBox.removeAllItems();
 	String propertyName$=(String)propertyComboBox.getSelectedItem();
 	String propertyValue$=(String)valueComboBox.getSelectedItem();
@@ -345,7 +348,9 @@ private void selectEntitiesAtPropertyValue(){
 		for(String aSa:sa)
 			entityBoxModel.addElement(aSa);
 		entityComboBox.setModel(entityBoxModel);
-		}
+		if(!INCLUDE_MODE.equals(mode$))
+					listContainers();	
+	}
 }
 private void selectEntitiesAtProperty(){
 	String propertyName$=(String)propertyComboBox.getSelectedItem();
@@ -368,6 +373,8 @@ private void selectEntitiesAtProperty(){
 		for(String aSa:sa)
 			entityBoxModel.addElement(aSa);
 		entityComboBox.setModel(entityBoxModel);
+		if(!INCLUDE_MODE.equals(mode$))
+			listContainers();	
 		}
 }
 private void intersect(){
@@ -723,8 +730,10 @@ public void close(){
 					model.addElement(aSa);
 				entityComboBox.setModel(model);
 				String entityLabel$=locator.getProperty(EntityHandler.ENTITY_LABEL);
-				if(entityLabel$!=null)
+				if(entityLabel$!=null){
 					setSelection(entityComboBox,entityLabel$);
+					
+				}
 			}
 		}
 		String containersList$=locator.getProperty(CONTAINERS_LIST);
@@ -738,6 +747,7 @@ public void close(){
 				String containerLabel$=locator.getProperty(CONTAINER_LABEL);
 				if(containerLabel$!=null)
 					setSelection(containerComboBox,containerLabel$);
+				   
 			}
 		}
 		return this;
@@ -799,10 +809,10 @@ public void close(){
 		if(entityLabel$==null)
 			return;
 		try{
-//		System.out.println("DesignPanel:showEntityPanel:label="+entityLabel$);
+		System.out.println("DesignPanel:showEntityPanel:label="+entityLabel$);
 		Entigrator entigrator=console.getEntigrator(entihome$);	
 		String entityLocator$=EntityHandler.getEntityLocatorAtLabel(entigrator, entityLabel$);
-//		System.out.println("DesignPanel:showEntityPanel:entity locator="+entityLocator$);
+		System.out.println("DesignPanel:showEntityPanel:entity locator="+entityLocator$);
 		Properties entityLocator=Locator.toProperties(entityLocator$);
 		String entityKey$=entityLocator.getProperty(EntityHandler.ENTITY_KEY);
 		JEntityFacetPanel erm=new JEntityFacetPanel();
@@ -856,6 +866,7 @@ private void listContainers(){
 		containerComboBox.removeAllItems();
 		try{
 		String entityLabel$=(String)entityComboBox.getSelectedItem();
+		//System.out.println("JDesignPanel:listContainers:label="+entityLabel$);
 		if(entityLabel$==null||"empty".equals(entityLabel$)||entityLabel$.length()<1)
 			return;
 		Entigrator entigrator=console.getEntigrator(entihome$);

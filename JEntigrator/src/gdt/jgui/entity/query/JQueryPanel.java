@@ -31,7 +31,6 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
-import java.io.FileWriter;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
@@ -83,6 +82,7 @@ import gdt.jgui.entity.JEntityPrimaryMenu;
 import gdt.jgui.entity.JReferenceEntry;
 import gdt.jgui.entity.folder.JFolderFacetAddItem;
 import gdt.jgui.entity.folder.JFolderFacetOpenItem;
+import gdt.jgui.entity.procedure.JProcedureFacetOpenItem;
 import gdt.jgui.entity.view.JViewPanel;
 import gdt.jgui.tool.JTextEditor;
 /**
@@ -412,7 +412,7 @@ public class JQueryPanel extends JPanel implements JFacetRenderer,JRequester{
 							Entigrator entigrator=console.getEntigrator(entihome$);
 							Sack query=entigrator.getEntityAtKey(entityKey$);
 							if(query!=null)
-							  entigrator.ent_replace(query);
+							  entigrator.ent_alter(query);
 							console.back();
 						}
 					} );
@@ -581,7 +581,7 @@ public class JQueryPanel extends JPanel implements JFacetRenderer,JRequester{
 	 				 return new JViewPanel.DoubleComparator();
 	 			if("date".equals(type$))
 	 				 return new JViewPanel.DateComparator();
-	 			return null;
+	 			return  new JViewPanel.StringComparator();
 	 		
 	}
 /**
@@ -806,10 +806,13 @@ public void instantiate(Entigrator entigrator, String locator$) {
 	public void reindex(JMainConsole console, Entigrator entigrator, Sack entity) {
 		 try{	
 		    	String queryHandler$=QueryHandler.class.getName();
-		    	if(entity.getElementItem("fhandler", queryHandler$)!=null){
+		    	if(entity.getElementItem("fhandler", queryHandler$)==null)
+					return;
+			     if(entity.getElementItem("jfacet", queryHandler$)==null){
 					entity.putElementItem("jfacet", new Core(null,queryHandler$,JQueryFacetOpenItem.class.getName()));
-					entigrator.ent_replace(entity);
+					entigrator.ent_alter(entity);
 				}
+		    	
 		    }catch(Exception e){
 		    	Logger.getLogger(getClass().getName()).severe(e.toString());
 		    }
@@ -873,7 +876,7 @@ public void instantiate(Entigrator entigrator, String locator$) {
 					query.createElement("jfacet");
 					query.putElementItem("jfacet", new Core(JFolderFacetAddItem.class.getName(),FolderHandler.class.getName(),JFolderFacetOpenItem.class.getName()));
 					query.putElementItem("jfacet", new Core(null,QueryHandler.class.getName(),JQueryFacetOpenItem.class.getName()));
-					entigrator.ent_replace(query);
+					entigrator.ent_alter(query);
 					entigrator.ent_assignProperty(query, "query", text$);
 					entigrator.ent_assignProperty(query, "folder", text$);
 					entigrator.saveHandlerIcon(getClass(), "query.png");
@@ -996,7 +999,7 @@ private void initComponentSelector(){
 		for(String s:sl)
 			model.addElement(s);
 		componentComboBox.setModel(model);
-	    entigrator.ent_replace(entity);
+	    entigrator.ent_alter(entity);
 	    initElementSelector();
 	}catch(Exception e){
 		Logger.getLogger(getClass().getName()).severe(e.toString());
@@ -1289,7 +1292,7 @@ private void addHeader(boolean anyComponent){
 	    	entity.putElementItem("header.component", new Core(null,headerKey$,"any"));
 	    else
 	    	entity.putElementItem("header.component", new Core(null,headerKey$,(String)componentComboBox.getSelectedItem()));
-		entigrator.ent_replace(entity); 
+		entigrator.ent_alter(entity); 
 		initTable();
 	 }catch(Exception e){
 	    	Logger.getLogger(getClass().getName()).severe(e.toString());
@@ -1519,7 +1522,7 @@ private static int compareRows(String[] r1,String[]r2){
 }
 private static ArrayList<String[]> pasteRows(String[] row1,String[] row2){
 	try{
-		//System.out.println("JQueryPanel:pasteRows");  
+	 
 		ArrayList<String[]>sl=new ArrayList<String[]>();	
 	  for(int i=0;i<row1.length;i++)
 		  if(row1[i]==null)
@@ -1528,12 +1531,8 @@ private static ArrayList<String[]> pasteRows(String[] row1,String[] row2){
 	  for(int i=0;i<row2.length;i++)
 		  if(row2[i]==null)
 			  row2[i]=row1[i];
-	  //System.out.println("JQueryPanel:pasteRows:r1");  
-	  //printRow(row1);
-	  //System.out.println("JQueryPanel:pasteRows:r2");  
-	  //printRow(row2);
 	  int res=compareRows(row1,row2);
-	  //System.out.println("JQueryPanel:pasteRows:res="+res);
+	
 	  if(ROW_EQUEL==res)
 	      if(!containsRow(sl,row1))
 		       sl.add(row1);
@@ -1549,11 +1548,6 @@ private static ArrayList<String[]> pasteRows(String[] row1,String[] row2){
 	      if(!containsRow(sl,row2))
 	    	   sl.add(row2);
 	  }
-	//System.out.println("JQueryPanel:pasteRows");  
-	  //
-	 // for(String[] r:sl)
-		//  printRow(r);
-	  //
 	  return sl;
 	}catch(Exception e){
 		 Logger.getLogger(JQueryPanel.class.getName()).severe(e.toString());
@@ -1566,8 +1560,6 @@ private static ArrayList<String[]> pasteRows(String[] root,ArrayList<String[]> r
 		ArrayList<String[]>pl=new ArrayList<String[]>();
 		if(!rl.isEmpty())
 		for(String[] r1:rl){
-		//	System.out.println("JQueryPanel:pasteRows:component");
-			//printRow(r1);
 			pl=pasteRows(root,r1);
 			if(!containsRow(sl,r1))
 					pl.add(r1);
@@ -1614,13 +1606,14 @@ private static JTable buildTable(Entigrator entigrator,Sack query){
 				 sorter.setComparator(i,new JViewPanel.DateComparator());
 		  
       }
-      // int columnCount=model.getColumnCount();
+    
        Sack member;
-       String[]	row;//=new String[columnCount];
-       //ArrayList<String>sl=collectMembers(entigrator,query);
+       //String[]	row;
+       //=new String[columnCount];
+    
 	   String[] ca;	  
-       // System.out.println("JQueryPanel:buildTable:members="+sl.size());
-       ArrayList<Sack>ml=new ArrayList<Sack>();
+    
+       //ArrayList<Sack>ml=new ArrayList<Sack>();
        ArrayList<String[]>rl=new ArrayList<String[]>();
        ArrayList<String[]> cl;
        ArrayList<String> done=new ArrayList<String>();
@@ -1670,23 +1663,43 @@ private static JTable buildTable(Entigrator entigrator,Sack query){
 	return null;
 }
 
+private static Comparator getRowComparator(Sack query,String sortColumnName$){
+	try{
+	Core[] ca=query.elementGet("header.alias");
+	String type$=null;
+	String key$=null;
+	for(Core c:ca){
+		if(sortColumnName$.equals(c.value)){
+			type$=c.type;
+		     key$=c.name;
+		     break;
+		}
+	}
+	int column=Integer.parseInt(query.getElementItem("header.element", key$).type);
+    System.out.println("JQueryPanel:getRowComparator: column name="+sortColumnName$+" index="+column+" key="+key$);
+	//Comparator columnComparator=getComparator(type$);
+   return new RowComparator(column,type$);
+	}catch(Exception e){
+		Logger.getLogger(JQueryPanel.class.getName()).severe(e.toString());
+	}
+	return null;
+}
 private static void saveTable(Entigrator entigrator,Sack query,String sortColumnName$){
 	try{
-		String[] sa=select(entigrator,query,sortColumnName$);
-		System.out.println("JQueryPanel:saveTable:sa="+sa.length);
+	
+		String[] sa=select(entigrator,query);
+	
 		Core[] hea=query.elementGet("header.element");
        hea=Core.sortAtIntType(hea);
        ArrayList <String>headers=new ArrayList<String>();
-      // System.out.println("JQueryPanel:saveTable:1");
+    
        for(int i=0;i<hea.length;i++)
              headers.add(query.getElementItem("header.alias", hea[i].name).value);
        if(debug){
     	   System.out.println("JQueryPanel:saveTable: headers="+headers.size());
        }
        Sack member;
-     //  String[]	row=new String[headers.size()];
-    //   Sack id2key=entigrator.getEntityAtKey(entigrator.indx_keyAtLabel("id2key"));
-       File out=new File(entigrator.getEntihome()+"/"+query.getKey()+"/out.txt");
+        File out=new File(entigrator.getEntihome()+"/"+query.getKey()+"/out.txt");
        if(!out.exists())
     	   out.createNewFile();
        Writer file = new BufferedWriter(new OutputStreamWriter(
@@ -1695,66 +1708,41 @@ private static void saveTable(Entigrator entigrator,Sack query,String sortColumn
        //FileWriter file=new FileWriter(out);
        int i=0;
        String[] columns=headers.toArray(new String[0]);
-       for(String s:sa){
-          member=entigrator.getEntityAtKey(s);
-    	 if(member==null)
-    		 continue;
-    	 
-    	 file.append("<tr>");
-    	 file.append("<td>"+String.valueOf(i++)+"</td>");
-    	 //saveRow(entigrator,row,query, member,file,id2key, columns);
-    	 saveMember(entigrator,query, member,file,columns);
-    	 file.append("</tr>");
-    	 entigrator.clearCache();
-       }
-       file.close();
-       //System.out.println("JQueryPanel:saveTable:finish");
-   	}catch(Exception e){
-		Logger.getLogger(JQueryPanel.class.getName()).severe(e.toString());
-	}
-
-}
-private static void saveTableOld(Entigrator entigrator,Sack query,String sortColumnName$){
-	try{
-		String[] sa=select(entigrator,query,sortColumnName$);
-       Core[] hea=query.elementGet("header.element");
-       hea=Core.sortAtIntType(hea);
-       ArrayList <String>headers=new ArrayList<String>();
-      // System.out.println("JQueryPanel:saveTable:1");
-       for(int i=0;i<hea.length;i++)
-             headers.add(query.getElementItem("header.alias", hea[i].name).value);
-       if(debug){
-    	   System.out.println("JQueryPanel:saveTable: headers="+headers.size());
-       }
-       Sack member;
-       String[]	row=new String[headers.size()];
-       Sack id2key=entigrator.getEntityAtKey(entigrator.indx_keyAtLabel("id2key"));
-       File out=new File(entigrator.getEntihome()+"/"+query.getKey()+"/out.txt");
-       if(!out.exists())
-    	   out.createNewFile();
-       Writer file = new BufferedWriter(new OutputStreamWriter(
-    		    new FileOutputStream(out), "UTF-8"));
        
-       //FileWriter file=new FileWriter(out);
-       int i=0;
-       String[] columns=headers.toArray(new String[0]);
+       ArrayList<String[]>crl;
+       ArrayList<String[]>sl=new ArrayList<String[]>();
        for(String s:sa){
           member=entigrator.getEntityAtKey(s);
     	 if(member==null)
     		 continue;
-    	 file.append("<tr>");
-    	 file.append("<td>"+String.valueOf(i++)+"</td>");
-    	 saveRow(entigrator,row,query, member,file,id2key, columns);
-    	 file.append("</tr>");
+    	 crl=expandMember(entigrator,query, member,file,columns);
+    	 if(crl!=null)
+    		 for(String[] cr:crl)
+    			 sl.add(cr);
     	 entigrator.clearCache();
        }
+      try{ 
+          Collections.sort(sl,getRowComparator(query,sortColumnName$));
+      }catch(Exception ee){
+    	  Logger.getLogger(JQueryPanel.class.getName()).info(ee.toString());
+      }
+      for(String[]s:sl){
+    	  file.append("<tr>");
+ 		 file.append("<td>"+String.valueOf(i++)+"</td>");
+ 		 for(int j=0;j<s.length;j++)
+ 			  file.append("<td>"+s[j]+"</td>");
+ 		 file.append("</tr>");
+     	 }
+      
        file.close();
-       //System.out.println("JQueryPanel:saveTable:finish");
+
    	}catch(Exception e){
 		Logger.getLogger(JQueryPanel.class.getName()).severe(e.toString());
 	}
 
 }
+
+
 private void clearHeader(){
 	int response = JOptionPane.showConfirmDialog(this, "Clear header ?", "Confirm",
 	        JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
@@ -1773,7 +1761,7 @@ private void clearHeader(){
         	query.removeElement("header.item");
         	query.removeElement("header.alias");
         	
-        	entigrator.ent_replace(query);
+        	entigrator.ent_alter(query);
 	    } catch(Exception e){
 	    	LOGGER.severe(e.toString());
 	    }
@@ -1797,7 +1785,7 @@ private void removeColumn(){
                 	entity.removeElementItem("header.alias", c.name);
         		}
         	}
-        	entigrator.ent_replace(entity);
+        	entigrator.ent_alter(entity);
         	initTable();
 	    } catch(Exception e){
 	    	LOGGER.severe(e.toString());
@@ -1814,7 +1802,7 @@ private void setType(){
         	Core alias=entity.getElementItem("header.alias", itemKey$);
         	alias.type=itemType$;
         	entity.putElementItem("header.alias",alias);
-        	entigrator.ent_replace(entity);
+        	entigrator.ent_alter(entity);
         	
 	    } catch(Exception e){
 	    	LOGGER.severe(e.toString());
@@ -1828,7 +1816,6 @@ private void initType(){
 	        entigrator=console.getEntigrator(entihome$);
         	entity=entigrator.getEntityAtKey(entityKey$);
         	String itemKey$=entity.getElementItemAtValue("header.item", itemName$);
-        	//String itemType$=(String)itemTypeComboBox.getSelectedItem();
         	Core alias=entity.getElementItem("header.alias", itemKey$);
         	if(debug)
      	    	System.out.println("JQueryPanel.initType:item type="+alias.type);
@@ -1970,16 +1957,12 @@ public  static String getWebItems(Entigrator entigrator,String locator$){
 			 File out=new File(entigrator.getEntihome()+"/"+query.getKey()+"/out.txt");
 			 BufferedReader br = new BufferedReader(new InputStreamReader(
 					    new FileInputStream(out), "UTF-8"));
-			// BufferedReader br = new BufferedReader(new FileReader(out)); 
 			 int value = 0;
 			 while((value = br.read()) != -1) {
 		            char c = (char)value;
 		            sb.append(c);
 			 }
   		     br.close();
-			 //
-			 //sb.append(getWebItems(entigrator,query,sortColumnName$));
-  		    // saveTable(entigrator, query, sortColumnName$);
 	         sb.append("</table>"); 
 			return sb.toString(); 
 		}catch(Exception e){
@@ -2050,101 +2033,45 @@ public String getFacetIcon() {
 		 Logger.getLogger(getClass().getName()).severe(e.toString());
 	 }
  }
-private static void saveRow(Entigrator entigrator,String[]row,Sack query,Sack member,Writer file,Sack id2key,String[] columns){
-	 try{
-			Core[] ca=query.elementGet("header.element");
-			ca=Core.sortAtIntType(ca);
-			int index;
-			String element$;
-			String name$;
-			String value$=null;
-			String field$;
-			String[] newRow=new String[row.length];
-				 for(int i=0;i<row.length;i++)
-					 newRow[i]=row[i];
-			Core item;	
-			Core []va;
-			for(int i=0;i<ca.length;i++){
-				value$=null;
-				element$=ca[i].value;
-				item=query.getElementItem("header.item", ca[i].name);
-				name$=item.value;
-				field$=item.type;
-				index=i;
-				va=member.elementGet(element$);
-				if(va!=null)
-					for(Core v:va){
-						if("type".equals(field$))
-							if(name$.equals(v.type))
-								value$=v.value;
-						if("name".equals(field$))
-							if(name$.equals(v.name))
-								value$=v.value;		
-								
-					}
-					if(debug)
-						System.out.println("JQueryPanel:addRow:member="+member.getProperty("label")+" element="+element$+" field="+name$+" value="+value$+" index="+index);
-					newRow[index]=value$;
-
-			}
-			String valueKey$;
-			String valueId$;
-		    	for(int i=0;i<newRow.length;i++){
-					  valueId$=newRow[i];
-					  valueKey$=null;
-					  try{
-					  valueKey$=id2key.getElementItemAt(columns[i], valueId$);
-					  }catch(Exception ee){}
-					  if(valueKey$==null)
-						  file.append("<td>"+valueId$+"</td>");
-					  else{
-						  file.append("<td  onclick=\"keyClick('"+valueKey$+"')\" style=\"text-decoration:underline;\"><strong>"+valueId$+"</strong></td>");
-					  }
-		    		if(debug)
-		    		{
-		    			System.out.print("["+i+"]="+newRow[i]+" ");
-		    			System.out.println();
-		    			}
-		    	}
-		
-	 }catch(Exception e){
-		 Logger.getLogger(JQueryPanel.class.getName()).severe(e.toString());
-	 }
-}
-private static void saveMember(Entigrator entigrator,Sack query,Sack member,Writer file,String[] columns){
+private static ArrayList<String[]> expandMember(Entigrator entigrator,Sack query,Sack member,Writer file,String[] columns){
 	 try{
 		 String[] rootRow=getMemberRow(entigrator, query, member, columns.length);
-		 System.out.println("JQueryPanel:saveMember:member="+member.getProperty("label"));
-		 printRow(rootRow);
-		 for(int i=0;i<columns.length;i++)
-			  file.append("<td>"+rootRow[i]+"</td>");
 		 String[] ca=entigrator.ent_listComponentsCascade(member);
     	 Sack component;
     	 String[] componentRow;
-    	// System.out.println("JQueryPanel:buildTable:member="+member.getProperty("label"));
+
     	 ArrayList<String> cl=new ArrayList<String>();
+    	 ArrayList<String[]> crl=new ArrayList<String[]>();
     	 if(ca!=null){
-    		// System.out.println("JQueryPanel:buildTable:components="+ca.length);
+
     		 for (String c:ca){
     			 if(c.equals(member.getKey()))
     				 continue;
+    			 if(cl.contains(c))
+    				 continue;
+    			 cl.add(c);
     			 component=entigrator.getEntityAtKey(c);
     			// System.out.println("JQueryPanel:buildTable:component="+component.getProperty("label"));
     			 if(component!=null){
     				componentRow=getMemberRow(entigrator, query, component, columns.length);
     				//printRow(componentRow);
-    				if(!cl.contains(c)){
-    					cl.add(c);
-    					for(int i=0;i<columns.length;i++)
-    						  file.append("<td>"+componentRow[i]+"</td>");
-    					
+    				if(!containsRow(crl,componentRow))
+    					crl.add(componentRow);
     				}
     			 }
-    		 }
-    	 }
+    	      }
+    	 
+    	 
+	 crl=pasteRows(rootRow,crl);
+	 ArrayList<String[]> sl=new ArrayList<String[]>();
+	 for (String[] cr:crl)
+		 if(!containsRow(sl,cr))
+				sl.add(cr);
+	 return sl;
 	 }catch(Exception e){
 		 Logger.getLogger(JQueryPanel.class.getName()).severe(e.toString());
 	 }
+	 return null;
 }
 
 private static boolean containsRow(ArrayList<String[]>rl,String[] row){
@@ -2184,5 +2111,37 @@ private static boolean containsRow(ArrayList<String[]>rl,String[] row){
 		
 	}
 	return false;
+}
+public static class RowComparator implements Comparator<String[]> {
+	int column;
+	String type$;
+	public RowComparator(int column,String type$){
+		this.column=column;
+		this.type$=type$;
+	}
+    @Override
+    public int compare(String[] row1, String[]row2) {
+        try{
+       // 	System.out.println("JQueryPanel:compare:type="+type$+" column="+column);
+        if(row1[column]==null||"null".equals(row1[column]))
+        	if(row2[column]!=null||!"null".equals(row2[column]))
+        		return -1;
+        	if(row2[column]==null||"null".equals(row2[column]))
+            	if(row1[column]!=null||!"null".equals(row1[column]))
+            		return 1;
+           if(row2[column]==null||"null".equals(row2[column]))
+        	   if(row1[column]==null||"null".equals(row1[column]))
+        		   return 0;
+        
+    	//printRow(row1);
+    	//printRow(row2);
+        Comparator c=getComparator(type$);
+        int ret= c.compare(row1[column], row2[column]);
+        //System.out.println("JQueryPanel:compare:column="+column+" ret="+ret);
+        return ret;
+        }catch(Exception e){
+        	return 0;
+        }
+    }
 }
 }

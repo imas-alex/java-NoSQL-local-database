@@ -252,6 +252,7 @@ public String getWebView(Entigrator entigrator, String locator$) {
 	    sb.append("<table><tr><td>Base:</td><td><strong>");
 	    sb.append(entigrator.getBaseName());
 	    sb.append("</strong></td></tr><tr><td>Entity: </td><td><strong>");
+	    
 	    sb.append(entityLabel$);
 	    sb.append("</strong></td></tr>");
 	    sb.append("<tr><td>Facet: </td><td><strong>Query</strong></td></tr>");

@@ -531,7 +531,7 @@ private void refresh(){
 			candidate.putAttribute(new Core(null,Entigrator.SAVE_ID,Identity.key()));
 			candidate.putAttribute(new Core(null,Entigrator.SAVE_ID,Identity.key()));
 			Entigrator entigrator=console.getEntigrator(entihome$);
-			entigrator.ent_replace(candidate);
+			entigrator.ent_alter(candidate);
 
 		}catch(Exception e){
 			LOGGER.severe(e.toString());
@@ -689,7 +689,7 @@ public void response(JMainConsole console, String locator$) {
 					  return;
 				  entity.createElement(text$);
 				  entity.putElementItem(text$, new Core(null,"item",null));
-				  entigrator.ent_replace(entity);
+				  entigrator.ent_alter(entity);
 				  locator$=getLocator();
 				  locator$=Locator.remove(locator$, BaseHandler.HANDLER_METHOD);
 				  locator$=Locator.remove(locator$, JRequester.REQUESTER_ACTION);
@@ -706,7 +706,7 @@ public void response(JMainConsole console, String locator$) {
 			entity.createElement(element$);
 			entity.elementReplace(element$, entity.elementGet(oldElement$));
 			entity.removeElement(oldElement$);
-			entigrator.ent_replace(entity);
+			entigrator.ent_alter(entity);
 			locator$=Locator.append(locator$, Locator.LOCATOR_TITLE,"Edit");
 			locator$=Locator.append(locator$,EntityHandler.ENTITY_ACTION,JEntityEditor.ENTITY_EDIT);
 			locator$=Locator.append(locator$,BaseHandler.HANDLER_CLASS,JEntityEditor.class.getName());
@@ -736,7 +736,7 @@ public void response(JMainConsole console, String locator$) {
 				core=entity.getAttribute(core$);
 			else	
 			 core=entity.getElementItem(element$, core$);
-			if(core==null)
+		//	if(core==null)
 		//	System.out.println("EntityEditor:response:cannot find core="+core$);
 			if(CELL_FIELD_TYPE.equals(cellField$))
 				core.type=text$;
@@ -748,7 +748,7 @@ public void response(JMainConsole console, String locator$) {
 				entity.putAttribute(core);
 			else	
 				entity.putElementItem(element$, core);
-			entigrator.ent_replace(entity);
+			entigrator.ent_alter(entity);
 			if(debug)
 			System.out.println("EntityEditor:response:entity saved");
 			locator$=Locator.append(locator$, Locator.LOCATOR_TITLE,"Edit");
@@ -814,7 +814,7 @@ public void response(JMainConsole console, String locator$) {
 			return;
 		}
 		if(1==n){
-			entigrator.ent_replace(entity);
+			entigrator.ent_alter(entity);
 			ignoreOutdate=true;
 			return;
 		}

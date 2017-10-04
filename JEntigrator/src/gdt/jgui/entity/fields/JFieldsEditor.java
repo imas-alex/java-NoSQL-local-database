@@ -102,7 +102,7 @@ protected JMenuItem pasteItem;
 protected JMenuItem doneItem;
 protected JMenuItem[] postMenu;
 protected String message$;
-boolean debug=true;
+boolean debug=false;
 protected boolean ignoreOutdate=false;
 /**
  * The default constructor.
@@ -228,12 +228,12 @@ public JFieldsEditor() {
 									sourceEntityKey$=locator.getProperty(EntityHandler.ENTITY_KEY);
 									sourceEntity=sourceEntigrator.getEntityAtKey(sourceEntityKey$);
 									sourceEntity.removeElementItem("field", name$);
-									sourceEntigrator.ent_replace(sourceEntity);
+									sourceEntigrator.ent_alter(sourceEntity);
 								}
 							}
 						}
 						}
-						entigrator.ent_replace(entity);
+						entigrator.ent_alter(entity);
 						Core[] ca=entity.elementGet("field");
 						replaceTable(ca);
 						}catch(Exception ee){
@@ -358,7 +358,7 @@ public JFieldsEditor() {
 			  entityLabel$=entigrator.indx_getLabel(entityKey$);
 				if(Locator.LOCATOR_TRUE.equals(locator.getProperty(JFacetRenderer.ONLY_ITEM)))
 					 return this;
-			    entity=entigrator.ent_getAtKey(entityKey$);
+			    entity=entigrator.getEntityAtKey(entityKey$);
 			  entityLabel$=entity.getProperty("label");
 			  Core[] ca=entity.elementGet("field");
 			  if(ca!=null)
@@ -497,7 +497,7 @@ public JFieldsEditor() {
 			//entity.print();
 				entity.putAttribute(new Core(null,Entigrator.TIMESTAMP,String.valueOf(System.currentTimeMillis())));	
 				entity.putAttribute(new Core(null,Entigrator.SAVE_ID,Identity.key()));
-				entigrator.ent_replace(entity);
+				entigrator.ent_alter(entity);
 		}catch(Exception e){
 			LOGGER.severe(e.toString());
 		}
@@ -665,7 +665,7 @@ public JFieldsEditor() {
 				newEntity.putAttribute(new Core (null,"icon","fields.png"));
 				//newEntity.print();
 				System.out.println("JFieldsEditor:response:1");
-				entigrator.ent_replace(newEntity);
+				entigrator.ent_alter(newEntity);
 					
 				String icons$=entihome$+"/"+Entigrator.ICONS;
 				Support.addHandlerIcon(getClass(), "fields.png", icons$);
@@ -699,7 +699,7 @@ public JFieldsEditor() {
 //				System.out.println("FieldsEditor:response:name="+core.name+" value="+core.value);
 				entity.putElementItem("field", core);
 				System.out.println("JFieldsEditor:response:3");
-				entigrator.ent_replace(entity);
+				entigrator.ent_alter(entity);
 				String feLocator$=getLocator();
 				feLocator$=Locator.append(locator$, Entigrator.ENTIHOME, entihome$);
 				feLocator$=Locator.append(locator$, EntityHandler.ENTITY_KEY, entityKey$);
@@ -772,10 +772,13 @@ public JFieldsEditor() {
 			String entihome$=locator.getProperty(Entigrator.ENTIHOME);
 			String entityKey$=locator.getProperty(EntityHandler.ENTITY_KEY);
 			Entigrator entigrator=console.getEntigrator(entihome$);
-			Sack entity=entigrator.ent_getAtKey(entityKey$);
+			Sack entity=entigrator.getEntityAtKey(entityKey$);
 			String entityLocator$=EntityHandler.getEntityLocator(entigrator, entity);
 			FieldsHandler fieldsHandler=new FieldsHandler();
 			fieldsHandler.instantiate(entityLocator$);
+			if(debug)
+				System.out.println("JFieldsEditor:adaptRename:1");
+				
 			fieldsHandler.adaptRename(entigrator);
 		}catch(Exception e){
 			LOGGER.severe(e.toString());
@@ -793,15 +796,16 @@ public JFieldsEditor() {
 	    //	System.out.println("JFieldsEditor:reindex:entity="+entity.getProperty("label"));
 	    	
 	    	String fhandler$=FieldsHandler.class.getName();
-	    	if(entity.getElementItem("fhandler", fhandler$)!=null){
+	    	
+	    	
+	    	if(entity.getElementItem("fhandler", fhandler$)==null){
+	    		return ;
+	    	}
+	    	if(entity.getElementItem("jfacet", fhandler$)==null){	
 				entity.putElementItem("jfacet", new Core(JFieldsFacetAddItem.class.getName(),fhandler$,JFieldsFacetOpenItem.class.getName()));
-				entigrator.ent_replace(entity);
+				  entigrator.ent_alter(entity);
 			}
-	    	String entityLocator$=EntityHandler.getEntityLocator(entigrator, entity);
-			FieldsHandler fieldsHandler=new FieldsHandler();
-			fieldsHandler.instantiate(entityLocator$);
-			fieldsHandler.adaptRename(entigrator);
-	    	adaptRename(console, entityLocator$);
+	    	
 	    }catch(Exception e){
 	    	LOGGER.severe(e.toString());
 	    }

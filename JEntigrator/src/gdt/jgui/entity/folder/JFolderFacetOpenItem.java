@@ -174,7 +174,7 @@ public boolean isRemovable() {
 			Sack entity=entigrator.getEntityAtKey(entityKey$);
 			entity.removeElementItem("fhandler", FolderHandler.class.getName());
 			entity.removeElementItem("jfacet", FolderHandler.class.getName());
-			entigrator.ent_replace(entity);
+			entigrator.ent_alter(entity);
 			entigrator.ent_takeOffProperty(entity, "folder");
 			String entityHome$=entigrator.ent_getHome(entityKey$);
 			FileExpert.clear(entityHome$);

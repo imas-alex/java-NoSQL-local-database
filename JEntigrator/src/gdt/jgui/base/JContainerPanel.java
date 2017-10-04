@@ -173,7 +173,7 @@ private String getIncludeLocator(){
             locator$=Locator.append(locator$,BaseHandler.HANDLER_METHOD,"response"); 
             locator$=Locator.append(locator$,JRequester.REQUESTER_ACTION,ACTION_INCLUDE_COMPONENT);
             locator$=Locator.append(locator$,Locator.LOCATOR_ICON_CONTAINER, Locator.LOCATOR_ICON_CONTAINER_CLASS);
-            locator$=Locator.append(locator$,Locator.LOCATOR_ICON_CLASS,getClass().getName());
+            locator$=Locator.append(locator$,Locator.LOCATOR_ICON_CLASS,JEntitiesPanel.class.getName());
             locator$=Locator.append(locator$,Locator.LOCATOR_ICON_FILE, "include.png"); 
        	return locator$;
 			}catch(Exception ee){
@@ -194,7 +194,7 @@ private String getExcludeLocator(){
            locator$=Locator.append(locator$,BaseHandler.HANDLER_METHOD,"response"); 
            locator$=Locator.append(locator$,JRequester.REQUESTER_ACTION,ACTION_EXCLUDE_COMPONENT);
            locator$=Locator.append(locator$,Locator.LOCATOR_ICON_CONTAINER, Locator.LOCATOR_ICON_CONTAINER_CLASS);
-           locator$=Locator.append(locator$,Locator.LOCATOR_ICON_CLASS,getClass().getName());
+           locator$=Locator.append(locator$,Locator.LOCATOR_ICON_CLASS,JEntitiesPanel.class.getName());
            locator$=Locator.append(locator$,Locator.LOCATOR_ICON_FILE, "exclude.png"); 
        	return locator$;
 			}catch(Exception ee){
@@ -225,13 +225,13 @@ private String getListComponentsLocator(){
 }	 
 private String getFacetsLocator(){
 	 try{
-		 Entigrator entigrator=console.getEntigrator(entihome$);
+		 //Entigrator entigrator=console.getEntigrator(entihome$);
 		 String locator$=getLocator();
        locator$=Locator.append(locator$, Locator.LOCATOR_TITLE,"Facets");
        locator$=Locator.append(locator$,BaseHandler.HANDLER_METHOD,"response"); 
        locator$=Locator.append(locator$,JRequester.REQUESTER_ACTION,ACTION_FACETS);
 	   locator$=Locator.append(locator$,Locator.LOCATOR_ICON_CONTAINER, Locator.LOCATOR_ICON_CONTAINER_CLASS);
-       locator$=Locator.append(locator$,Locator.LOCATOR_ICON_CLASS,getClass().getName());
+       locator$=Locator.append(locator$,Locator.LOCATOR_ICON_CLASS,JEntitiesPanel.class.getName());
        locator$=Locator.append(locator$,Locator.LOCATOR_ICON_FILE, "facet.png"); 
 		return locator$;
 			}catch(Exception ee){
@@ -286,8 +286,16 @@ private String getFacetsLocator(){
 			Sack container=entigrator.getEntityAtKey(containerKey$);
 			if(ACTION_INCLUDE_COMPONENT.equals(action$)){
 				     entityKey$=locator.getProperty(EntityHandler.ENTITY_KEY);
-				     Sack component=entigrator.getEntityAtKey(entityKey$);
-				     entigrator.col_addComponent(container, component);
+				     if(entigrator.store_scopeIsBusy(true, new String[]{entityKey$,containerKey$})){
+				    	 JBusyStorage.show(this);
+				    	 return;
+				     }
+				    entigrator.store_lock();	 
+				    Sack component=entigrator.getEntityAtKey(entityKey$);
+				    entigrator.col_addComponent(container, component);
+				    entigrator.store_release();
+				    entigrator.ent_release(containerKey$);
+				    entigrator.ent_release(entityKey$);
 				    JDesignPanel dp=new JDesignPanel();
 				    String dpLocator$=dp.getLocator();
 				    dpLocator$=Locator.append(dpLocator$, Entigrator.ENTIHOME, entihome$);

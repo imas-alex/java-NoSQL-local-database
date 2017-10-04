@@ -53,7 +53,7 @@ public class WebsetHandler extends FacetHandler{
 						if(!entity.existsElement("fhandler"))
 							entity.createElement("fhandler");
 							entity.putElementItem("fhandler", new Core(null,getClass().getName(),null));
-							entigrator.ent_replace(entity);
+							entigrator.ent_alter(entity);
 					}
 	            result=true;
 				}

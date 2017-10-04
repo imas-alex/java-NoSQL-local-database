@@ -241,6 +241,7 @@ public static JFacetRenderer getFacetRenderer(Entigrator entigrator,String fhand
 			extension=entigrator.getEntityAtKey(aSa);
 	//		System.out.println("ConsoleHandler:getFacetRenderer:extension="+extension.getProperty("label"));
 			ca=extension.elementGet("content.jfacet");
+			
 			if(ca!=null)
 				for(Core aCa:ca)
 				     if(aCa.name.equals(fhandler$)){
@@ -248,8 +249,9 @@ public static JFacetRenderer getFacetRenderer(Entigrator entigrator,String fhand
 					facetOpenItem=(JFacetOpenItem)getHandlerInstance(entigrator,aCa.value);
 					facetRenderer$= facetOpenItem.getFacetRenderer();
 					if(debug)
-					System.out.println("JConsoleHandler:getFacetRenderer:facet renderer="+facetRenderer$);	 
-						return (JFacetRenderer)ExtensionHandler.loadHandlerInstance( entigrator,extension.getKey(), facetRenderer$);
+					System.out.println("JConsoleHandler:getFacetRenderer:facet renderer="+facetRenderer$);
+					return (JFacetRenderer)ExtensionHandler.loadHandlerInstance( entigrator,extension.getKey(), facetRenderer$);
+					
 				}
 			}catch(Exception e){
 				Logger.getLogger(JConsoleHandler.class.getName()).severe(e.toString());

@@ -27,6 +27,8 @@ import gdt.data.grain.Core;
 import gdt.data.grain.Locator;
 import gdt.data.grain.Sack;
 import gdt.data.store.Entigrator;
+import gdt.jgui.base.JBaseNavigator;
+import gdt.jgui.base.ProgressDialog;
 import gdt.jgui.console.JConsoleHandler;
 import gdt.jgui.console.JContext;
 import gdt.jgui.console.JItemPanel;
@@ -45,11 +47,22 @@ public class JArchivePanel extends  JItemsListPanel implements JRequester{
 	private Logger LOGGER=Logger.getLogger(getClass().getName());
 	public static final String ARCHIVE_PANEL="Archive panel";
 	public static final String ACTION_TAR="action tar";
+	
+	private static final int ARCHIVE_MODE_DAB_TAR=1;
+	private static final int ARCHIVE_MODE_DAB_TGZ=3;
+	private static final int ARCHIVE_MODE_DAB_ZIP=5;
+	private static final int ARCHIVE_MODE_ENTITIES_TAR=2;
+	private static final int ARCHIVE_MODE_ENTITIES_TGZ=4;
+	private static final int ARCHIVE_MODE_ENTITIES_ZIP=6;
 	String entihome$;
     String list$;
     String entityKey$;
     String entityLabel$;
     String archiveContent$;
+    String archiveLocator$;
+    Entigrator entigrator;
+    ArchiveHandler archiveHandler;
+    int archiveMode=0;
 	/**
 	 * The default constructor.
 	 */
@@ -364,12 +377,12 @@ private String getTarLocator() {
     chooser.setAcceptAllFileFilterUsed(false);
     if (chooser.showSaveDialog(this) == JFileChooser.APPROVE_OPTION) {
     	String entihome$=locator.getProperty(Entigrator.ENTIHOME);
-    	Entigrator entigrator=console.getEntigrator(entihome$);
+    	entigrator=console.getEntigrator(entihome$);
         String file$=chooser.getSelectedFile().getPath()+"/"+fileName$;	
 //    	System.out.println("ArchivePanel:response:archive to "+file$);
     	String archiveType$=locator.getProperty(ArchiveHandler.ARCHIVE_TYPE);
-    	ArchiveHandler archiveHandler=new ArchiveHandler();
-		String archiveLocator$=archiveHandler.getLocator();
+    	archiveHandler=new ArchiveHandler();
+		archiveLocator$=archiveHandler.getLocator();
 		Properties archiveLocator=Locator.toProperties(archiveLocator$);
 		archiveLocator.setProperty(ArchiveHandler.ARCHIVE_FILE, file$);
 		String entityList$=locator.getProperty(EntityHandler.ENTITY_LIST);
@@ -391,35 +404,78 @@ private String getTarLocator() {
 //    		System.out.println("ArchivePanel:response:archive tar:locator="+locator$);
     		archiveLocator.setProperty(ArchiveHandler.ARCHIVE_TYPE, ArchiveHandler.ARCHIVE_TYPE_TAR);
     		archiveLocator$=Locator.toString(archiveLocator); 
-    	   if(ArchiveHandler.ARCHIVE_CONTENT_DATABASE.equals(archiveContent$))
-    		   archiveHandler.compressDatabaseToTar(entigrator, archiveLocator$);
-    	   else
-    		 archiveHandler.compressEntitiesToTar(entigrator, archiveLocator$);
+    	   if(ArchiveHandler.ARCHIVE_CONTENT_DATABASE.equals(archiveContent$)){
+    		   //archiveHandler.compressDatabaseToTar(entigrator, archiveLocator$);
+    		   archiveMode=ARCHIVE_MODE_DAB_TAR;   
+    	   }else{
+    		 //archiveHandler.compressEntitiesToTar(entigrator, archiveLocator$);
+    		   archiveMode=ARCHIVE_MODE_ENTITIES_TAR;
+    	   }
     	}
     	if(ArchiveHandler.ARCHIVE_TYPE_TGZ.equals(archiveType$)){
   // 		System.out.println("ArchivePanel:response:archive tgz:locator="+locator$);
     		archiveLocator.setProperty(ArchiveHandler.ARCHIVE_TYPE, ArchiveHandler.ARCHIVE_TYPE_TGZ);
     		archiveLocator$=Locator.toString(archiveLocator); 
-    		if(ArchiveHandler.ARCHIVE_CONTENT_DATABASE.equals(archiveContent$))
-     		   archiveHandler.compressDatabaseToTgz(entigrator, archiveLocator$);
-     	   	else
-    		   archiveHandler.compressEntitiesToTgz(entigrator, archiveLocator$);
+    		if(ArchiveHandler.ARCHIVE_CONTENT_DATABASE.equals(archiveContent$)){
+     		   //archiveHandler.compressDatabaseToTgz(entigrator, archiveLocator$);
+     		  archiveMode=ARCHIVE_MODE_DAB_TGZ;   
+    		}
+     	   	else{
+    		   //archiveHandler.compressEntitiesToTgz(entigrator, archiveLocator$);
+     	   	archiveMode=ARCHIVE_MODE_ENTITIES_TGZ;
+     	   	}
     	}
     	if(ArchiveHandler.ARCHIVE_TYPE_ZIP.equals(archiveType$)){
     	//	System.out.println("ArchivePanel:response:archive zip:locator="+locator$);
     		archiveLocator.setProperty(ArchiveHandler.ARCHIVE_TYPE, ArchiveHandler.ARCHIVE_TYPE_ZIP);
     		archiveLocator$=Locator.toString(archiveLocator); 
-    		if(ArchiveHandler.ARCHIVE_CONTENT_DATABASE.equals(archiveContent$))
-      		   archiveHandler.compressDatabaseToZip(entigrator, archiveLocator$);
-      	   	else
-    		   archiveHandler.compressEntitiesToZip(entigrator, archiveLocator$);
+    		if(ArchiveHandler.ARCHIVE_CONTENT_DATABASE.equals(archiveContent$)){
+      		   //archiveHandler.compressDatabaseToZip(entigrator, archiveLocator$);
+    			archiveMode=ARCHIVE_MODE_DAB_ZIP;
+    		}
+      	   	else{
+    		   //archiveHandler.compressEntitiesToZip(entigrator, archiveLocator$);
+      	   	archiveMode=ARCHIVE_MODE_ENTITIES_ZIP;
+      	   	}
+    		
     	}
+    	ProgressDialog pd=new ProgressDialog(console.getFrame(),Export,"Export");
+		pd.setLocationRelativeTo(JArchivePanel.this);
+		pd.setVisible(true);
   }
     else {
     	Logger.getLogger(JMainConsole.class.getName()).info(" no selection");
       }
     console.back();
 	}
+Runnable Export =new Runnable(){
+	public void run(){
+		switch(archiveMode){
+		case ARCHIVE_MODE_DAB_TAR:{
+			archiveHandler.compressDatabaseToTar(entigrator, archiveLocator$);
+			return;
+		}
+		case ARCHIVE_MODE_ENTITIES_TAR:{
+			archiveHandler.compressEntitiesToTar(entigrator, archiveLocator$);
+			return;
+		}
+		case ARCHIVE_MODE_DAB_TGZ:{
+			archiveHandler.compressDatabaseToTgz(entigrator, archiveLocator$);
+			return;
+		}
+		case ARCHIVE_MODE_ENTITIES_TGZ:{
+			archiveHandler.compressEntitiesToTgz(entigrator, archiveLocator$);
+			return;
+		}
+		case ARCHIVE_MODE_DAB_ZIP:{
+			archiveHandler.compressDatabaseToZip(entigrator, archiveLocator$);
+			return;
+		}
+		case ARCHIVE_MODE_ENTITIES_ZIP:
+			archiveHandler.compressEntitiesToZip(entigrator, archiveLocator$);	
+		}
+	}
+};
 	@Override
 	public void activate() {
 		// TODO Auto-generated method stub

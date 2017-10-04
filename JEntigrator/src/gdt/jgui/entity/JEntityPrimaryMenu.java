@@ -91,7 +91,7 @@ public JMenu getContextMenu() {
 					@Override
 					public void actionPerformed(ActionEvent e) {
 						Entigrator entigrator=console.getEntigrator(entihome$);
-						entigrator.ent_replace(entity);
+						entigrator.ent_alter(entity);
 						if(requesterResponseLocator$!=null){
 							try{
 							   byte[] ba=Base64.decodeBase64(requesterResponseLocator$);
@@ -512,7 +512,7 @@ private String getContainersLocator() {
 		locator.setProperty(BaseHandler.HANDLER_CLASS,getClass().getName());
 		locator.setProperty( BaseHandler.HANDLER_METHOD, "showContainers");
 		 locator.setProperty(Locator.LOCATOR_TITLE,"Show containers");
-		 locator.setProperty(Locator.LOCATOR_TITLE,"Show components");
+		 
 		 locator.setProperty( Locator.LOCATOR_ICON_CONTAINER, Locator.LOCATOR_ICON_CONTAINER_CLASS);
 		 locator.setProperty( Locator.LOCATOR_ICON_CLASS, getClass().getName());
 		 locator.setProperty( Locator.LOCATOR_ICON_FILE, "box.png");
@@ -579,6 +579,11 @@ private void cloneEntity(JMainConsole console,String locator$){
  * @param console the main console.
  * @param locator$ the locator string.
  */
+public static void reindexEntity(JMainConsole console,String locator$){
+	Thread t=new Thread(new ReindexEntity(console,locator$));
+	t.start();
+}
+/*
 public static Sack reindexEntity(JMainConsole console,String locator$){
 	  try{
 		  if(debug) 
@@ -621,7 +626,7 @@ public static Sack reindexEntity(JMainConsole console,String locator$){
 		  					//System.out.println("EntityPrimaryMenu:reindexEntity:facet="+facetRenderer.getTitle());
 		  				    //entity.print();
 		   					  facetRenderer.reindex(console,entigrator ,entity);
-		   					  entity=entigrator.getEntityAtKey(entityKey$);
+		   					 // entity=entigrator.getEntityAtKey(entityKey$);
 		   					//System.out.println("----------------------------");
 		   					//entity.print();
 		   				  }
@@ -637,7 +642,7 @@ public static Sack reindexEntity(JMainConsole console,String locator$){
 			}
 				
 			}
-			entigrator.ent_replace(entity);
+			entigrator.ent_alter(entity);
 			
 			return entity;
 	  }catch(Exception e){
@@ -645,6 +650,92 @@ public static Sack reindexEntity(JMainConsole console,String locator$){
 	  }
 	 return null; 
 	}
+*/
+public static Sack indexEntity(JMainConsole console,String locator$){
+	  try{
+		  if(debug)
+		  System.out.println("JEntityPrimaryMenu:indexEntity:locator="+locator$);
+		  Properties locator=Locator.toProperties(locator$);
+		  String entihome$=locator.getProperty(Entigrator.ENTIHOME);
+		  Entigrator entigrator=console.getEntigrator(entihome$);
+		  String entityKey$=locator.getProperty(EntityHandler.ENTITY_KEY);
+		  
+		  Sack entity=entigrator.getEntityAtKey(entityKey$);
+		  entigrator.ent_setBusy(entity);
+		  FacetHandler[] fha=BaseHandler.listAllHandlers(entigrator);
+		  if(debug) 
+		  System.out.println("EntityPrimaryMenu:reindexEntity:fha="+fha.length);
+		  Core[] ca;
+		  JFacetRenderer facetRenderer;
+
+			for(FacetHandler fh:fha){
+				try{
+				fh.instantiate(locator$);
+				 
+				//System.out.println("EntityPrimaryMenu:reindexEntity:try facet handler="+fh.getTitle());
+				if(fh.isApplied(entigrator, locator$)){
+		        	//entity=entigrator.get(entity);
+		        	ca=entity.elementGet("fhandler");
+		   		    if(ca!=null){
+		   			  for(Core aCa:ca){
+		  				
+		   				  facetRenderer=JConsoleHandler.getFacetRenderer(entigrator, aCa.name);
+		  				 if(debug)
+		  				  System.out.println("JEntityPrimaryMenu:reindexEntity:facet renderer="+facetRenderer.getTitle()+" entity="+entity.getProperty("label"));
+		  				  if(facetRenderer!=null){
+		  					//System.out.println("EntityPrimaryMenu:reindexEntity:facet="+facetRenderer.getTitle());
+		  				    //entity.print();
+		   					 try{
+		  					  facetRenderer.reindex(console,entigrator ,entity);
+		   					  entity=entigrator.getEntityAtKey(entityKey$);
+		   					 }catch(Exception ee){
+		   						 System.out.println("JEntityPrimaryMenu:reindexEntity:"+ee.toString());
+		   					 }
+		   					 
+		   					//System.out.println("----------------------------");
+		   					//entity.print();
+		   				  }
+		  			
+		  				 
+		   				  //else
+		   				//	System.out.println("EntityPrimaryMenu:reindexEntity:cannot get renderer="+aCa.value);
+		   			  }
+		   		  }
+		        }
+				
+			}catch(Exception ee){
+				Logger.getLogger(JEntityPrimaryMenu.class.getName()).info(ee.toString());
+				continue;
+			}
+				
+			}
+			Core []jbma=entity.elementGet("jbookmark");
+			if(jbma!=null){
+				for(Core jbm:jbma){
+					    jbm.value=Locator.append(jbm.value,Entigrator.ENTIHOME, entigrator.getEntihome()); 
+						entity.putElementItem("jbookmark", jbm);
+				}
+			}
+			entigrator.ent_runReplace(entity);
+			// System.out.println("JEntityPrimaryMenu:indexEntity:FINISH");
+			return entity;
+	  }catch(Exception e){
+		  Logger.getLogger(JEntityPrimaryMenu.class.getName()).severe(e.toString());
+	  }
+	 
+	 return null; 
+	}
+static class ReindexEntity implements Runnable{
+	JMainConsole console;
+	String locator$;
+	public ReindexEntity(JMainConsole console,String locator$){
+		this.console=console;
+		this.locator$=locator$;
+	}
+	public void run(){
+		indexEntity(console,locator$);  
+      }
+};
 /**
  * Display a list of components
  * @param console the main console.
@@ -855,7 +946,7 @@ public void response(JMainConsole console, String locator$) {
 		//		System.out.println("EntityPrimaryMenu:response:label="+entityLabel$);
 				locator$=Locator.append(locator$, EntityHandler.ENTITY_LABEL,entityLabel$);
 			    adaptRename(entigrator,entity);
-				entigrator.ent_replace(entity);
+				entigrator.ent_alter(entity);
 			    
 				JEntityPrimaryMenu pm=new JEntityPrimaryMenu();
 				String pmLocator$=pm.getLocator();
@@ -872,7 +963,7 @@ public void response(JMainConsole console, String locator$) {
 			String icon$=locator.getProperty(JIconSelector.ICON);
 			if(icon$!=null){
 					entity=entigrator.ent_assignIcon(entity, icon$);
-					entigrator.ent_replace(entity);
+					entigrator.ent_alter(entity);
 					JEntityPrimaryMenu pm=new JEntityPrimaryMenu();
 					String pmLocator$=pm.getLocator();
 					pmLocator$=Locator.append(pmLocator$, Entigrator.ENTIHOME,entihome$);
@@ -1024,7 +1115,7 @@ public void activate() {
 		return;
 	}
 	if(1==n){
-		entigrator.ent_replace(entity);
+		entigrator.ent_alter(entity);
 		JEntityPrimaryMenu pm=new JEntityPrimaryMenu();
 		String pmLocator$=pm.getLocator();
 		pmLocator$=Locator.append(pmLocator$,Entigrator.ENTIHOME , entihome$);

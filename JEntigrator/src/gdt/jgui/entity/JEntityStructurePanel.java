@@ -24,7 +24,9 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Enumeration;
+import java.util.Hashtable;
 import java.util.Properties;
 import java.util.logging.Logger;
 
@@ -278,7 +280,7 @@ public class JEntityStructurePanel extends JPanel implements JContext,WContext{
 						@Override
 						public void actionPerformed(ActionEvent e) {
 							Entigrator entigrator=console.getEntigrator(entihome$);
-							entigrator.ent_replace(parent);
+							entigrator.ent_alter(parent);
 							console.back();
 						}
 					    });
@@ -360,14 +362,27 @@ public class JEntityStructurePanel extends JPanel implements JContext,WContext{
 				Sack child;
 				String childLocator$;
 				DefaultMutableTreeNode childNode;
+				 Hashtable<String,DefaultMutableTreeNode>nt=new Hashtable<String,DefaultMutableTreeNode>();
+				 ArrayList <String> tl=new ArrayList<String>();
+	            String title$;
+	           
 				for(String aSa:sa){
 					//child=entigrator.getEntityAtKey(aSa);
 					//childLocator$=EntityHandler.getEntityLocator(entigrator, child);
+					
 					childLocator$=EntityHandler.getEntityLocatorAtKey(entigrator,aSa);
+					title$=entigrator.indx_getLabel(aSa);
+				    
 					childNode=new DefaultMutableTreeNode();
 					childNode.setUserObject(childLocator$);
-					parentNode.add(childNode);
+					nt.put(title$, childNode);
+					tl.add(title$);
+					//parentNode.add(childNode);
 					//addChildren(childNode);
+				}
+				Collections.sort(tl);
+				for(String t:tl){
+					parentNode.add(nt.get(t));
 				}
 				
 			}
@@ -508,10 +523,13 @@ public class JEntityStructurePanel extends JPanel implements JContext,WContext{
             @SuppressWarnings("unchecked")
 			Enumeration<TreeNode> enumeration = node.children();
             while (enumeration.hasMoreElements()) {
-                TreeNode n = (TreeNode) enumeration.nextElement();
+                //TreeNode n = (TreeNode) enumeration.nextElement();
+                DefaultMutableTreeNode n = (DefaultMutableTreeNode) enumeration.nextElement();
                 TreePath p = path.pathByAddingChild(n);
                 expandAll(tree, p, expand);
             }
+           
+            	
         }
         if (expand) {
             tree.expandPath(path);
@@ -555,8 +573,7 @@ public class JEntityStructurePanel extends JPanel implements JContext,WContext{
 	        	      	  icon.setImage(image);
 	        	      	  label.setIcon(icon); 
 	        		}
-	        		//else
-	        		//	System.out.println("EntityStructurePanel:renderer:icon is null");
+	        		
 	        	}catch(Exception e){
 	        		Logger.getLogger(JEntityStructurePanel.class.getName()).severe(e.toString());
 	        	}

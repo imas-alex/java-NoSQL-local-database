@@ -222,7 +222,8 @@ public class Support {
  		return null;
     }
     /**
- 	 * Get an icon encoded as Base64 string located as file in the class path. 
+ 	 * Get an icon encoded as Base64 string located as file in the class path.
+ 	 * @param entigrator the entigrator. 
  	 * @param handler the class
  	 * @param iconResource$ the name of the icon file.
  	 * @return input stream.
