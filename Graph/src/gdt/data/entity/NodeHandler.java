@@ -68,7 +68,7 @@ public class NodeHandler extends FieldsHandler{
 					if(!entity.existsElement("fhandler"))
 						entity.createElement("fhandler");
 					entity.putElementItem("fhandler", new Core(null, NodeHandler.class.getName(),null));
-					entigrator.save(entity);
+					entigrator.ent_alter(entity);
 				}
 	            result=true;
 			}
@@ -202,7 +202,7 @@ public static void rebuild(Entigrator entigrator,String graphKey$){
 				}
 			
 		}
-	entigrator.save(graph);	
+	entigrator.ent_alter(graph);	
 		}catch(Exception e){
 		Logger.getLogger(NodeHandler.class.getName()).severe(e.toString());
 	}
@@ -485,7 +485,7 @@ public static void refresh(Entigrator entigrator,String entityKey$){
 				}
 			}
 		}
-		entigrator.replace(node);
+		entigrator.ent_alter(node);
 	}catch(Exception e){
 		Logger.getLogger(NodeHandler.class.getName()).severe(e.toString());	
 	}

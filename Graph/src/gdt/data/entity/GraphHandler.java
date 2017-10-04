@@ -68,7 +68,7 @@ public class GraphHandler extends FieldsHandler{
 					if(!entity.existsElement("fhandler"))
 						entity.createElement("fhandler");
 					entity.putElementItem("fhandler", new Core(null, GraphHandler.class.getName(),null));
-					entigrator.save(entity);
+					entigrator.ent_alter(entity);
 				}
 	            result=true;
 			}
@@ -220,7 +220,7 @@ public static void undoReset(JMainConsole console,String locator$){
 		Properties locator=Locator.toProperties(locator$);
 		String entihome$=locator.getProperty(Entigrator.ENTIHOME);
 		Entigrator entigrator=console.getEntigrator(entihome$);
-		entigrator.save(undo);
+		entigrator.ent_alter(undo);
 	    }catch(Exception e){
 	    	Logger.getLogger(GraphHandler.class.getName()).severe(e.toString());
 	    }
@@ -252,7 +252,7 @@ public static void undoPush(JMainConsole console,String locator$){
 		undo.createElement(undoName$);
 		for(String s:sa)
 			undo.putElementItem(undoName$, new Core(null,s,null));
-		entigrator.save(undo);
+		entigrator.ent_alter(undo);
 	    }catch(Exception e){
 	    	Logger.getLogger(GraphHandler.class.getName()).severe(e.toString());
 	    }
@@ -294,8 +294,8 @@ public static void undoPop(JMainConsole console,String locator$){
 			graph.putElementItem("node.select", new Core(null,s,null));
 		undo.removeElement(undoName$);
 		undo.removeElementItem("undo", String.valueOf(undoMax));
-		entigrator.save(undo);
-		entigrator.save(graph);
+		entigrator.ent_alter(undo);
+		entigrator.ent_alter(graph);
 	    }catch(Exception e){
 	    	Logger.getLogger(GraphHandler.class.getName()).severe(e.toString());
 	    }
@@ -356,7 +356,7 @@ public static String viewsPutView(JMainConsole console,String locator$){
 			viewName$=String.valueOf(cnt);
 		String viewKey$=Identity.key();
 		views.putElementItem("view", new Core(null,viewName$,viewKey$));
-		entigrator.save(views);
+		entigrator.ent_alter(views);
 		return viewKey$;
 	    }catch(Exception e){
 	    	Logger.getLogger(GraphHandler.class.getName()).severe(e.toString());

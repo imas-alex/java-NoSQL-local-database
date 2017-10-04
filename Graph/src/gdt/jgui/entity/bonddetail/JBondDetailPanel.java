@@ -414,7 +414,7 @@ public class JBondDetailPanel extends JEntitiesPanel {
 		if(!edge.existsElement("parameter"))
 			edge.createElement("parameter");
 		edge.putElementItem("parameter", new Core(null,JBondsPanel.BOND_KEY,bondKey$));
-		entigrator.save(edge);
+		entigrator.ent_alter(edge);
 		}catch(Exception e){
 			System.out.println("JBondsPanel:saveSelectedBond:"+e.toString());
 		}

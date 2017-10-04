@@ -186,7 +186,7 @@ public void removeFacet() {
 		 entity.removeElement("bond");
 		 entity.removeElement("edge");
 		
-		 entigrator.save(entity);
+		 entigrator.ent_alter(entity);
 		 entigrator.ent_takeOffProperty(entity, "node");
 	}catch(Exception e){
 		Logger.getLogger(getClass().getName()).severe(e.toString());

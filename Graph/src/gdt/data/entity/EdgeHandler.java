@@ -70,7 +70,7 @@ public class EdgeHandler extends FieldsHandler{
 					if(!entity.existsElement("fhandler"))
 						entity.createElement("fhandler");
 					entity.putElementItem("fhandler", new Core(null, EdgeHandler.class.getName(),null));
-					entigrator.save(entity);
+					entigrator.ent_alter(entity);
 				}
 	            result=true;
 			}
@@ -142,7 +142,7 @@ public void completeMigration(Entigrator entigrator) {
     if(sa==null){
     	edge.removeElement("bond");
     	edge.removeElement("detail");
-    	entigrator.save(edge);
+    	entigrator.ent_alter(edge);
     	return;
     }
     
@@ -176,7 +176,7 @@ public void completeMigration(Entigrator entigrator) {
     		  cl.add(d);
     da=cl.toArray(new Core[0]);
     edge.elementReplace("detail", da);
-    entigrator.save(edge);
+    entigrator.ent_alter(edge);
     String originEntihome$=edge.getAttributeAt(JReferenceEntry.ORIGIN_ENTIHOME);
     File sourceDetail;
     File targetDetail;

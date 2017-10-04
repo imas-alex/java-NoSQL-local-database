@@ -389,10 +389,10 @@ public class JNewBond extends JPanel implements JContext{
 				inNode.createElement("jfacet");
 			inNode.putElementItem("jfacet", new Core(null,BondDetailHandler.class.getName(),JBondDetailFacetOpenItem.class.getName()));
 			
-			entigrator.replace(outNode);
-			entigrator.replace(inNode);
+			entigrator.ent_alter(outNode);
+			entigrator.ent_alter(inNode);
 		}
-		entigrator.replace(edge);
+		entigrator.ent_alter(edge);
 		}catch(Exception e){
 			Logger.getLogger(getClass().getName()).severe(e.toString());
 		}

@@ -609,7 +609,7 @@ menu.addMenuListener(new MenuListener(){
 			if(!entity.existsElement("parameter"))
 				entity.createElement("parameter");
 			entity.putElementItem("parameter", new Core(null,SELECT_MODE,selectMode$));
-			entigrator.save(entity);
+			entigrator.ent_alter(entity);
 			}catch(Exception ee){}
 		}
 	} );
@@ -636,7 +636,7 @@ menu.addMenuListener(new MenuListener(){
 				if(!entity.existsElement("parameter"))
 					entity.createElement("parameter");
 				entity.putElementItem("parameter", new Core(null,SELECT_MODE,selectMode$));
-				entigrator.save(entity);
+				entigrator.ent_alter(entity);
 			}catch(Exception ee){}
 		}
 	} );
@@ -718,7 +718,7 @@ return menu;
 				newEntity.createElement("jfacet");
 				newEntity.putElementItem("jfacet", new Core("gdt.jgui.entity.edge.JEdgeFacetAddItem",EdgeHandler.class.getName(),"gdt.jgui.entity.edge.JEdgeFacetOpenItem"));
 				newEntity.putAttribute(new Core (null,"icon","edge.png"));
-				entigrator.save(newEntity);
+				entigrator.ent_alter(newEntity);
 				entigrator.ent_assignProperty(newEntity, "fields", text$);
 				entigrator.ent_assignProperty(newEntity, "edge", text$);
 				String icons$=entihome$+"/"+Entigrator.ICONS;
@@ -751,18 +751,7 @@ return menu;
 	 */
 	@Override
 	public String addIconToLocator(String locator$) {
-		//String icon$=Support.readHandlerIcon(JBondsPanel.class, "edge.png");
-		/*
-		try{
-		Entigrator entigrator=console.getEntigrator(entihome$);
-		String icon$=ExtensionHandler.loadIcon(entigrator, EdgeHandler.EXTENSION_KEY, "edge.png");
-	    if(icon$!=null)
-		   return Locator.append(locator$, Locator.LOCATOR_ICON,icon$);
-		}catch(Exception e){
-			Logger.getLogger(getClass().getName()).severe(e.toString());
-		}
-		*/
-	    	return locator$;
+		   	return locator$;
 	}
 	/**
 	 * Get facet handler class name.
@@ -863,7 +852,7 @@ return menu;
 						//System.out.println("JContactEditor:reindex:1:entity="+entity.getProperty("label"));
 			    		entity.putElementItem("jfacet", new Core(null,fhandler$,JEdgeFacetOpenItem.class.getName()));
 						entity.putElementItem("fhandler", new Core(null,fhandler$,EdgeHandler.EXTENSION_KEY));
-						entigrator.save(entity);
+						entigrator.ent_alter(entity);
 					}
 			    }catch(Exception e){
 			    	Logger.getLogger(getClass().getName()).severe(e.toString());
@@ -930,9 +919,9 @@ private static void removeBond(JMainConsole console,String locator$){
 		Sack outNode=entigrator.getEntityAtKey(nodeOutKey$);
 		outNode.removeElementItem("bond", bondKey$);
 		outNode.removeElementItem("edge", bondKey$);
-		entigrator.save(outNode);
-		entigrator.save(inNode);
-		entigrator.save(edge);
+		entigrator.ent_alter(outNode);
+		entigrator.ent_alter(inNode);
+		entigrator.ent_alter(edge);
 		
 	}catch(Exception e){
 		Logger.getLogger(JBondsPanel.class.getName()).severe(e.toString());
@@ -947,7 +936,7 @@ private void removeBondEntry(String locator$){
 		Entigrator entigrator=console.getEntigrator(entihome$);
 		Sack graph=entigrator.getEntityAtKey(entityKey$); 
 		graph.removeElementItem("bond", bondKey$);
-		entigrator.save(graph);
+		entigrator.ent_alter(graph);
 	}catch(Exception e){
 		Logger.getLogger(JBondsPanel.class.getName()).severe(e.toString());
 	}
@@ -1045,7 +1034,7 @@ private void pasteBonds(){
 				graph.putElementItem("edge",new Core(null,bondKey$,edgeKey$));
 			}
 		}
-		entigrator.save(graph);
+		entigrator.ent_alter(graph);
 	 }catch(Exception e){
 	   	 Logger.getLogger(JBondsPanel.class.getName()).severe(e.toString());
 	    }
@@ -1097,7 +1086,7 @@ public void activate() {
 	}
 	if(1==n){
 		entity.putAttribute(new Core(null,Entigrator.SAVE_ID,Identity.key()));
-		entigrator.save(entity);
+		entigrator.ent_alter(entity);
 		
 	}
 	if(0==n){
@@ -1126,6 +1115,7 @@ private void refresh(){
      Logger.getLogger(getClass().getName()).severe(e.toString());		
 	}
 }
+/*
 private String[] listNodeLabels(){
 	try{
 		Core []ca =entity.elementGet("bond");
@@ -1147,4 +1137,5 @@ private String[] listNodeLabels(){
 	}
 	return null;
 }
+*/
 }

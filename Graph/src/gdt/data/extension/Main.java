@@ -101,7 +101,7 @@ public class Main implements ExtensionMain{
                String source$=jar$;
                String target$=folder$+"/res.jar";
                extractResources(source$,target$);
-               entigrator.save(extension);
+               entigrator.ent_alter(extension);
             
                 }catch(Exception e ){
             	  Logger.getLogger(Main.class.getName()).severe(e.toString());

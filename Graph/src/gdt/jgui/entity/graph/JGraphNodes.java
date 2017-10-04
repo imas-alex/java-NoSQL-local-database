@@ -335,7 +335,7 @@ public class JGraphNodes extends JEntitiesPanel{
 			    	}
 				}catch(Exception ee){}
 			}
-		 entigrator.save(graph);
+		 entigrator.ent_alter(graph);
 		 JConsoleHandler.execute(console, getLocator());
 		}catch(Exception e){
 			Logger.getLogger(JGraphNodes.class.getName()).severe(e.toString());
@@ -384,7 +384,7 @@ public class JGraphNodes extends JEntitiesPanel{
  			for(String s:sa)
  				entity.putElementItem("node.select", new Core(null,Locator.getProperty(s, EntityHandler.ENTITY_KEY),null));
  			
- 			entigrator.save(entity);
+ 			entigrator.ent_alter(entity);
  	    
  	  }catch(Exception e){
  		  Logger.getLogger(JGraphNodes.class.getName()).severe(e.toString());
@@ -410,7 +410,7 @@ public class JGraphNodes extends JEntitiesPanel{
 						System.out.println("JGraphNodes:expandCascade:"+ee.toString());
 					}
 				}
-			 entigrator.save(graph);
+			 entigrator.ent_alter(graph);
 			 
 			 NodeHandler.rebuild(entigrator, entityKey$);
 			 graph=removeStandAloneNodes();
@@ -445,7 +445,7 @@ public class JGraphNodes extends JEntitiesPanel{
            	for(String nb:nbl)
             	graph.putElementItem("node.select", new Core(null,nb,null));
            	
-			entigrator.save(graph);
+			entigrator.ent_alter(graph);
 			JItemPanel[] ipa=getItems();
 			String [] nka=graph.elementListNoSorted("node.select");
 			
@@ -518,7 +518,7 @@ public class JGraphNodes extends JEntitiesPanel{
 	    	  //System.out.println("JGraphNode:removeStandAloneNodes:remove node="+s);
 	      }
 	      
-	      entigrator.save(graph);
+	      entigrator.ent_alter(graph);
 	      return graph;
 	  }catch(Exception e){
 		  Logger.getLogger(JGraphNodes.class.getName()).severe(e.toString());
@@ -551,7 +551,7 @@ public class JGraphNodes extends JEntitiesPanel{
 				}
 				graph.removeElementItem("node", nodeKey$);
 			}
-			entigrator.save(graph);
+			entigrator.ent_alter(graph);
 			NodeHandler.rebuild(entigrator, entityKey$);
 			//graph.print();
 	  }catch(Exception e){

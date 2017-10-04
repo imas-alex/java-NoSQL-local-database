@@ -106,7 +106,6 @@ import gdt.data.grain.Locator;
 import gdt.data.grain.Sack;
 import gdt.data.grain.Support;
 import gdt.data.store.Entigrator;
-import gdt.data.store.StoreAdapter;
 import gdt.jgui.console.JConsoleHandler;
 import gdt.jgui.console.JContext;
 import gdt.jgui.console.JFacetRenderer;
@@ -222,7 +221,7 @@ public class JGraphRenderer extends JPanel implements JContext , JRequester
 				newEntity.createElement("jfacet");
 				newEntity.putElementItem("jfacet", new Core("gdt.jgui.entity.graph.JGraphFacetAddItem",EdgeHandler.class.getName(),"gdt.jgui.entity.graph.JGraphFacetOpenItem"));
 				newEntity.putAttribute(new Core (null,"icon","graph.png"));
-				entigrator.save(newEntity);
+				entigrator.ent_alter(newEntity);
 				entigrator.ent_assignProperty(newEntity, "fields", text$);
 				entigrator.ent_assignProperty(newEntity, "graph", text$);
 				String icons$=entihome$+"/"+Entigrator.ICONS;
@@ -275,7 +274,7 @@ public class JGraphRenderer extends JPanel implements JContext , JRequester
 				viewComponent.putElementItem("views", new Core(null,viewKey$,viewTitle$));
 				viewComponent.createElement(viewKey$);
 				viewComponent.elementReplace(viewKey$, ca);
-				entigrator.save(viewComponent);
+				entigrator.ent_alter(viewComponent);
 				String gv$=new JGraphViews().getLocator();
 				gv$=Locator.append(gv$,Entigrator.ENTIHOME,entihome$);
 				gv$=Locator.append(gv$,EntityHandler.ENTITY_KEY,entityKey$);
@@ -331,7 +330,7 @@ public class JGraphRenderer extends JPanel implements JContext , JRequester
 									   Sack graph=entigrator.getEntityAtKey(entityKey$);
 									   if(graph!=null){
 										   graph.removeElement("node");
-										   entigrator.replace(graph);
+										   entigrator.ent_alter(graph);
 									   }
 									   init();
 								
@@ -468,7 +467,7 @@ public class JGraphRenderer extends JPanel implements JContext , JRequester
 				  			 for(Point2D p:pl){
 				  				entity.putElementItem("node", new Core(String.valueOf(p.getX()-minX),vLabels.get(lm.get(p)),String.valueOf(p.getY()-minY)));
 				  			 }
-				             entigrator.replace(entity);  				
+				             entigrator.ent_alter(entity);  				
 				  			
 				  			}catch(Exception ee){
 				  				System.out.println("JGraphViews:getContextMenu:new:"+ee.toString());
@@ -608,7 +607,7 @@ public class JGraphRenderer extends JPanel implements JContext , JRequester
    	  	    	 Sack viewComponent=entigrator.getEntityAtKey(viewComponentKey$);
    	  		title$=viewComponent.getElementItemAt("views", viewKey$); 
    	  	     Core[]ca=viewComponent.elementGet(viewKey$);
-   	  	entigrator.save(graphEntity);
+   	  	entigrator.ent_alter(graphEntity);
    	  	     }catch(Exception ee){
    	  	    	 Logger.getLogger(JGraphRenderer.class.getName()).info(ee.toString()); 
    	  	     }
@@ -898,31 +897,34 @@ public  void visualize(Entigrator entigrator,final String[] scope ,String edgeKe
 		removeAll();
 	
 	 graph = new DirectedSparseGraph<Number,Number>();
-	// Entigrator entigrator=console.getEntigrator(entihome$);
-//	 String[] nka=NodeHandler.getScopeExpandedNodeKeys(entigrator, null,scope); 		 
-//	 scope=nka;
 	 String icon$;
 	 byte[] bar;
 	 ImageIcon icon;
-	 //final Map<Number,String> vLabels = new HashMap<Number,String>();
+
 	 Map<Number,Icon> iconMap = new HashMap<Number,Icon>();
 	 String vLabel$;
+	 String entityLocator$;
 	 for (int i = 0; i <scope.length; i++) {
 		 vLabel$=entigrator.indx_getLabel(scope[i]);
 		 if(debug)
 				System.out.println("JGraphRenderer:visualize:node label="+vLabel$+" i="+i);
-		// if(!ll.contains(vLabel$))
-		//	 ll.add(vLabel$);
 		 vLabels.put(i, vLabel$);
 		 v.put(scope[i], i);
-		 icon$=getNodeIcon(entigrator, scope[i]);
+		 entityLocator$=EntityHandler.getEntityLocatorAtKey(entigrator, scope[i]);
+		 icon$=JConsoleHandler.getIcon(entigrator, entityLocator$);
 		 if(icon$!=null){
-			   bar=Base64.decodeBase64(icon$);
-	      	  icon = new ImageIcon(bar);
+			 if(debug)
+				 System.out.println("JGraphRenderer:visualize:locator="+entityLocator$);
+			 bar=Base64.decodeBase64(icon$);
+	      	 icon = new ImageIcon(bar);
 	      	  Image image= icon.getImage().getScaledInstance(24, 24, 0);
 	      	  icon.setImage(image);
               iconMap.put(i, icon);
-				}
+				}else
+					if(debug)
+						 System.out.println("JGraphRenderer:visualize:image is null");
+					
+					
 	 }
 	 if(debug)
 		 System.out.println("JGraphRenderer:visualize:expanded nodes="+scope.length);
@@ -1007,10 +1009,6 @@ public  void visualize(Entigrator entigrator,final String[] scope ,String edgeKe
                 vv.getRenderContext().setVertexIconTransformer(vertexIconTransformer);
                  PickedState<Number> ps = vv.getPickedVertexState();
                 ps.addItemListener(new PickWithIconListener<Number>(vertexIconTransformer));
-                if(debug)
-          			 System.out.println("JGraphRenderer:visualize: 2");         
-                //vv.setVertexToolTipTransformer(new ToStringLabeller<Number>());
-               // vv.getRenderContext().setEdgeLabelTransformer(new ToStringLabeller<Number>());
                 vv.getRenderContext().setEdgeFontTransformer(new
                 		ConstantTransformer(new Font("Helvetica", Font.PLAIN, 8)));
                 vv.getRenderContext().setEdgeLabelTransformer(new Transformer<Number, String>() {
@@ -1026,8 +1024,6 @@ public  void visualize(Entigrator entigrator,final String[] scope ,String edgeKe
            
                 MousePopupListener mpl=new MousePopupListener();
                 vv.addMouseListener(mpl);
-                if(debug)
-         			 System.out.println("JGraphRenderer:visualize: 3");         
               
                 JPanel controls = new JPanel();
                 controls.setLayout(new BoxLayout(controls, BoxLayout.X_AXIS));
@@ -1036,7 +1032,7 @@ public  void visualize(Entigrator entigrator,final String[] scope ,String edgeKe
                 //
                Collections.sort(ll);
                String[] la=ll.toArray(new String[0]);
-            	
+              
                 final JComboBox <String>nodesBox =new JComboBox<String>(la);
                 nodesBox.addItemListener(new ItemListener() {
 					@Override
@@ -1129,11 +1125,9 @@ public  void visualize(Entigrator entigrator,final String[] scope ,String edgeKe
                    edgesPanel.add(edgeMenu);
                 controls.add(edgesPanel);
                 add(controls, BorderLayout.SOUTH);
+                repaint();
                 revalidate();
-				repaint();
-				         
-             
-}
+		}
 private JPopupMenu getEdgeMenu(final Number n){
 	  final JPopupMenu	popup = new JPopupMenu();
 	  popup.addPopupMenuListener(new PopupMenuListener(){
@@ -1509,9 +1503,10 @@ public void activate() {
 	// TODO Auto-generated method stub
 	
 }
-
+/*
 public static String getNodeIcon(Entigrator entigrator,String nodeKey$){
 try{
+	
 	//Core [] ca=entigrator.indx_getMarks(new String[]{nodeKey$});
 	String header$=entigrator.getEntihome()+"/"+StoreAdapter.HEADERS+"/"+nodeKey$;
     if(!new File(header$).exists())
@@ -1527,6 +1522,7 @@ try{
 }
 return null;
 }
+*/
 private void undoPush(){
 	Collection <Number>vc=graph.getVertices();
 		//final PickedState<Number> pickedState = vv.getPickedVertexState();

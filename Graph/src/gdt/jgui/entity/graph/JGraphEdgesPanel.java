@@ -288,21 +288,8 @@ private void filter(){
 				//System.out.println("JGraphEdgesPanel:filter:node key="+s);
 			}
 		}
-		/*
-		if(sa==null){
-			graphEntity.createElement("node.select");
-			for(String n:nl)
-				graphEntity.putElementItem("node.select", new Core(null,n,null));
-		}else{
-			graphEntity.clearElement("node.select");
-			for(String s:sa){
-				if(nl.contains(s))
-					graphEntity.putElementItem("node.select", new Core(null,s,null));
-			}
-			
-		}
-		*/
-		entigrator.save(graphEntity);
+		
+		entigrator.ent_alter(graphEntity);
 		JGraphRenderer gr=new JGraphRenderer();
 		String gr$=gr.getLocator();
 		gr$=Locator.append(gr$, Entigrator.ENTIHOME, entihome$);
@@ -349,7 +336,7 @@ private void filter(){
 @Override
 public void activate() {
 	Entigrator  entigrator=console.getEntigrator(entihome$);
-	Sack entity=entigrator.getEntity(entityKey$);
+	Sack entity=entigrator.getEntityAtKey(entityKey$);
 	if(entity==null)
 		return;
 	if(ignoreOutdate){
@@ -367,7 +354,7 @@ public void activate() {
 	}
 	if(1==n){
 		entity.putAttribute(new Core(null,Entigrator.SAVE_ID,Identity.key()));
-		entigrator.save(entity);
+		entigrator.ent_alter(entity);
 		
 	}
 	if(0==n){

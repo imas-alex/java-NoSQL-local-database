@@ -371,7 +371,7 @@ public class JGraphViews extends JItemsListPanel implements JRequester{
 			views.putElementItem("views", new Core(null,viewKey$,viewTitle$));
 			views.createElement(viewKey$);
 			views.elementReplace(viewKey$, ca);
-			entigrator.save(views);
+			entigrator.ent_alter(views);
 			String gv$=new JGraphViews().getLocator();
 			gv$=Locator.append(gv$,Entigrator.ENTIHOME,entihome$);
 			gv$=Locator.append(gv$,EntityHandler.ENTITY_KEY,entityKey$);
@@ -387,7 +387,7 @@ public class JGraphViews extends JItemsListPanel implements JRequester{
 			String viewKey$=locator.getProperty(VIEW_KEY);
 			String text$=locator.getProperty(JTextEditor.TEXT);
 			views.putElementItem("views", new Core(null,viewKey$,text$));
-			entigrator.save(views);
+			entigrator.ent_alter(views);
 			String gv$=new JGraphViews().getLocator();
 			String entityKey$=locator.getProperty(EntityHandler.ENTITY_KEY);
 			gv$=Locator.append(gv$,Entigrator.ENTIHOME,entihome$);
@@ -399,6 +399,7 @@ public class JGraphViews extends JItemsListPanel implements JRequester{
 		Logger.getLogger(JGraphViews.class.getName()).severe(e.toString());
 	}
 	}
+	/*
 private void replaceView(String viewKey$){
 	try{
 		 Entigrator	entigrator=console.getEntigrator(entihome$);  
@@ -408,11 +409,12 @@ private void replaceView(String viewKey$){
 			 return;
 		 Sack views=entigrator.getEntityAtKey(viewComponentKey$);
 		 views.elementReplace(viewKey$, ca);
-		 entigrator.save(views);
+		 entigrator.ent_alter(views);
 	}catch(Exception e){
 		Logger.getLogger(JGraphViews.class.getName()).severe(e.toString());
 	}
 }
+*/
 private void deleteView(String viewKey$){
 	try{
 	
@@ -423,7 +425,7 @@ private void deleteView(String viewKey$){
 	
 		 views.removeElement(viewKey$);
 		 views.removeElementItem("views", viewKey$);
-		 entigrator.save(views);
+		 entigrator.ent_alter(views);
 		 String gv$=new JGraphViews().getLocator();
 		gv$=Locator.append(gv$,Entigrator.ENTIHOME,entihome$);
 		gv$=Locator.append(gv$,EntityHandler.ENTITY_KEY,entityKey$);

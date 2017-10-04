@@ -117,7 +117,7 @@ public class JGraphEditor extends JBookmarksEditor{
 								  }
 				                   
 								  //entigrator.save(entity);
-								  entigrator.replace(entity);
+								  entigrator.ent_alter(entity);
 								  JConsoleHandler.execute(console,getLocator());
 							   }
 							}catch(Exception ee){
@@ -153,7 +153,7 @@ public class JGraphEditor extends JBookmarksEditor{
 						
 						Entigrator entigrator=console.getEntigrator(entihome$);
 						//entigrator.save(entity);
-						entigrator.replace(entity);
+						entigrator.ent_alter(entity);
 						console.back();
 					}
 				} );
@@ -242,7 +242,7 @@ public class JGraphEditor extends JBookmarksEditor{
 	    	}
 	    	ca=cl.toArray(new Core[0]);
 	    	entity.elementReplace("jbookmark", ca);
-	    	entigrator.replace(entity);
+	    	entigrator.ent_alter(entity);
 	    	JConsoleHandler.execute(console, getLocator());
 	    }catch(Exception e){
 	    	LOGGER.severe(e.toString());
@@ -297,7 +297,7 @@ public class JGraphEditor extends JBookmarksEditor{
 				   graph.putElementItem("jfacet", new Core("gdt.jgui.entity.bookmark.JBookmarksFacetAddItem","gdt.jgui.entity.bookmark.JBookmarksFacetOpenItem",null));
 				   graph.putElementItem("jfacet", new Core(null,"gdt.data.entity.GraphHandler","gdt.jgui.entity.graph.JGraphFacetOpenItem"));
 				 
-				   entigrator.save(graph);
+				   entigrator.ent_alter(graph);
 				   entigrator.saveHandlerIcon(JGraphEditor.class, "graph.png");
 				   entityKey$=graph.getKey();
 				   JGraphEditor ge=new JGraphEditor();
@@ -337,7 +337,7 @@ public class JGraphEditor extends JBookmarksEditor{
 				bookmark.value=  bookmarkLocator$;
 			}
 			entity.putElementItem("jbookmark", bookmark);
-			entigrator.save(entity);
+			entigrator.ent_alter(entity);
 			String bmeLocator$=getLocator();
 			bmeLocator$=Locator.append(bmeLocator$, Entigrator.ENTIHOME, entihome$);
 			bmeLocator$=Locator.append(bmeLocator$, EntityHandler.ENTITY_KEY, entityKey$);

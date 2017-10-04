@@ -251,11 +251,11 @@ public class JBondItem extends JItemPanel{
 						if(inNode!=null)
 							inNode.removeElementItem("bond", bondKey$);
 						host.removeElementItem("bond",bondKey$ );
-						entigrator.save(host);
+						entigrator.ent_alter(host);
 						if(outNode!=null)
-							entigrator.save(outNode);
+							entigrator.ent_alter(outNode);
 						if(inNode!=null)
-							entigrator.save(inNode);
+							entigrator.ent_alter(inNode);
 						JBondsPanel bp=new JBondsPanel();
 						String bpLocator$=bp.getLocator();
 						bpLocator$=Locator.append(bpLocator$,Entigrator.ENTIHOME, entihome$);
@@ -293,7 +293,7 @@ public class JBondItem extends JItemPanel{
 					else
 						bond.type=nodeKey$;
 					edge.putElementItem("bond",bond );
-					entigrator.save(edge);
+					entigrator.ent_alter(edge);
 					JBondsPanel bp=new JBondsPanel();
 					String bpLocator$=bp.getLocator();
 					bpLocator$=Locator.append(bpLocator$,Entigrator.ENTIHOME, entihome$);
@@ -327,7 +327,7 @@ public class JBondItem extends JItemPanel{
 					else
 						bond.value=nodeKey$;
 					edge.putElementItem("bond",bond );
-					entigrator.save(edge);
+					entigrator.ent_alter(edge);
 					JBondsPanel bp=new JBondsPanel();
 					String bpLocator$=bp.getLocator();
 					bpLocator$=Locator.append(bpLocator$,Entigrator.ENTIHOME, entihome$);
@@ -393,8 +393,8 @@ public class JBondItem extends JItemPanel{
 							inNode.createElement("jfacet");
 						inNode.putElementItem("jfacet", new Core(JNodeFacetAddItem.class.getName(), NodeHandler.class.getName(),JNodeFacetOpenItem.class.getName()));
 					
-						entigrator.save(outNode);
-						entigrator.save(inNode);
+						entigrator.ent_alter(outNode);
+						entigrator.ent_alter(inNode);
 						entigrator.ent_assignProperty(outNode, "node",outNode.getProperty("label"));
 						entigrator.ent_assignProperty(inNode, "node",inNode.getProperty("label"));
 						JBondsPanel bp=new JBondsPanel();

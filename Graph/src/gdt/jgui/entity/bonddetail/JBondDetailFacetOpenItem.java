@@ -165,7 +165,7 @@ public void removeFacet() {
 					sl.add(d.name);
 			for(String s:sl)
 				edge.removeElementItem("detail", s);
-			entigrator.replace(edge);
+			entigrator.ent_alter(edge);
 			}catch(Exception ee){
 				System.out.println("JBondDetaiFacetOpenItem:removeFacet:"+ee.toString());
 			}
@@ -174,7 +174,7 @@ public void removeFacet() {
 		detail.removeElement("edge");
 		detail.removeElementItem("fhandler", BondDetailHandler.class.getName());
 		detail.removeElementItem("jfacet", BondDetailHandler.class.getName());
-		entigrator.replace(detail);
+		entigrator.ent_alter(detail);
 	}catch(Exception e){
 		Logger.getLogger(getClass().getName()).severe(e.toString());
 	}

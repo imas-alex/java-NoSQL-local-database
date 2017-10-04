@@ -125,7 +125,7 @@ public class JEdgeEditor extends JFieldsEditor {
 					//System.out.println("JPhoneEditor:reindex:1:entity="+entity.getProperty("label"));
 		    		entity.putElementItem("jfacet", new Core(null,fhandler$,JEdgeFacetOpenItem.class.getName()));
 					entity.putElementItem("fhandler", new Core(null,fhandler$,EdgeHandler.EXTENSION_KEY));
-					entigrator.save(entity);
+					entigrator.ent_alter(entity);
 				}
 		    }catch(Exception e){
 		    	Logger.getLogger(getClass().getName()).severe(e.toString());
@@ -178,7 +178,7 @@ public class JEdgeEditor extends JFieldsEditor {
 				newEntity.createElement("jfacet");
 				newEntity.putElementItem("jfacet", new Core("gdt.jgui.entity.node.JEdgeFacetAddItem",EdgeHandler.class.getName(),"gdt.jgui.entity.node.JEdgeFacetOpenItem"));
 				newEntity.putAttribute(new Core (null,"icon","edge.png"));
-				entigrator.save(newEntity);
+				entigrator.ent_alter(newEntity);
 				entigrator.ent_assignProperty(newEntity, "fields", text$);
 				entigrator.ent_assignProperty(newEntity, "edge", text$);
 				String icons$=entihome$+"/"+Entigrator.ICONS;
@@ -203,7 +203,7 @@ public class JEdgeEditor extends JFieldsEditor {
 				entityKey$=locator.getProperty(EntityHandler.ENTITY_KEY);
 				Sack entity=entigrator.getEntityAtKey(entityKey$);
 				entity.putElementItem("field", new Core(null,"Display node",text$));
-				entigrator.save(entity);
+				entigrator.ent_alter(entity);
 				String feLocator$=getLocator();
 				feLocator$=Locator.remove(feLocator$, BaseHandler.HANDLER_METHOD);
 				JConsoleHandler.execute(console, feLocator$);
@@ -220,7 +220,7 @@ public class JEdgeEditor extends JFieldsEditor {
 					core.value=text$;
 //				System.out.println("FieldsEditor:response:name="+core.name+" value="+core.value);
 				entity.putElementItem("field", core);
-				entigrator.save(entity);
+				entigrator.ent_alter(entity);
 				String feLocator$=getLocator();
 				feLocator$=Locator.append(locator$, Entigrator.ENTIHOME, entihome$);
 				feLocator$=Locator.append(locator$, EntityHandler.ENTITY_KEY, entityKey$);

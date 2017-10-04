@@ -36,7 +36,7 @@ import gdt.jgui.entity.bonddetail.JBondDetailFacetOpenItem;
 import gdt.jgui.entity.edge.JBondsPanel;
 
 public class JWebGraph implements WContext {
-static boolean debug=true;
+static boolean debug=false;
 //private JMainConsole console;
 private String entihome$;
 private String entityKey$;
@@ -549,8 +549,10 @@ public JWebGraph(){
 			 ArrayList<String>dl=new ArrayList<String>();
 			 //ArrayList<String>bl=new ArrayList<String>();
 			 for(Bond b:ba){
-				 	outIcon$=getNodeIcon(entigrator,b.outNodeKey$);
-					inIcon$=getNodeIcon(entigrator,b.inNodeKey$);
+				 	outIcon$=entigrator.ent_getIconAtKey(b.outNodeKey$);
+				 			//getNodeIcon(entigrator,b.outNodeKey$);
+					inIcon$=entigrator.ent_getIconAtKey(b.inNodeKey$);
+					//getNodeIcon(entigrator,b.inNodeKey$);
 					outNodeLabel$=entigrator.indx_getLabel(b.outNodeKey$);
 					if(outNodeLabel$==null)
 						continue;
@@ -626,8 +628,10 @@ public JWebGraph(){
 			 for(Bond b:ba){
 				    if(!edgeKey$.equals(b.edgeKey$))
 				    	continue;
-				 	outIcon$=JGraphRenderer.getNodeIcon(entigrator,b.outNodeKey$);
-					inIcon$=JGraphRenderer.getNodeIcon(entigrator,b.inNodeKey$);
+				 //	outIcon$=JGraphRenderer.getNodeIcon(entigrator,b.outNodeKey$);
+				//	inIcon$=JGraphRenderer.getNodeIcon(entigrator,b.inNodeKey$);
+				    outIcon$=entigrator.ent_getIconAtKey(b.outNodeKey$);
+				    inIcon$=entigrator.ent_getIconAtKey(b.inNodeKey$);
 					outNodeLabel$=entigrator.indx_getLabel(b.outNodeKey$);
 					if(outNodeLabel$==null)
 						continue;
@@ -899,7 +903,9 @@ public JWebGraph(){
 		return this;
 	}
 */
+	/*
 private static String getNodeIcon(Entigrator entigrator,String nodeKey$){
+
 try{
 	//Core [] ca=entigrator.indx_getMarks(new String[]{nodeKey$});
 	String header$=entigrator.getEntihome()+"/"+StoreAdapter.HEADERS+"/"+nodeKey$;
@@ -916,4 +922,6 @@ try{
 }
 return null;
 }
+*/
 }
+

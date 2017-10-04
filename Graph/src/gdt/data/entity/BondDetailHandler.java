@@ -131,15 +131,15 @@ public static void deleteDetail(Entigrator entigrator, String locator$){
     			edge.removeElementItem("detail", c.name);
     			//break;
     		}
-    entigrator.replace(edge);
+    entigrator.ent_alter(edge);
     if(detail!=null)	
     	if(detail.elementGet("bond")==null){
     		detail.removeElementItem("fhandler", BondDetailHandler.class.getName());
     		detail.removeElementItem("jfacet", BondDetailHandler.class.getName());
-    		entigrator.replace(detail);
+    		entigrator.ent_alter(detail);
     		entigrator.ent_takeOffProperty(detail, "detail");
     	}else
-   entigrator.replace(detail);
+   entigrator.ent_alter(detail);
 	}catch(Exception e){
 		Logger.getLogger(BondDetailHandler.class.getName()).severe(e.toString());
 	}
@@ -190,7 +190,7 @@ private static boolean isDetailAlreadyAttached(Entigrator entigrator,Sack edge,S
 			return false;
 		if(!edgeModified)
 			return true;
-		entigrator.replace(edge);
+		entigrator.ent_alter(edge);
 	}catch(Exception e){
 			
 	}
@@ -233,11 +233,11 @@ public static void addDetail(Entigrator entigrator, String locator$){
     	System.out.println("BondDetailHandler:addDetail:already attached="+detailKey$);
     	*/	
     edge.putElementItem("detail", new Core(bondKey$,Identity.key(),detailKey$));
-    entigrator.replace(edge);
+    entigrator.ent_alter(edge);
    detail.putElementItem("fhandler",new Core(null, BondDetailHandler.class.getName(),EXTENSION_KEY));
    detail.putElementItem("jfacet",new Core(null, "gdt.data.entity.BondDetailHandler","gdt.jgui.entity.bonddetail.JBondDetailFacetOpenItem"));
    
-   entigrator.replace(detail);
+   entigrator.ent_alter(detail);
    entigrator.ent_assignProperty(detail, "detail", detail.getProperty("label"));
  	}catch(Exception e){
 		Logger.getLogger(BondDetailHandler.class.getName()).severe(e.toString());
