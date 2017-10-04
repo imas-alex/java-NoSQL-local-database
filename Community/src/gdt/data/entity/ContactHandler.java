@@ -74,7 +74,7 @@ public final static String CONTACT="contact";
 					if(!entity.existsElement("fhandler"))
 						entity.createElement("fhandler");
 					entity.putElementItem("fhandler", new Core(null,ContactHandler.class.getName(),null));
-					entigrator.save(entity);
+					entigrator.ent_alter(entity);
 				}
 	            result=true;
 			}

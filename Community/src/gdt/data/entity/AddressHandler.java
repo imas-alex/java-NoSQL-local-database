@@ -48,7 +48,7 @@ public AddressHandler(){
 					if(!entity.existsElement("fhandler"))
 						entity.createElement("fhandler");
 					entity.putElementItem("fhandler", new Core(null, AddressHandler.class.getName(),null));
-					entigrator.save(entity);
+					entigrator.ent_alter(entity);
 				}
 	            result=true;
 			}

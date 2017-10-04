@@ -185,7 +185,7 @@ public class JEmailFacetOpenItem extends JFacetOpenItem implements JRequester,WC
 			
 			 entity.removeElementItem("fhandler", EmailHandler.class.getName());
 			 entity.removeElementItem("jfacet", EmailHandler.class.getName());
-			 entigrator.save(entity);
+			 entigrator.ent_alter(entity);
 			 entigrator.ent_takeOffProperty(entity, "email");
 		}catch(Exception e){
 			LOGGER.severe(e.toString());

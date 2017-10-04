@@ -175,7 +175,7 @@ public class JContactFacetOpenItem extends JFacetOpenItem implements JRequester,
 			
 			 entity.removeElementItem("fhandler", ContactHandler.class.getName());
 			 entity.removeElementItem("jfacet", ContactHandler.class.getName());
-			 entigrator.save(entity);
+			 entigrator.ent_alter(entity);
 			 entigrator.ent_takeOffProperty(entity, "contact");
 		}catch(Exception e){
 			LOGGER.severe(e.toString());

@@ -181,7 +181,7 @@ public class JAddressEditor extends JFieldsEditor {
 					//System.out.println("JPhoneEditor:reindex:1:entity="+entity.getProperty("label"));
 		    		entity.putElementItem("jfacet", new Core(JAddressFacetAddItem.class.getName(),fhandler$,JAddressFacetOpenItem.class.getName()));
 					entity.putElementItem("fhandler", new Core(null,fhandler$,JAddressFacetAddItem.EXTENSION_KEY));
-					entigrator.replace(entity);
+					entigrator.ent_alter(entity);
 				}
 		    }catch(Exception e){
 		    	Logger.getLogger(getClass().getName()).severe(e.toString());
@@ -239,7 +239,7 @@ public class JAddressEditor extends JFieldsEditor {
 				newEntity.putElementItem("jfacet", new Core("gdt.jgui.entity.address.JAddressFacetAddItem",AddressHandler.class.getName(),"gdt.jgui.entity.address.JAddressFacetOpenItem"));
 				
 				newEntity.putAttribute(new Core (null,"icon","address.png"));
-				entigrator.replace(newEntity);
+				entigrator.ent_alter(newEntity);
 				entigrator.ent_assignProperty(newEntity, "fields", text$);
 				entigrator.ent_assignProperty(newEntity, "address", text$);
 				String icons$=entihome$+"/"+Entigrator.ICONS;
@@ -265,7 +265,7 @@ public class JAddressEditor extends JFieldsEditor {
 				entityKey$=locator.getProperty(EntityHandler.ENTITY_KEY);
 				Sack entity=entigrator.getEntityAtKey(entityKey$);
 				entity.putElementItem("field", new Core(null,"Display address",text$));
-				entigrator.replace(entity);
+				entigrator.ent_alter(entity);
 				entigrator.ent_assignProperty(entity, "address", text$);
 				String feLocator$=getLocator();
 				feLocator$=Locator.remove(feLocator$, BaseHandler.HANDLER_METHOD);
@@ -288,7 +288,7 @@ public class JAddressEditor extends JFieldsEditor {
 					core.value=text$;
 //				System.out.println("FieldsEditor:response:name="+core.name+" value="+core.value);
 				entity.putElementItem("field", core);
-				entigrator.replace(entity);
+				entigrator.ent_alter(entity);
 				String feLocator$=getLocator();
 				feLocator$=Locator.append(locator$, Entigrator.ENTIHOME, entihome$);
 				feLocator$=Locator.append(locator$, EntityHandler.ENTITY_KEY, entityKey$);

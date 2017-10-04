@@ -145,7 +145,7 @@ public class JPersonEditor extends JFieldsEditor implements JExtendedFacetRender
 					//System.out.println("JPhoneEditor:reindex:1:entity="+entity.getProperty("label"));
 		    		entity.putElementItem("jfacet", new Core(JPersonFacetAddItem.class.getName(),fhandler$,JPersonFacetOpenItem.class.getName()));
 					entity.putElementItem("fhandler", new Core(null,fhandler$,JPersonFacetAddItem.EXTENSION_KEY));
-					entigrator.save(entity);
+					entigrator.ent_alter(entity);
 				}
 		    }catch(Exception e){
 		    	Logger.getLogger(getClass().getName()).severe(e.toString());
@@ -205,7 +205,7 @@ public class JPersonEditor extends JFieldsEditor implements JExtendedFacetRender
 				newEntity.putElementItem("jfacet", new Core("gdt.jgui.entity.person.JPersonFacetAddItem",PersonHandler.class.getName(),"gdt.jgui.entity.person.JPersonFacetOpenItem"));
 				newEntity.putAttribute(new Core (null,"icon","person.png"));
 				//entigrator.save(newEntity);
-				entigrator.replace(newEntity);
+				entigrator.ent_alter(newEntity);
 				entigrator.ent_assignProperty(newEntity, "fields", text$);
 				entigrator.ent_assignProperty(newEntity, "person", text$);
 				String icons$=entihome$+"/"+Entigrator.ICONS;
@@ -231,7 +231,7 @@ public class JPersonEditor extends JFieldsEditor implements JExtendedFacetRender
 				entityKey$=locator.getProperty(EntityHandler.ENTITY_KEY);
 				Sack entity=entigrator.getEntityAtKey(entityKey$);
 				entity.putElementItem("field", new Core(null,"Display name",text$));
-				entigrator.save(entity);
+				entigrator.ent_alter(entity);
 				String feLocator$=getLocator();
 				//feLocator$=Locator.append(locator$, Entigrator.ENTIHOME, entihome$);
 				//feLocator$=Locator.append(locator$, EntityHandler.ENTITY_KEY, entityKey$);
@@ -250,7 +250,7 @@ public class JPersonEditor extends JFieldsEditor implements JExtendedFacetRender
 					core.value=text$;
 //				System.out.println("FieldsEditor:response:name="+core.name+" value="+core.value);
 				entity.putElementItem("field", core);
-				entigrator.save(entity);
+				entigrator.ent_alter(entity);
 				String feLocator$=getLocator();
 				feLocator$=Locator.append(locator$, Entigrator.ENTIHOME, entihome$);
 				feLocator$=Locator.append(locator$, EntityHandler.ENTITY_KEY, entityKey$);

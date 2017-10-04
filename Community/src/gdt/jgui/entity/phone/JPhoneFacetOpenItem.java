@@ -179,7 +179,7 @@ public class JPhoneFacetOpenItem extends JFacetOpenItem implements JRequester,WC
 			
 			 entity.removeElementItem("fhandler", PhoneHandler.class.getName());
 			 entity.removeElementItem("jfacet", PhoneHandler.class.getName());
-			 entigrator.save(entity);
+			 entigrator.ent_alter(entity);
 			 entigrator.ent_takeOffProperty(entity, "phone");
 		}catch(Exception e){
 			LOGGER.severe(e.toString());

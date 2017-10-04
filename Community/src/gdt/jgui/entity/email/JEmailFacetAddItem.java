@@ -82,7 +82,7 @@ public void response(JMainConsole console, String locator$) {
 			component.putElementItem("fhandler", new Core(null,EmailHandler.class.getName(),EXTENSION_KEY));
 			component.createElement("jfacet");
 			component.putElementItem("jfacet", new Core(getClass().getName(),EmailHandler.class.getName(),JEmailFacetOpenItem.class.getName()));
-			entigrator.save(component);
+			entigrator.ent_alter(component);
 			entigrator.saveHandlerIcon(JEmailFacetAddItem.class, "email.png");
 			Sack container=entigrator.getEntityAtKey(entityKey$);
 			entigrator.col_addComponent(container, component);
@@ -113,7 +113,7 @@ public void addFacet(JMainConsole console, String locator$) {
 	   if(!entity.existsElement("jfacet"))
 		   entity.createElement("jfacet");
 	   entity.putElementItem("jfacet", new Core(JEmailFacetAddItem.class.getName(),EmailHandler.class.getName(),JEmailFacetOpenItem.class.getName()));
-	   entigrator.save(entity);
+	   entigrator.ent_alter(entity);
 	   entigrator.ent_assignProperty(entity, "email", "a@b.com");
 	}catch(Exception e){
 		  LOGGER.severe(e.toString());

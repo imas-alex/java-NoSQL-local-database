@@ -339,9 +339,11 @@ public class JContactEditor extends JPanel implements JContext,JFacetRenderer,JR
 	@Override
 	public String getTitle() {
 		try{
+			if(console!=null&&entihome$!=null&&entityKey$!=null){
 			Entigrator entigrator=console.getEntigrator(entihome$);
 			Sack contact=entigrator.getEntityAtKey(entityKey$);
-			return contact.getProperty("label");
+			   return contact.getProperty("label");
+			}
 			}catch(Exception e){
 				Logger.getLogger(JContactEditor.class.getName()).severe(e.toString());
 			}	
@@ -435,7 +437,7 @@ public class JContactEditor extends JPanel implements JContext,JFacetRenderer,JR
 						//System.out.println("JContactEditor:reindex:1:entity="+entity.getProperty("label"));
 			    		entity.putElementItem("jfacet", new Core(JContactFacetAddItem.class.getName(),fhandler$,JContactFacetOpenItem.class.getName()));
 						entity.putElementItem("fhandler", new Core(null,fhandler$,JContactFacetAddItem.EXTENSION_KEY));
-						entigrator.save(entity);
+						entigrator.ent_alter(entity);
 					}
 			    }catch(Exception e){
 			    	Logger.getLogger(getClass().getName()).severe(e.toString());
@@ -486,7 +488,7 @@ public class JContactEditor extends JPanel implements JContext,JFacetRenderer,JR
 			   contact=entigrator.ent_assignProperty(contact, "email", "a@b.com");
 			   contact=entigrator.ent_assignProperty(contact, "phone", "123456");
 			   contact.putAttribute(new Core(null,"icon","contact.png"));
-			   entigrator.replace(contact);
+			   entigrator.ent_alter(contact);
 			   entigrator.saveHandlerIcon(JContactEditor.class, "contact.png");
 			   entityKey$=contact.getKey();
 			   JContactEditor ce=new JContactEditor();

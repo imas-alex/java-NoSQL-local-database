@@ -89,7 +89,7 @@ public void response(JMainConsole console, String locator$) {
 			component.putElementItem("fhandler", new Core(null,PhoneHandler.class.getName(),PhoneHandler.EXTENSION_KEY));
 			component.createElement("jfacet");
 			component.putElementItem("jfacet", new Core(getClass().getName(),PhoneHandler.class.getName(),JPhoneFacetOpenItem.class.getName()));
-			entigrator.save(component);
+			entigrator.ent_alter(component);
 			entigrator.saveHandlerIcon(JPhoneFacetAddItem.class, "phone.png");
 			Sack container=entigrator.getEntityAtKey(entityKey$);
 			entigrator.col_addComponent(container, component);
@@ -120,7 +120,7 @@ public void addFacet(JMainConsole console, String locator$) {
 	   if(!entity.existsElement("jfacet"))
 		   entity.createElement("jfacet");
 	   entity.putElementItem("jfacet", new Core(JPhoneFacetAddItem.class.getName(),PhoneHandler.class.getName(),JPhoneFacetOpenItem.class.getName()));
-	   entigrator.save(entity);
+	   entigrator.ent_alter(entity);
 	   entigrator.ent_assignProperty(entity, "phone", "123456");
 	}catch(Exception e){
 		  LOGGER.severe(e.toString());

@@ -140,7 +140,7 @@ String entihome$;
 					//System.out.println("JEmailEditor:reindex:1:entity="+entity.getProperty("label"));
 		    		entity.putElementItem("jfacet", new Core(JEmailFacetAddItem.class.getName(),fhandler$,JEmailFacetOpenItem.class.getName()));
 					entity.putElementItem("fhandler", new Core(null,fhandler$,JEmailFacetAddItem.EXTENSION_KEY));
-					entigrator.save(entity);
+					entigrator.ent_alter(entity);
 				}
 		    }catch(Exception e){
 		    	Logger.getLogger(getClass().getName()).severe(e.toString());
@@ -189,7 +189,7 @@ String entihome$;
 			   email.putElementItem("jfacet", new Core("gdt.jgui.entity.email.JEmailFacetAddItem","gdt.data.entity.EmailHandler","gdt.jgui.entity.email.JEmailFacetOpenItem"));
 			   email.createElement("fhandler");
 			   email.putElementItem("fhandler", new Core(null,"gdt.data.entity.EmailHandler",EmailHandler.EXTENSION_KEY));
-			   entigrator.replace(email);
+			   entigrator.ent_alter(email);
 			   //email=entigrator.ent_assignProperty(email, "email", "a@b.com");
 			  
 			   entigrator.saveHandlerIcon(JEmailEditor.class, "email.png");
@@ -215,9 +215,9 @@ String entihome$;
 			   entityKey$=locator.getProperty(EntityHandler.ENTITY_KEY);
 			   String text$=locator.getProperty(JTextEditor.TEXT);
 			   Entigrator entigrator=console.getEntigrator(entihome$);
-			   Sack email=entigrator.ent_getAtKey(entityKey$);
+			   Sack email=entigrator.getEntityAtKey(entityKey$);
 			   email=entigrator.ent_assignProperty(email, "email", text$);
-			   entigrator.replace(email);
+			   entigrator.ent_alter(email);
 			   JEntityFacetPanel efp=new JEntityFacetPanel();
 			   String efpLocator$=efp.getLocator();
 			   efpLocator$=Locator.append(efpLocator$, Entigrator.ENTIHOME, entihome$);
