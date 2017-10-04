@@ -2,7 +2,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>WebSecurity</groupId>
   <artifactId>WebSecurity</artifactId>
-  <version>0.0.2-SNAPSHOT</version>
+  <version>0.0.1</version>
  <scm>
 		<url>https://github.com/imas-alex/Graph</url>
 		<connection>scm:git:git://github.com/imas-alex/java-NoSQL-local-database.git</connection>
@@ -121,9 +121,9 @@
    <dependency>
   <groupId>com.github.imas-alex</groupId>
   <artifactId>JEntigrator</artifactId>
-  <version>0.0.915</version>
+  <version>0.0.882</version>
    <scope>system</scope>
-    <systemPath>${basedir}/../JEntigrator/target/JEntigrator-0.0.915-jar-with-dependencies.jar </systemPath>
+    <systemPath>${basedir}/../JEntigrator/target/JEntigrator-0.0.882-jar-with-dependencies.jar </systemPath>
    </dependency>
   	<dependency>
 	  	<groupId>commons-codec</groupId>
