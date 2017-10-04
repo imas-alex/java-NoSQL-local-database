@@ -37,7 +37,7 @@ public class NwCustomerHandler extends FieldsHandler{
 private Logger LOGGER=Logger.getLogger(NwCustomerHandler.class.getName());
 String entihome$;
 String entityKey$;
-static boolean debug=true;
+static boolean debug=false;
 public final static String CUSTOMER="nwCustomer";
 
 public NwCustomerHandler(){
@@ -60,7 +60,7 @@ public NwCustomerHandler(){
 					if(!entity.existsElement("fhandler"))
 						entity.createElement("fhandler");
 					entity.putElementItem("fhandler", new Core(null, NwCustomerHandler.class.getName(),null));
-					entigrator.save(entity);
+					entigrator.ent_alter(entity);
 				}
 	            result=true;
 			}
@@ -257,7 +257,7 @@ public  static void rebuildCustomers(Entigrator entigrator,Document doc,boolean 
 										                 System.out.println("Fax : " 
 										                    +fax$ );  	                 
 								
-	              entigrator.replace(nwCustomer);
+	              entigrator.ent_alter(nwCustomer);
 	              nwCustomer=entigrator.ent_assignProperty(nwCustomer, "nwCustormer", name$);
 	              nwCustomer=entigrator.ent_assignProperty(nwCustomer, "fields", name$);
 	              entigrator.ent_reindex(nwCustomer);
@@ -266,7 +266,7 @@ public  static void rebuildCustomers(Entigrator entigrator,Document doc,boolean 
 	              id2key.putElementItem("nwCustomer", new Core(null,id$,nwCustomer.getKey()));
 	      
 	             }
-	             entigrator.replace(id2key);
+	             entigrator.ent_alter(id2key);
 	             }catch(Exception ee){
 	            	 System.out.println("NwCustomerHandler:rebuildCustomers:"+ee.toString());
 	             }

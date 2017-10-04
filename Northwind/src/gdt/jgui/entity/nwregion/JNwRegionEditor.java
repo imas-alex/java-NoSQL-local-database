@@ -98,7 +98,7 @@ public class JNwRegionEditor extends JFieldsEditor {
 
 	@Override
 	public String getCategoryIcon(Entigrator entigrator) {
-		return ExtensionHandler.loadIcon(entigrator, NwRegionHandler.EXTENSION_KEY, "nwProduct.png");
+		return ExtensionHandler.loadIcon(entigrator, NwRegionHandler.EXTENSION_KEY, "nwRegion.png");
 			
 	}
 
@@ -115,7 +115,7 @@ public class JNwRegionEditor extends JFieldsEditor {
 		    	if(entity.getElementItem("fhandler", fhandler$)!=null){
 		    		entity.putElementItem("jfacet", new Core(JNwRegionFacetAddItem.class.getName(),fhandler$,JNwRegionFacetOpenItem.class.getName()));
 					entity.putElementItem("fhandler", new Core(null,fhandler$,NwRegionHandler.EXTENSION_KEY));
-					entigrator.replace(entity);
+					entigrator.ent_alter(entity);
 				}
 		    }catch(Exception e){
 		    	Logger.getLogger(getClass().getName()).severe(e.toString());
@@ -169,7 +169,7 @@ public class JNwRegionEditor extends JFieldsEditor {
 				newEntity.putElementItem("jfacet", new Core("gdt.jgui.entity.nwregion.JNwRegionFacetAddItem",NwRegionHandler.class.getName(),"gdt.jgui.entity.nwregion.JNwRegionFacetOpenItem"));
 				
 				newEntity.putAttribute(new Core (null,"icon","nwRegion.png"));
-				entigrator.replace(newEntity);
+				entigrator.ent_alter(newEntity);
 				entigrator.ent_assignProperty(newEntity, "fields", text$);
 				entigrator.ent_assignProperty(newEntity, "nwRegion", text$);
 				String icons$=entihome$+"/"+Entigrator.ICONS;
@@ -200,7 +200,7 @@ public class JNwRegionEditor extends JFieldsEditor {
 					core.value=text$;
 //				System.out.println("FieldsEditor:response:name="+core.name+" value="+core.value);
 				entity.putElementItem("field", core);
-				entigrator.replace(entity);
+				entigrator.ent_alter(entity);
 				String feLocator$=getLocator();
 				feLocator$=Locator.append(locator$, Entigrator.ENTIHOME, entihome$);
 				feLocator$=Locator.append(locator$, EntityHandler.ENTITY_KEY, entityKey$);

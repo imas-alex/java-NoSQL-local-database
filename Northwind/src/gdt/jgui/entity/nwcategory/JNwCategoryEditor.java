@@ -115,7 +115,7 @@ public class JNwCategoryEditor extends JFieldsEditor {
 		    	if(entity.getElementItem("fhandler", fhandler$)!=null){
 		    		entity.putElementItem("jfacet", new Core(JNwCategoryFacetAddItem.class.getName(),fhandler$,JNwCategoryFacetOpenItem.class.getName()));
 					entity.putElementItem("fhandler", new Core(null,fhandler$,NwCategoryHandler.EXTENSION_KEY));
-					entigrator.replace(entity);
+					entigrator.ent_alter(entity);
 				}
 		    }catch(Exception e){
 		    	Logger.getLogger(getClass().getName()).severe(e.toString());
@@ -169,7 +169,7 @@ public class JNwCategoryEditor extends JFieldsEditor {
 				newEntity.putElementItem("jfacet", new Core("gdt.jgui.entity.nwcategory.JNwCategoryFacetAddItem",NwCategoryHandler.class.getName(),"gdt.jgui.entity.nwcategory.JNwCategoryFacetOpenItem"));
 				
 				newEntity.putAttribute(new Core (null,"icon","nwCategory.png"));
-				entigrator.replace(newEntity);
+				entigrator.ent_alter(newEntity);
 				entigrator.ent_assignProperty(newEntity, "fields", text$);
 				entigrator.ent_assignProperty(newEntity, "nwCategory", text$);
 				String icons$=entihome$+"/"+Entigrator.ICONS;
@@ -200,7 +200,7 @@ public class JNwCategoryEditor extends JFieldsEditor {
 					core.value=text$;
 //				System.out.println("FieldsEditor:response:name="+core.name+" value="+core.value);
 				entity.putElementItem("field", core);
-				entigrator.replace(entity);
+				entigrator.ent_alter(entity);
 				String feLocator$=getLocator();
 				feLocator$=Locator.append(locator$, Entigrator.ENTIHOME, entihome$);
 				feLocator$=Locator.append(locator$, EntityHandler.ENTITY_KEY, entityKey$);
@@ -238,7 +238,6 @@ public class JNwCategoryEditor extends JFieldsEditor {
 		return JNwCategoryFacetOpenItem.class.getName();
 	}
 public String getFacetIcon() {
-		
 		return "nwCategory.png";
 	}
 }

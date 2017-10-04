@@ -113,7 +113,7 @@ public class JNwOrderEditor extends JFieldsEditor {
 		    	if(entity.getElementItem("fhandler", fhandler$)!=null){
 		    		entity.putElementItem("jfacet", new Core(JNwOrderFacetAddItem.class.getName(),fhandler$,JNwOrderFacetOpenItem.class.getName()));
 					entity.putElementItem("fhandler", new Core(null,fhandler$,NwOrderHandler.EXTENSION_KEY));
-					entigrator.replace(entity);
+					entigrator.ent_alter(entity);
 				}
 		    }catch(Exception e){
 		    	Logger.getLogger(getClass().getName()).severe(e.toString());
@@ -164,7 +164,7 @@ public class JNwOrderEditor extends JFieldsEditor {
 				newEntity.createElement("jfacet");
 				newEntity.putElementItem("jfacet", new Core("gdt.jgui.entity.nworder.JNwOrderFacetAddItem",NwOrderHandler.class.getName(),"gdt.jgui.entity.nworder.JNwOrderFacetOpenItem"));
 				newEntity.putAttribute(new Core (null,"icon","nwOrder.png"));
-				entigrator.replace(newEntity);
+				entigrator.ent_alter(newEntity);
 				entigrator.ent_assignProperty(newEntity, "fields", text$);
 				entigrator.ent_assignProperty(newEntity, "nwOrder", text$);
 				String icons$=entihome$+"/"+Entigrator.ICONS;
@@ -195,7 +195,7 @@ public class JNwOrderEditor extends JFieldsEditor {
 					core.value=text$;
 //				System.out.println("FieldsEditor:response:name="+core.name+" value="+core.value);
 				entity.putElementItem("field", core);
-				entigrator.replace(entity);
+				entigrator.ent_alter(entity);
 				String feLocator$=getLocator();
 				feLocator$=Locator.append(locator$, Entigrator.ENTIHOME, entihome$);
 				feLocator$=Locator.append(locator$, EntityHandler.ENTITY_KEY, entityKey$);

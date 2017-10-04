@@ -34,7 +34,7 @@ public class NwOrderDetailHandler extends FieldsHandler{
 private Logger LOGGER=Logger.getLogger(NwOrderDetailHandler.class.getName());
 String entihome$;
 String entityKey$;
-static boolean debug=true;
+static boolean debug=false;
 public final static String ORDER_DETAIL="nwOrderDetail";
 
 public NwOrderDetailHandler(){
@@ -57,7 +57,7 @@ public NwOrderDetailHandler(){
 					if(!entity.existsElement("fhandler"))
 						entity.createElement("fhandler");
 					entity.putElementItem("fhandler", new Core(null, NwOrderDetailHandler.class.getName(),null));
-					entigrator.replace(entity);
+					entigrator.ent_alter(entity);
 				}
 	            result=true;
 			}
@@ -207,9 +207,9 @@ public  static void rebuildOrderDetails(Entigrator entigrator,Document doc,boole
 		          	        	if(productID$!=null)
 					    	   	   nwOrderDetail.putElementItem("field", new Core(null,"Discount",discount$));
 		          	        
-		          	        	entigrator.replace(nwOrderDetail);
+		          	        	entigrator.ent_alter(nwOrderDetail);
 					             
-	              entigrator.replace(nwOrderDetail);
+	              entigrator.ent_alter(nwOrderDetail);
 	              entigrator.ent_reindex(nwOrderDetail);
 	              if(!id2key.existsElement("nwOrderDetail"))
 	            	  id2key.createElement("nwOrderDetail");
@@ -218,7 +218,7 @@ public  static void rebuildOrderDetails(Entigrator entigrator,Document doc,boole
 	             }
 	             }
 	             System.out.println("NwOrderHandler:rebuildOrderDetails:n="+n);
-	             entigrator.replace(id2key);
+	             entigrator.ent_alter(id2key);
 	             }catch(Exception eee){
 	            	 System.out.println("NwOrderHandler:rebuildOrderDetails:"+eee.toString());
 	             }
@@ -251,7 +251,7 @@ private  static Sack createOrderDetail(Entigrator entigrator,String label$,Sack 
 	newEntity.putElementItem("fhandler", new Core(null,FieldsHandler.class.getName(),null));
 	newEntity.createElement("jfacet");
 	newEntity.putElementItem("jfacet", new Core("gdt.jgui.entity.fields.JFieldsFacetAddItem",FieldsHandler.class.getName(),"gdt.jgui.entity.fields.JFieldsFacetOpenItem"));
-	entigrator.replace(newEntity);
+	entigrator.ent_alter(newEntity);
 	newEntity=entigrator.ent_assignProperty(newEntity, "nwOrderDetail",label$);
     newEntity=entigrator.ent_assignProperty(newEntity, "fields", label$);
 	entigrator.col_addComponent(nwOrder,newEntity);
@@ -379,9 +379,9 @@ public  static void repairOrderDetails(Entigrator entigrator){
 		          	        	if(productID$!=null)
 					    	   	   nwOrderDetail.putElementItem("field", new Core(null,"Discount",discount$));
 		          	        
-		          	        	entigrator.replace(nwOrderDetail);
+		          	        	entigrator.ent_alter(nwOrderDetail);
 					             
-	              entigrator.replace(nwOrderDetail);
+	              entigrator.ent_alter(nwOrderDetail);
 	              entigrator.ent_reindex(nwOrderDetail);
 	              if(!id2key.existsElement("nwOrderDetail"))
 	            	  id2key.createElement("nwOrderDetail");
@@ -395,7 +395,7 @@ public  static void repairOrderDetails(Entigrator entigrator){
 	             }catch(Exception eee){
 	            	 System.out.println("NwOrderHandler:repairOrderDetails:"+eee.toString());
 	             }
-	        	entigrator.replace(id2key);
+	        	entigrator.ent_alter(id2key);
 	         }
 	}catch(Exception e){
 		Logger.getLogger(NwOrderDetailHandler.class.getName()).severe(e.toString());

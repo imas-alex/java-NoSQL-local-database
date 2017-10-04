@@ -149,7 +149,7 @@ public  static void rebuildId2key(Entigrator entigrator){
 			id2key.createElement("fhandler");
 			id2key.putElementItem("fhandler", new Core(null,FieldsHandler.class.getName(),null));
 			id2key.putAttribute(new Core (null,"icon","fields.png"));
-			entigrator.replace(id2key);
+			entigrator.ent_alter(id2key);
 			id2key=entigrator.ent_reindex(id2key);
 		Sack candidate;
 		String id$;
@@ -265,7 +265,7 @@ public  static void rebuildId2key(Entigrator entigrator){
 										}
 										}
 									}								
-		entigrator.replace(id2key);
+		entigrator.ent_alter(id2key);
 		entigrator.ent_reindex(id2key);
 	}catch(Exception e){
 		Logger.getLogger(NwSourceHandler.class.getName()).severe(e.toString());

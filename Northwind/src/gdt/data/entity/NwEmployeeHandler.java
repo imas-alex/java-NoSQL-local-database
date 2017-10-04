@@ -34,7 +34,7 @@ public class NwEmployeeHandler extends FieldsHandler{
 private Logger LOGGER=Logger.getLogger(NwEmployeeHandler.class.getName());
 String entihome$;
 String entityKey$;
-static boolean debug=true;
+static boolean debug=false;
 public final static String EMPLOYEE="nwEmployee";
 
 
@@ -58,7 +58,7 @@ public NwEmployeeHandler(){
 					if(!entity.existsElement("fhandler"))
 						entity.createElement("fhandler");
 					entity.putElementItem("fhandler", new Core(null, NwEmployeeHandler.class.getName(),null));
-					entigrator.replace(entity);
+					entigrator.ent_alter(entity);
 				}
 	            result=true;
 			}
@@ -320,7 +320,7 @@ public  static void rebuildEmployees(Entigrator entigrator,Document doc,boolean 
 		          	        	if(territoryID$!=null)
 					    	   	 nwEmployee.putElementItem("EmployeeTerritorie", new Core(null,territoryID$,null));
 					             }
-	              entigrator.replace(nwEmployee);
+	              entigrator.ent_alter(nwEmployee);
 	              nwEmployee=entigrator.ent_assignProperty(nwEmployee, "nwEmployee", name$);
 	              nwEmployee=entigrator.ent_assignProperty(nwEmployee, "fields", name$);
 	              entigrator.ent_reindex(nwEmployee);
@@ -329,7 +329,7 @@ public  static void rebuildEmployees(Entigrator entigrator,Document doc,boolean 
 	              id2key.putElementItem("nwEmployee", new Core(null,id$,nwEmployee.getKey()));
 	      
 	             }
-	             entigrator.replace(id2key);
+	             entigrator.ent_alter(id2key);
 	             }catch(Exception eee){
 	            	 System.out.println("NwEmployeeHandler:rebuildEmployees:"+eee.toString());
 	             }

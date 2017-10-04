@@ -34,7 +34,7 @@ public class NwTerritoryHandler extends FieldsHandler{
 private Logger LOGGER=Logger.getLogger(NwTerritoryHandler.class.getName());
 String entihome$;
 String entityKey$;
-static boolean debug=true;
+static boolean debug=false;
 public final static String TERRITORY="nwTerritory";
 
 public NwTerritoryHandler(){
@@ -57,7 +57,7 @@ public NwTerritoryHandler(){
 					if(!entity.existsElement("fhandler"))
 						entity.createElement("fhandler");
 					entity.putElementItem("fhandler", new Core(null, NwTerritoryHandler.class.getName(),null));
-					entigrator.save(entity);
+					entigrator.ent_alter(entity);
 				}
 	            result=true;
 			}
@@ -177,7 +177,7 @@ public  static void rebuildTerritories(Entigrator entigrator,Document doc,boolea
 		                    +regionID$ );
 		        
 	            
-	              entigrator.replace(nwTerritory);
+	              entigrator.ent_alter(nwTerritory);
 	              nwTerritory=entigrator.ent_assignProperty(nwTerritory, "nwTerritory", territory$);
 	              nwTerritory=entigrator.ent_assignProperty(nwTerritory, "fields",territory$);
 	              entigrator.ent_reindex(nwTerritory);
@@ -186,7 +186,7 @@ public  static void rebuildTerritories(Entigrator entigrator,Document doc,boolea
 	              id2key.putElementItem("nwTerritory", new Core(null,id$,nwTerritory.getKey()));
 	      
 	             }} 
-	         entigrator.replace(id2key);
+	         entigrator.ent_alter(id2key);
 	}catch(Exception e){
 		Logger.getLogger(NwTerritoryHandler.class.getName()).severe(e.toString());
 	}

@@ -34,7 +34,7 @@ public class NwSupplierHandler extends FieldsHandler{
 private Logger LOGGER=Logger.getLogger(NwSupplierHandler.class.getName());
 String entihome$;
 String entityKey$;
-static boolean debug=true;
+static boolean debug=false;
 public final static String SUPPLIER="supplier";
 
 public NwSupplierHandler(){
@@ -57,7 +57,7 @@ public NwSupplierHandler(){
 					if(!entity.existsElement("fhandler"))
 						entity.createElement("fhandler");
 					entity.putElementItem("fhandler", new Core(null, NwSupplierHandler.class.getName(),null));
-					entigrator.save(entity);
+					entigrator.ent_alter(entity);
 				}
 	            result=true;
 			}
@@ -262,7 +262,7 @@ public  static void rebuildSuppliers(Entigrator entigrator,Document doc,boolean 
 	    	                 + homePage$);
 	                 nwSupplier.putElementItem("field", new Core(null,"HomePage",homePage$));
 	              
-	              entigrator.replace(nwSupplier);
+	              entigrator.ent_alter(nwSupplier);
 	              nwSupplier=entigrator.ent_assignProperty(nwSupplier, "nwSupplier", companyName$);
 	              nwSupplier=entigrator.ent_assignProperty(nwSupplier, "fields",companyName$);
 	              entigrator.ent_reindex(nwSupplier);
@@ -271,7 +271,7 @@ public  static void rebuildSuppliers(Entigrator entigrator,Document doc,boolean 
 	              id2key.putElementItem("nwSupplier", new Core(null,id$,nwSupplier.getKey()));
 	      
 	             }} }
-		 entigrator.replace(id2key);
+		 entigrator.ent_alter(id2key);
 	}catch(Exception e){
 		Logger.getLogger(NwSupplierHandler.class.getName()).severe(e.toString());
 	}

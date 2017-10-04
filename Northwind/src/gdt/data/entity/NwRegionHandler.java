@@ -34,7 +34,7 @@ public class NwRegionHandler extends FieldsHandler{
 private Logger LOGGER=Logger.getLogger(NwRegionHandler.class.getName());
 String entihome$;
 String entityKey$;
-static boolean debug=true;
+static boolean debug=false;
 public final static String REGION="nwRegion";
 
 public NwRegionHandler(){
@@ -57,7 +57,7 @@ public NwRegionHandler(){
 					if(!entity.existsElement("fhandler"))
 						entity.createElement("fhandler");
 					entity.putElementItem("fhandler", new Core(null, NwRegionHandler.class.getName(),null));
-					entigrator.save(entity);
+					entigrator.ent_alter(entity);
 				}
 	            result=true;
 			}
@@ -179,7 +179,7 @@ public  static void rebuildRegions(Entigrator entigrator,Document doc,boolean up
 	                 System.out.println("RegionID  : " 
 	                    +id$ );
 	                 nwRegion.putElementItem("field", new Core(null,"RegionID",id$));
-	                	              entigrator.replace(nwRegion);
+	                	              entigrator.ent_alter(nwRegion);
 	              nwRegion=entigrator.ent_assignProperty(nwRegion, "nwRegion", region$);
 	              nwRegion=entigrator.ent_assignProperty(nwRegion, "fields",region$);
 	              entigrator.ent_reindex(nwRegion);
@@ -189,7 +189,7 @@ public  static void rebuildRegions(Entigrator entigrator,Document doc,boolean up
 	      
 	             }
 	             } }
-		 entigrator.replace(id2key);
+		 entigrator.ent_alter(id2key);
 	}catch(Exception e){
 		Logger.getLogger(NwRegionHandler.class.getName()).severe(e.toString());
 	}

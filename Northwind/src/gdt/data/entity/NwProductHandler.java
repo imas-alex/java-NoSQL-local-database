@@ -34,7 +34,7 @@ public class NwProductHandler extends FieldsHandler{
 private Logger LOGGER=Logger.getLogger(NwProductHandler.class.getName());
 String entihome$;
 String entityKey$;
-static boolean debug=true;
+static boolean debug=false;
 public final static String PRODUCT="nwProduct";
 
 public NwProductHandler(){
@@ -57,7 +57,7 @@ public NwProductHandler(){
 					if(!entity.existsElement("fhandler"))
 						entity.createElement("fhandler");
 					entity.putElementItem("fhandler", new Core(null, NwProductHandler.class.getName(),null));
-					entigrator.save(entity);
+					entigrator.ent_alter(entity);
 				}
 	            result=true;
 			}
@@ -239,7 +239,7 @@ public  static void rebuildProducts(Entigrator entigrator,Document doc,boolean u
 						    if(debug)
 						          System.out.println("Discontinued : " 
 						               +discontinued$ );   
-	              entigrator.replace(nwProduct);
+	              entigrator.ent_alter(nwProduct);
 	              nwProduct=entigrator.ent_assignProperty(nwProduct, "nwProduct", name$);
 	              nwProduct=entigrator.ent_assignProperty(nwProduct, "fields", name$);
 	              entigrator.ent_reindex(nwProduct);
@@ -249,7 +249,7 @@ public  static void rebuildProducts(Entigrator entigrator,Document doc,boolean u
 	      
 	         }
 	         }
-	         entigrator.replace(id2key);
+	         entigrator.ent_alter(id2key);
 	}catch(Exception e){
 		Logger.getLogger(NwProductHandler.class.getName()).severe(e.toString());
 	}

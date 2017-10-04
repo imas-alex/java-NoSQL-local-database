@@ -84,7 +84,7 @@ public void response(JMainConsole console, String locator$) {
 			component.putElementItem("jfacet", new Core(JNwOrderDetailFacetAddItem.class.getName(),NwOrderDetailHandler.class.getName(),JNwOrderDetailFacetOpenItem.class.getName()));
 			component.createElement("field");
 			component.putElementItem("field", new Core(null,"Name","Value"));
-			entigrator.save(component);
+			entigrator.ent_alter(component);
 			entigrator.saveHandlerIcon(JNwOrderDetailFacetAddItem.class, "nwOrderDetail.png");
 			Sack container=entigrator.getEntityAtKey(entityKey$);
 			entigrator.col_addComponent(container, component);
@@ -113,7 +113,7 @@ public void addFacet(JMainConsole console, String locator$) {
 	   if(!entity.existsElement("jfacet"))
 		   entity.createElement("jfacet");
 	   entity.putElementItem("jfacet", new Core(JNwOrderDetailFacetAddItem.class.getName(),NwOrderDetailHandler.class.getName(),JNwOrderDetailFacetOpenItem.class.getName()));
-	   entigrator.save(entity);
+	   entigrator.ent_alter(entity);
 	   entity=entigrator.ent_assignProperty(entity, "fields", entity.getProperty("label"));
 	   entity=entigrator.ent_assignProperty(entity, "nwOrderDetail", entity.getProperty("label"));
 	}catch(Exception e){

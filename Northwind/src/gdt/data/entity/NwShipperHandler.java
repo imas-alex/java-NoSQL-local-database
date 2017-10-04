@@ -34,7 +34,7 @@ public class NwShipperHandler extends FieldsHandler{
 private Logger LOGGER=Logger.getLogger(NwShipperHandler.class.getName());
 String entihome$;
 String entityKey$;
-static boolean debug=true;
+static boolean debug=false;
 public final static String SHIPPER="shipper";
 
 public NwShipperHandler(){
@@ -57,7 +57,7 @@ public NwShipperHandler(){
 					if(!entity.existsElement("fhandler"))
 						entity.createElement("fhandler");
 					entity.putElementItem("fhandler", new Core(null, NwShipperHandler.class.getName(),null));
-					entigrator.save(entity);
+					entigrator.ent_alter(entity);
 				}
 	            result=true;
 			}
@@ -179,7 +179,7 @@ public  static void rebuildShippers(Entigrator entigrator,Document doc,boolean u
 	                 System.out.println("ShipperID  : " 
 	                    +id$ );
 	                 nwShipper.putElementItem("field", new Core(null,"ShipperID",id$));
-	                	              entigrator.replace(nwShipper);
+	                	              entigrator.ent_alter(nwShipper);
 	              nwShipper=entigrator.ent_assignProperty(nwShipper, "nwShipper", companyName$);
 	              nwShipper=entigrator.ent_assignProperty(nwShipper, "fields",companyName$);
 	              entigrator.ent_reindex(nwShipper);
@@ -188,7 +188,7 @@ public  static void rebuildShippers(Entigrator entigrator,Document doc,boolean u
 	              id2key.putElementItem("nwShiiper", new Core(null,id$,nwShipper.getKey()));
 	      
 	             }} }
-		 entigrator.replace(id2key);
+		 entigrator.ent_alter(id2key);
 	}catch(Exception e){
 		Logger.getLogger(NwShipperHandler.class.getName()).severe(e.toString());
 	}

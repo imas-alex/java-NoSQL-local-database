@@ -37,7 +37,7 @@ public class NwCategoryHandler extends FieldsHandler{
 private Logger LOGGER=Logger.getLogger(NwCategoryHandler.class.getName());
 String entihome$;
 String entityKey$;
-static boolean debug=true;
+static boolean debug=false;
 public final static String CATEGORY="nwCategory";
 
 public NwCategoryHandler(){
@@ -60,7 +60,7 @@ public NwCategoryHandler(){
 					if(!entity.existsElement("fhandler"))
 						entity.createElement("fhandler");
 					entity.putElementItem("fhandler", new Core(null, NwCategoryHandler.class.getName(),null));
-					entigrator.save(entity);
+					entigrator.ent_alter(entity);
 				}
 	            result=true;
 			}
@@ -107,6 +107,7 @@ public  static void rebuildCategories(Entigrator entigrator,Document doc,boolean
 	Sack id2key=entigrator.getEntityAtKey(entigrator.indx_keyAtLabel("id2key"));
 	if(id2key==null){
 		entigrator.ent_releaseLabel("id2key");
+		
 		id2key=entigrator.ent_new("fields", "id2key");
 	}
 	try{
@@ -186,7 +187,7 @@ public  static void rebuildCategories(Entigrator entigrator,Document doc,boolean
 	                    NwSourceHandler.saveIcon(entigrator, fileName$, icon$);
 	                    nwCategory.putAttribute(new Core(null,"icon",fileName$));
 	                    }
-	              entigrator.replace(nwCategory);
+	              entigrator.ent_alter(nwCategory);
 	              nwCategory=entigrator.ent_assignProperty(nwCategory, "nwCategory", name$);
 	              nwCategory=entigrator.ent_assignProperty(nwCategory, "fields", name$);
 	              entigrator.ent_reindex(nwCategory);
@@ -195,7 +196,7 @@ public  static void rebuildCategories(Entigrator entigrator,Document doc,boolean
 	              id2key.putElementItem("nwCategory", new Core(null,id$,nwCategory.getKey()));
 	         }
 	         }
-	         entigrator.replace(id2key);
+	         entigrator.ent_alter(id2key);
 	}catch(Exception e){
 		Logger.getLogger(NwCategoryHandler.class.getName()).severe(e.toString());
 	}

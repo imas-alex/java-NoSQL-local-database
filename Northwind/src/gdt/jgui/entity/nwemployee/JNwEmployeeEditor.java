@@ -124,7 +124,7 @@ public class JNwEmployeeEditor extends JFieldsEditor {
 		    	if(entity.getElementItem("fhandler", fhandler$)!=null){
 		    		entity.putElementItem("jfacet", new Core(JNwEmployeeFacetAddItem.class.getName(),fhandler$,JNwEmployeeFacetOpenItem.class.getName()));
 					entity.putElementItem("fhandler", new Core(null,fhandler$,NwEmployeeHandler.EXTENSION_KEY));
-					entigrator.replace(entity);
+					entigrator.ent_alter(entity);
 				}
 		    }catch(Exception e){
 		    	Logger.getLogger(getClass().getName()).severe(e.toString());
@@ -175,7 +175,7 @@ public class JNwEmployeeEditor extends JFieldsEditor {
 				newEntity.createElement("jfacet");
 				newEntity.putElementItem("jfacet", new Core("gdt.jgui.entity.nwemployee.JNwEmployeeFacetAddItem",NwEmployeeHandler.class.getName(),"gdt.jgui.entity.nwemployee.JNwEmployeeFacetOpenItem"));
 				newEntity.putAttribute(new Core (null,"icon","nwEmployee.png"));
-				entigrator.replace(newEntity);
+				entigrator.ent_alter(newEntity);
 				entigrator.ent_assignProperty(newEntity, "fields", text$);
 				entigrator.ent_assignProperty(newEntity, "nwEmployee", text$);
 				String icons$=entihome$+"/"+Entigrator.ICONS;
@@ -206,7 +206,7 @@ public class JNwEmployeeEditor extends JFieldsEditor {
 					core.value=text$;
 //				System.out.println("FieldsEditor:response:name="+core.name+" value="+core.value);
 				entity.putElementItem("field", core);
-				entigrator.replace(entity);
+				entigrator.ent_alter(entity);
 				String feLocator$=getLocator();
 				feLocator$=Locator.append(locator$, Entigrator.ENTIHOME, entihome$);
 				feLocator$=Locator.append(locator$, EntityHandler.ENTITY_KEY, entityKey$);
@@ -350,12 +350,12 @@ public JMenu getContextMenu() {
 								sourceEntityKey$=locator.getProperty(EntityHandler.ENTITY_KEY);
 								sourceEntity=sourceEntigrator.getEntityAtKey(sourceEntityKey$);
 								sourceEntity.removeElementItem("field", name$);
-								sourceEntigrator.save(sourceEntity);
+								sourceEntigrator.ent_alter(sourceEntity);
 							}
 						}
 					}
 					}
-					entigrator.save(entity);
+					entigrator.ent_alter(entity);
 					Core[] ca=entity.elementGet("field");
 					replaceTable(ca);
 					}catch(Exception ee){
