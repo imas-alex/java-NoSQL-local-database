@@ -1,0 +1,12 @@
+<component name="libraryTable">
+  <library name="target">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/target/JEntigrator-0.0.915-jar-with-dependencies.jar!/" />
+      <root url="jar://$PROJECT_DIR$/target/JEntigrator-0.0.915.jar!/" />
+      <root url="jar://$PROJECT_DIR$/target/JEntigrator-0.0.915-sources.jar!/" />
+      <root url="jar://$PROJECT_DIR$/target/JEntigrator-0.0.915-javadoc.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

@@ -1,9 +1,0 @@
-Manifest-Version: 1.0
-Built-By: imasa
-Class-Path: lib/commons-codec-1.10.jar lib/commons-compress-1.10.jar l
- ib/jcaptcha-core-2.0.0.jar lib/jcaptcha-api-2.0.0.jar lib/filters-2.0
- .235.jar lib/slf4j-api-1.5.6.jar
-Build-Jdk: 1.8.0_144
-Created-By: Maven Integration for Eclipse
-Main-Class: gdt.jgui.console.JMainConsole
-
