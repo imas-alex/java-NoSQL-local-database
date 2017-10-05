@@ -2,7 +2,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>wentigrator</groupId>
   <artifactId>wentigrator</artifactId>
-  <version>0.0.2-SNAPSHOT</version>
+  <version>0.0.1-SNAPSHOT</version>
   <packaging>war</packaging>
   <name>wentigrator</name>
   <description>Web access to the JEntigrator </description>
@@ -10,7 +10,7 @@
 		<url>https://github.com/imas-alex/Graph</url>
 		<connection>scm:git:git://github.com/imas-alex/java-NoSQL-local-database.git</connection>
 		<developerConnection>scm:git:git@github.com:imas-alex/java-NoSQL-local-database.git</developerConnection>
-	  <tag>wentigrator-0.0.1</tag>
+	  <tag>Graph-0.0.12</tag>
   </scm>
 	<developers>
 		<developer>
@@ -46,22 +46,5 @@
   <artifactId>JEntigrator</artifactId>
   <version>0.0.6</version>
    </dependency>
-   <dependency>
-    <groupId>javax.servlet</groupId>
-    <artifactId>javax.servlet-api</artifactId>
-    <version>3.1.0</version>
-    <scope>provided</scope>
-</dependency>
-<dependency>
-	  	<groupId>commons-codec</groupId>
-  		<artifactId>commons-codec</artifactId>
-  		<version>1.10</version>
-  	</dependency>
-  	<dependency>
-  		<groupId>org.apache.commons</groupId>
- 			 <artifactId>commons-compress</artifactId>
-  			<version>1.10</version>
-</dependency>
- 
    </dependencies> 
 </project>
