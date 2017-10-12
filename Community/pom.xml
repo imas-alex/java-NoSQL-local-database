@@ -23,7 +23,7 @@
 		<url>https://github.com/imas-alex/Community</url>
 		<connection>scm:git:git://github.com/imas-alex.git</connection>
 		<developerConnection>scm:git:git@github.com:imas-alex/java-NoSQL-local-database.git</developerConnection>
-	  <tag>Community-0.0.20</tag>
+	  <tag>Community-0.09</tag>
   </scm>
   
 	<developers>

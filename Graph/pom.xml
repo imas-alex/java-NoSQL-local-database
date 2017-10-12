@@ -142,19 +142,17 @@
    </plugins> 
   </build>
   <dependencies> 
-   <dependency>
+    <groupId>com.github.imas-alex</groupId>
+ <dependency>
   <groupId>com.github.imas-alex</groupId>
   <artifactId>JEntigrator</artifactId>
-  <version>0.0.915</version>
-   <scope>system</scope>
-    <systemPath>${basedir}/../JEntigrator/target/JEntigrator-0.0.915-jar-with-dependencies.jar </systemPath>
-   </dependency>
-  
-		<dependency>
+  <version>0.0.7</version>
+  <classifier>dependencies</classifier>
+</dependency>
+  <dependency>
 	  	<groupId>commons-codec</groupId>
   		<artifactId>commons-codec</artifactId>
   		<version>1.10</version>
-  		
   	</dependency>
   	<dependency>
     <groupId>net.sourceforge.collections</groupId>
